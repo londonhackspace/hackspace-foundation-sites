@@ -1,7 +1,7 @@
 <? require('header.php'); ?>
 
-<p class="blurb"><strong>The Hackspace Foundation is a non-profit, community organisation dedicated to providing physical
-spaces for hacking in the UK.</strong></p>
+<p class="blurb"><strong>The Hackspace Foundation is a non-profit, community organisation dedicated to providing permanent 
+physical spaces for hacking in the UK.</strong></p>
 
 <p>We mean <em>hacking</em> in the <a href="http://catb.org/jargon/html/H/hacker.html">original sense</a> of the word 
 &mdash; the art of making, tinkering, improving and destroying things. Nothing to do with breaking into systems 
@@ -13,6 +13,6 @@ spaces for hacking in the UK.</strong></p>
     <li><a href="http://groups.google.com/group/birmingham-hack-space">Birmingham Hack Space</a></li>
 </ul>
 
-<p>If you're thinking of starting a hacker space in the UK, please get in touch with us - we'd love to help you.</p>
+<p>If you're thinking of starting a hacker space in the UK, please <a href="/contact">get in touch</a> with us - we'd love to help you.</p>
 
 <? require('footer.php'); ?>
