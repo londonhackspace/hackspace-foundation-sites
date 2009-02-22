@@ -6,6 +6,7 @@ require('./header.php');
  * http://en.wikipedia.org/wiki/Oxford_spelling
  * I'm using -ise here because I think emphasizing the pseudo-englishness is important ;) */
 ?>
+<h2>Organisation</h2>
 <p>In order to successfully rent a space without one person taking on all the risk, an organisational structure is needed.
    We believe strongly in a transparent, community-run organisation.</p>
 
