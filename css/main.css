@@ -1,0 +1,48 @@
+html {
+    background: #ccc;
+}
+
+body {
+    font-family: Helvetica, Arial, Verdana, sans-serif;
+    margin: 0; padding:0;
+    overflow:hidden;
+}
+
+a {
+    color: #121;
+}
+
+a:visited {
+    color #112;
+}
+
+#doc {
+    background: #fff;
+    padding: 5px;
+}
+
+#yui-main {
+    min-height: 500px;
+}
+
+#ft {
+    text-align: right;
+    color: #222;
+    font-size: 90%
+}
+
+#menu {
+    margin: 5px 0 0 10px;
+    font-size:110%;
+}
+
+#menu li {
+    list-style-type: none;
+    padding:0 0 3px; margin:0;
+}
+
+.blurb {
+    font-size: 110%
+}
+
+
