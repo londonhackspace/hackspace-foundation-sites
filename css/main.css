@@ -40,6 +40,10 @@ a:visited {
     padding:0 0 3px; margin:0;
 }
 
+#menu ul.submenu {
+    margin:2px 0 2px 5px;
+}
+
 h1 a {
     text-decoration:none;
 }

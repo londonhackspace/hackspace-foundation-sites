@@ -1,4 +1,7 @@
-<? require('../header.php'); ?>
+<? 
+$title = 'Memorandum of Association';
+$page = 'mem';
+require('./header.php'); ?>
 <p>The Companies Acts 1985 and 1989: Company limited by guarantee and not having a share capital</p>
 <h2>Memorandum of Association of Hackspace Foundation</h2>
 <ol>

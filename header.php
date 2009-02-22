@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Hackspace Foundation</title>
+    <title><? if ($title) echo "$title &mdash; "; ?> Hackspace Foundation</title>
     <link rel="stylesheet" type="text/css" 
         href="http://yui.yahooapis.com/combo?2.7.0/build/reset-fonts-grids/reset-fonts-grids.css&2.7.0/build/base/base-min.css"> 
     <link rel="stylesheet" type="text/css" href="/css/main.css" />

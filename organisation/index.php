@@ -1,4 +1,7 @@
-<? require('../header.php'); 
+<? 
+$page = 'organisation';
+$title = 'Organisation';
+require('./header.php'); 
 /* Grammatical note: I usually spell organization with a Z as per the proper Oxford spelling:
  * http://en.wikipedia.org/wiki/Oxford_spelling
  * I'm using -ise here because I think emphasizing the pseudo-englishness is important ;) */
@@ -7,8 +10,8 @@
    We believe strongly in a transparent, community-run organisation.</p>
 
 <p>The Hackspace Foundation is a registered company in England and Wales, limited by guarantee. A limited-by-guarantee 
-   company has no shareholders to pay profit to. The founding documents of the Hackspace Foundation
-   prevent paying profits to anyone, although we're not a registered charity and so still have to pay tax.</p>
+   company has no shareholders to pay profit to. The founding documents of the Hackspace Foundation (which you can access 
+   through the menu) prevent paying profits to anyone, although we're not a registered charity and so still have to pay tax.</p>
 
 <h3>Membership</h3>
 
