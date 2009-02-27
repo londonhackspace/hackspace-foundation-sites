@@ -10,7 +10,7 @@
 <body>
 <div id="doc" class="yui-t1">
     <div id="hd">
-        <h1><a href="/">Hackspace Foundation</a></h1>
+        <h1><a href="/"><img src="/images/logo.png"/></a></h1>
     </div>
     <? require('menu.php'); ?>
     <div id="bd">

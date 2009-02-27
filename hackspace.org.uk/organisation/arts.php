@@ -2,7 +2,6 @@
 $title = 'Articles of Association';
 $page = 'arts';
 require('./header.php'); ?>
-<p>Company limited by guarantee and not having a share capital</p>
 <h2>Articles of Association of Hackspace Foundation</h2>
 <h3>General</h3>
 <p>In these presents the words standing in the first column of the Table next hereinafter contained 

@@ -1,7 +1,11 @@
 <?php
 function menulink($url, $name, $title) {
     global $page;
-    $ret = '';
+    $ret = '<li';
+    if ($page == $name) {
+        $ret .= ' class="active"';
+    }   
+    $ret .= '>';
     if ($page != $name) {
         $ret .= '<a href="' . $url . '">';
     }
@@ -9,21 +13,16 @@ function menulink($url, $name, $title) {
     if ($page != $name) {
         $ret .= '</a>';
     }
+    $ret .= '</li>';
     return $ret;
 }
 
 ?>
 <div class="yui-b">
     <ul id="menu">
-        <li><?=menulink('/organisation', 'organisation', 'Organisation');?>
-            <? if ($section == 'organisation') { ?>
-                <ul class="submenu">
-                    <li><?=menulink('/organisation/arts.php', 'arts', 'Articles of Association');?></li>
-                    <li><?=menulink('/organisation/mem.php', 'mem', 'Memorandum of Association');?></li>
-                </ul>
-            <? } ?>
-        </li>
+        <?=menulink('/', 'about', 'About');?>
+        <?=menulink('/organisation', 'organisation', 'Organisation');?>
         <li><a href="http://www.beeonastring.com">Wiki</a></li>
-        <li><?=menulink('/contact', 'contact', 'Contact Us');?></li>
+        <?=menulink('/contact', 'contact', 'Contact Us');?>
     </ul>
 </div>
