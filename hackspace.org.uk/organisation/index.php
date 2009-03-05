@@ -12,7 +12,8 @@ require('./header.php');
 
 <p>The Hackspace Foundation is a registered company in England and Wales, limited by guarantee. A limited-by-guarantee 
    company has no shareholders to pay profit to. The founding documents of the Hackspace Foundation (which you can access 
-   through the menu) prevent paying profits to anyone, although we're not a registered charity and so still have to pay tax.</p>
+   above) prevent the foundation from paying profits to anyone, although we're not a registered charity and so still 
+   have to pay tax.</p>
 
 <h3>Membership</h3>
 
