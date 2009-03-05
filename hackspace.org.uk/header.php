@@ -13,7 +13,6 @@
     <div id="hd">
         <h1 id="headerlogo"><a href="/"><img src="/images/logo.png"/></a></h1>
         <ul id="membermenu">
-            <li><a href="/signup.php">Sign up</a></li>
             <li><a href="/login.php">Login</a></li>
         </ul>
     </div>
