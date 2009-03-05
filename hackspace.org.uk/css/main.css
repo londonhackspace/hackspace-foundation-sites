@@ -55,6 +55,21 @@ h3 {
     font-size: 90%
 }
 
+#headerlogo {
+    float:left;
+}
+
+#membermenu {
+    padding-top:10px;
+    float:right;
+}
+
+#membermenu li{
+    display:inline;
+    list-style-type:none;
+    padding-right:5px;
+}
+
 #menu {
     margin: 0px 0 0 10px;
     font-size:110%;

@@ -1,3 +1,4 @@
+<?php require_once( $_SERVER['DOCUMENT_ROOT'] . '/../lib/init.php'); ?>
 <!DOCTYPE html>
 <html>
 <head>
@@ -10,7 +11,11 @@
 <body>
 <div id="doc" class="yui-t1">
     <div id="hd">
-        <h1><a href="/"><img src="/images/logo.png"/></a></h1>
+        <h1 id="headerlogo"><a href="/"><img src="/images/logo.png"/></a></h1>
+        <ul id="membermenu">
+            <li><a href="/signup.php">Sign up</a></li>
+            <li><a href="/login.php">Login</a></li>
+        </ul>
     </div>
     <? require('menu.php'); ?>
     <div id="bd">
