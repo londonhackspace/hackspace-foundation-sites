@@ -100,3 +100,8 @@ h3 {
     margin-top:3px;
     font-size: 110%
 }
+
+#signuptable td {
+    border:none;
+}
+
