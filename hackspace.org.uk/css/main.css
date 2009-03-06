@@ -45,6 +45,14 @@ h3 {
     margin-top:14px;   
 }
 
+td, th {
+    border: 1px solid #AAA;
+}
+
+th {
+    text-align:right;
+}
+
 #yui-main {
     min-height: 500px;
 }

@@ -2,6 +2,10 @@
 $page = 'signup';
 require('header.php'); 
 
+if ($user) {
+    fURL::redirect('/members');
+}
+
 if (isset($_POST['submit'])) {
     try {
         $validator = new fValidation();
@@ -22,7 +26,7 @@ if (isset($_POST['submit'])) {
 
         fSession::set('user', $user->getId());
 
-        fURL::redirect('/');
+        fURL::redirect('/members');
         exit;
     } catch (fValidationException $e) {
         echo "<p>" . $e->printMessage() . "</p>";

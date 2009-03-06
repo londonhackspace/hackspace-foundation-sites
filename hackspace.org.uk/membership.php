@@ -21,6 +21,6 @@ require('header.php'); ?>
 </p>
 
 <p>
-    Payment methods available soon.
+    <strong>To become a member, please <a href="/signup.php">Sign Up</a>.</strong>
 </p>
 <? require('footer.php'); ?>

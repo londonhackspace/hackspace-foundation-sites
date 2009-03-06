@@ -5,8 +5,9 @@ require_once('user.php');
 
 
 fORMDatabase::attach(
-    new fDatabase('sqlite', '../var/database.db')
+    new fDatabase('sqlite', dirname(__FILE__) . '/../var/database.db')
 );
+
 
 fSession::setLength('1 day');
 
