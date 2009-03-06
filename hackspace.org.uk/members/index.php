@@ -15,7 +15,7 @@ require('../header.php');
         pay with PayPal, although it costs us a bit more money in fees and hassle.</p>
 
 <h3>Standing Order</h3>
-    <p>Set up a standing order with your bank (most banks let you do this online), 
+    <p>Set up a monthly standing order with your bank (most banks let you do this online), 
        using the following details:</p>
 
 <table>
