@@ -1,6 +1,11 @@
 <? 
 $page = 'membership';
-require('header.php'); ?>
+require('header.php'); 
+
+if ($user) {
+    fURL::redirect('/members');
+}
+?>
 <h2>Membership</h2>
 <p>
     Members of the Hackspace Foundation have a hand in the running of the organisation and 

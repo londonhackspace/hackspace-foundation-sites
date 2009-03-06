@@ -1,6 +1,10 @@
 <? 
-$page = 'members';
+$page = 'membership';
 require('../header.php'); 
+
+if (!$user) {
+    fURL::redirect('/');
+}
 ?>
 <h2>Members Area</h2>
 
@@ -10,9 +14,8 @@ require('../header.php');
 <? } else { ?>
     <p>You're not currently a member of the Hackspace Foundation.
         Membership is a recommended donation of £10 per month, with a 
-        minimum of £5 per month. To become a member, you have two options:
-        We'd much prefer you set up a standing order, but you can also 
-        pay with PayPal, although it costs us a bit more money in fees and hassle.</p>
+        minimum of £5 per month. To become a member, you can pay by 
+        standing order.</p>
 
 <h3>Standing Order</h3>
     <p>Set up a monthly standing order with your bank (most banks let you do this online), 
@@ -27,10 +30,7 @@ require('../header.php');
 </table>
 
     <p>Once your payment is set up, your payment will show up on the site once we reconcile 
-        our statements &mdash; this usually happens at least twice a month.</p>
-
-<h3>PayPal</h3>
-
+        our statements &mdash; this should happen at least twice a month.</p>
 
 <? } ?>
 
