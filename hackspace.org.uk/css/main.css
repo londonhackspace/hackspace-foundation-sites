@@ -70,6 +70,12 @@ h3 {
     padding-right:5px;
 }
 
+#loggedin {
+    float:right;
+    padding-top:23px;
+    font-size: 80%;
+}
+
 #menu {
     margin: 0px 0 0 10px;
     font-size:110%;

@@ -1,6 +1,38 @@
 <? 
 $page = 'signup';
-require('header.php'); ?>
+require('header.php'); 
+
+if (isset($_POST['submit'])) {
+    try {
+        $validator = new fValidation();
+        $validator->addRequiredFields('fullname', 'password', 'email');
+        $validator->addEmailFields('email');
+
+        $validator->validate();
+
+        if ($_POST['password'] != $_POST['passwordconfirm']) {
+            throw new fValidationException('Passwords do not match');
+        }
+
+        $user = new User();
+        $user->setEmail($_POST['email']);
+        $user->setFullName($_POST['fullname']);
+        $user->setPassword(fCryptography::hashPassword($_POST['password']));
+        $user->store();
+
+        fSession::set('user', $user->getId());
+
+        fURL::redirect('/');
+        exit;
+    } catch (fValidationException $e) {
+        echo "<p>" . $e->printMessage() . "</p>";
+    } catch (fSQLException $e) {
+        echo "<p>An unexpected error occurred, please try again later</p>";
+        trigger_error($e);
+    }
+}
+
+?>
 <h2>Sign up to the Hackspace Foundation</h2>
 <p>To become a member of the Hackspace Foundation, we need a few details from you.</p>
 <form method="post">
