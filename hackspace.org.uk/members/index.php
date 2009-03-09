@@ -32,6 +32,12 @@ if (!$user) {
     <p>Once your payment is set up, your payment will show up on the site once we reconcile 
         our statements &mdash; this should happen at least twice a month.</p>
 
+<h3>Can't do Standing Order?</h3>
+<p>If you aren't able to use a standing order to pay, please contact us at 
+    <a href="mailto:russ@hackspace.org.uk">russ@hackspace.org.uk</a> and we'll do our best to
+    sort something out for you.
+</p>
+
 <? } ?>
 
 <? require('../footer.php'); ?>
