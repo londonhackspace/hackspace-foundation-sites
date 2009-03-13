@@ -3,8 +3,8 @@ $page = 'donate';
 require('../header.php'); ?>
 <h2>Donate</h2>
 <p>The Hackspace Foundation is a non-profit organisation which gladly accepts donations.
-    If you're planning on using our spaces regularly or contributing to the Foundation you should
-    <a href="/membership.php">become a member</a> instead.
+    If you're planning on using our spaces regularly or contributing to the Foundation you should also
+    <a href="/membership.php">become a member</a>.
 </p>
 
 <p>There are two ways to donate to the Hackspace Foundation. We prefer bank transfer, as we don't have to pay commission.</p>
