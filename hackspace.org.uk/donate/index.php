@@ -10,12 +10,13 @@ require('../header.php'); ?>
 <p>There are two ways to donate to the Hackspace Foundation. We prefer bank transfer, as we don't have to pay commission.</p>
 
 <h3>Bank Transfer (BACS/FPS)</h3>
-<p>Our bank details are as follows:<br/>
-Hackspace Foundation<br/>
-Barclays Bank<br/>
-Sort Code: 20-32-06<br/>
-Account: 53413292
-</p>
+<p>Our bank details are as follows:</p>
+<table>
+    <tr><th>Bank</th><td>Barclays</td></tr>
+    <tr><th>Payee</th><td>Hackspace Foundation</td></tr>
+    <tr><th>Sort Code</th><td>20-32-06</td></tr>
+    <tr><th>Account Number</th><td>53413292</td></tr>
+</table>
 
 <h3>Paypal</h3>
 <p>
