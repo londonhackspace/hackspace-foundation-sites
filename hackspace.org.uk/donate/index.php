@@ -3,13 +3,14 @@ $page = 'donate';
 require('../header.php'); ?>
 <h2>Donate</h2>
 <p>The Hackspace Foundation is a non-profit organisation which gladly accepts donations.
-    If you're planning on using our spaces regularly or contributing to the Foundation you should also
+    If you're planning on using our spaces regularly, you should also
     <a href="/membership.php">become a member</a>.
 </p>
 
-<p>There are two ways to donate to the Hackspace Foundation. We prefer bank transfer, as we don't have to pay commission.</p>
+<p>There are two ways to donate to the Hackspace Foundation. We prefer bank transfer, as we don't have to pay commission.
+    Since we're not a registered charity, you unfortunately can't claim Gift Aid back on donations to us.</p>
 
-<h3>Bank Transfer (BACS/FPS)</h3>
+<h3>Bank Transfer</h3>
 <p>Our bank details are as follows:</p>
 <table>
     <tr><th>Bank</th><td>Barclays</td></tr>

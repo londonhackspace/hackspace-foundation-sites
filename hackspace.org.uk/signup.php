@@ -44,7 +44,7 @@ if (isset($_POST['submit'])) {
 <table id="signuptable">
 <tr><td><label for="email">Email</label></td><td><input type="text" id="email" name="email"/></td></tr>
 <tr><td><label for="password">Password</label></td><td><input type="password" id="password" name="password" /></td></tr>
-<tr><td><label for="passwordconfirm">Confirm Password</label></td><td><input type="password" id+"passwordconfirm" name="passwordconfirm" /></td></tr>
+<tr><td><label for="passwordconfirm">Confirm Password</label></td><td><input type="password" id="passwordconfirm" name="passwordconfirm" /></td></tr>
 <tr><td><label for="fullname">Full Name</label></td><td><input type="text" id="fullname" name="fullname"/></td></tr>
 <tr><td colspan="2"><input type="submit" name="submit" value="Submit" /></td></tr>
 </table>
