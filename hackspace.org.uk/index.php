@@ -1,5 +1,6 @@
 <? 
 $page = 'about';
+$desc = 'The Hackspace Foundation is a non-profit organisation providing hacker spaces in the UK. We are forming spaces in London and Birmingham.';
 require('header.php'); ?>
 
 <p class="blurb"><strong>The Hackspace Foundation is a non-profit, community organisation dedicated to providing
