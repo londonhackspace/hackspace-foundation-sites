@@ -21,9 +21,7 @@ function menulink($url, $name, $title) {
 <div class="yui-b">
     <ul id="menu">
         <?=menulink('/', 'about', 'About');?>
-        <?=menulink('/organisation', 'organisation', 'Organisation');?>
         <li><a href="http://wiki.hackspace.org.uk">Wiki</a></li>
-        <?=menulink('/donate', 'donate', 'Donate');?>
         <?=menulink('/membership.php', 'membership', 'Membership');?>
         <?=menulink('/contact', 'contact', 'Contact Us');?>
     </ul>
