@@ -2,6 +2,7 @@
 ob_start();
 require_once('config.php');
 require_once('user.php');
+require_once('transaction.php');
 
 
 fORMDatabase::attach(

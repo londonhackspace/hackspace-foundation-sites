@@ -7,6 +7,6 @@ class User extends fActiveRecord {
     }
 
     public function isMember() {
-        return false;
+        return $this->getSubscribed();
     }
 }
