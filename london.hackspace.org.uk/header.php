@@ -15,15 +15,7 @@
 <body>
 <div id="doc" class="yui-t1">
     <div id="hd">
-        <h1 id="headerlogo"><a href="/"><img src="/images/logo.png"/></a></h1>
-<?if ($user) { ?>
-        <p id="loggedin">Logged in as <a href="/members"><?=$user->getFullName()?></a>.
-                        <a href="/logout.php">Logout</a></p>
-<? } else { ?>
-        <ul id="membermenu">
-            <li><a href="/login.php">Login</a></li>
-        </ul>
-<? } ?>
+        <a href="/"><img src="/images/london.png"/></a><h1>London<br/>Hackspace</h1>
     </div>
     <? require('menu.php'); ?>
     <div id="bd">
