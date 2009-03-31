@@ -11,4 +11,7 @@ come and make things.</strong></p>
 <p>We hold regular <a href="/events">hack evenings</a>, generally in a pub, to help build the community so people can get to know each other, 
 as well as to provide a place for geeks to come and hack.</p>
 
+<p>The London Hackspace is run by the <a href="http://hackspace.org.uk">Hackspace Foundation</a> &mdash; 
+a non-profit, community-run organisation dedicated to promoting hacker spaces in the UK.</p>
+
 <? require('footer.php'); ?>
