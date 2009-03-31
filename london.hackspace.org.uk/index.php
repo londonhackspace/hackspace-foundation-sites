@@ -1,6 +1,6 @@
 <? 
 $page = 'about';
-$desc = '';
+$desc = 'The London Hackspace project is working to create a permanent space in London for people to come and make things.';
 require('header.php'); ?>
 
 <p class="blurb"><strong>The London Hackspace project is working to create a permanent space in London for people to 
