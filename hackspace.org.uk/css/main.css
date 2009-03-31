@@ -22,6 +22,11 @@ a:visited {
     margin-bottom:5px;
 }
 
+#hd img {
+    float:left;
+    padding-bottom:5px;
+}
+
 #bd {
     padding-top: 6px;
 }
@@ -32,6 +37,13 @@ a:visited {
 
 h1 {
     margin: 0;
+}
+
+#hd h1 {
+    padding:12px 0px 0px 10px;
+    float:left;
+    line-height: 1em;
+    font-weight: 750;
 }
 
 h2 {
