@@ -12,9 +12,10 @@ physical spaces for hacking in the UK.</strong></p>
 
 <p>Currently there are three spaces in various stages of formation:</p>
 <ul>
-    <li><a href="http://london.hackspace.org.uk">London Hack Space</a></li>
+    <li><a href="http://london.hackspace.org.uk">London Hackspace</a></li>
     <li><a href="http://groups.google.com/group/birmingham-hack-space">Birmingham Hack Space</a></li>
     <li><a href="http://groups.google.com/group/NW-hack-space">North West Hackspace</a></li>
+    <li><a href="http://groups.google.co.uk/group/leeds-hack-space">Leeds Hack Space</a></li>
 </ul>
 
 <p>If you're thinking of starting a hacker space in the UK, <a href="/starting.php">we can help you</a>.</p>
