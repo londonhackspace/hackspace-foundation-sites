@@ -10,7 +10,7 @@ physical spaces for hacking in the UK.</strong></p>
 &mdash; the art of making, tinkering with, improving and destroying things. Nothing to do with breaking into systems 
 (that&apos;s cracking), and not necessarily to do with computers or electronics.</p>
 
-<p>Currently there are three spaces in various stages of formation:</p>
+<p>Currently there are several spaces in various stages of formation:</p>
 <ul>
     <li><a href="http://london.hackspace.org.uk">London Hackspace</a></li>
     <li><a href="http://groups.google.com/group/birmingham-hack-space">Birmingham Hack Space</a></li>
