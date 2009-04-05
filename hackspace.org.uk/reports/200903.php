@@ -10,6 +10,9 @@ require('../header.php');
 over £1,000 in donations. We've still got a long way to go though &mdash; we're aiming for 
 £10,000 in cash to get things going, plus over £1,500 per month in subscriptions.</p>
 
+<p>At present, the only space that the Foundation is collecting funds for is the London Hackspace. 
+All funds currently on our books are therefore implicitly earmarked for this cause.</p>
+
 <h3>Stats</h3>
 <table>
     <tr><th>Registered Users</th><td>31</td></tr>
