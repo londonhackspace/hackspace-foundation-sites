@@ -135,3 +135,23 @@ form table td {
     border:none;
 }
 
+table.financial {
+    width:290px;
+}
+
+table.financial th {
+    text-align:left;
+}
+
+table.financial .sub {
+    padding-left:15px;
+}
+
+table.financial .sub2 {
+    padding-left:30px;
+}
+
+
+table.financial td.amount {
+    text-align:right;
+}
