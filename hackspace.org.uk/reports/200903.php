@@ -7,7 +7,8 @@ require('../header.php');
 
 <h3>Introduction</h3>
 <p>March is the first month where the Foundation was actually trading, and we managed to amass 
-over £1,000 in donations.</p>
+over £1,000 in donations. We've still got a long way to go though &mdash; we're aiming for 
+£10,000 in cash to get things going, plus over £1,500 per month in subscriptions.</p>
 
 <h3>Stats</h3>
 <table>
