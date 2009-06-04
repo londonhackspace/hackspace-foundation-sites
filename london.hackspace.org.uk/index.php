@@ -12,7 +12,7 @@ as well as to provide a place for geeks to come and hack.</p>
 <h2>We need money to make this happen</h2>
 
 <p>Renting a place in London isn't cheap &mdash; if you're interested, <strong>please help us out</strong> by
-donating using <a href="/donate">nank transfer</a> or Paypal:</p>
+donating using <a href="/donate">bank transfer</a> or Paypal:</p>
 <p>
 <form action="https://www.paypal.com/cgi-bin/webscr" method="post" style="padding-bottom:10px">
 <input type="hidden" name="cmd" value="_s-xclick">
