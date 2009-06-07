@@ -9,8 +9,14 @@ if (!$user) {
 <h2>Members Area</h2>
 
 <? if($user->isMember()) { ?>
-    <p>You're currently a member of the Hackspace Foundation.</p>
-
+    <p>You're currently a member of the Hackspace Foundation, thanks for your support!</p>
+<h3>Your Recent Payments</h3>
+<table>
+    <tr><th>Date</th><th>Amount</th></tr>
+<? foreach($user->buildTransactions() as $transaction) {?>
+    <tr><td><?=$transaction->getTimestamp()?></td><td>£<?=$transaction->getAmount()?></td></tr>
+<? } ?>
+</table>
 <? } else { ?>
     <p>You're not currently a member of the Hackspace Foundation.
         Membership is a recommended donation of £10 per month, with a 

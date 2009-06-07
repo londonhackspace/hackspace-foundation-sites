@@ -22,6 +22,11 @@ a:visited {
     margin-bottom:5px;
 }
 
+#hd img {
+    float:left;
+    padding-bottom:5px;
+}
+
 #bd {
     padding-top: 6px;
 }
@@ -32,6 +37,13 @@ a:visited {
 
 h1 {
     margin: 0;
+}
+
+#hd h1 {
+    padding:12px 0px 0px 10px;
+    float:left;
+    line-height: 1em;
+    font-weight: 750;
 }
 
 h2 {
@@ -123,3 +135,23 @@ form table td {
     border:none;
 }
 
+table.financial {
+    width:290px;
+}
+
+table.financial th {
+    text-align:left;
+}
+
+table.financial .sub {
+    padding-left:15px;
+}
+
+table.financial .sub2 {
+    padding-left:30px;
+}
+
+
+table.financial td.amount {
+    text-align:right;
+}

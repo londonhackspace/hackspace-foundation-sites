@@ -4,12 +4,8 @@ body {
 }
 
 a {
-    color: #ed1c24;
+    color: #3528A8;
     font-weight:bold;
-}
-
-a:visited {
-    color #112;
 }
 
 #doc {
@@ -22,16 +18,29 @@ a:visited {
     margin-bottom:5px;
 }
 
+#hd img {
+    float:left;
+    padding-bottom:5px;
+}
+
+h1 {
+    margin: 0;
+}
+
+
+#hd h1 {
+    padding:12px 0px 0px 10px;
+    float:left;
+    line-height: 1em;
+    font-weight: 750;
+}
+
 #bd {
     padding-top: 6px;
 }
 
 #bd p, #bd table, #bd form {
     margin-left:11px;
-}
-
-h1 {
-    margin: 0;
 }
 
 h2 {
@@ -96,7 +105,7 @@ th {
 }
 
 #menu li.active {
-    background-color: #ed1c24;
+    background-color: #3528A8;
     color: #fff;
 }
 

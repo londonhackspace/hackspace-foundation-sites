@@ -15,7 +15,7 @@
 <body>
 <div id="doc" class="yui-t1">
     <div id="hd">
-        <h1 id="headerlogo"><a href="/"><img src="/images/logo.png"/></a></h1>
+        <a href="/"><img src="/images/logo.png" alt="Hackspace Foundation"/></a><h1>Hackspace<br/>Foundation</h1>
 <?if ($user) { ?>
         <p id="loggedin">Logged in as <a href="/members"><?=$user->getFullName()?></a>.
                         <a href="/logout.php">Logout</a></p>

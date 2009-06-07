@@ -11,7 +11,7 @@ document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.
 </script>
 <script type="text/javascript">
 try {
-    var pageTracker = _gat._getTracker("UA-7698227-1");
+    var pageTracker = _gat._getTracker("UA-7698227-2");
     <? if ($user) {?>
         pageTracker._setVar("Logged In");
     <? }?>
