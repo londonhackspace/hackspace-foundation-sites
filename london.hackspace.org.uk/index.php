@@ -6,8 +6,12 @@ require('header.php'); ?>
 <p class="blurb"><strong>The London Hackspace project is working to create a dedicated space for people to 
 come and make things.</strong></p>
 
-<p>Although we haven't got a permanent space yet, we hold regular <a href="/events">hack evenings</a> 
+<p>Although we don't have a permanent space yet, we hold regular <a href="/events">hack evenings</a> 
 so people can get to know each other, as well as to provide a place for geeks to come and hack.</p>
+
+<p>To keep up to date with our progress, join the <a href="http://dev.london.hackspace.org.uk/irc">IRC channel</a>, 
+    <a href="http://groups.google.com/group/london-hack-space">mailing list</a>, 
+or <a href="http://twitter.com/londonhackspace">follow us on twitter</a></p>
 
 <h2>We need money to make this happen</h2>
 
