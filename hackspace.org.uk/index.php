@@ -24,6 +24,8 @@ to the lack of hacker spaces in the UK. Since then, we've helped groups in more 
     <li><a href="http://lists.psand.net/cgi-bin/mailman/listinfo/hackspacebristol">Bristol Hack Space</a></li>
     <li><a href="http://www.southackton.org.uk/">SoutHACKton (Southampton)</a></li>
     <li><a href="http://groups.google.com/group/york-hack-space">York Hackspace</a></li>
+    <li><a href="http://stockport.hackspace.org.uk">Stockport/South-east Manchester Hackspace</a></li>
+    <li><a href="http://groups.google.com/group/brightonhackerspace">BuildBrighton (Brighton)</a></li>
 </ul>
 
 <p>If you're thinking of starting a hacker space in the UK, <a href="/starting.php">we can help you</a>.</p>
