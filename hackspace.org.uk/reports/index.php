@@ -12,5 +12,6 @@ financial and organisational health of the Foundation.</p>
     <li><a href="/reports/200904.php">April</a></li>
     <li><a href="/reports/200905.php">May</a></li>
     <li><a href="/reports/200906.php">June</a></li>
+    <li><a href="/reports/200907.php">July</a></li>
 </ul>
 <? require('../footer.php'); ?>
