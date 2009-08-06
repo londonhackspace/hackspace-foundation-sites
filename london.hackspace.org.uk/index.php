@@ -1,19 +1,18 @@
 <? 
 $page = 'about';
-$desc = 'The London Hackspace project is working to create a permanent hacker space in London, UK for people to come and make things.';
+$desc = 'The London Hackspace project is running a dedicated hacker space in London, UK for people to learn and build things.';
 require('header.php'); ?>
 
-<p class="blurb"><strong>The London Hackspace project is working to create a dedicated space for people to 
-come and make things.</strong></p>
+<p class="blurb"><strong>We're running a dedicated space for people to learn and build things in London.</strong></p>
 
-<p>Although we don't have a permanent space yet, we hold regular <a href="/events">hack evenings</a> 
-so people can get to know each other, as well as to provide a place for geeks to come and hack.</p>
+<p>We have a space near King's Cross which is open to our members, and we hold regular 
+<a href="/events">hack evenings and workshops</a> which are open to everyone.</p>
 
-<p>To keep up to date with our progress, join the <a href="/irc">IRC channel</a>, 
+<p>To keep up to date with us, join the <a href="/irc">IRC channel</a>, 
     <a href="http://groups.google.com/group/london-hack-space">mailing list</a>, 
 or <a href="http://twitter.com/londonhackspace">follow us on twitter</a></p>
 
-<h2>We need money to make this happen</h2>
+<h2>We need money to stay alive</h2>
 
 <p>Renting a place in London isn't cheap &mdash; if you're interested, <strong>please help us out</strong> by
 donating to the cause using <a href="/donate">bank transfer</a> or Paypal:</p>
