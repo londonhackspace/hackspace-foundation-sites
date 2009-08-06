@@ -24,7 +24,7 @@ function menulink($url, $name, $title) {
         <li><a href="http://wiki.hackspace.org.uk">Wiki</a></li>
         <li><a href="http://groups.google.com/group/london-hack-space">Mailing List</a></li>
         <?=menulink('/irc', 'irc', 'IRC');?>
-        <?=menulink('/donate', 'donate', 'Donate');?>
+        <?=menulink('/donate', 'donate', 'Join');?>
         <?=menulink('/events', 'events', 'Events');?>
     </ul>
 </div>
