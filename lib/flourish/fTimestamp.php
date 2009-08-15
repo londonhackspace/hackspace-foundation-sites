@@ -9,7 +9,10 @@
  * @package    Flourish
  * @link       http://flourishlib.com/fTimestamp
  * 
- * @version    1.0.0b4
+ * @version    1.0.0b7
+ * @changes    1.0.0b7  Fixed a translation bug with ::getFuzzyDifference() [wb, 2009-07-11]
+ * @changes    1.0.0b6  Added ::registerUnformatCallback() and ::callUnformatCallback() to allow for localization of date/time parsing [wb, 2009-06-01]
+ * @changes    1.0.0b5  Backwards compatibility break - Removed ::getSecondsDifference() and ::getSeconds(), added ::eq(), ::gt(), ::gte(), ::lt(), ::lte() [wb, 2009-03-05]
  * @changes    1.0.0b4  Updated for new fCore API [wb, 2009-02-16]
  * @changes    1.0.0b3  Removed a useless double check of the strtotime() return value in ::__construct() [wb, 2009-01-21]
  * @changes    1.0.0b2  Added support for CURRENT_TIMESTAMP, CURRENT_DATE and CURRENT_TIME SQL keywords [wb, 2009-01-11]
@@ -18,17 +21,18 @@
 class fTimestamp
 {
 	// The following constants allow for nice looking callbacks to static methods
-	const callFormatCallback     = 'fTimestamp::callFormatCallback';
-	const combine                = 'fTimestamp::combine';
-	const defineFormat           = 'fTimestamp::defineFormat';
-	const fixISOWeek             = 'fTimestamp::fixISOWeek';
-	const getDefaultTimezone     = 'fTimestamp::getDefaultTimezone';
-	const getSeconds             = 'fTimestamp::getSeconds';
-	const isValidTimezone        = 'fTimestamp::isValidTimezone';
-	const registerFormatCallback = 'fTimestamp::registerFormatCallback';
-	const reset                  = 'fTimestamp::reset';
-	const setDefaultTimezone     = 'fTimestamp::setDefaultTimezone';
-	const translateFormat        = 'fTimestamp::translateFormat';
+	const callFormatCallback       = 'fTimestamp::callFormatCallback';
+	const callUnformatCallback     = 'fTimestamp::callUnformatCallback';
+	const combine                  = 'fTimestamp::combine';
+	const defineFormat             = 'fTimestamp::defineFormat';
+	const fixISOWeek               = 'fTimestamp::fixISOWeek';
+	const getDefaultTimezone       = 'fTimestamp::getDefaultTimezone';
+	const isValidTimezone          = 'fTimestamp::isValidTimezone';
+	const registerFormatCallback   = 'fTimestamp::registerFormatCallback';
+	const registerUnformatCallback = 'fTimestamp::registerUnformatCallback';
+	const reset                    = 'fTimestamp::reset';
+	const setDefaultTimezone       = 'fTimestamp::setDefaultTimezone';
+	const translateFormat          = 'fTimestamp::translateFormat';
 	
 	
 	/**
@@ -45,6 +49,13 @@ class fTimestamp
 	 */
 	static private $format_callback = NULL;
 	
+	/**
+	 * A callback to parse all date string to allow for locale-specific parsing
+	 * 
+	 * @var callback
+	 */
+	static private $unformat_callback = NULL;
+	
 	
 	/**
 	 * If a format callback is defined, call it
@@ -52,7 +63,7 @@ class fTimestamp
 	 * @internal
 	 * 
 	 * @param  string $formatted_string  The formatted date/time/timestamp string to be (possibly) modified
-	 * @return void
+	 * @return string  The (possibly) modified formatted string
 	 */
 	static public function callFormatCallback($formatted_string)
 	{
@@ -60,6 +71,23 @@ class fTimestamp
 			return call_user_func(self::$format_callback, $formatted_string);
 		}
 		return $formatted_string;
+	}
+	
+	
+	/**
+	 * If an unformat callback is defined, call it
+	 * 
+	 * @internal
+	 * 
+	 * @param  string $date_time_string  A raw date/time/timestamp string to be (possibly) parsed/modified
+	 * @return string  The (possibly) parsed or modified date/time/timestamp
+	 */
+	static public function callUnformatCallback($date_time_string)
+	{
+		if (self::$unformat_callback) {
+			return call_user_func(self::$unformat_callback, $date_time_string);
+		}
+		return $date_time_string;
 	}
 	
 	
@@ -153,18 +181,6 @@ class fTimestamp
 		self::checkPHPVersion();
 		
 		return date_default_timezone_get();
-	}
-	
-	
-	/**
-	 * Returns the number of seconds in a given timespan (e.g. `'30 minutes'`, `'1 hour'`, `'5 days'`, etc). Useful for comparing with `getSecondsDifference()` methods in fDate, fTime and fTimestamp.
-	 * 
-	 * @param  string $timespan  The timespan to calculate the number of seconds in
-	 * @return integer  The number of seconds in the timestamp specified
-	 */
-	static public function getSeconds($timespan)
-	{
-		return strtotime($timespan) - time();
 	}
 	
 	
@@ -647,6 +663,21 @@ class fTimestamp
 	
 	
 	/**
+	 * Allows setting a callback to parse any date strings passed into ::__construct(), fDate::__construct() and fTime::__construct()
+	 * 
+	 * @param  callback $callback  The callback to pass all date/time/timestamp strings through. Should accept a single string and return a single string that is parsable by [http://php.net/strtotime `strtotime()`].
+	 * @return void
+	 */
+	static public function registerUnformatCallback($callback)
+	{
+		if (is_string($callback) && strpos($callback, '::') !== FALSE) {
+			$callback = explode('::', $callback);	
+		}
+		self::$unformat_callback = $callback;
+	}
+	
+	
+	/**
 	 * Resets the configuration of the class
 	 * 
 	 * @internal
@@ -715,7 +746,7 @@ class fTimestamp
 	/**
 	 * Creates the date/time to represent
 	 * 
-	 * @throws fValidationException
+	 * @throws fValidationException  When `$datetime` is not a valid date/time, date or time value
 	 * 
 	 * @param  fTimestamp|object|string|integer $datetime  The date/time to represent, `NULL` is interpreted as now
 	 * @param  string $timezone  The timezone for the date/time. This causes the date/time to be interpretted as being in the specified timezone. If not specified, will default to timezone set by ::setDefaultTimezone().
@@ -745,7 +776,7 @@ class fTimestamp
 		$this->timezone = $timezone;
 		
 		if ($datetime === NULL) {
-			$timestamp = strtotime('now');
+			$timestamp = time();
 		} elseif (is_numeric($datetime) && ctype_digit($datetime)) {
 			$timestamp = (int) $datetime;
 		} elseif (is_string($datetime) && in_array(strtoupper($datetime), array('CURRENT_TIMESTAMP', 'CURRENT_TIME'))) {
@@ -758,6 +789,9 @@ class fTimestamp
 			} elseif (is_numeric($datetime) || is_object($datetime)) {
 				$datetime = (string) $datetime;	
 			}
+			
+			$datetime = self::callUnformatCallback($datetime);
+			
 			$timestamp = strtotime(self::fixISOWeek($datetime) . ' ' . $timezone);
 		}
 		
@@ -774,6 +808,8 @@ class fTimestamp
 	
 	/**
 	 * All requests that hit this method should be requests for callbacks
+	 * 
+	 * @internal
 	 * 
 	 * @param  string $method  The method to create a callback for
 	 * @return callback  The callback for the method requested
@@ -798,7 +834,7 @@ class fTimestamp
 	/**
 	 * Changes the date/time by the adjustment specified
 	 * 
-	 * @throws fValidationException
+	 * @throws fValidationException  When `$adjustment` is not a valid relative date/time measurement or timezone
 	 * 
 	 * @param  string $adjustment  The adjustment to make - may be a relative adjustment or a different timezone
 	 * @return fTimestamp  The adjusted date/time
@@ -822,6 +858,19 @@ class fTimestamp
 		}
 		
 		return new fTimestamp($timestamp, $timezone);
+	}
+	
+	
+	/**
+	 * If this timestamp is equal to the timestamp passed
+	 * 
+	 * @param  fTimestamp|object|string|integer $other_timestamp  The timestamp to compare with, `NULL` is interpreted as today
+	 * @return boolean  If this timestamp is equal to the one passed
+	 */
+	public function eq($other_timestamp=NULL)
+	{
+		$other_timestamp = new fTimestamp($other_timestamp);
+		return $this->timestamp == $other_timestamp->timestamp;
 	}
 	
 	
@@ -920,7 +969,7 @@ class fTimestamp
 			if (abs($diff) > $break_point) { continue; }
 			
 			$unit_diff = round(abs($diff)/$unit_info[0]);
-			$units     = fGrammar::inflectOnQuantity($unit_diff, $unit_info[1], $unit_info[1] . 's');
+			$units     = fGrammar::inflectOnQuantity($unit_diff, $unit_info[1], $unit_info[2]);
 			break;
 		}
 		
@@ -957,15 +1006,54 @@ class fTimestamp
 	
 	
 	/**
-	 * Returns the difference between the two timestamps in seconds
+	 * If this timestamp is greater than the timestamp passed
 	 * 
-	 * @param  fTimestamp|object|string|integer $other_timestamp  The timestamp to calculate the difference with, `NULL` is interpreted as now
-	 * @return integer  The difference between the two timestamps in seconds, positive if the other timestamp is before this time or negative if after
+	 * @param  fTimestamp|object|string|integer $other_timestamp  The timestamp to compare with, `NULL` is interpreted as now
+	 * @return boolean  If this timestamp is greater than the one passed
 	 */
-	public function getSecondsDifference($other_timestamp=NULL)
+	public function gt($other_timestamp=NULL)
 	{
 		$other_timestamp = new fTimestamp($other_timestamp);
-		return $this->timestamp - $other_timestamp->timestamp;
+		return $this->timestamp > $other_timestamp->timestamp;
+	}
+	
+	
+	/**
+	 * If this timestamp is greater than or equal to the timestamp passed
+	 * 
+	 * @param  fTimestamp|object|string|integer $other_timestamp  The timestamp to compare with, `NULL` is interpreted as now
+	 * @return boolean  If this timestamp is greater than or equal to the one passed
+	 */
+	public function gte($other_timestamp=NULL)
+	{
+		$other_timestamp = new fTimestamp($other_timestamp);
+		return $this->timestamp >= $other_timestamp->timestamp;
+	}
+	
+	
+	/**
+	 * If this timestamp is less than the timestamp passed
+	 * 
+	 * @param  fTimestamp|object|string|integer $other_timestamp  The timestamp to compare with, `NULL` is interpreted as today
+	 * @return boolean  If this timestamp is less than the one passed
+	 */
+	public function lt($other_timestamp=NULL)
+	{
+		$other_timestamp = new fTimestamp($other_timestamp);
+		return $this->timestamp < $other_timestamp->timestamp;
+	}
+	
+	
+	/**
+	 * If this timestamp is less than or equal to the timestamp passed
+	 * 
+	 * @param  fTimestamp|object|string|integer $other_timestamp  The timestamp to compare with, `NULL` is interpreted as today
+	 * @return boolean  If this timestamp is less than or equal to the one passed
+	 */
+	public function lte($other_timestamp=NULL)
+	{
+		$other_timestamp = new fTimestamp($other_timestamp);
+		return $this->timestamp <= $other_timestamp->timestamp;
 	}
 	
 	

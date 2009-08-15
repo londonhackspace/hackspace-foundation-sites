@@ -2,19 +2,29 @@
 /**
  * Holds a single instance of the fDatabase class and provides database manipulation functionality for ORM code
  * 
- * @copyright  Copyright (c) 2007-2008 Will Bond
+ * @copyright  Copyright (c) 2007-2009 Will Bond, others
  * @author     Will Bond [wb] <will@flourishlib.com>
+ * @author     Craig Ruksznis, iMarc LLC [cr-imarc] <craigruk@imarc.net>
  * @license    http://flourishlib.com/license
  * 
  * @package    Flourish
  * @link       http://flourishlib.com/fORMDatabase
  * 
- * @version    1.0.0b5
- * @changes    1.0.0b5  Fixed ::parseSearchTerms() to include stop words when they are the only thing in the search string [wb, 2008-12-31]
- * @changes    1.0.0b4  Fixed a bug where loading a related record in the same table through a one-to-many relationship caused recursion [wb, 2008-12-24]
- * @changes    1.0.0b3  Fixed a bug from 1.0.0b2 [wb, 2008-12-05]
- * @changes    1.0.0b2  Added support for != and <> to ::createWhereClause() and ::createHavingClause() [wb, 2008-12-04]
- * @changes    1.0.0b   The initial implementation [wb, 2007-08-04]
+ * @version    1.0.0b14
+ * @changes    1.0.0b14  Added support for the intersection operator `><` to ::createWhereClause() [wb, 2009-07-13]
+ * @changes    1.0.0b13  Added support for the `AND LIKE` operator `&~` to ::createWhereClause() [wb, 2009-07-09]
+ * @changes    1.0.0b12  Added support for the `NOT LIKE` operator `!~` to ::createWhereClause() [wb, 2009-07-08]
+ * @changes    1.0.0b11  Added support for concatenated columns to ::escapeBySchema() [cr-imarc, 2009-06-19]
+ * @changes    1.0.0b10  Updated ::createWhereClause() to properly handle NULLs for arrays of values when doing = and != comparisons [wb, 2009-06-17]
+ * @changes    1.0.0b9   Changed replacement values in preg_replace() calls to be properly escaped [wb, 2009-06-11]
+ * @changes    1.0.0b8   Fixed a bug with ::creatingWhereClause() where a null value would not be escaped property [wb, 2009-05-12]
+ * @changes    1.0.0b7   Fixed a bug where an OR condition in ::createWhereClause() could not have one of the values be an array [wb, 2009-04-22]
+ * @changes    1.0.0b6   ::insertFromAndGroupByClauses() will no longer wrap ungrouped columns if in a CAST or CASE statement for ORDER BY clauses of queries with a GROUP BY clause [wb, 2009-03-23]
+ * @changes    1.0.0b5   Fixed ::parseSearchTerms() to include stop words when they are the only thing in the search string [wb, 2008-12-31]
+ * @changes    1.0.0b4   Fixed a bug where loading a related record in the same table through a one-to-many relationship caused recursion [wb, 2008-12-24]
+ * @changes    1.0.0b3   Fixed a bug from 1.0.0b2 [wb, 2008-12-05]
+ * @changes    1.0.0b2   Added support for != and <> to ::createWhereClause() and ::createHavingClause() [wb, 2008-12-04]
+ * @changes    1.0.0b    The initial implementation [wb, 2007-08-04]
  */
 class fORMDatabase
 {
@@ -98,6 +108,132 @@ class fORMDatabase
 	static public function attach($database)
 	{
 		self::$database_object = $database;
+	}
+	
+	
+	/**
+	 * Translated the where condition for a single column into a SQL clause
+	 * 
+	 * @param  string $table     The table to create the condition for
+	 * @param  string $column    The column to store the value in, may also be shorthand column name like `table.column` or `table=>related_table.column`
+	 * @param  mixed  $values    The value(s) to escape
+	 * @param  string $operator  Should be `'='`, `'!='`, `'!'`, `'<>'`, `'<'`, `'<='`, `'>'`, `'>='`, `'IN'`, `'NOT IN'`
+	 * @return string  The SQL clause for the column, values and operator specified
+	 */
+	static private function createColumnCondition($table, $column, $values, $operator)
+	{
+		settype($values, 'array');
+		
+		// More than one value
+		if (sizeof($values) > 1) {
+			switch ($operator) {
+				case '=':
+					$condition = array();
+					$has_null  = FALSE;
+					foreach ($values as $value) {
+						if ($value === NULL) {
+							$has_null = TRUE;
+							continue;	
+						}
+						$condition[] = self::escapeBySchema($table, $column, $value);
+					}
+					$sql = $column . ' IN (' . join(', ', $condition) . ')';
+					if ($has_null) {
+						$sql = '(' . $column . ' IS NULL OR ' . $sql . ')';	
+					}
+					break;
+					
+				case '!':
+					$condition = array();
+					$has_null  = FALSE;
+					foreach ($values as $value) {
+						if ($value === NULL) {
+							$has_null = TRUE;
+							continue;	
+						}
+						$condition[] = self::escapeBySchema($table, $column, $value);
+					}
+					$sql = $column . ' NOT IN (' . join(', ', $condition) . ')';
+					if ($has_null) {
+						$sql = '(' . $column . ' IS NOT NULL AND ' . $sql . ')';	
+					}
+					break;
+					
+				case '~':
+					$condition = array();
+					foreach ($values as $value) {
+						$condition[] = $column . self::retrieve()->escape(' LIKE %s', '%' . $value . '%');
+					}
+					$sql = '(' . join(' OR ', $condition) . ')';
+					break;
+				
+				case '&~':
+					$condition = array();
+					foreach ($values as $value) {
+						$condition[] = $column . self::retrieve()->escape(' LIKE %s', '%' . $value . '%');
+					}
+					$sql = '(' . join(' AND ', $condition) . ')';
+					break;
+				
+				case '!~':
+					$condition = array();
+					foreach ($values as $value) {
+						$condition[] = $column . self::retrieve()->escape(' NOT LIKE %s', '%' . $value . '%');
+					}
+					$sql = '(' . join(' AND ', $condition) . ')';
+					break;
+					
+				default:
+					throw new fProgrammerException(
+						'An invalid array comparison operator, %s, was specified for an array of values',
+						$operator
+					);
+					break;
+			}
+			
+		// A single value
+		} else {
+			if ($values === array()) {
+				$value = NULL;
+			} else {
+				$value = current($values);
+			}
+			
+			switch ($operator) {
+				case '=':
+				case '<':
+				case '<=':
+				case '>':
+				case '>=':
+					$sql = $column . self::escapeBySchema($table, $column, $value, $operator);
+					break;
+					
+				case '!':
+					if ($value !== NULL) {
+						$sql = '(' . $column . self::escapeBySchema($table, $column, $value, '<>') . ' OR ' . $column . ' IS NULL)';
+					} else {
+						$sql = $column . self::escapeBySchema($table, $column, $value, '<>');
+					}
+					break;
+					
+				case '~':
+					$sql = $column . self::retrieve()->escape(' LIKE %s', '%' . $value . '%');
+					break;
+				
+				case '!~':
+					$sql = $column . self::retrieve()->escape(' NOT LIKE %s', '%' . $value . '%');
+					break;
+					
+				default:
+					throw new fProgrammerException(
+						'An invalid comparison operator, %s, was specified for a single value',
+						$operator
+					);
+					break;
+			}
+		}
+		
+		return $sql;	
 	}
 	
 	
@@ -389,7 +525,6 @@ class fORMDatabase
 	 * If you are looking to build a primary key where clause from the `$values`
 	 * and `$old_values` arrays, please see ::createPrimaryKeyWhereClause()
 	 * 
-	 * @throws fValidationException
 	 * @internal
 	 * 
 	 * @param  string $table         The table to build the where clause for
@@ -429,7 +564,7 @@ class fORMDatabase
 		$sql = array();
 		foreach ($conditions as $column => $values) {
 			
-			if (in_array(substr($column, -2), array('<=', '>=', '!=', '<>'))) {
+			if (in_array(substr($column, -2), array('<=', '>=', '!=', '<>', '!~', '&~', '><'))) {
 				$operator = strtr(
 					substr($column, -2),
 					array(
@@ -462,12 +597,12 @@ class fORMDatabase
 			$values = $new_values;
 			
 			// Multi-column condition
-			if (strpos($column, '|') !== FALSE) {
+			if (preg_match('#(?<!\|)\|(?!\|)#', $column)) {
 				$columns   = explode('|', $column);
 				$operators = array();
 				
 				foreach ($columns as &$_column) {
-					if (in_array(substr($_column, -2), array('<=', '>=', '!=', '<>'))) {
+					if (in_array(substr($_column, -2), array('<=', '>=', '!=', '<>', '!~', '&~'))) {
 						$operators[] = strtr(
 							substr($_column, -2),
 							array(
@@ -485,30 +620,49 @@ class fORMDatabase
 				
 				$columns = self::addTableToValues($table, $columns);
 				
-				// Handle fuzzy searches
 				if (sizeof($operators) == 1) {
-					if ($operator != '~') {
+					
+					// Handle fuzzy searches
+					if ($operator == '~') {
+					
+						// If the value to search is a single string value, parse it for search terms
+						if (sizeof($values) == 1 && is_string($values[0])) {
+							$values = self::parseSearchTerms($values[0], TRUE);	
+						}
+						
+						$condition = array();
+						foreach ($values as $value) {
+							$sub_condition = array();
+							foreach ($columns as $column) {
+								$sub_condition[] = $column . self::retrieve()->escape(' LIKE %s', '%' . $value . '%');
+							}
+							$condition[] = '(' . join(' OR ', $sub_condition) . ')';
+						}
+						$sql[] = ' (' . join(' AND ', $condition) . ') ';
+					
+					// Handle intersection
+					} elseif ($operator == '><') {
+						
+						if (sizeof($columns) != 2 || sizeof($values) != 2) {
+							throw new fProgrammerException(
+								'The intersection operator, %s, requires exactly two columns and two values',
+								$operator
+							);	
+						}
+															 
+						$part_1 = '(' . $columns[0] . ' <= ' . self::escapeBySchema($table, $columns[0], $values[0]) . ' AND ' . $columns[1] . ' >= ' . self::escapeBySchema($table, $columns[1], $values[0]) . ')';
+						$part_2 = '(' . $columns[0] . ' <= ' . self::escapeBySchema($table, $columns[0], $values[1]) . ' AND ' . $columns[1] . ' >= ' . self::escapeBySchema($table, $columns[1], $values[1]) . ')';
+						$part_3 = '(' . $columns[0] . ' >= ' . self::escapeBySchema($table, $columns[0], $values[0]) . ' AND ' . $columns[1] . ' <= ' . self::escapeBySchema($table, $columns[1], $values[1]) . ')';
+						$part_4 = '(' . $columns[1] . ' IS NULL AND ' . $columns[0] . ' >= ' . self::escapeBySchema($table, $columns[0], $values[0]) . ' AND ' . $columns[0] . ' <= ' . self::escapeBySchema($table, $columns[0], $values[1]) . ')';
+						
+						$sql[] = ' (' . $part_1 . ' OR ' . $part_2 . ' OR ' . $part_3 . ' OR ' . $part_4 . ') ';
+					
+					} else {
 						throw new fProgrammerException(
-							'An invalid comparison operator, %s, was specified',
+							'An invalid comparison operator, %s, was specified for multiple columns',
 							$operator
 						);
 					}
-					
-					// If the value to search is a single string value, parse it for search terms
-					if (sizeof($values) == 1 && is_string($values[0])) {
-						$values = self::parseSearchTerms($values[0], TRUE);	
-					}
-					
-					$condition = array();
-					foreach ($values as $value) {
-						$sub_condition = array();
-						foreach ($columns as $column) {
-							$sub_condition[] = $column . self::retrieve()->escape(' LIKE %s', '%' . $value . '%');
-						}
-						$condition[] = '(' . join(' OR ', $sub_condition) . ')';
-					}
-					$sql[] = ' (' . join(' AND ', $condition) . ') ';
-				
 				
 				// Handle OR combos
 				} else {
@@ -531,7 +685,7 @@ class fORMDatabase
 					$conditions = array();
 					$iterations = sizeof($columns);
 					for ($i=0; $i<$iterations; $i++) {
-						$conditions[] = $columns[$i] . self::escapeBySchema($table, $columns[$i], $values[$i], $operators[$i]);
+						$conditions[] = self::createColumnCondition($table, $columns[$i], $values[$i], $operators[$i]);
 					}
 					$sql[] = ' (' . join(' OR ', $conditions) . ') ';
 				}
@@ -543,74 +697,8 @@ class fORMDatabase
 				$columns = self::addTableToValues($table, array($column));
 				$column  = $columns[0];
 				
-				// More than one value
-				if (sizeof($values) > 1) {
-					switch ($operator) {
-						case '=':
-							$condition = array();
-							foreach ($values as $value) {
-								$condition[] = self::escapeBySchema($table, $column, $value);
-							}
-							$sql[] = $column . ' IN (' . join(', ', $condition) . ')';
-							break;
-							
-						case '!':
-							$condition = array();
-							foreach ($values as $value) {
-								$condition[] = self::escapeBySchema($table, $column, $value);
-							}
-							$sql[] = $column . ' NOT IN (' . join(', ', $condition) . ')';
-							break;
-							
-						case '~':
-							$condition = array();
-							foreach ($values as $value) {
-								$condition[] = $column . self::retrieve()->escape(' LIKE %s', '%' . $value . '%');
-							}
-							$sql[] = '(' . join(' OR ', $condition) . ')';
-							break;
-							
-						default:
-							throw new fProgrammerException(
-								'An invalid array comparison operator, %s, was specified',
-								$operator
-							);
-							break;
-					}
-					
-				// A single value
-				} else {
-					$value = $values[0];
-					
-					switch ($operator) {
-						case '=':
-						case '<':
-						case '<=':
-						case '>':
-						case '>=':
-							$sql[] = $column . self::escapeBySchema($table, $column, $value, $operator);
-							break;
-							
-						case '!':
-							if ($values[0] !== NULL) {
-								$sql[] = '(' . $column . self::escapeBySchema($table, $column, $value, '<>') . ' OR ' . $column . ' IS NULL)';
-							} else {
-								$sql[] = $column . self::escapeBySchema($table, $column, $value, '<>');
-							}
-							break;
-							
-						case '~':
-							$sql[] = $column . self::retrieve()->escape(' LIKE %s', '%' . $value . '%');
-							break;
-							
-						default:
-							throw new fProgrammerException(
-								'An invalid comparison operator, %s, was specified',
-								$operator
-							);
-							break;
-					}
-				}
+				$sql[] = self::createColumnCondition($table, $column, $values, $operator);
+				
 			}
 		}
 		
@@ -621,29 +709,47 @@ class fORMDatabase
 	/**
 	 * Escapes a value for a DB call based on database schema
 	 * 
-	 * @throws fValidationException
 	 * @internal
 	 * 
 	 * @param  string $table                The table to store the value
-	 * @param  string $column               The column to store the value in, may also be shorthand column name like `table.column` or `table=>related_table.column`
+	 * @param  string $column               The column to store the value in, may also be shorthand column name like `table.column` or `table=>related_table.column` or concatenated column names like `table.column||table.other_column`
 	 * @param  mixed  $value                The value to escape
 	 * @param  string $comparison_operator  Optional: should be `'='`, `'!='`, `'!'`, `'<>'`, `'<'`, `'<='`, `'>'`, `'>='`, `'IN'`, `'NOT IN'`
 	 * @return string  The SQL-ready representation of the value
 	 */
 	static public function escapeBySchema($table, $column, $value, $comparison_operator=NULL)
 	{
-		// Handle shorthand column names like table.column and table=>related_table.column
-		if (preg_match('#(\w+)(?:\{\w+\})?\.(\w+)$#D', $column, $match)) {
-			$table  = $match[1];
-			$column = $match[2];
-		}
+		// handle concatenated column names
+		if (preg_match('#\|\|#', $column)) {
+			
+			if (is_object($value) && is_callable(array($value, '__toString'))) {
+				$value = $value->__toString();
+			} elseif (is_object($value)) {
+				$value = (string) $value;
+			}
+			
+			$column_info = array(
+				'not_null' => FALSE,
+				'default'  => NULL,
+				'type'     => 'varchar'
+			);
+			
+		} else {
+			
+			// Handle shorthand column names like table.column and table=>related_table.column
+			if (preg_match('#(\w+)(?:\{\w+\})?\.(\w+)$#D', $column, $match)) {
+				$table  = $match[1];
+				$column = $match[2];
+			}
+			
+			$column_info = fORMSchema::retrieve()->getColumnInfo($table, $column);	
+			
+			// Some of the tables being escaped for are linking tables that might break with classize()
+			if (is_object($value)) {
+				$class = fORM::classize($table);
+				$value = fORM::scalarize($class, $column, $value);
+			}
 		
-		$column_info = fORMSchema::retrieve()->getColumnInfo($table, $column);	
-		
-		// Some of the tables being escaped for are linking tables that might break with classize()
-		if (is_object($value)) {
-			$class = fORM::classize($table);
-			$value = fORM::scalarize($class, $column, $value);
 		}
 		
 		if ($comparison_operator !== NULL) {
@@ -744,7 +850,7 @@ class fORMDatabase
 	 * 
 	 * {{{
 	 * SELECT users.* FROM :from_clause WHERE groups.group_id = 5 :group_by_clause ORDER BY lower(users.first_name) ASC
-	 * <}}}
+	 * }}}
 	 * 
 	 * @internal
 	 * 
@@ -896,23 +1002,23 @@ class fORMDatabase
 				
 				// In the ORDER BY clause we need to wrap columns in
 				if ($found_order_by && $joined_to_many) {
-					$temp_sql = preg_replace('#(?<!avg\(|count\(|max\(|min\(|sum\()\b((?!' . preg_quote($table, '#') . '\.)\w+\.\w+)\b#', 'max(\1)', $temp_sql);
+					$temp_sql = preg_replace('#(?<!avg\(|count\(|max\(|min\(|sum\(|cast\(|case |when )\b((?!' . preg_quote($table, '#') . '\.)\w+\.\w+)\b#i', 'max(\1)', $temp_sql);
 				}
 				
 				if ($joined_to_many && preg_match('#order\s+by#i', $temp_sql)) {
 					$order_by_found = TRUE;
 					
 					$parts = preg_split('#(order\s+by)#i', $temp_sql, -1, PREG_SPLIT_DELIM_CAPTURE);
-					$parts[2] = $temp_sql = preg_replace('#(?<!avg\(|count\(|max\(|min\(|sum\()\b((?!' . preg_quote($table, '#') . '\.)\w+\.\w+)\b#', 'max(\1)', $parts[2]);
+					$parts[2] = $temp_sql = preg_replace('#(?<!avg\(|count\(|max\(|min\(|sum\(|cast\(|case |when )\b((?!' . preg_quote($table, '#') . '\.)\w+\.\w+)\b#i', 'max(\1)', $parts[2]);
 					
 					$temp_sql = join('', $parts);
 				}
 				
 				$temp_sql = str_replace(':from_clause', $from_clause, $temp_sql);
 				if ($has_group_by_placeholder) {
-					$temp_sql = preg_replace('#\s:group_by_clause\s#', $group_by_clause, $temp_sql);
+					$temp_sql = preg_replace('#\s:group_by_clause\s#', strtr($group_by_clause, array('\\' => '\\\\', '$' => '\\$')), $temp_sql);
 				} elseif ($group_by_columns) {
-					$temp_sql = preg_replace('#(\sGROUP\s+BY\s((?!HAVING|ORDER\s+BY).)*)\s#i', '\1, ' . $group_by_columns, $temp_sql);
+					$temp_sql = preg_replace('#(\sGROUP\s+BY\s((?!HAVING|ORDER\s+BY).)*)\s#i', '\1, ' . strtr($group_by_columns, array('\\' => '\\\\', '$' => '\\$')), $temp_sql);
 				}
 			}
 			
@@ -1038,7 +1144,7 @@ class fORMDatabase
 
 
 /**
- * Copyright (c) 2007-2008 Will Bond <will@flourishlib.com>
+ * Copyright (c) 2007-2009 Will Bond <will@flourishlib.com>, others
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal

@@ -9,7 +9,17 @@
  * @package    Flourish
  * @link       http://flourishlib.com/fSchema
  * 
- * @version    1.0.0b13
+ * @version    1.0.0b23
+ * @changes    1.0.0b23  Fixed a bug where one-to-one relationships were being listed as many-to-one [wb, 2009-07-21]
+ * @changes    1.0.0b22  PostgreSQL UNIQUE constraints that are created as indexes and not table constraints are now properly detected [wb, 2009-07-08]
+ * @changes    1.0.0b21  Added support for the UUID data type in PostgreSQL [wb, 2009-06-18]
+ * @changes    1.0.0b20  Add caching of merged info, improved performance of ::getColumnInfo() [wb, 2009-06-15]
+ * @changes    1.0.0b19  Fixed a couple of bugs with ::setKeysOverride() [wb, 2009-06-04]
+ * @changes    1.0.0b18  Added missing support for MySQL mediumint columns [wb, 2009-05-18]
+ * @changes    1.0.0b17  Fixed a bug with ::clearCache() not properly reseting the tables and databases list [wb, 2009-05-13]
+ * @changes    1.0.0b16  Backwards Compatibility Break - ::setCacheFile() changed to ::enableCaching() and now requires an fCache object, ::flushInfo() renamed to ::clearCache(), added Oracle support [wb, 2009-05-04]
+ * @changes    1.0.0b15  Added support for the three different types of identifier quoting in SQLite [wb, 2009-03-28]
+ * @changes    1.0.0b14  Added support for MySQL column definitions containing the COLLATE keyword [wb, 2009-03-28]
  * @changes    1.0.0b13  Fixed a bug with detecting PostgreSQL columns having both a CHECK constraint and a UNIQUE constraint [wb, 2009-02-27]
  * @changes    1.0.0b12  Fixed detection of multi-column primary keys in MySQL [wb, 2009-02-27]
  * @changes    1.0.0b11  Fixed an issue parsing MySQL tables with comments [wb, 2009-02-25]
@@ -27,11 +37,11 @@
 class fSchema
 {
 	/**
-	 * The file to cache the info to
+	 * The place to cache to
 	 * 
-	 * @var string
+	 * @var fCache
 	 */
-	private $cache_file = NULL;
+	private $cache = NULL;
 	
 	/**
 	 * The cached column info
@@ -60,13 +70,6 @@ class fSchema
 	 * @var array
 	 */
 	private $databases = NULL;
-	
-	/**
-	 * If the info has changed (and should be written to cache)
-	 * 
-	 * @var boolean
-	 */
-	private $info_changed = FALSE;
 	
 	/**
 	 * The cached key info
@@ -104,13 +107,6 @@ class fSchema
 	private $relationships = array();
 	
 	/**
-	 * The state of the info
-	 * 
-	 * @var string
-	 */
-	private $state = 'current';
-	
-	/**
 	 * The tables in the database
 	 * 
 	 * @var array
@@ -131,22 +127,9 @@ class fSchema
 	
 	
 	/**
-	 * Stores the info in the cache file if set
-	 * 
-	 * @return void
-	 */
-	public function __destruct()
-	{
-		if ($this->cache_file && $this->info_changed) {
-			$contents = serialize(array('column_info'   => $this->column_info,
-										'keys'          => $this->keys));
-			file_put_contents($this->cache_file, $contents);
-		}
-	}
-	
-	
-	/**
 	 * All requests that hit this method should be requests for callbacks
+	 * 
+	 * @internal
 	 * 
 	 * @param  string $method  The method to create a callback for
 	 * @return callback  The callback for the method requested
@@ -165,13 +148,67 @@ class fSchema
 	 * @return boolean  If the column is part of a single-column unique key
 	 */
 	private function checkForSingleColumnUniqueKey($table, $column)
-	{
+	{        
 		foreach ($this->merged_keys[$table]['unique'] as $key) {
 			if (array($column) == $key) {
 				return TRUE;
 			}
 		}
 		return FALSE;
+	}
+	
+	
+	/**
+	 * Clears all of the schema info out of the object and, if set, the fCache object
+	 * 
+	 * @internal
+	 * 
+	 * @return void
+	 */
+	public function clearCache()
+	{
+		$this->column_info        = array();
+		$this->databases          = NULL;
+		$this->keys               = array();
+		$this->merged_column_info = array();
+		$this->merged_keys        = array();
+		$this->relationships      = array();
+		$this->tables             = NULL;
+		if ($this->cache) {
+			$prefix = $this->makeCachePrefix();
+			$this->cache->delete($prefix . 'column_info');
+			$this->cache->delete($prefix . 'databases');
+			$this->cache->delete($prefix . 'keys');
+			$this->cache->delete($prefix . 'merged_column_info');
+			$this->cache->delete($prefix . 'merged_keys');
+			$this->cache->delete($prefix . 'relationships');
+			$this->cache->delete($prefix . 'tables');
+		}
+	}
+	
+	
+	/**
+	 * Sets the schema to be cached to the fCache object specified
+	 * 
+	 * @param  fCache $cache  The cache to cache to
+	 * @return void
+	 */
+	public function enableCaching($cache)
+	{
+		$this->cache = $cache;
+		
+		$prefix = $this->makeCachePrefix();
+		$this->column_info        = $this->cache->get($prefix . 'column_info',          array());
+		$this->databases          = $this->cache->get($prefix . 'databases',            NULL);
+		$this->keys               = $this->cache->get($prefix . 'keys',                 array());
+		
+		if (!$this->column_info_override && !$this->keys_override) {
+			$this->merged_column_info = $this->cache->get($prefix . 'merged_column_info',   array());
+			$this->merged_keys        = $this->cache->get($prefix . 'merged_keys',          array());  
+			$this->relationships      = $this->cache->get($prefix . 'relationships',        array());
+		}
+		
+		$this->tables             = $this->cache->get($prefix . 'tables',               NULL);   
 	}
 	
 	
@@ -183,6 +220,10 @@ class fSchema
 	 */
 	private function fetchColumnInfo($table)
 	{
+		if (isset($this->column_info[$table])) {
+			return;	
+		}
+		
 		switch ($this->database->getType()) {
 			case 'mssql':
 				$column_info = $this->fetchMSSQLColumnInfo($table);
@@ -192,6 +233,10 @@ class fSchema
 				$column_info = $this->fetchMySQLColumnInfo($table);
 				break;
 				
+			case 'oracle':
+				$column_info = $this->fetchOracleColumnInfo($table);
+				break;
+			
 			case 'postgresql':
 				$column_info = $this->fetchPostgreSQLColumnInfo($table);
 				break;
@@ -206,7 +251,9 @@ class fSchema
 		}
 			
 		$this->column_info[$table] = $column_info;
-		$this->info_changed = TRUE;
+		if ($this->cache) {
+			$this->cache->set($this->makeCachePrefix() . 'column_info', $this->column_info);	
+		}
 	}
 	
 	
@@ -217,6 +264,10 @@ class fSchema
 	 */
 	private function fetchKeys()
 	{
+		if ($this->keys) {
+			return;	
+		}
+		
 		switch ($this->database->getType()) {
 			case 'mssql':
 				$keys = $this->fetchMSSQLKeys();
@@ -226,6 +277,10 @@ class fSchema
 				$keys = $this->fetchMySQLKeys();
 				break;
 				
+			case 'oracle':
+				$keys = $this->fetchOracleKeys();
+				break;
+			
 			case 'postgresql':
 				$keys = $this->fetchPostgreSQLKeys();
 				break;
@@ -236,7 +291,9 @@ class fSchema
 		}
 			
 		$this->keys = $keys;
-		$this->info_changed = TRUE;
+		if ($this->cache) {
+			$this->cache->set($this->makeCachePrefix() . 'keys', $this->keys);	
+		}
 	}
 	
 	
@@ -274,6 +331,9 @@ class fSchema
 			'bigint'			=> 'integer',
 			'datetime'			=> 'timestamp',
 			'smalldatetime'     => 'timestamp',
+			'datetime2'         => 'timestamp',
+			'date'              => 'date',
+			'time'              => 'time',
 			'varchar'	        => 'varchar',
 			'nvarchar'          => 'varchar',
 			'char'			    => 'char',
@@ -295,16 +355,18 @@ class fSchema
 		$sql = "SELECT
 						c.column_name              AS 'column',
 						c.data_type                AS 'type',
-						c.is_nullable              AS not_null,
+						c.is_nullable              AS nullable,
 						c.column_default           AS 'default',
 						c.character_maximum_length AS max_length,
 						c.numeric_scale            AS decimal_places,
-						CASE WHEN COLUMNPROPERTY(OBJECT_ID(QUOTENAME(c.table_schema) + '.' + QUOTENAME(c.table_name)), c.column_name, 'IsIdentity') = 1 AND
-								  OBJECTPROPERTY(OBJECT_ID(QUOTENAME(c.table_schema) + '.' + QUOTENAME(c.table_name)), 'IsMSShipped') = 0
-							 THEN '1'
-							 ELSE '0'
+						CASE
+							WHEN
+							  COLUMNPROPERTY(OBJECT_ID(QUOTENAME(c.table_schema) + '.' + QUOTENAME(c.table_name)), c.column_name, 'IsIdentity') = 1 AND
+							  OBJECTPROPERTY(OBJECT_ID(QUOTENAME(c.table_schema) + '.' + QUOTENAME(c.table_name)), 'IsMSShipped') = 0
+							THEN '1'
+							ELSE '0'
 						  END AS auto_increment,
-						cc.check_clause            AS 'constraint'
+						cc.check_clause AS 'constraint'
 					FROM
 						INFORMATION_SCHEMA.COLUMNS AS c LEFT JOIN
 						INFORMATION_SCHEMA.CONSTRAINT_COLUMN_USAGE AS ccu ON c.column_name = ccu.column_name AND c.table_name = ccu.table_name AND c.table_catalog = ccu.table_catalog LEFT JOIN
@@ -346,12 +408,14 @@ class fSchema
 			
 			// If the column has a constraint, look for valid values
 			if (in_array($info['type'], array('char', 'varchar')) && !empty($row['constraint'])) {
-				if (preg_match('#^\(((?:(?: OR )?\[[^\]]+\]=\'(?:\'\'|[^\']+)+\')+)\)$#D', $row['constraint'], $matches)) {
+				if (preg_match('#^\(((?:(?: OR )?\[[^\]]+\]\s*=\s*\'(?:\'\'|[^\']+)+\')+)\)$#D', $row['constraint'], $matches)) {
 					$valid_values = explode(' OR ', $matches[1]);
 					foreach ($valid_values as $key => $value) {
-						$valid_values[$key] = substr($value, 4 + strlen($row['column']), -1);
+						$value = preg_replace('#^\s*\[' . preg_quote($row['column'], '#') . '\]\s*=\s*\'(.*)\'\s*$#', '\1', $value);
+						$valid_values[$key] = str_replace("''", "'", $value);
 					}
-					$info['valid_values'] = $valid_values;
+					// SQL Server turns CHECK constraint values into a reversed list, so we fix it here
+					$info['valid_values'] = array_reverse($valid_values);
 				}
 			}
 			
@@ -366,7 +430,9 @@ class fSchema
 					$info['default'] = 'CURRENT_TIMESTAMP';
 				} elseif (in_array($info['type'], array('char', 'varchar', 'text', 'timestamp')) ) {
 					$info['default'] = substr($row['default'], 2, -2);
-				} elseif (in_array($info['type'], array('integer', 'float', 'boolean')) ) {
+				} elseif ($info['type'] == 'boolean') {
+					$info['default'] = (boolean) substr($row['default'], 2, -2);
+				} elseif (in_array($info['type'], array('integer', 'float')) ) {
 					$info['default'] = str_replace(array('(', ')'), '', $row['default']);
 				} else {
 					$info['default'] = pack('H*', substr($row['default'], 3, -1));
@@ -374,7 +440,7 @@ class fSchema
 			}
 			
 			// Handle not null
-			$info['not_null'] = ($row['not_null'] == 'NO') ? TRUE : FALSE;
+			$info['not_null'] = ($row['nullable'] == 'NO') ? TRUE : FALSE;
 			
 			$column_info[$row['column']] = $info;
 		}
@@ -443,11 +509,13 @@ class fSchema
 						INFORMATION_SCHEMA.REFERENTIAL_CONSTRAINTS AS rc ON c.constraint_name = rc.constraint_name LEFT JOIN
 						INFORMATION_SCHEMA.CONSTRAINT_COLUMN_USAGE AS ccu ON ccu.constraint_name = rc.unique_constraint_name
 					WHERE
-						c.constraint_catalog = '" . $this->database->getDatabase() . "'
+						c.constraint_catalog = '" . $this->database->getDatabase() . "' AND
+						c.table_name != 'sysdiagrams'
 					ORDER BY
 						LOWER(c.table_name),
 						c.constraint_type,
 						LOWER(kcu.constraint_name),
+						kcu.ordinal_position,
 						LOWER(kcu.column_name)";
 		
 		$result = $this->database->query($sql);
@@ -461,6 +529,9 @@ class fSchema
 				
 				if ($last_name) {
 					if ($last_type == 'foreign' || $last_type == 'unique') {
+						if (!isset($keys[$last_table][$last_type])) {
+							$keys[$last_table][$last_type] = array();		
+						}
 						$keys[$last_table][$last_type][] = $temp;
 					} else {
 						$keys[$last_table][$last_type] = $temp;
@@ -497,6 +568,9 @@ class fSchema
 		
 		if (isset($temp)) {
 			if ($last_type == 'foreign') {
+				if (!isset($keys[$last_table][$last_type])) {
+					$keys[$last_table][$last_type] = array();		
+				}
 				$keys[$last_table][$last_type][] = $temp;
 			} else {
 				$keys[$last_table][$last_type] = $temp;
@@ -532,9 +606,9 @@ class fSchema
 	private function fetchMySQLColumnInfo($table)
 	{
 		$data_type_mapping = array(
-			'tinyint(1)'		=> 'boolean',
 			'tinyint'			=> 'integer',
 			'smallint'			=> 'integer',
+			'mediumint'         => 'integer',
 			'int'				=> 'integer',
 			'bigint'			=> 'integer',
 			'datetime'			=> 'timestamp',
@@ -571,7 +645,7 @@ class fSchema
 			return array();			
 		}
 		
-		preg_match_all('#(?<=,|\()\s+(?:"|\`)(\w+)(?:"|\`)\s+(?:([a-z]+)(?:\(([^)]+)\))?(?: unsigned| zerofill){0,2})(?: character set [^ ]+)?(?: NULL)?( NOT NULL)?(?: DEFAULT ((?:[^, \']*|\'(?:\'\'|[^\']+)*\')))?( auto_increment)?( COMMENT \'(?:\'\'|[^\']+)*\')?( ON UPDATE CURRENT_TIMESTAMP)?\s*(?:,|\s*(?=\)))#mi', $create_sql, $matches, PREG_SET_ORDER);
+		preg_match_all('#(?<=,|\()\s+(?:"|\`)(\w+)(?:"|\`)\s+(?:([a-z]+)(?:\(([^)]+)\))?(?: unsigned| zerofill){0,2})(?: character set [^ ]+)?(?: collate [^ ]+)?(?: NULL)?( NOT NULL)?(?: DEFAULT ((?:[^, \']*|\'(?:\'\'|[^\']+)*\')))?( auto_increment)?( COMMENT \'(?:\'\'|[^\']+)*\')?( ON UPDATE CURRENT_TIMESTAMP)?\s*(?:,|\s*(?=\)))#mi', $create_sql, $matches, PREG_SET_ORDER);
 		
 		foreach ($matches as $match) {
 			
@@ -579,6 +653,10 @@ class fSchema
 			
 			foreach ($data_type_mapping as $data_type => $mapped_data_type) {
 				if (stripos($match[2], $data_type) === 0) {
+					if ($match[2] == 'tinyint' && $match[3] == 1) {
+						$mapped_data_type = 'boolean';	
+					}
+				
 					$info['type'] = $mapped_data_type;
 					break;
 				}
@@ -719,6 +797,330 @@ class fSchema
 	
 	
 	/**
+	 * Gets the column info from an Oracle database
+	 * 
+	 * The returned array is in the format:
+	 * 
+	 * {{{
+	 * array(
+	 *     (string) {column name} => array(
+	 *         'type'           => (string)  {data type},
+	 *         'not_null'       => (boolean) {if value can't be null},
+	 *         'default'        => (mixed)   {the default value-may contain special strings CURRENT_TIMESTAMP, CURRENT_TIME or CURRENT_DATE},
+	 *         'valid_values'   => (array)   {the valid values for a char/varchar field},
+	 *         'max_length'     => (integer) {the maximum length in a char/varchar field},
+	 *         'decimal_places' => (integer) {the number of decimal places for a decimal field},
+	 *         'auto_increment' => (boolean) {if the integer primary key column is auto_increment}
+	 *     ), ...
+	 * )
+	 * }}}
+	 * 
+	 * @param  string $table  The table to fetch the column info for
+	 * @return array  The column info for the table specified - see method description for details
+	 */
+	private function fetchOracleColumnInfo($table)
+	{
+		$table = strtoupper($table);
+		
+		$column_info = array();
+		
+		$data_type_mapping = array(
+			'boolean'			=> 'boolean',
+			'integer'			=> 'integer',
+			'timestamp'			=> 'timestamp',
+			'date'				=> 'date',
+			'varchar2'          => 'varchar',
+			'nvarchar2'			=> 'varchar',
+			'char'              => 'char',
+			'nchar'             => 'char',
+			'float'				=> 'float',
+			'binary_float'      => 'float',
+			'binary_double'     => 'float',
+			'blob'				=> 'blob',
+			'bfile'             => 'varchar',
+			'clob'				=> 'text',
+			'nclob'             => 'text'
+		);
+		
+		$sql = "SELECT
+						LOWER(UTC.COLUMN_NAME) COLUMN_NAME,
+						CASE
+							WHEN
+								UTC.DATA_TYPE = 'NUMBER' AND
+								UTC.DATA_PRECISION IS NULL AND
+								UTC.DATA_SCALE = 0
+							THEN
+								'integer'
+							WHEN
+								UTC.DATA_TYPE = 'NUMBER' AND
+								UTC.DATA_PRECISION = 1 AND
+								UTC.DATA_SCALE = 0
+							THEN
+								'boolean'
+							WHEN
+								UTC.DATA_TYPE = 'NUMBER' AND
+								UTC.DATA_PRECISION IS NOT NULL AND
+								UTC.DATA_SCALE != 0 AND
+								UTC.DATA_SCALE IS NOT NULL
+							THEN
+								'float'
+							ELSE
+								LOWER(UTC.DATA_TYPE)
+							END DATA_TYPE,
+						CASE
+							WHEN
+								UTC.CHAR_LENGTH <> 0
+							THEN
+								UTC.CHAR_LENGTH
+							WHEN
+								UTC.DATA_TYPE = 'NUMBER' AND
+								UTC.DATA_PRECISION != 1 AND
+								UTC.DATA_SCALE != 0	AND
+								UTC.DATA_PRECISION IS NOT NULL
+							THEN
+								UTC.DATA_SCALE	
+							ELSE
+								NULL
+							END LENGTH,
+						UTC.NULLABLE,
+						UTC.DATA_DEFAULT,
+						UC.SEARCH_CONDITION CHECK_CONSTRAINT
+					FROM
+						USER_TAB_COLUMNS UTC LEFT JOIN
+						USER_CONS_COLUMNS UCC ON
+							UTC.COLUMN_NAME = UCC.COLUMN_NAME AND
+							UTC.TABLE_NAME = UCC.TABLE_NAME AND
+							UCC.POSITION IS NULL LEFT JOIN
+						USER_CONSTRAINTS UC ON
+							UC.CONSTRAINT_NAME = UCC.CONSTRAINT_NAME AND
+							UC.CONSTRAINT_TYPE = 'C' AND
+							UC.STATUS = 'ENABLED'
+					WHERE
+						UTC.TABLE_NAME = %s
+					ORDER BY
+						UTC.TABLE_NAME ASC,
+						UTC.COLUMN_ID ASC";
+		$result = $this->database->query($sql, $table);
+		
+		foreach ($result as $row) {
+			
+			$column = $row['column_name'];
+			
+			// Since Oracle stores check constraints in LONG columns, it is
+			// not possible to check or modify the constraints in SQL which
+			// ends up causing multiple rows with duplicate data except for
+			// the check constraint
+			$duplicate = FALSE;
+			
+			if (isset($column_info[$column])) {
+				$info = $column_info[$column];
+				$duplicate = TRUE;	
+			} else {
+				$info = array();	
+			}
+			
+			if (!$duplicate) {
+				// Get the column type
+				foreach ($data_type_mapping as $data_type => $mapped_data_type) {
+					if (stripos($row['data_type'], $data_type) === 0) {
+						$info['type'] = $mapped_data_type;
+						break;
+					}
+				}
+				
+				if (!isset($info['type'])) {
+					$info['type'] = $row['data_type'];
+				}
+				
+				// Handle the length of decimal/numeric fields
+				if ($info['type'] == 'float' && $row['length']) {
+					$info['decimal_places'] = (int) $row['length'];
+				}
+				
+				// Handle the special data for varchar fields
+				if (in_array($info['type'], array('char', 'varchar'))) {
+					$info['max_length'] = (int) $row['length'];
+				}
+			}
+			
+			// Handle check constraints that are just simple lists
+			if (in_array($info['type'], array('varchar', 'char')) && $row['check_constraint']) {
+				if (preg_match('/^\s*' . preg_quote($column, '/') . '\s+in\s+\((.*?)\)\s*$/i', $row['check_constraint'], $match)) {
+					if (preg_match_all("/(?<!')'((''|[^']+)*)'/", $match[1], $matches, PREG_PATTERN_ORDER)) {
+						$info['valid_values'] = str_replace("''", "'", $matches[1]);
+					}			
+				}
+			}
+			
+			if (!$duplicate) {
+				// Handle default values
+				if ($row['data_default'] !== NULL) {
+					if (in_array($info['type'], array('char', 'varchar', 'text'))) {
+						$info['default'] = str_replace("''", "'", substr(trim($row['data_default']), 1, -1));
+						
+					} elseif ($info['type'] == 'boolean') {
+						$info['default'] = (boolean) trim($row['data_default']);
+						
+					} elseif (in_array($info['type'], array('integer', 'float'))) {
+						$info['default'] = trim($row['data_default']);
+						
+					} else {
+						$info['default'] = $row['data_default'];
+					}
+				}
+			
+				// Not null values
+				$info['not_null'] = ($row['nullable'] == 'N') ? TRUE : FALSE;
+			}
+			
+			$column_info[$column] = $info;
+		}
+		
+		$sql = "SELECT
+						TRIGGER_BODY
+					FROM
+						USER_TRIGGERS
+					WHERE
+						TRIGGERING_EVENT = 'INSERT' AND
+						STATUS = 'ENABLED' AND
+						TRIGGER_NAME NOT LIKE 'BIN\$%' AND
+						TABLE_NAME = %s";
+						
+		foreach ($this->database->query($sql, $table) as $row) {
+			if (preg_match('#SELECT\s+(\w+).nextval\s+INTO\s+:new\.(\w+)\s+FROM\s+dual#i', $row['trigger_body'], $matches)) {
+				$column = strtolower($matches[2]);
+				$column_info[$column]['auto_increment'] = TRUE;
+			}
+		}
+		
+		return $column_info;
+	}
+	
+	
+	/**
+	 * Fetches the key info for an Oracle database
+	 * 
+	 * The structure of the returned array is:
+	 * 
+	 * {{{
+	 * array(
+	 *      'primary' => array(
+	 *          {column name}, ...
+	 *      ),
+	 *      'unique'  => array(
+	 *          array(
+	 *              {column name}, ...
+	 *          ), ...
+	 *      ),
+	 *      'foreign' => array(
+	 *          array(
+	 *              'column'         => {column name},
+	 *              'foreign_table'  => {foreign table name},
+	 *              'foreign_column' => {foreign column name},
+	 *              'on_delete'      => {the ON DELETE action: 'no_action', 'restrict', 'cascade', 'set_null', or 'set_default'},
+	 *              'on_update'      => {the ON UPDATE action: 'no_action', 'restrict', 'cascade', 'set_null', or 'set_default'}
+	 *          ), ...
+	 *      )
+	 * )
+	 * }}}
+	 * 
+	 * @return array  The keys arrays for every table in the database - see method description for details
+	 */
+	private function fetchOracleKeys()
+	{
+		$keys = array();
+		
+		$tables = $this->getTables();
+		foreach ($tables as $table) {
+			$keys[$table] = array();
+			$keys[$table]['primary'] = array();
+			$keys[$table]['unique']  = array();
+			$keys[$table]['foreign'] = array();
+		}
+		
+		$sql  = "SELECT
+						 LOWER(UC.TABLE_NAME) \"TABLE\",
+						 UC.CONSTRAINT_NAME CONSTRAINT_NAME,
+						 CASE UC.CONSTRAINT_TYPE
+							 WHEN 'P' THEN 'primary'
+							 WHEN 'R' THEN 'foreign'
+							 WHEN 'U' THEN 'unique'
+							 END TYPE,
+						 LOWER(UCC.COLUMN_NAME) \"COLUMN\",
+						 LOWER(FKC.TABLE_NAME) FOREIGN_TABLE,
+						 LOWER(FKC.COLUMN_NAME) FOREIGN_COLUMN,
+						 CASE WHEN FKC.TABLE_NAME IS NOT NULL THEN REPLACE(LOWER(UC.DELETE_RULE), ' ', '_') ELSE NULL END ON_DELETE
+					 FROM
+						 USER_CONSTRAINTS UC INNER JOIN
+						 USER_CONS_COLUMNS UCC ON UC.CONSTRAINT_NAME = UCC.CONSTRAINT_NAME LEFT JOIN
+						 USER_CONSTRAINTS FK ON UC.R_CONSTRAINT_NAME = FK.CONSTRAINT_NAME LEFT JOIN
+						 USER_CONS_COLUMNS FKC ON FK.CONSTRAINT_NAME = FKC.CONSTRAINT_NAME
+					 WHERE
+						 UC.CONSTRAINT_TYPE IN ('U', 'P', 'R') AND
+						 UC.STATUS = 'ENABLED' AND
+						 SUBSTR(UC.TABLE_NAME, 1, 4) <> 'BIN\$'
+					 ORDER BY
+						 UC.TABLE_NAME ASC,
+						 UC.CONSTRAINT_TYPE ASC,
+						 UC.CONSTRAINT_NAME ASC,
+						 UCC.POSITION ASC";
+		
+		$result = $this->database->query($sql);
+		
+		$last_name  = '';
+		$last_table = '';
+		$last_type  = '';
+		foreach ($result as $row) {
+			
+			if ($row['constraint_name'] != $last_name) {
+				
+				if ($last_name) {
+					if ($last_type == 'foreign' || $last_type == 'unique') {
+						$keys[$last_table][$last_type][] = $temp;
+					} else {
+						$keys[$last_table][$last_type] = $temp;
+					}
+				}
+				
+				$temp = array();
+				if ($row['type'] == 'foreign') {
+					
+					$temp['column']         = $row['column'];
+					$temp['foreign_table']  = $row['foreign_table'];
+					$temp['foreign_column'] = $row['foreign_column'];
+					$temp['on_delete']      = 'no_action';
+					$temp['on_update']      = 'no_action';
+					
+					if (!empty($row['on_delete'])) {
+						$temp['on_delete'] = $row['on_delete'];
+					}
+					
+				} else {
+					$temp[] = $row['column'];
+				}
+				
+				$last_table = $row['table'];
+				$last_name  = $row['constraint_name'];
+				$last_type  = $row['type'];
+				
+			} else {
+				$temp[] = $row['column'];
+			}
+		}
+		
+		if (isset($temp)) {
+			if ($last_type == 'foreign' || $last_type == 'unique') {
+				$keys[$last_table][$last_type][] = $temp;
+			} else {
+				$keys[$last_table][$last_type] = $temp;
+			}
+		}
+		
+		return $keys;
+	}
+	
+	
+	/**
 	 * Gets the column info from a PostgreSQL database
 	 * 
 	 * The returned array is in the format:
@@ -754,6 +1156,7 @@ class fSchema
 			'timestamp'			=> 'timestamp',
 			'date'				=> 'date',
 			'time'				=> 'time',
+			'uuid'              => 'varchar',
 			'character varying'	=> 'varchar',
 			'character'			=> 'char',
 			'real'				=> 'float',
@@ -814,8 +1217,13 @@ class fSchema
 			}
 			
 			// Handle the special data for varchar fields
-			if (in_array($info['type'], array('char', 'varchar'))) {
+			if (in_array($info['type'], array('char', 'varchar')) && !empty($column_data_type[2])) {
 				$info['max_length'] = $column_data_type[2];
+			}
+			
+			// In PostgreSQL, a UUID can be the 32 digits, 32 digits plus 4 hyphens or 32 digits plus 4 hyphens and 2 curly braces
+			if ($row['data_type'] == 'uuid') {
+				$info['max_length'] = 38;	
 			}
 			
 			// Handle check constraints that are just simple lists
@@ -897,7 +1305,8 @@ class fSchema
 			$keys[$table]['foreign'] = array();
 		}
 		
-		$sql  = "SELECT
+		$sql  = "(
+				 SELECT
 						 t.relname AS table,
 						 con.conname AS constraint_name,
 						 CASE con.contype
@@ -921,7 +1330,8 @@ class fSchema
 							 WHEN 'r' THEN 'restrict'
 							 WHEN 'n' THEN 'set_null'
 							 WHEN 'd' THEN 'set_default'
-						 END AS on_update
+						 END AS on_update,
+						CASE WHEN con.conkey IS NOT NULL THEN position('-'||col.attnum||'-' in '-'||array_to_string(con.conkey, '-')||'-') ELSE 0 END AS column_order
 					 FROM
 						 pg_attribute AS col INNER JOIN
 						 pg_class AS t ON col.attrelid = t.oid INNER JOIN
@@ -935,11 +1345,30 @@ class fSchema
 						 (con.contype = 'p' OR
 						  con.contype = 'f' OR
 						  con.contype = 'u')
-					 ORDER BY
-						 t.relname,
-						 con.contype,
-						 con.conname,
-						 col.attname";
+				) UNION (
+				SELECT
+						t.relname AS table,
+						ic.relname AS constraint_name,
+						'unique' AS type,
+						col.attname AS column,
+						NULL AS foreign_table,
+						NULL AS foreign_column,
+						NULL AS on_delete,
+						NULL AS on_update,
+						CASE WHEN ind.indkey IS NOT NULL THEN position('-'||col.attnum||'-' in '-'||array_to_string(ind.indkey, '-')||'-') ELSE 0 END AS column_order
+					FROM
+						pg_class AS t INNER JOIN
+						pg_index AS ind ON ind.indrelid = t.oid INNER JOIN
+						pg_namespace AS n ON t.relnamespace = n.oid INNER JOIN
+						pg_class AS ic ON ind.indexrelid = ic.oid LEFT JOIN
+						pg_constraint AS con ON con.conrelid = t.oid AND con.contype = 'u' AND con.conname = ic.relname INNER JOIN
+						pg_attribute AS col ON col.attrelid = t.oid AND col.attnum = ANY (ind.indkey)  
+					WHERE
+						n.nspname NOT IN ('pg_catalog', 'pg_toast') AND
+						indisunique = TRUE AND
+						indisprimary = FALSE AND
+						con.oid IS NULL
+				) ORDER BY 1, 3, 2, 9";
 		
 		$result = $this->database->query($sql);
 		
@@ -1056,7 +1485,7 @@ class fSchema
 			return array();			
 		}
 		
-		preg_match_all('#(?<=,|\()\s*(\w+)\s+([a-z]+)(?:\(\s*(\d+)(?:\s*,\s*(\d+))?\s*\))?(?:(\s+NOT\s+NULL)|(?:\s+DEFAULT\s+([^, \']*|\'(?:\'\'|[^\']+)*\'))|(\s+UNIQUE)|(\s+PRIMARY\s+KEY(?:\s+AUTOINCREMENT)?)|(\s+CHECK\s*\(\w+\s+IN\s+\(\s*(?:(?:[^, \']+|\'(?:\'\'|[^\']+)*\')\s*,\s*)*\s*(?:[^, \']+|\'(?:\'\'|[^\']+)*\')\)\)))*(\s+REFERENCES\s+\w+\s*\(\s*\w+\s*\)\s*(?:\s+(?:ON\s+DELETE|ON\s+UPDATE)\s+(?:CASCADE|NO\s+ACTION|RESTRICT|SET\s+NULL|SET\s+DEFAULT))*(?:\s+(?:DEFERRABLE|NOT\s+DEFERRABLE))?)?\s*(?:,|\s*(?=\)))#mi', $create_sql, $matches, PREG_SET_ORDER);
+		preg_match_all('#(?<=,|\()\s*(?:`|"|\[)?(\w+)(?:`|"|\])?\s+([a-z]+)(?:\(\s*(\d+)(?:\s*,\s*(\d+))?\s*\))?(?:(\s+NOT\s+NULL)|(?:\s+NULL)|(?:\s+DEFAULT\s+([^, \']*|\'(?:\'\'|[^\']+)*\'))|(\s+UNIQUE)|(\s+PRIMARY\s+KEY(?:\s+AUTOINCREMENT)?)|(\s+CHECK\s*\(\w+\s+IN\s+\(\s*(?:(?:[^, \']+|\'(?:\'\'|[^\']+)*\')\s*,\s*)*\s*(?:[^, \']+|\'(?:\'\'|[^\']+)*\')\)\)))*(\s+REFERENCES\s+\w+\s*\(\s*\w+\s*\)\s*(?:\s+(?:ON\s+DELETE|ON\s+UPDATE)\s+(?:CASCADE|NO\s+ACTION|RESTRICT|SET\s+NULL|SET\s+DEFAULT))*(?:\s+(?:DEFERRABLE|NOT\s+DEFERRABLE))?)?\s*(?:,|\s*(?=\)))#mi', $create_sql, $matches, PREG_SET_ORDER);
 		
 		foreach ($matches as $match) {
 			$info = array();
@@ -1069,7 +1498,7 @@ class fSchema
 			}
 		
 			// Type specific information
-			if (in_array($info['type'], array('char', 'varchar'))) {
+			if (in_array($info['type'], array('char', 'varchar')) && !empty($match[3])) {
 				$info['max_length'] = $match[3];
 			}
 			
@@ -1137,8 +1566,8 @@ class fSchema
 	 */
 	private function fetchSQLiteKeys()
 	{
-		$tables   = $this->getTables();
-		$keys = array();
+		$tables = $this->getTables();
+		$keys   = array();
 		
 		foreach ($tables as $table) {
 			$keys[$table] = array();
@@ -1265,14 +1694,17 @@ class fSchema
 	private function findOneToManyRelationships($table)
 	{
 		foreach ($this->merged_keys[$table]['foreign'] as $key) {
+			$type = ($this->checkForSingleColumnUniqueKey($table, $key['column'])) ? 'one-to-one' : 'one-to-many';
 			$temp = array();
 			$temp['table']          = $key['foreign_table'];
 			$temp['column']         = $key['foreign_column'];
 			$temp['related_table']  = $table;
 			$temp['related_column'] = $key['column'];
-			$temp['on_delete']      = $key['on_delete'];
-			$temp['on_update']      = $key['on_update'];
-			$this->relationships[$key['foreign_table']]['one-to-many'][] = $temp;
+			if ($type == 'one-to-many') {
+				$temp['on_delete']      = $key['on_delete'];
+				$temp['on_update']      = $key['on_update'];
+			}
+			$this->relationships[$key['foreign_table']][$type][] = $temp;
 		}
 	}
 	
@@ -1324,27 +1756,9 @@ class fSchema
 			$this->findStarToOneRelationships($table);
 			$this->findOneToManyRelationships($table);
 		}
-	}
-	
-	
-	/**
-	 * Makes sure the info is current, if not it deletes it so that all info is current
-	 * 
-	 * @internal
-	 * 
-	 * @return void
-	 */
-	public function flushInfo()
-	{
-		if ($this->state != 'current') {
-			$this->tables             = NULL;
-			$this->column_info        = array();
-			$this->keys               = array();
-			$this->merged_column_info = array();
-			$this->merged_keys        = array();
-			$this->relationships      = array();
-			$this->state              = 'current';
-			$this->info_changed       = TRUE;
+		
+		if ($this->cache) {
+			$this->cache->set($this->makeCachePrefix() . 'relationships', $this->relationships);	
 		}
 	}
 	
@@ -1404,13 +1818,22 @@ class fSchema
 	 */
 	public function getColumnInfo($table, $column=NULL, $element=NULL)
 	{
-		$valid_elements = array('type', 'not_null', 'default', 'valid_values', 'max_length', 'decimal_places', 'auto_increment');
-		if ($element && !in_array($element, $valid_elements)) {
-			throw new fProgrammerException(
-				'The element specified, %1$s, is invalid. Must be one of: %2$s.',
-				$element,
-				join(', ', $valid_elements)
-			);
+		// Return the saved column info if possible
+		if (!$column && isset($this->merged_column_info[$table])) {
+			return $this->merged_column_info[$table];
+		}
+		if ($column && isset($this->merged_column_info[$table][$column])) {
+			if ($element !== NULL) {
+				if (!isset($this->merged_column_info[$table][$column][$element]) && !array_key_exists($element, $this->merged_column_info[$table][$column])) {
+					throw new fProgrammerException(
+						'The element specified, %1$s, is invalid. Must be one of: %2$s.',
+						$element,
+						join(', ', array('type', 'not_null', 'default', 'valid_values', 'max_length', 'decimal_places', 'auto_increment'))
+					);	
+				}
+				return $this->merged_column_info[$table][$column][$element];
+			}
+			return $this->merged_column_info[$table][$column];
 		}
 		
 		if (!in_array($table, $this->getTables())) {
@@ -1418,17 +1841,6 @@ class fSchema
 				'The table specified, %s, does not exist in the database',
 				$table
 			);
-		}
-		
-		// Return the saved column info if possible
-		if (!$column && isset($this->merged_column_info[$table])) {
-			return $this->merged_column_info[$table];
-		}
-		if ($column && isset($this->merged_column_info[$table][$column])) {
-			if ($element !== NULL) {
-				return $this->merged_column_info[$table][$column][$element];
-			}
-			return $this->merged_column_info[$table][$column];
 		}
 		
 		$this->fetchColumnInfo($table);
@@ -1500,6 +1912,10 @@ class fSchema
 		foreach ($result as $row) {
 			$keys = array_keys($row);
 			$this->databases[] = $row[$keys[0]];
+		}
+		
+		if ($this->cache) {
+			$this->cache->set($this->makeCachePrefix() . 'databases', $this->databases);		
 		}
 		
 		return $this->databases;
@@ -1679,16 +2095,29 @@ class fSchema
 		
 		switch ($this->database->getType()) {
 			case 'mssql':
-				$sql = 'SELECT
+				$sql = "SELECT
 								TABLE_NAME
 							FROM
 								INFORMATION_SCHEMA.TABLES
+							WHERE
+								TABLE_NAME != 'sysdiagrams'
 							ORDER BY
-								LOWER(TABLE_NAME)';
+								LOWER(TABLE_NAME)";
 				break;
 			
 			case 'mysql':
 				$sql = 'SHOW TABLES';
+				break;
+			
+			case 'oracle':
+				$sql = "SELECT
+								LOWER(TABLE_NAME)
+							FROM
+								USER_TABLES
+							WHERE
+								SUBSTR(TABLE_NAME, 1, 4) <> 'BIN\$'
+							ORDER BY
+								TABLE_NAME ASC";
 				break;
 			
 			case 'postgresql':
@@ -1724,6 +2153,10 @@ class fSchema
 			$this->tables[] = $row[$keys[0]];
 		}
 		
+		if ($this->cache) {
+			$this->cache->set($this->makeCachePrefix() . 'tables', $this->tables);
+		}
+		
 		return $this->tables;
 	}
 		
@@ -1755,6 +2188,28 @@ class fSchema
 		}
 		
 		return sizeof($foreign_key_columns) == 2 && !array_diff($foreign_key_columns, $primary_key_columns);
+	}
+	
+	
+	/**
+	 * Creates a unique cache prefix to help prevent cache conflicts
+	 * 
+	 * @return void
+	 */
+	private function makeCachePrefix()
+	{
+		$prefix  = 'fSchema::' . $this->database->getType() . '::';
+		if ($this->database->getHost()) {
+			$prefix .= $this->database->getHost() . '::';	
+		}
+		if ($this->database->getPort()) {
+			$prefix .= $this->database->getPort() . '::';	
+		}
+		$prefix .= $this->database->getDatabase() . '::';
+		if ($this->database->getUsername()) {
+			$prefix .= $this->database->getUsername() . '::';	
+		}
+		return $prefix;	
 	}
 	
 	
@@ -1793,7 +2248,7 @@ class fSchema
 			}
 		}
 		
-		$optional_elements = array('default', 'not_null', 'valid_values', 'max_length', 'decimal_places', 'auto_increment');
+		$optional_elements = array('not_null', 'default', 'valid_values', 'max_length', 'decimal_places', 'auto_increment');
 		
 		foreach ($this->merged_column_info as $table => $column_array) {
 			foreach ($column_array as $column => $info) {
@@ -1806,6 +2261,10 @@ class fSchema
 					}
 				}
 			}
+		}
+		
+		if ($this->cache) {
+			$this->cache->set($this->makeCachePrefix() . 'merged_column_info', $this->merged_column_info);	
 		}
 	}
 		
@@ -1821,54 +2280,17 @@ class fSchema
 		$this->merged_keys = $this->keys;
 		
 		foreach ($this->keys_override as $table => $info) {
-			if (!isset($this->merge_keys[$table])) {
+			if (!isset($this->merged_keys[$table])) {
 				$this->merged_keys[$table] = array();
 			}
 			$this->merged_keys[$table] = array_merge($this->merged_keys[$table], $info);
 		}
 		
+		if ($this->cache) {
+			$this->cache->set($this->makeCachePrefix() . 'merged_keys', $this->merged_keys);	
+		}
+		
 		$this->findRelationships();
-	}
-	
-	
-	/**
-	 * Sets a file to cache the schema info to
-	 * 
-	 * @param  string $file  The cache file
-	 * @return void
-	 */
-	public function setCacheFile($file)
-	{
-		$file = realpath($file);
-		
-		if (file_exists($file) && !is_writable($file)) {
-			throw new fEnvironmentException(
-				'The cache file specified, %s, is not writable',
-				$file
-			);
-		}
-		
-		if (!file_exists($file) && !is_writable(dirname($file))) {
-			throw new fEnvironmentException(
-				'The cache file specified, %1$s, does not exist and the cache file directory, %2$s, is not writable',
-				$file,
-				dirname($file) . DIRECTORY_SEPARATOR
-			);
-		}
-		
-		$this->cache_file = $file;
-		
-		$contents = file_get_contents($this->cache_file);
-		if ($contents) {
-			$info = unserialize($contents);
-			$this->tables        = $info['tables'];
-			$this->column_info   = $info['column_info'];
-			$this->keys          = $info['keys'];
-		}
-		
-		if (!empty($this->column_info) || !empty($this->keys)) {
-			$this->state = 'cached';
-		}
 	}
 	
 	
@@ -1963,6 +2385,7 @@ class fSchema
 			$this->keys_override[$table] = $keys;
 		}
 		
+		$this->fetchKeys();
 		$this->mergeKeys();
 	}
 }

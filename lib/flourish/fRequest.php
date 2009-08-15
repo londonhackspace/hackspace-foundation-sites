@@ -8,21 +8,29 @@
  * Please also note that using this class in a PUT or DELETE request will
  * cause the php://input stream to be consumed, and thus no longer available.
  * 
- * @copyright  Copyright (c) 2007-2008 Will Bond
+ * @copyright  Copyright (c) 2007-2009 Will Bond
  * @author     Will Bond [wb] <will@flourishlib.com>
  * @license    http://flourishlib.com/license
  * 
  * @package    Flourish
  * @link       http://flourishlib.com/fRequest
  * 
- * @version    1.0.0b
- * @changes    1.0.0b  The initial implementation [wb, 2007-06-14]
+ * @version    1.0.0b7
+ * @changes    1.0.0b7  Fixed a bug with ::filter() not properly creating new `$_FILES` entries [wb, 2009-07-02]
+ * @changes    1.0.0b6  ::filter() now works with empty prefixes and filtering the `$_FILES` superglobal has been fixed [wb, 2009-07-02]
+ * @changes    1.0.0b5  Changed ::filter() so that it can be called multiple times for multi-level filtering [wb, 2009-06-02]
+ * @changes    1.0.0b4  Added the HTML escaping functions ::encode() and ::prepare() [wb, 2009-05-27]
+ * @changes    1.0.0b3  Updated class to use new fSession API [wb, 2009-05-08]
+ * @changes    1.0.0b2  Added ::generateCSRFToken() from fCRUD::generateRequestToken() and ::validateCSRFToken() from fCRUD::validateRequestToken() [wb, 2009-05-08]
+ * @changes    1.0.0b   The initial implementation [wb, 2007-06-14]
  */
 class fRequest
 {
 	// The following constants allow for nice looking callbacks to static methods
 	const check                 = 'fRequest::check';
+	const encode                = 'fRequest::encode';
 	const filter                = 'fRequest::filter';
+	const generateCSRFToken     = 'fRequest::generateCSRFToken';
 	const get                   = 'fRequest::get';
 	const getAcceptLanguages    = 'fRequest::getAcceptLanguages';
 	const getAcceptTypes        = 'fRequest::getAcceptTypes';
@@ -34,9 +42,11 @@ class fRequest
 	const isPost                = 'fRequest::isPost';
 	const isPut                 = 'fRequest::isPut';
 	const overrideAction        = 'fRequest::overrideAction';
+	const prepare               = 'fRequest::prepare';
 	const reset                 = 'fRequest::reset';
 	const set                   = 'fRequest::set';
 	const unfilter              = 'fRequest::unfilter';
+	const validateCSRFToken     = 'fRequest::validateCSRFToken';
 	
 	
 	/**
@@ -44,28 +54,28 @@ class fRequest
 	 * 
 	 * @var array
 	 */
-	static private $backup_files = NULL;
+	static private $backup_files = array();
 	
 	/**
 	 * A backup copy of `$_GET` for ::unfilter()
 	 * 
 	 * @var array
 	 */
-	static private $backup_get = NULL;
+	static private $backup_get = array();
 	
 	/**
 	 * A backup copy of `$_POST` for unfilter()
 	 * 
 	 * @var array
 	 */
-	static private $backup_post = NULL;
+	static private $backup_post = array();
 	
 	/**
 	 * A backup copy of the local `PUT`/`DELETE` post data for ::unfilter()
 	 * 
 	 * @var array
 	 */
-	static private $backup_put_delete = NULL;
+	static private $backup_put_delete = array();
 	
 	/**
 	 * The key/value pairs from the post data of a `PUT`/`DELETE` request
@@ -90,6 +100,20 @@ class fRequest
 	
 	
 	/**
+	 * Gets a value from ::get() and passes it through fHTML::encode()
+	 * 
+	 * @param  string $key            The key to get the value of
+	 * @param  string $cast_to        Cast the value to this data type
+	 * @param  mixed  $default_value  If the parameter is not set in the `DELETE`/`PUT` post data, `$_POST` or `$_GET`, use this value instead
+	 * @return string  The encoded value
+	 */
+	static public function encode($key, $cast_to=NULL, $default_value=NULL)
+	{
+		return fHTML::encode(self::get($key, $cast_to, $default_value));
+	}
+	
+	
+	/**
 	 * Parses through `$_FILES`, `$_GET`, `$_POST` and the `PUT`/`DELETE` post data and filters out everything that doesn't match the prefix and key, also removes the prefix from the field name
 	 * 
 	 * @internal
@@ -104,12 +128,15 @@ class fRequest
 		
 		$regex = '#^' . preg_quote($prefix, '#') . '#';
 		
-		self::$backup_files = $_FILES;
+		$current_backup       = sizeof(self::$backup_files);
+		self::$backup_files[] = $_FILES;
 		
 		$_FILES = array();
-		foreach (self::$backup_files as $field => $value) {
-			if (strpos($field, $prefix) === 0 && is_array($value) && isset($value['name'][$key])) {
+		foreach (self::$backup_files[$current_backup] as $field => $value) {
+			$matches_prefix = !$prefix || ($prefix && strpos($field, $prefix) === 0);
+			if ($matches_prefix && is_array($value) && isset($value['name'][$key])) {
 				$new_field = preg_replace($regex, '', $field);
+				$_FILES[$new_field]             = array();
 				$_FILES[$new_field]['name']     = $value['name'][$key];
 				$_FILES[$new_field]['type']     = $value['type'][$key];
 				$_FILES[$new_field]['tmp_name'] = $value['tmp_name'][$key];
@@ -125,10 +152,12 @@ class fRequest
 		);
 		
 		foreach ($globals as $refs) {
-			$refs['backup'] = $refs['array'];
-			$refs['array']  = array();	
-			foreach ($refs['backup'] as $field => $value) {
-				if (strpos($field, $prefix) === 0 && is_array($value) && isset($value[$key])) {
+			$current_backup   = sizeof($refs['backup']);
+			$refs['backup'][] = $refs['array'];
+			$refs['array']    = array();	
+			foreach ($refs['backup'][$current_backup] as $field => $value) {
+				$matches_prefix = !$prefix || ($prefix && strpos($field, $prefix) === 0);
+				if ($matches_prefix && is_array($value) && isset($value[$key])) {
 					$new_field = preg_replace($regex, '', $field);
 					$refs['array'][$new_field] = $value[$key];
 				}
@@ -138,9 +167,44 @@ class fRequest
 	
 	
 	/**
+	 * Returns a request token that should be placed in each HTML form to prevent [http://en.wikipedia.org/wiki/Cross-site_request_forgery cross-site request forgery]
+	 * 
+	 * This method will return a random 15 character string that should be
+	 * placed in a hidden `input` element on every HTML form. When the form
+	 * contents are being processed, the token should be retrieved and passed
+	 * into ::validateCSRFToken().
+	 * 
+	 * The value returned by this method is stored in the session and then
+	 * checked by the validate method, which helps prevent cross site request
+	 * forgeries and (naive) automated form submissions.
+	 * 
+	 * Tokens generated by this method are single use, so a user must request
+	 * the page that generates the token at least once per submission.
+	 * 
+	 * @param  string $url  The URL to generate a token for, default to the current page
+	 * @return string  The token to be submitted with the form
+	 */
+	static public function generateCSRFToken($url=NULL)
+	{
+		if ($url === NULL) {
+			$url = fURL::get();	
+		}
+		
+		$token  = fCryptography::randomString(16);
+		
+		$tokens = fSession::get($url . '::csrf_tokens', array(), __CLASS__ . '::');
+		$tokens[] = $token;
+		fSession::set($url . '::csrf_tokens', $tokens, __CLASS__ . '::');
+		
+		return $token;
+	}
+	
+	
+	/**
 	 * Gets a value from the `DELETE`/`PUT` post data, `$_POST` or `$_GET` superglobals (in that order)
 	 * 
-	 * A value that exactly equals `''` and is not cast to a specific type will become `NULL`.
+	 * A value that exactly equals `''` and is not cast to a specific type will
+	 * become `NULL`.
 	 *  
 	 * All text values are interpreted as UTF-8 string and appropriately
 	 * cleaned.
@@ -411,6 +475,20 @@ class fRequest
 	
 	
 	/**
+	 * Gets a value from ::get() and passes it through fHTML::prepare()
+	 * 
+	 * @param  string $key            The key to get the value of
+	 * @param  string $cast_to        Cast the value to this data type
+	 * @param  mixed  $default_value  If the parameter is not set in the `DELETE`/`PUT` post data, `$_POST` or `$_GET`, use this value instead
+	 * @return string  The prepared value
+	 */
+	static public function prepare($key, $cast_to=NULL, $default_value=NULL)
+	{
+		return fHTML::prepare(self::get($key, $cast_to, $default_value));
+	}
+	
+	
+	/**
 	 * Returns an array of values from one of the HTTP `Accept-*` headers
 	 * 
 	 * @return array  An associative array of `{value} => {quality}` sorted (in a stable-fashion) from highest to lowest `q`
@@ -455,6 +533,8 @@ class fRequest
 	 */
 	static public function reset()
 	{
+		fSession::clear(__CLASS__ . '::');
+		
 		self::$backup_files      = NULL;
 		self::$backup_get        = NULL;
 		self::$backup_post       = NULL;
@@ -499,7 +579,7 @@ class fRequest
 	 */
 	static public function unfilter()
 	{
-		if (self::$backup_get === NULL) {
+		if (self::$backup_get === array()) {
 			throw new fProgrammerException(
 				'%1$s can only be called after %2$s',
 				__CLASS__ . '::unfilter()',
@@ -507,10 +587,41 @@ class fRequest
 			);
 		}
 		
-		$_FILES           = self::$backup_files;
-		$_GET             = self::$backup_get;
-		$_POST            = self::$backup_post;
-		self::$put_delete = self::$backup_put_delete;
+		$_FILES           = array_pop(self::$backup_files);
+		$_GET             = array_pop(self::$backup_get);
+		$_POST            = array_pop(self::$backup_post);
+		self::$put_delete = array_pop(self::$backup_put_delete);
+	}
+	
+	
+	/**
+	 * Validates a request token generated by ::generateCSRFToken()
+	 * 
+	 * This method takes a request token and ensures it is valid, otherwise
+	 * it will throw an fValidationException.
+	 * 
+	 * @throws fValidationException  When the CSRF token specified is invalid
+	 * 
+	 * @param  string $token  The request token to validate
+	 * @param  string $url    The URL to validate the token for, default to the current page
+	 * @return void
+	 */
+	static public function validateCSRFToken($token, $url=NULL)
+	{
+		if ($url === NULL) {
+			$url = fURL::get();	
+		}
+		
+		$tokens = fSession::get($url . '::csrf_tokens', array(), __CLASS__ . '::');
+		
+		if (!in_array($token, $tokens)) {
+			throw new fValidationException(
+				'The form submitted could not be validated as authentic, please try submitting it again'
+			);	
+		}
+		
+		$tokens = array_diff($tokens, array($token));;
+		fSession::set($url . '::csrf_tokens', $tokens, __CLASS__ . '::');
 	}
 	
 	
@@ -525,7 +636,7 @@ class fRequest
 
 
 /**
- * Copyright (c) 2007-2008 Will Bond <will@flourishlib.com>
+ * Copyright (c) 2007-2009 Will Bond <will@flourishlib.com>
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal

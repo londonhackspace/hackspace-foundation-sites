@@ -9,15 +9,22 @@
  * @package    Flourish
  * @link       http://flourishlib.com/fImage
  * 
- * @version    1.0.0b8
- * @changes    1.0.0b8  Updated for new fCore API [wb, 2009-02-16]
- * @changes    1.0.0b7  Changed @ error suppression operator to `error_reporting()` calls [wb, 2009-01-26]
- * @changes    1.0.0b6  Fixed ::cropToRatio() and ::resize() to always return the object even if nothing is to be done [wb, 2009-01-05]
- * @changes    1.0.0b5  Added check to see if exec() is disabled, which causes ImageMagick to not work [wb, 2009-01-03]
- * @changes    1.0.0b4  Fixed ::saveChanges() to not delete the image if no changes have been made [wb, 2008-12-18]
- * @changes    1.0.0b3  Fixed a bug with $jpeg_quality in ::saveChanges() from 1.0.0b2 [wb, 2008-12-16]
- * @changes    1.0.0b2  Changed some int casts to round() to fix ::resize() dimension issues [wb, 2008-12-11]
- * @changes    1.0.0b   The initial implementation [wb, 2007-12-19]
+ * @version    1.0.0b15
+ * @changes    1.0.0b15  Added ::getDimensions() [wb, 2009-08-07]
+ * @changes    1.0.0b14  Performance updates for checking image type and compatiblity [wb, 2009-07-31]
+ * @changes    1.0.0b13  Updated class to work even if the file extension is wrong or not present, ::saveChanges() detects files that aren't writable [wb, 2009-07-29]
+ * @changes    1.0.0b12  Fixed a bug where calling ::saveChanges() after unserializing would throw an exception related to the image processor [wb, 2009-05-27]
+ * @changes    1.0.0b11  Added a ::crop() method [wb, 2009-05-27]
+ * @changes    1.0.0b10  Fixed a bug with GD not saving changes to files ending in .jpeg [wb, 2009-03-18]
+ * @changes    1.0.0b9   Changed ::processWithGD() to explicitly free the image resource [wb, 2009-03-18]
+ * @changes    1.0.0b8   Updated for new fCore API [wb, 2009-02-16]
+ * @changes    1.0.0b7   Changed @ error suppression operator to `error_reporting()` calls [wb, 2009-01-26]
+ * @changes    1.0.0b6   Fixed ::cropToRatio() and ::resize() to always return the object even if nothing is to be done [wb, 2009-01-05]
+ * @changes    1.0.0b5   Added check to see if exec() is disabled, which causes ImageMagick to not work [wb, 2009-01-03]
+ * @changes    1.0.0b4   Fixed ::saveChanges() to not delete the image if no changes have been made [wb, 2008-12-18]
+ * @changes    1.0.0b3   Fixed a bug with $jpeg_quality in ::saveChanges() from 1.0.0b2 [wb, 2008-12-16]
+ * @changes    1.0.0b2   Changed some int casts to round() to fix ::resize() dimension issues [wb, 2008-12-11]
+ * @changes    1.0.0b    The initial implementation [wb, 2007-12-19]
  */
 class fImage extends fFile
 {
@@ -89,7 +96,7 @@ class fImage extends fFile
 	 * This operation will be reverted by a filesystem transaction being rolled
 	 * back.
 	 * 
-	 * @throws fValidationException
+	 * @throws fValidationException  When no image was specified or when the image already exists
 	 * 
 	 * @param  string $file_path  The path to the new image
 	 * @param  string $contents   The contents to write to the image
@@ -281,7 +288,7 @@ class fImage extends fFile
 	 *  - `'png'`
 	 *  - `'tif'`
 	 * 
-	 * @throws fValidationException
+	 * @throws fValidationException  When the file specified is not an image
 	 * 
 	 * @param  string $image_path  The path to the image to get stats for
 	 * @param  string $element     The element to retrieve: `'type'`, `'width'`, `'height'`
@@ -291,10 +298,13 @@ class fImage extends fFile
 	{
 		$extension = strtolower(fFilesystem::getPathInfo($image_path, 'extension'));
 		if (!in_array($extension, array('jpg', 'jpeg', 'png', 'gif', 'tif', 'tiff'))) {
-			throw new fValidationException(
-				'The file specified, %s, does not appear to be an image',
-				$image_path
-			);		
+			$type = self::getImageType($image_path);
+			if ($type === NULL) {
+				throw new fValidationException(
+					'The file specified, %s, does not appear to be an image',
+					$image_path
+				);
+			}	
 		}
 		
 		$old_level  = error_reporting(error_reporting() & ~E_WARNING);
@@ -341,11 +351,47 @@ class fImage extends fFile
 	
 	
 	/**
+	 * Gets the image type from a file by looking at the file contents
+	 * 
+	 * @param  string $image  The image path to get the type for
+	 * @return string|NULL  The type of the image - `'jpg'`, `'gif'`, `'png'` or `'tif'` - NULL if not one of those  
+	 */
+	static private function getImageType($image)
+	{
+		$handle   = fopen($image, 'r');
+		$contents = fread($handle, 12);
+		fclose($handle);
+		
+		$_0_8 = substr($contents, 0, 8);
+		$_0_4 = substr($contents, 0, 4);
+		$_6_4 = substr($contents, 6, 4);
+		
+		if ($_0_4 == "MM\x00\x2A" || $_0_4 == "II\x2A\x00") {
+			return 'tif';	
+		}
+		
+		if ($_0_8 == "\x89PNG\x0D\x0A\x1A\x0A") {
+			return 'png';	
+		}
+		
+		if ($_0_4 == 'GIF8') {
+			return 'gif';	
+		}
+		
+		if ($_6_4 == 'JFIF' || $_6_4 == 'Exif') {
+			return 'jpg';	
+		}
+		
+		return NULL;	
+	}
+	
+	
+	/**
 	 * Checks to make sure the class can handle the image file specified
 	 * 
 	 * @internal
 	 * 
-	 * @throws fValidationException
+	 * @throws fValidationException  When the image specified does not exist
 	 * 
 	 * @param  string $image  The image to check for incompatibility
 	 * @return boolean  If the image is compatible with the detected image processor
@@ -361,13 +407,9 @@ class fImage extends fFile
 			);
 		}
 		
-		try {
-			$info = self::getInfo($image);
-		
-			if ($info['type'] === NULL || ($info['type'] == 'tif' && self::$processor == 'gd')) {
-				return FALSE;
-			}
-		} catch (fValidationException $e) {
+		$type = self::getImageType($image);
+	
+		if ($type === NULL || ($type == 'tif' && self::$processor == 'gd')) {
 			return FALSE;
 		}
 		
@@ -482,16 +524,17 @@ class fImage extends fFile
 	/**
 	 * Creates an object to represent an image on the filesystem
 	 * 
-	 * @throws fValidationException
+	 * @throws fValidationException  When no image was specified, when the image does not exist or when the path specified is not an image
 	 * 
-	 * @param  string $file_path  The path to the image
+	 * @param  string  $file_path    The path to the image
+	 * @param  boolean $skip_checks  If file checks should be skipped, which improves performance, but may cause undefined behavior - only skip these if they are duplicated elsewhere
 	 * @return fImage
 	 */
-	public function __construct($file_path)
+	public function __construct($file_path, $skip_checks=FALSE)
 	{
 		self::determineProcessor();
 		
-		parent::__construct($file_path);
+		parent::__construct($file_path, $skip_checks);
 		
 		if (!self::isImageCompatible($file_path)) {
 			$valid_image_types = array('GIF', 'JPG', 'PNG');
@@ -507,6 +550,75 @@ class fImage extends fFile
 	}
 	
 	
+	/**
+	 * Crops the image by the exact pixel dimensions specified
+	 * 
+	 * The crop does not occur until ::saveChanges() is called.
+	 * 
+	 * @param  numeric $crop_from_x  The number of pixels from the left of the image to start the crop from
+	 * @param  numeric $crop_from_y  The number of pixels from the top of the image to start the crop from
+	 * @param  numeric $new_width    The width in pixels to crop the image to
+	 * @param  numeric $new_height   The height in pixels to crop the image to
+	 * @return fImage  The image object, to allow for method chaining
+	 */
+	public function crop($crop_from_x, $crop_from_y, $new_width, $new_height)
+	{
+		$this->tossIfException();
+		
+		// Get the original dimensions for our parameter checking
+		$dim = $this->getCurrentDimensions();
+		$orig_width  = $dim['width'];
+		$orig_height = $dim['height'];
+		
+		// Make sure the user input is valid
+		if (!is_numeric($crop_from_x) || $crop_from_x < 0 || $crop_from_x > $orig_width - 1) {
+			throw new fProgrammerException(
+				'The crop-from x specified, %s, is not a number, is less than zero, or would result in a zero-width image',
+				$crop_from_x
+			);
+		}
+		if (!is_numeric($crop_from_y) || $crop_from_y < 0 || $crop_from_y > $orig_height - 1) {
+			throw new fProgrammerException(
+				'The crop-from y specified, %s, is not a number, is less than zero, or would result in a zero-height image',
+				$crop_from_y
+			);
+		}
+		
+		if (!is_numeric($new_width) || $new_width <= 0 || $crop_from_x + $new_width > $orig_width) {
+			throw new fProgrammerException(
+				'The new width specified, %1$s, is not a number, is less than or equal to zero, or is larger than can be cropped with the specified crop-from x of %2$s',
+				$new_width,
+				$crop_from_x
+			);
+		}
+		if (!is_numeric($new_height) || $new_height <= 0 || $crop_from_y + $new_height > $orig_height) {
+			throw new fProgrammerException(
+				'The new height specified, %1$s, is not a number, is less than or equal to zero, or is larger than can be cropped with the specified crop-from y of %2$s',
+				$new_height,
+				$crop_from_y
+			);
+		}
+		
+		// If nothing changed, don't even record the modification
+		if ($orig_width == $new_width && $orig_height == $new_height) {
+			return $this;
+		}
+		
+		// Record what we are supposed to do
+		$this->pending_modifications[] = array(
+			'operation'  => 'crop',
+			'start_x'    => $crop_from_x,
+			'start_y'    => $crop_from_y,
+			'width'      => $new_width,
+			'height'     => $new_height,
+			'old_width'  => $orig_width,
+			'old_height' => $orig_height
+		);
+		
+		return $this;
+	}
+	
+		
 	/**
 	 * Crops the biggest area possible from the center of the image that matches the ratio provided
 	 * 
@@ -623,6 +735,18 @@ class fImage extends fFile
 	
 	
 	/**
+	 * Returns the width and height of the image as a two element array
+	 * 
+	 * @return array  In the format `0 => (integer) {width}, 1 => (integer) {height}`
+	 */
+	public function getDimensions()
+	{
+		$info = self::getInfo($this->file);
+		return array($info['width'], $info['height']);
+	}
+	
+	
+	/**
 	 * Returns the height of the image
 	 * 
 	 * @return integer  The height of the image in pixels
@@ -640,7 +764,7 @@ class fImage extends fFile
 	 */
 	public function getType()
 	{
-		return self::getInfo($this->file, 'type');
+		return self::getImageType($this->file);
 	}
 	
 	
@@ -662,8 +786,8 @@ class fImage extends fFile
 	 */
 	private function isAnimatedGif()
 	{
-		$info = self::getInfo($this->file);
-		if ($info['type'] == 'gif') {
+		$type = self::getImageType($this->file);
+		if ($type == 'gif') {
 			if (preg_match('#\x00\x21\xF9\x04.{4}\x00\x2C#s', file_get_contents($this->file))) {
 				return TRUE;
 			}
@@ -681,9 +805,9 @@ class fImage extends fFile
 	 */
 	private function processWithGD($output_file, $jpeg_quality)
 	{
-		$info = self::getInfo($this->file);
+		$type = self::getImageType($this->file);
 		
-		switch ($info['type']) {
+		switch ($type) {
 			case 'gif':
 				$gd_res = imagecreatefromgif($this->file);
 				break;
@@ -756,9 +880,15 @@ class fImage extends fFile
 		}
 		
 		// Save the file
-		$info = fFilesystem::getPathInfo($output_file);
+		$path_info = fFilesystem::getPathInfo($output_file);
+		$new_type = $path_info['extension'];
+		$new_type = ($type == 'jpeg') ? 'jpg' : $type;
 		
-		switch ($info['extension']) {
+		if (!in_array($new_type, array('gif', 'jpg', 'png'))) {
+			$new_type = $type;	
+		}
+		
+		switch ($new_type) {
 			case 'gif':
 				imagegif($gd_res, $output_file);
 				break;
@@ -769,6 +899,8 @@ class fImage extends fFile
 				imagepng($gd_res, $output_file);
 				break;
 		}
+		
+		imagedestroy($gd_res);
 	}
 	
 	
@@ -781,7 +913,7 @@ class fImage extends fFile
 	 */
 	private function processWithImageMagick($output_file, $jpeg_quality)
 	{
-		$info = self::getInfo($this->file);
+		$type = self::getImageType($this->file);
 		
 		$command_line  = escapeshellcmd(self::$imagemagick_dir . 'convert');
 		
@@ -797,7 +929,7 @@ class fImage extends fFile
 		}
 		
 		// TIFF files should be set to a depth of 8
-		if ($info['type'] == 'tif') {
+		if ($type == 'tif') {
 			$command_line .= ' -depth 8 ';
 		}
 		
@@ -825,12 +957,19 @@ class fImage extends fFile
 		}
 		
 		// Set up jpeg compression
-		$info = fFilesystem::getPathInfo($output_file);
-		if ($info['extension'] == 'jpg') {
+		$path_info = fFilesystem::getPathInfo($output_file);
+		$new_type = $path_info['extension'];
+		$new_type = ($new_type == 'jpeg') ? 'jpg' : $new_type;
+		
+		if (!in_array($new_type, array('gif', 'jpg', 'png'))) {
+			$new_type = $type;	
+		}
+		
+		if ($new_type == 'jpg') {
 			$command_line .= ' -compress JPEG -quality ' . $jpeg_quality . ' ';
 		}
 		
-		$command_line .= ' ' . escapeshellarg($output_file);
+		$command_line .= ' ' . escapeshellarg($new_type . ':' . $output_file);
 		
 		exec($command_line);
 	}
@@ -932,6 +1071,7 @@ class fImage extends fFile
 	public function saveChanges($new_image_type=NULL, $jpeg_quality=90)
 	{
 		$this->tossIfException();
+		self::determineProcessor();
 		
 		if (self::$processor == 'none') {
 			throw new fEnvironmentException(
@@ -939,8 +1079,8 @@ class fImage extends fFile
 			);
 		}
 		
-		$info = self::getInfo($this->file);
-		if ($info['type'] == 'tif' && self::$processor == 'gd') {
+		$type = self::getImageType($this->file);
+		if ($type == 'tif' && self::$processor == 'gd') {
 			throw new fEnvironmentException(
 				'The image specified, %s, is a TIFF file and the GD extension can not handle TIFF files. Please install ImageMagick if you wish to manipulate TIFF files.',
 				$this->file
@@ -971,8 +1111,21 @@ class fImage extends fFile
 		
 		if ($new_image_type) {
 			$output_file = fFilesystem::makeUniqueName($this->file, $new_image_type);
+			$output_dir  = dirname($output_file);
+			if (!is_writable($output_dir)) {
+				throw new fEnvironmentException(
+					'Changes to the image can not be saved because the directory to save the new file, %s, is not writable',
+					$output_dir
+				);		
+			}
 		} else {
 			$output_file = $this->file;
+			if (!is_writable($output_file)) {
+				throw new fEnvironmentException(
+					'Changes to the image can not be saved because the file, %s, is not writable',
+					$output_file
+				);	
+			}
 		}
 		
 		// If we don't have any changes and no name change, just exit

@@ -2,18 +2,37 @@
 /**
  * A lightweight, iterable set of fActiveRecord-based objects
  * 
- * @copyright  Copyright (c) 2007-2008 Will Bond
+ * @copyright  Copyright (c) 2007-2009 Will Bond
  * @author     Will Bond [wb] <will@flourishlib.com>
  * @license    http://flourishlib.com/license
  * 
  * @package    Flourish
  * @link       http://flourishlib.com/fRecordSet
  * 
- * @version    1.0.0b2
- * @changes    1.0.0b2  Added support for != and <> to ::build() and ::filter() [wb, 2008-12-04]
- * @changes    1.0.0b   The initial implementation [wb, 2007-08-04]
+ * @version    1.0.0b21
+ * @changes    1.0.0b21  Added performance tweaks to ::prebuild() and ::precreate() [wb, 2009-07-31]
+ * @changes    1.0.0b20  Changed the class to implement Countable, making the [http://php.net/count `count()`] function work [wb, 2009-07-29]
+ * @changes    1.0.0b19  Fixed bugs with ::diff() and ::intersect() and empty record sets [wb, 2009-07-29]
+ * @changes    1.0.0b18  Added method chaining support to prebuild, precount and precreate methods [wb, 2009-07-15]
+ * @changes    1.0.0b17  Changed ::__call() to pass the parameters to the callback [wb, 2009-07-14]
+ * @changes    1.0.0b16  Updated documentation for the intersection operator `><` [wb, 2009-07-13]
+ * @changes    1.0.0b15  Added the methods ::diff() and ::intersect() [wb, 2009-07-13]
+ * @changes    1.0.0b14  Added the methods ::contains() and ::unique() [wb, 2009-07-09]
+ * @changes    1.0.0b13  Added documentation to ::build() about the intersection operator `><` [wb, 2009-07-09]
+ * @changes    1.0.0b12  Added documentation to ::build() about the `AND LIKE` operator `&~` [wb, 2009-07-09]
+ * @changes    1.0.0b11  Added documentation to ::build() about the `NOT LIKE` operator `!~` [wb, 2009-07-08]
+ * @changes    1.0.0b10  Moved the private method ::checkConditions() to fActiveRecord::checkConditions() [wb, 2009-07-08]
+ * @changes    1.0.0b9   Changed ::build() to only fall back to ordering by primary keys if one exists [wb, 2009-06-26]
+ * @changes    1.0.0b8   Updated ::merge() to accept arrays of fActiveRecords or a single fActiveRecord in addition to an fRecordSet [wb, 2009-06-02]
+ * @changes    1.0.0b7   Backwards Compatibility Break - Removed ::flagAssociate() and ::isFlaggedForAssociation(), callbacks registered via fORM::registerRecordSetMethod() no longer receive the `$associate` parameter [wb, 2009-06-02]
+ * @changes    1.0.0b6   Changed ::tossIfEmpty() to return the record set to allow for method chaining [wb, 2009-05-18]
+ * @changes    1.0.0b5   ::build() now allows NULL for `$where_conditions` and `$order_bys`, added a check to the SQL passed to ::buildFromSQL() [wb, 2009-05-03]
+ * @changes    1.0.0b4   ::__call() was changed to prevent exceptions coming from fGrammar when an unknown method is called [wb, 2009-03-27]
+ * @changes    1.0.0b3   ::sort() and ::sortByCallback() now return the record set to allow for method chaining [wb, 2009-03-23]
+ * @changes    1.0.0b2   Added support for != and <> to ::build() and ::filter() [wb, 2008-12-04]
+ * @changes    1.0.0b    The initial implementation [wb, 2007-08-04]
  */
-class fRecordSet implements Iterator
+class fRecordSet implements Iterator, Countable
 {
 	// The following constants allow for nice looking callbacks to static methods
 	const build                  = 'fRecordSet::build';
@@ -33,6 +52,7 @@ class fRecordSet implements Iterator
 	 * 'column!='                   => VALUE                        // column <> VALUE
 	 * 'column<>'                   => VALUE                        // column <> VALUE
 	 * 'column~'                    => VALUE                        // column LIKE '%VALUE%'
+	 * 'column!~'                   => VALUE                        // column NOT LIKE '%VALUE%'
 	 * 'column<'                    => VALUE                        // column < VALUE
 	 * 'column<='                   => VALUE                        // column <= VALUE
 	 * 'column>'                    => VALUE                        // column > VALUE
@@ -42,7 +62,10 @@ class fRecordSet implements Iterator
 	 * 'column!='                   => array(VALUE, VALUE2, ... )   // column NOT IN (VALUE, VALUE2, ... )
 	 * 'column<>'                   => array(VALUE, VALUE2, ... )   // column NOT IN (VALUE, VALUE2, ... )
 	 * 'column~'                    => array(VALUE, VALUE2, ... )   // (column LIKE '%VALUE%' OR column LIKE '%VALUE2%' OR column ... )
+	 * 'column&~'                   => array(VALUE, VALUE2, ... )   // (column LIKE '%VALUE%' AND column LIKE '%VALUE2%' AND column ... )
+	 * 'column!~'                   => array(VALUE, VALUE2, ... )   // (column NOT LIKE '%VALUE%' AND column NOT LIKE '%VALUE2%' AND column ... )
 	 * 'column!|column2<|column3='  => array(VALUE, VALUE2, VALUE3) // (column <> '%VALUE%' OR column2 < '%VALUE2%' OR column3 = '%VALUE3%')
+	 * 'column|column2><'           => array(VALUE, VALUE2)         // ((column <= VALUE AND column2 >= VALUE) OR (column <= VALUE2 AND column2 >= VALUE2) OR (column >= VALUE AND column2 <= VALUE2) OR (column2 IS NULL AND column >= VALUE AND column <= VALUE2)) 
 	 * 'column|column2|column3~'    => VALUE                        // (column LIKE '%VALUE%' OR column2 LIKE '%VALUE%' OR column3 LIKE '%VALUE%')
 	 * 'column|column2|column3~'    => array(VALUE, VALUE2, ... )   // ((column LIKE '%VALUE%' OR column2 LIKE '%VALUE%' OR column3 LIKE '%VALUE%') AND (column LIKE '%VALUE2%' OR column2 LIKE '%VALUE2%' OR column3 LIKE '%VALUE2%') AND ... )
 	 * }}}
@@ -75,6 +98,7 @@ class fRecordSet implements Iterator
 	 * 'related_table{route}=>once_removed_related_table.column'        // e.g. 'user_groups{user_group_id}=>permissions.level'
 	 * 'related_table=>once_removed_related_table{route}.column'        // e.g. 'user_groups=>permissions{read}.level'
 	 * 'related_table{route}=>once_removed_related_table{route}.column' // e.g. 'user_groups{user_group_id}=>permissions{read}.level'
+	 * 'column||other_column'                                           // e.g. 'first_name||last_name' - this concatenates the column values
 	 * }}}
 	 * 
 	 * In addition to using plain column names for where conditions, it is also
@@ -87,6 +111,7 @@ class fRecordSet implements Iterator
 	 * 'function(column)!=   => VALUE                        // function(column) <> VALUE
 	 * 'function(column)<>'  => VALUE                        // function(column) <> VALUE
 	 * 'function(column)~'   => VALUE                        // function(column) LIKE '%VALUE%'
+	 * 'function(column)!~'  => VALUE                        // function(column) NOT LIKE '%VALUE%'
 	 * 'function(column)<'   => VALUE                        // function(column) < VALUE
 	 * 'function(column)<='  => VALUE                        // function(column) <= VALUE
 	 * 'function(column)>'   => VALUE                        // function(column) > VALUE
@@ -138,15 +163,15 @@ class fRecordSet implements Iterator
 		
 		$sql = "SELECT " . $table . ".* FROM :from_clause";
 		
-		$having_conditions = fORMDatabase::splitHavingConditions($where_conditions);
-		
 		if ($where_conditions) {
+			$having_conditions = fORMDatabase::splitHavingConditions($where_conditions);
+		
 			$sql .= ' WHERE ' . fORMDatabase::createWhereClause($table, $where_conditions);
 		}
 		
 		$sql .= ' :group_by_clause ';
 		
-		if ($having_conditions) {
+		if ($where_conditions && $having_conditions) {
 			$sql .= ' HAVING ' . fORMDatabase::createHavingClause($having_conditions);	
 		}
 		
@@ -154,8 +179,7 @@ class fRecordSet implements Iterator
 			$sql .= ' ORDER BY ' . fORMDatabase::createOrderByClause($table, $order_bys);
 		
 		// If no ordering is specified, order by the primary key
-		} else {
-			$primary_keys = fORMSchema::retrieve()->getKeys($table, 'primary');
+		} elseif ($primary_keys = fORMSchema::retrieve()->getKeys($table, 'primary')) {
 			$expressions = array();
 			foreach ($primary_keys as $primary_key) {
 				$expressions[] = $table . '.' . $primary_key . ' ASC';
@@ -221,7 +245,41 @@ class fRecordSet implements Iterator
 	/**
 	 * Creates an fRecordSet from an SQL statement
 	 * 
-	 * @param  string $class                  The type of object to create
+	 * The SQL statement should select all columns from a single table with a *
+	 * pattern since that is what an fActiveRecord models. If any columns are
+	 * left out or added, strange error may happen when loading or saving
+	 * records.
+	 * 
+	 * Here is an example of an appropriate SQL statement:
+	 * 
+	 * {{{
+	 * #!sql
+	 * SELECT users.* FROM users INNER JOIN groups ON users.group_id = groups.group_id WHERE groups.name = 'Public'
+	 * }}}
+	 * 
+	 * Here is an example of a SQL statement that will cause errors:
+	 * 
+	 * {{{
+	 * #!sql
+	 * SELECT users.*, groups.name FROM users INNER JOIN groups ON users.group_id = groups.group_id WHERE groups.group_id = 2
+	 * }}}
+	 * 
+	 * The `$non_limited_count_sql` should only be passed when the `$sql`
+	 * contains a `LIMIT` clause and should contain a count of the records when
+	 * a `LIMIT` is not imposed.
+	 * 
+	 * Here is an example of a `$sql` statement with a `LIMIT` clause and a
+	 * corresponding `$non_limited_count_sql`:
+	 * 
+	 * {{{
+	 * #!php
+	 * fRecordSet::buildFromSQL('User', 'SELECT * FROM users LIMIT 5', 'SELECT count(*) FROM users');
+	 * }}}
+	 * 
+	 * The `$non_limited_count_sql` is used when ::count() is called with `TRUE`
+	 * passed as the parameter.
+	 * 
+	 * @param  string $class                  The class to create the fRecordSet of
 	 * @param  string $sql                    The SQL to create the set from
 	 * @param  string $non_limited_count_sql  An SQL statement to get the total number of rows that would have been returned if a `LIMIT` clause had not been used. Should only be passed if a `LIMIT` clause is used.
 	 * @return fRecordSet  A set of fActiveRecord objects
@@ -230,140 +288,18 @@ class fRecordSet implements Iterator
 	{
 		self::validateClass($class);
 		
+		if (!preg_match('#^\s*SELECT\s*(DISTINCT|ALL)?\s*(\w+\.)?\*\s*FROM#i', $sql)) {
+			throw new fProgrammerException(
+				'The SQL statement specified, %s, does not appear to be in the form SELECT * FROM table',
+				$sql
+			);	
+		}
+		
 		return new fRecordSet(
 			$class,
 			fORMDatabase::retrieve()->translatedQuery($sql),
 			$non_limited_count_sql
 		);
-	}
-	
-	
-	/**
-	 * Checks to see if a record matches all of the conditions
-	 * 
-	 * @param  fActiveRecord $record      The record to check
-	 * @param  array         $conditions  The conditions to check - see ::filter() for format details
-	 * @return boolean  If the record meets all conditions
-	 */
-	static private function checkConditions($record, $conditions)
-	{
-		foreach ($conditions as $method => $value) {
-			
-			// Split the operator off of the end of the method name
-			if (in_array(substr($method, -2), array('<=', '>=', '!=', '<>'))) {
-				$operator = strtr(
-					substr($method, -2),
-					array(
-						'<>' => '!',
-						'!=' => '!'
-					)
-				);
-				$method   = substr($method, 0, -2);
-			} else {
-				$operator = substr($method, -1);
-				$method   = substr($method, 0, -1);
-			}
-			
-			$multi_method = FALSE;
-			
-			if ($operator == '~' && strpos($method, '|')) {
-				$multi_method = TRUE;
-				$result = array();
-				foreach(explode('|', $method) as $_method) {
-					$result[] = $record->$_method();	
-				}
-					
-			} else {
-				$result = $record->$method();
-			}
-			
-			switch ($operator) {
-				case '~':
-					// This is a fuzzy search type operation since it is using the output of multiple methods
-					if ($multi_method) {
-						if (!is_array($value)) {
-							$value = fORMDatabase::parseSearchTerms($value, TRUE);
-						}	
-						
-						foreach ($value as $_value) {
-							$found = FALSE;
-							foreach ($result as $_result) {
-								if (fUTF8::ipos($_result, $_value) !== FALSE) {
-									$found = TRUE;
-								} 
-							}
-							if (!$found) {
-								return FALSE;
-							}	
-						}
-					
-					// This is a simple LIKE match against one or more values
-					} else {
-						// Ensure the method output is present in at least one value of the array
-						if (is_array($value)) {
-						
-							$found = FALSE;
-							foreach ($value as $_value) {
-								if (fUTF8::ipos($result, $_value) !== FALSE) {
-									$found = TRUE;
-								}	
-							}
-							if (!$found) {
-								return FALSE;	
-							}
-								
-						// Ensure the method is present in the value
-						} elseif (!is_array($value) && fUTF8::ipos($result, $value) === FALSE) {
-							return FALSE;	
-						}	
-					}
-					break;
-				
-				case '=':
-					if (is_array($value) && !in_array($result, $value)) {
-						return FALSE;	
-					}
-					if (!is_array($value) && $result != $value) {
-						return FALSE;	
-					}
-					break;
-					
-				case '!':
-					if (is_array($value) && in_array($result, $value)) {
-						return FALSE;	
-					}
-					if (!is_array($value) && $result == $value) {
-						return FALSE;	
-					}
-					break;
-				
-				case '<':
-					if ($result >= $value) {
-						return FALSE;	
-					}
-					break;
-				
-				case '<=':
-					if ($result > $value) {
-						return FALSE;	
-					}
-					break;
-				
-				case '>':
-					if ($result <= $value) {
-						return FALSE;	
-					}
-					break;
-				
-				case '>=':
-					if ($result < $value) {
-						return FALSE;	
-					}
-					break;
-			}	
-		}
-		
-		return TRUE;
 	}
 	
 	
@@ -407,13 +343,6 @@ class fRecordSet implements Iterator
 		}	
 	}
 	
-	
-	/**
-	 * A flag to indicate this should record set should be associated to the parent fActiveRecord object
-	 * 
-	 * @var boolean
-	 */
-	private $associate = FALSE;
 	
 	/**
 	 * The type of class to create from the primary keys provided
@@ -462,8 +391,6 @@ class fRecordSet implements Iterator
 	 * record in the record set. `precreate` will create a *-to-one record
 	 * for every record in the record set.
 	 *  
-	 * @throws fValidationException
-	 * 
 	 * @param  string $method_name  The name of the method called
 	 * @param  string $parameters   The parameters passed
 	 * @return void
@@ -478,15 +405,19 @@ class fRecordSet implements Iterator
 					$this->class,
 					&$this->records,
 					&$this->pointer,
-					&$this->associate
+					$parameters
 				)
 			);	
 		}
 		
 		list($action, $element) = fORM::parseMethod($method_name);
 		
-		$route         = ($parameters) ? $parameters[0] : NULL;
-		$related_class = fGrammar::singularize(fGrammar::camelize($element, TRUE));
+		$route = ($parameters) ? $parameters[0] : NULL;
+		
+		// This check prevents fGrammar exceptions being thrown when an unknown method is called
+		if (in_array($action, array('prebuild', 'precount', 'precreate'))) {
+			$related_class = fGrammar::singularize(fGrammar::camelize($element, TRUE));
+		}
 		 
 		switch ($action) {
 			case 'prebuild':
@@ -528,6 +459,8 @@ class fRecordSet implements Iterator
 	
 	/**
 	 * All requests that hit this method should be requests for callbacks
+	 * 
+	 * @internal
 	 * 
 	 * @param  string $method  The method to create a callback for
 	 * @return callback  The callback for the method requested
@@ -645,6 +578,40 @@ class fRecordSet implements Iterator
 	
 	
 	/**
+	 * Checks if the record set contains the record specified
+	 * 
+	 * @param  fActiveRecord $record  The record to check, must exist in the database
+	 * @return boolean  If the record specified is in this record set
+	 */
+	public function contains($record)
+	{
+		$class = get_class($record);
+		if (!in_array($class, (array) $this->class)) {
+			return FALSE;	
+		}
+		
+		if (!$record->exists()) {
+			throw new fProgrammerException(
+				'Only records that exist can be checked for in the record set'
+			);	
+		}
+		
+		$hash = fActiveRecord::hash($record);
+		
+		foreach ($this->records as $_record) {
+			if ($class != get_class($_record)) {
+				continue;
+			}	
+			if ($hash == fActiveRecord::hash($_record)) {
+				return TRUE;	
+			}
+		}
+		
+		return FALSE;
+	}
+	
+	
+	/**
 	 * Returns the number of records in the set
 	 * 
 	 * @param  boolean $ignore_limit  If set to `TRUE`, this method will return the number of records that would be in the set if there was no `LIMIT` clause
@@ -670,7 +637,7 @@ class fRecordSet implements Iterator
 	/**
 	 * Returns the current record in the set (used for iteration)
 	 * 
-	 * @throws fNoRemainingException
+	 * @throws fNoRemainingException  When there are no remaining records in the set
 	 * @internal
 	 * 
 	 * @return fActiveRecord  The current record
@@ -684,6 +651,52 @@ class fRecordSet implements Iterator
 		}
 		
 		return $this->records[$this->pointer];
+	}
+	
+	
+	/**
+	 * Removes all passed records from the current record set
+	 * 
+	 * @param  fRecordSet|array|fActiveRecord $records  The record set, array of records, or record to remove from the current record set, all instances will be removed
+	 * @return fRecordSet  The records not present in the passed records
+	 */
+	public function diff($records)
+	{
+		$remove_records = array();
+		
+		if ($records instanceof fActiveRecord) {
+			$records = array($records);	
+		}
+		foreach ($records as $record) {
+			$class = get_class($record);
+			$hash  = fActiveRecord::hash($record);
+			$remove_records[$class . '::' . $hash] = TRUE;
+		}
+		
+		$new_records = array();
+		$classes     = array();
+		
+		foreach ($this->records as $record) {
+			$class = get_class($record);
+			$hash  = fActiveRecord::hash($record);
+			if (!isset($remove_records[$class . '::' . $hash])) {
+				$new_records[]   = $record;
+				$classes[$class] = TRUE;
+			}		
+		}
+		
+		if (sizeof($classes) > 0) {
+			$class = sizeof($classes) == 1 ? key($classes) : array_keys($classes);
+		}
+		
+		if (empty($class)) {
+			$class = $this->class;
+		}	
+		
+		return self::buildFromRecords(
+			$class,
+			$new_records		
+		);
 	}
 	
 	
@@ -754,7 +767,7 @@ class fRecordSet implements Iterator
 		foreach ($this->records as $record) {
 			switch ($type) {
 				case 'conditions':
-					$value = self::checkConditions($record, $conditions);
+					$value = fActiveRecord::checkConditions($record, $conditions);
 					break;
 					
 				case 'psuedo-callback':
@@ -785,24 +798,9 @@ class fRecordSet implements Iterator
 	
 	
 	/**
-	 * Flags this record set for association with the fActiveRecord object that references it
-	 * 
-	 * @internal
-	 * 
-	 * @return void
-	 */
-	public function flagAssociate()
-	{
-		$this->validateSingleClass('associate');
-		
-		$this->associate = TRUE;
-	}
-	
-	
-	/**
 	 * Returns the current record in the set and moves the pointer to the next
 	 * 
-	 * @throws fNoRemainingException
+	 * @throws fNoRemainingException  When there are no remaining records in the set
 	 * 
 	 * @return fActiveRecord  The current record
 	 */
@@ -827,8 +825,6 @@ class fRecordSet implements Iterator
 	
 	/**
 	 * Returns all of the records in the set
-	 * 
-	 * @throws fValidationException
 	 * 
 	 * @return array  The records in the set
 	 */
@@ -869,15 +865,48 @@ class fRecordSet implements Iterator
 	
 	
 	/**
-	 * Returns if this record set is flagged for association with the fActiveRecord object that references it
+	 * Returns all records in the current record set that are also present in the passed records
 	 * 
-	 * @internal
-	 * 
-	 * @return boolean  If this record set is flagged for association
+	 * @param  fRecordSet|array|fActiveRecord $records  The record set, array of records, or record to create an intersection of with the current record set
+	 * @return fRecordSet  The records present in the current record set that are also present in the passed records
 	 */
-	public function isFlaggedForAssociation()
+	public function intersect($records)
 	{
-		return $this->associate;
+		$hashes = array();
+		
+		if ($records instanceof fActiveRecord) {
+			$records = array($records);	
+		}
+		foreach ($records as $record) {
+			$class = get_class($record);
+			$hash  = fActiveRecord::hash($record);
+			$hashes[$class . '::' . $hash] = TRUE;
+		}
+		
+		$new_records = array();
+		$classes     = array();
+		
+		foreach ($this->records as $record) {
+			$class = get_class($record);
+			$hash  = fActiveRecord::hash($record);
+			if (isset($hashes[$class . '::' . $hash])) {
+				$new_records[]   = $record;
+				$classes[$class] = TRUE;
+			}		
+		}
+		
+		if (sizeof($classes) > 0) {
+			$class = sizeof($classes) == 1 ? key($classes) : array_keys($classes);
+		}
+		
+		if (empty($class)) {
+			$class = $this->class;
+		}	
+		
+		return self::buildFromRecords(
+			$class,
+			$new_records		
+		);
 	}
 	
 	
@@ -969,17 +998,58 @@ class fRecordSet implements Iterator
 	
 	
 	/**
-	 * Merges two fRecordSet objects together
+	 * Merges the record set with more records
 	 * 
-	 * @param  fRecordSet  The record set to merge with the current record set, duplicates will **not** be removed
+	 * @param  fRecordSet|array|fActiveRecord $records  The record set, array of records, or record to merge with the current record set, duplicates will **not** be removed
 	 * @return fRecordSet  The merged record sets
 	 */
-	public function merge($record_set)
+	public function merge($records)
 	{
-		if ($this->class != $record_set->class) {
+		if ($records instanceof fRecordSet) {
+			$new_records = $records->records;
+			$new_class   = $records->class;	
+		
+		} elseif (is_array($records)) {
+			$new_records = array();
+			$new_class   = array();
+			foreach ($records as $record) {
+				if (!$record instanceof fActiveRecord) {
+					throw new fProgrammerException(
+						'One of the records specified is not an instance of %s',
+						'fActiveRecord'
+					);	
+				}
+				$new_records[] = $record;
+				if (!in_array(get_class($record), $new_class)) {
+					$new_class[] = get_class($record);
+				}	
+			}
+			if (sizeof($new_class) == 1) {
+				$new_class = $new_class[0];
+			}	
+		
+		} elseif ($records instanceof fActiveRecord) {
+			$new_records = array($records);
+			$new_class   = get_class($records);
+			
+		} else {
+			throw new fProgrammerException(
+				'The records specified, %1$s, are invalid. Must be an %2$s, %3$s or an array of %4$s.',
+				$records,
+				'fRecordSet',
+				'fActiveRecord',
+				'fActiveRecords'
+			);	
+		}
+		
+		if (!$new_records) {
+			return $this;	
+		}
+		
+		if ($this->class != $new_class) {
 			$class = array_unique(array_merge(
-				(is_array($this->class))       ? $this->class       : array($this->class),
-				(is_array($record_set->class)) ? $record_set->class : array($record_set->class)	
+				(is_array($this->class)) ? $this->class : array($this->class),
+				(is_array($new_class))   ? $new_class   : array($new_class)	
 			));
 		} else {
 			$class = $this->class;	
@@ -989,7 +1059,7 @@ class fRecordSet implements Iterator
 			$class,
 			array_merge(
 				$this->records,
-				$record_set->records
+				$new_records
 			)
 		);
 	}
@@ -1021,7 +1091,7 @@ class fRecordSet implements Iterator
 		
 		// If there are no primary keys we can just exit
 		if (!array_merge($this->getPrimaryKeys())) {
-			return;
+			return $this;
 		}
 		
 		$related_table = fORM::tablize($related_class);
@@ -1102,29 +1172,10 @@ class fRecordSet implements Iterator
 				}
 			} catch (fExpectedException $e) { }
 			 
-			 
-			// Build the SQL for the record set we are injecting
-			$method = 'get' . fGrammar::camelize($relationship['column'], TRUE);
-			 
-			$sql  = "SELECT " . $related_table . ".* FROM :from_clause";
-			 
-			$where_conditions = array(
-				$table_with_route . '.' . $relationship['column'] . '=' => $record->$method()
-			);
-			$sql .= ' WHERE ' . fORMDatabase::createWhereClause($related_table, $where_conditions);
-			
-			$sql .= ' :group_by_clause ';
-			 
-			if ($order_bys = fORMRelated::getOrderBys($this->class, $related_class, $route)) {
-				$sql .= ' ORDER BY ' . fORMDatabase::createOrderByClause($related_table, $order_bys);
-			}
-			 
-			$sql = fORMDatabase::insertFromAndGroupByClauses($related_table, $sql);
-			 
 			
 			// Set up the result object for the new record set
 			$injected_result = new fResult(fORMDatabase::retrieve()->getType(), 'array');
-			$injected_result->setSQL($sql);
+			$injected_result->setSQL("");
 			$injected_result->setResult($rows);
 			$injected_result->setReturnedRows(sizeof($rows));
 			$injected_result->setAffectedRows(0);
@@ -1137,6 +1188,8 @@ class fRecordSet implements Iterator
 			$method = 'inject' . fGrammar::pluralize($related_class);
 			$record->$method($set, $route);
 		}
+		
+		return $this;
 	}
 	
 	
@@ -1153,7 +1206,7 @@ class fRecordSet implements Iterator
 		
 		// If there are no primary keys we can just exit
 		if (!array_merge($this->getPrimaryKeys())) {
-			return;
+			return $this;
 		}
 		
 		$related_table = fORM::tablize($related_class);
@@ -1201,6 +1254,8 @@ class fRecordSet implements Iterator
 			$count  = (isset($counts[$record->$get_method()])) ? $counts[$record->$get_method()] : 0;
 			$record->$tally_method($count, $route);
 		}
+		
+		return $this;
 	}
 	
 	
@@ -1217,7 +1272,7 @@ class fRecordSet implements Iterator
 		
 		// If there are no primary keys we can just exit
 		if (!array_merge($this->getPrimaryKeys())) {
-			return;
+			return $this;
 		}
 		
 		$relationship = fORMSchema::getRoute(
@@ -1227,14 +1282,17 @@ class fRecordSet implements Iterator
 			'*-to-one'
 		);
 		
+		$values = $this->call('get' . fGrammar::camelize($relationship['column'], TRUE));
+		$values = array_unique($values);
+		
 		self::build(
 			$related_class,
 			array(
-				$relationship['related_column'] . '=' => $this->call(
-					'get' . fGrammar::camelize($relationship['column'], TRUE)
-				)
+				$relationship['related_column'] . '=' => $values
 			)
 		);
+		
+		return $this;
 	}
 	
 	
@@ -1308,11 +1366,9 @@ class fRecordSet implements Iterator
 	 * 
 	 * This methods uses fUTF8::inatcmp() to perform comparisons.
 	 * 
-	 * @throws fValidationException
-	 * 
 	 * @param  string $method     The method to call on each object to get the value to sort by
 	 * @param  string $direction  Either `'asc'` or `'desc'`
-	 * @return void
+	 * @return fRecordSet  The record set object, to allow for method chaining
 	 */
 	public function sort($method, $direction)
 	{
@@ -1333,52 +1389,80 @@ class fRecordSet implements Iterator
 		);
 		
 		$this->sortByCallback(create_function($lambda_params, $lambda_funcs[$direction]));
+		
+		return $this;
 	}
 	
 	
 	/**
 	 * Sorts the set by passing the callback to [http://php.net/usort `usort()`] and rewinds the interator
 	 * 
-	 * @throws fValidationException
-	 * 
 	 * @param  mixed $callback  The function/method to pass to `usort()`
-	 * @return void
+	 * @return fRecordSet  The record set object, to allow for method chaining 
 	 */
 	public function sortByCallback($callback)
 	{
 		usort($this->records, $callback);
 		$this->rewind();
+		
+		return $this;
 	}
 	
 	
 	/**
 	 * Throws an fEmptySetException if the record set is empty
 	 * 
-	 * @throws fEmptySetException
+	 * @throws fEmptySetException  When there are no record in the set
 	 * 
 	 * @param  string $message  The message to use for the exception if there are no records in this set
-	 * @return void
+	 * @return fRecordSet  The record set object, to allow for method chaining
 	 */
 	public function tossIfEmpty($message=NULL)
 	{
-		if (!$this->count()) {
-			if ($message === NULL) {
-				if (is_array($this->class)) {
-					$names = array_map(array('fORM', 'getRecordName'), $this->class);
-					$names = array_map(array('fGrammar', 'pluralize'), $names);
-					$name  = join(', ', $names);	
-				} else {
-					$name = fGrammar::pluralize(fORM::getRecordName($this->class));
-				}
-				
-				$message = self::compose(
-					'No %s could be found',
-					$name
-				);	
+		if ($this->count()) {
+			return $this;	
+		}
+		
+		if ($message === NULL) {
+			if (is_array($this->class)) {
+				$names = array_map(array('fORM', 'getRecordName'), $this->class);
+				$names = array_map(array('fGrammar', 'pluralize'), $names);
+				$name  = join(', ', $names);	
+			} else {
+				$name = fGrammar::pluralize(fORM::getRecordName($this->class));
 			}
 			
-			throw new fEmptySetException($message);
+			$message = self::compose(
+				'No %s could be found',
+				$name
+			);	
 		}
+		
+		throw new fEmptySetException($message);
+	}
+	
+	
+	/**
+	 * Returns a new fRecordSet containing only unique records in the record set
+	 * 
+	 * @return fRecordSet  The new record set with only unique records
+	 */
+	public function unique()
+	{
+		$records = array();
+		
+		foreach ($this->records as $record) {
+			$class = get_class($record);
+			$hash  = fActiveRecord::hash($record);
+			if (isset($records[$class . '::' . $hash])) {
+				continue;
+			}	
+			$records[$class . '::' . $hash] = $record;
+		}
+		
+		$set = new fRecordSet($this->class);
+		$set->records = array_values($records);
+		return $set;
 	}
 	
 	
@@ -1418,7 +1502,7 @@ class fRecordSet implements Iterator
 
 
 /**
- * Copyright (c) 2007-2008 Will Bond <will@flourishlib.com>
+ * Copyright (c) 2007-2009 Will Bond <will@flourishlib.com>
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal

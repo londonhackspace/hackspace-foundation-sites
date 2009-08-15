@@ -6,15 +6,19 @@
  * the original URL entered by the user will be used, or that any rewrites
  * will **not** be reflected by this class.
  * 
- * @copyright  Copyright (c) 2007-2008 Will Bond
+ * @copyright  Copyright (c) 2007-2009 Will Bond
  * @author     Will Bond [wb] <will@flourishlib.com>
  * @license    http://flourishlib.com/license
  * 
  * @package    Flourish
  * @link       http://flourishlib.com/fURL
  * 
- * @version    1.0.0b
- * @changes    1.0.0b  The initial implementation [wb, 2007-06-14]
+ * @version    1.0.0b5
+ * @changes    1.0.0b5  Updated ::redirect() to not require a URL, using the current URL as the default [wb, 2009-07-29]
+ * @changes    1.0.0b4  ::getDomain() now includes the port number if non-standard [wb, 2009-05-02]
+ * @changes    1.0.0b3  ::makeFriendly() now changes _-_ to - and multiple _ to a single _ [wb, 2009-03-24]
+ * @changes    1.0.0b2  Fixed ::makeFriendly() so that _ doesn't appear at the beginning of URLs [wb, 2009-03-22]
+ * @changes    1.0.0b   The initial implementation [wb, 2007-06-14]
  */
 class fURL
 {
@@ -44,13 +48,18 @@ class fURL
 	
 	
 	/**
-	 * Returns the current domain name, with protcol prefix
+	 * Returns the current domain name, with protcol prefix. Port will be included if not 80 for HTTP or 443 for HTTPS.
 	 * 
 	 * @return string  The current domain name, prefixed by `http://` or `https://`
 	 */
 	static public function getDomain()
 	{
-		return ((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? 'https://' : 'http://') . $_SERVER['SERVER_NAME'];
+		$port = (isset($_SERVER['SERVER_PORT'])) ? $_SERVER['SERVER_PORT'] : NULL;
+		if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') {
+			return 'https://' . $_SERVER['SERVER_NAME'] . ($port && $port != 443 ? ':' . $port : '');
+		} else {
+			return 'http://' . $_SERVER['SERVER_NAME'] . ($port && $port != 80 ? ':' . $port : '');
+		}
 	}
 	
 	
@@ -88,17 +97,24 @@ class fURL
 		$string = strtolower(trim($string));
 		$string = str_replace("'", '', $string);
 		$string = preg_replace('#[^a-z0-9\-]+#', '_', $string);
-		return preg_replace('#_+$#D', '', $string);
+		$string = preg_replace('#_{2,}#', '_', $string);
+		$string = preg_replace('#_-_#', '-', $string);
+		return preg_replace('#(^_+|_+$)#D', '', $string);
 	}
 	
 	
 	/**
-	 * Redirects to the URL specified, if the URL does not start with `http://` or `https://` it redirects to current site
+	 * Redirects to the URL specified, without requiring a full-qualified URL
+	 * 
+	 *  - If the URL starts with `/`, it is treated as an absolute path on the current site
+	 *  - If the URL starts with `http://` or `https://`, it is treated as a fully-qualified URL
+	 *  - If the URL starts with anything else, including a `?`, it is appended to the current URL
+	 *  - If the URL is ommitted, it is treated as the current URL
 	 * 
 	 * @param  string $url  The url to redirect to
 	 * @return void
 	 */
-	static public function redirect($url)
+	static public function redirect($url=NULL)
 	{
 		if (strpos($url, '/') === 0) {
 			$url = self::getDomain() . $url;
@@ -190,7 +206,7 @@ class fURL
 
 
 /**
- * Copyright (c) 2007-2008 Will Bond <will@flourishlib.com>
+ * Copyright (c) 2007-2009 Will Bond <will@flourishlib.com>
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal

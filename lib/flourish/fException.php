@@ -9,7 +9,13 @@
  * @package    Flourish
  * @link       http://flourishlib.com/fException
  * 
- * @version    1.0.0b2
+ * @version    1.0.0b8
+ * @changes    1.0.0b8  Added a missing line of backtrace to ::formatTrace() [wb, 2009-06-28]
+ * @changes    1.0.0b7  Updated ::__construct() to no longer require a message, like the Exception class, and allow for non-integer codes [wb, 2009-06-26]
+ * @changes    1.0.0b6  Fixed ::splitMessage() so that the original message is returned if no list items are found, added ::reorderMessage() [wb, 2009-06-02]
+ * @changes    1.0.0b5  Added ::splitMessage() to replace fCRUD::removeListItems() and fCRUD::reorderListItems() [wb, 2009-05-08]
+ * @changes    1.0.0b4  Added a check to ::__construct() to ensure that the `$code` parameter is numeric [wb, 2009-05-04]
+ * @changes    1.0.0b3  Fixed a bug with ::printMessage() messing up some HTML messages [wb, 2009-03-27]
  * @changes    1.0.0b2  ::compose() more robustly handles `$components` passed as an array, ::__construct() now detects stray `%` characters [wb, 2009-02-05]
  * @changes    1.0.0b   The initial implementation [wb, 2007-06-14]
  */
@@ -157,6 +163,19 @@ abstract class fException extends Exception
 	
 	
 	/**
+	 * Compares the message matching strings by longest first so that the longest matches are made first
+	 *
+	 * @param  string $a  The first string to compare
+	 * @param  string $b  The second string to compare
+	 * @return integer  `-1` if `$a` is longer than `$b`, `0` if they are equal length, `1` if `$a` is shorter than `$b`
+	 */
+	static private function sortMatchingArray($a, $b)
+	{
+		return -1 * strnatcmp(strlen($a), strlen($b));
+	}
+	
+	
+	/**
 	 * Sets the message for the exception, allowing for string interpolation and internationalization
 	 * 
 	 * The `$message` can contain any number of formatting placeholders for
@@ -170,13 +189,13 @@ abstract class fException extends Exception
 	 *  - `% 2d`: Using a literal space as a padding character - a space will be used if no padding character is specified
 	 *  - `%'.d`: Providing a padding character but no width - no padding will be applied without a width
 	 * 
-	 * @param  string  $message    The message for the exception. This accepts a subset of [http://php.net/sprintf `sprintf()`] strings - see method description for more details.
-	 * @param  mixed   $component  A string or number to insert into the message
-	 * @param  mixed   ...
-	 * @param  integer $code       The exception code to set
+	 * @param  string $message    The message for the exception. This accepts a subset of [http://php.net/sprintf `sprintf()`] strings - see method description for more details.
+	 * @param  mixed  $component  A string or number to insert into the message
+	 * @param  mixed  ...
+	 * @param  mixed  $code       The exception code to set
 	 * @return fException
 	 */
-	public function __construct($message)
+	public function __construct($message='')
 	{
 		$args          = array_slice(func_get_args(), 1);
 		$required_args = preg_match_all(
@@ -215,7 +234,7 @@ abstract class fException extends Exception
 		
 		if (sizeof($args) != $required_args) {
 			$message = self::compose(
-				'Only %1$d components were passed to the %2$s constructor, while %3$d were specified in the message',
+				'%1$d components were passed to the %2$s constructor, while %3$d were specified in the message',
 				sizeof($args),
 				get_class($this),
 				$required_args
@@ -225,10 +244,8 @@ abstract class fException extends Exception
 		
 		$args = array_map(array('fException', 'dump'), $args);
 		
-		parent::__construct(
-			self::compose($message, $args),
-			$code
-		);
+		parent::__construct(self::compose($message, $args));
+		$this->code = $code;
 		
 		foreach (self::$callbacks as $class => $callbacks) {
 			foreach ($callbacks as $callback) {
@@ -242,6 +259,8 @@ abstract class fException extends Exception
 	
 	/**
 	 * All requests that hit this method should be requests for callbacks
+	 * 
+	 * @internal
 	 * 
 	 * @param  string $method  The method to create a callback for
 	 * @return callback  The callback for the method requested
@@ -260,11 +279,12 @@ abstract class fException extends Exception
 	public function formatTrace()
 	{
 		$doc_root  = realpath($_SERVER['DOCUMENT_ROOT']);
-		$doc_root .= (substr($doc_root, -1) != '/' && substr($doc_root, -1) != '\\') ? '/' : '';
+		$doc_root .= (substr($doc_root, -1) != DIRECTORY_SEPARATOR) ? DIRECTORY_SEPARATOR : '';
 		
 		$backtrace = explode("\n", $this->getTraceAsString());
+		array_unshift($backtrace, $this->file . '(' . $this->line . ')');
 		$backtrace = preg_replace('/^#\d+\s+/', '', $backtrace);
-		$backtrace = str_replace($doc_root, '{doc_root}/', $backtrace);
+		$backtrace = str_replace($doc_root, '{doc_root}' . DIRECTORY_SEPARATOR, $backtrace);
 		$backtrace = array_diff($backtrace, array('{main}'));
 		$backtrace = array_reverse($backtrace);
 		
@@ -305,8 +325,6 @@ abstract class fException extends Exception
 		// Check to see if we have any block-level html, extracted from fHTML to reduce dependencies
 		$inline_tags = $inline_tags_minus_br . '<br>';
 		$no_block_html = strip_tags($content, $inline_tags) == $content;
-		
-		$content = html_entity_decode($content, ENT_QUOTES, 'UTF-8');
 		
 		// This code ensures the output is properly encoded for display in (X)HTML, extracted from fHTML to reduce dependencies
 		$reg_exp = "/<\s*\/?\s*[\w:]+(?:\s+[\w:]+(?:\s*=\s*(?:\"[^\"]*?\"|'[^']*?'|[^'\">\s]+))?)*\s*\/?\s*>|&(?:#\d+|\w+);|<\!--.*?-->/";
@@ -358,6 +376,56 @@ abstract class fException extends Exception
 	
 	
 	/**
+	 * Reorders list items in the message based on simple string matching
+	 * 
+	 * @param  string $match  This should be a string to match to one of the list items - whatever the order this is in the parameter list will be the order of the list item in the adjusted message
+	 * @param  string ...
+	 * @return fException  The exception object, to allow for method chaining
+	 */
+	public function reorderMessage($match)
+	{
+		// If we can't find a list, don't bother continuing
+		if (!preg_match('#^(.*<(?:ul|ol)[^>]*?>)(.*?)(</(?:ul|ol)>.*)$#isD', $this->message, $message_parts)) {
+			return $this;
+		}
+		
+		$matching_array = func_get_args();
+		// This ensures that we match on the longest string first
+		uasort($matching_array, array('self', 'sortMatchingArray'));
+		
+		$beginning     = $message_parts[1];
+		$list_contents = $message_parts[2];
+		$ending        = $message_parts[3];
+		
+		preg_match_all('#<li(.*?)</li>#i', $list_contents, $list_items, PREG_SET_ORDER);
+		
+		$ordered_items = array_fill(0, sizeof($matching_array), array());
+		$other_items   = array();
+		
+		foreach ($list_items as $list_item) {
+			foreach ($matching_array as $num => $match_string) {
+				if (strpos($list_item[1], $match_string) !== FALSE) {
+					$ordered_items[$num][] = $list_item[0];
+					continue 2;
+				}
+			}
+			
+			$other_items[] = $list_item[0];
+		}
+		
+		$final_list = array();
+		foreach ($ordered_items as $ordered_item) {
+			$final_list = array_merge($final_list, $ordered_item);
+		}
+		$final_list = array_merge($final_list, $other_items);
+		
+		$this->message = $beginning . join("\n", $final_list) . $ending;
+		
+		return $this;
+	}
+	
+	
+	/**
 	 * Allows the message to be overwriten
 	 * 
 	 * @param  string $new_message  The new message for the exception
@@ -366,6 +434,137 @@ abstract class fException extends Exception
 	public function setMessage($new_message)
 	{
 		$this->message = $new_message;
+	}
+	
+	
+	/**
+	 * Splits an exception with an HTML list into multiple strings each containing part of the original message
+	 * 
+	 * This method should be called with two or more parameters of arrays of
+	 * string to match. If any of the provided strings are matching in a list
+	 * item in the exception message, a new copy of the message will be created
+	 * containing just the matching list items.
+	 * 
+	 * Here is an exception message to be split:
+	 * 
+	 * {{{
+	 * #!html
+	 * <p>The following problems were found:</p>
+	 * <ul>
+	 *     <li>First Name: Please enter a value</li>
+	 *     <li>Last Name: Please enter a value</li>
+	 *     <li>Email: Please enter a value</li>
+	 *     <li>Address: Please enter a value</li>
+	 *     <li>City: Please enter a value</li>
+	 *     <li>State: Please enter a value</li>
+	 *     <li>Zip Code: Please enter a value</li>
+	 * </ul>
+	 * }}}
+	 * 
+	 * The following PHP would split the exception into two messages:
+	 * 
+	 * {{{
+	 * #!php
+	 * list ($name_exception, $address_exception) = $exception->splitMessage(
+	 *     array('First Name', 'Last Name', 'Email'),
+	 *     array('Address', 'City', 'State', 'Zip Code')
+	 * );
+	 * }}}
+	 * 
+	 * The resulting messages would be:
+	 * 
+	 * {{{
+	 * #!html
+	 * <p>The following problems were found:</p>
+	 * <ul>
+	 *     <li>First Name: Please enter a value</li>
+	 *     <li>Last Name: Please enter a value</li>
+	 *     <li>Email: Please enter a value</li>
+	 * </ul>
+	 * }}}
+	 * 
+	 * and
+	 * 
+	 * {{{
+	 * #!html
+	 * <p>The following problems were found:</p>
+	 * <ul>
+	 *     <li>Address: Please enter a value</li>
+	 *     <li>City: Please enter a value</li>
+	 *     <li>State: Please enter a value</li>
+	 *     <li>Zip Code: Please enter a value</li>
+	 * </ul>
+	 * }}}
+	 * 
+	 * If no list items match the strings in a parameter, the result will be
+	 * an empty string, allowing for simple display:
+	 * 
+	 * {{{
+	 * #!php
+	 * fHTML::show($name_exception, 'error');
+	 * }}}
+	 * 
+	 * An empty string is returned when none of the list items matched the
+	 * strings in the parameter. If no list items are found, the first value in
+	 * the returned array will be the existing message and all other array
+	 * values will be an empty string.
+	 * 
+	 * @param  array $list_item_matches  An array of strings to filter the list items by, list items will be ordered in the same order as this array
+	 * @param  array ...
+	 * @return array  This will contain an array of strings corresponding to the parameters passed - see method description for details
+	 */
+	public function splitMessage($list_item_matches)
+	{
+		$class = get_class($this);
+		
+		$matching_arrays = func_get_args();
+		
+		if (!preg_match('#^(.*<(?:ul|ol)[^>]*?>)(.*?)(</(?:ul|ol)>.*)$#isD', $this->message, $matches)) {
+			return array_merge(array($this->message), array_fill(0, sizeof($matching_arrays)-1, ''));
+		}
+		
+		$beginning_html  = $matches[1];
+		$list_items_html = $matches[2];
+		$ending_html     = $matches[3];
+		
+		preg_match_all('#<li(.*?)</li>#i', $list_items_html, $list_items, PREG_SET_ORDER);
+		
+		$output = array();
+		
+		foreach ($matching_arrays as $matching_array) {
+			
+			// This ensures that we match on the longest string first
+			uasort($matching_array, array('self', 'sortMatchingArray'));
+			
+			// We may match more than one list item per matching string, so we need a multi-dimensional array to hold them
+			$matched_list_items = array_fill(0, sizeof($matching_array), array());
+			$found              = FALSE;
+			
+			foreach ($list_items as $list_item) {
+				foreach ($matching_array as $match_num => $matching_string) {
+					if (strpos($list_item[1], $matching_string) !== FALSE) {
+						$matched_list_items[$match_num][] = $list_item[0];
+						$found = TRUE;
+						continue 2;
+					}
+				}
+			}
+			
+			if (!$found) {
+				$output[] = '';
+				continue;
+			}
+			
+			// This merges all of the multi-dimensional arrays back to one so we can do a simple join
+			$merged_list_items = array();
+			foreach ($matched_list_items as $match_num => $matched_items) {
+				$merged_list_items = array_merge($merged_list_items, $matched_items);
+			}
+			
+			$output[] = $beginning_html . join("\n", $merged_list_items) . $ending_html;
+		}
+		
+		return $output;
 	}
 }
 

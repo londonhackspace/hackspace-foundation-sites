@@ -8,19 +8,25 @@
  * This class is implemented to use the UTF-8 character encoding. Please see
  * http://flourishlib.com/docs/UTF-8 for more information.
  * 
- * @copyright  Copyright (c) 2008-2009 Will Bond
+ * @copyright  Copyright (c) 2008-2009 Will Bond, others
  * @author     Will Bond [wb] <will@flourishlib.com>
+ * @author     Bill Bushee, iMarc LLC [bb-imarc] <bill@imarc.net>
  * @license    http://flourishlib.com/license
  * 
  * @package    Flourish
  * @link       http://flourishlib.com/fEmail
  * 
- * @version    1.0.0b5
- * @changes    1.0.0b5  Updated for new fCore API [wb, 2009-02-16]
- * @changes    1.0.0b4  The recipient error message in ::validate() no longer contains a typo [wb, 2009-02-09]
- * @changes    1.0.0b3  Fixed a bug with missing content in the fValidationException thrown by ::validate() [wb, 2009-01-14]
- * @changes    1.0.0b2  Fixed a few bugs with sending S/MIME encrypted/signed emails [wb, 2009-01-10]
- * @changes    1.0.0b   The initial implementation [wb, 2008-06-23]
+ * @version    1.0.0b10
+ * @changes    1.0.0b10  Fixed a bug with sending both an HTML and a plaintext body [bb-imarc, 2009-06-18]
+ * @changes    1.0.0b9   Fixed a bug where the MIME headers were not being set for all emails [wb, 2009-06-12]
+ * @changes    1.0.0b8   Added the method ::clearRecipients() [wb, 2009-05-29]
+ * @changes    1.0.0b7   Email names with UTF-8 characters are now properly encoded [wb, 2009-05-08]
+ * @changes    1.0.0b6   Fixed a bug where <> quoted email addresses in validation messages were not showing [wb, 2009-03-27]
+ * @changes    1.0.0b5   Updated for new fCore API [wb, 2009-02-16]
+ * @changes    1.0.0b4   The recipient error message in ::validate() no longer contains a typo [wb, 2009-02-09]
+ * @changes    1.0.0b3   Fixed a bug with missing content in the fValidationException thrown by ::validate() [wb, 2009-01-14]
+ * @changes    1.0.0b2   Fixed a few bugs with sending S/MIME encrypted/signed emails [wb, 2009-01-10]
+ * @changes    1.0.0b    The initial implementation [wb, 2008-06-23]
  */
 class fEmail
 {
@@ -343,6 +349,8 @@ class fEmail
 	/**
 	 * All requests that hit this method should be requests for callbacks
 	 * 
+	 * @internal
+	 * 
 	 * @param  string $method  The method to create a callback for
 	 * @return callback  The callback for the method requested
 	 */
@@ -471,6 +479,19 @@ class fEmail
 	
 	
 	/**
+	 * Removes all To, CC and BCC recipients from the email
+	 * 
+	 * @return void
+	 */
+	public function clearRecipients()
+	{
+		$this->to_emails  = array();
+		$this->cc_emails  = array();
+		$this->bcc_emails = array();
+	}
+	
+	
+	/**
 	 * Creates a 32-character boundary for a multipart message
 	 * 
 	 * @return string  A multipart boundary
@@ -501,14 +522,23 @@ class fEmail
 	 */
 	private function combineNameEmail($name, $email)
 	{
-		$email = str_replace(array("\r", "\n"), '', $email);
-		$name  = str_replace(array('\\', '"', "\r", "\n"), '', $name);
+		// Strip lower ascii character since they aren't useful in email addresses
+		$email = preg_replace('#[\x0-\x19]+#', '', $email);
+		$name  = preg_replace('#[\x0-\x19]+#', '', $name);
 		
 		if (!$name || fCore::checkOS('windows')) {
 			return $email;
 		}
 		
-		return '"' . $name . '" <' . $email . '>';
+		// If the name contains any non-ascii bytes or stuff not allowed
+		// in quoted strings we just make an encoded word out of it
+		if (preg_replace('#[\x80-\xff\x5C\x22]#', '', $name) != $name) {
+			$name = $this->makeEncodedWord($name);
+		} else {
+			$name = '"' . $name . '"';	
+		}
+		
+		return $name . ' <' . $email . '>';
 	}
 	
 	
@@ -533,9 +563,10 @@ class fEmail
 			if ($this->attachments) {
 				$boundary = $this->createBoundary();
 				$body    .= 'Content-Type: multipart/alternative; boundary="' . $boundary . "\"\r\n\r\n";
+			} else {
+				$body .= $mime_notice . "\r\n";
 			}
 			
-			$body .= $mime_notice . "\r\n";
 			$body .= '--' . $boundary . "\r\n";
 			$body .= "Content-Type: text/plain; charset=utf-8\r\n";
 			$body .= "Content-Transfer-Encoding: quoted-printable\r\n\r\n";
@@ -544,7 +575,7 @@ class fEmail
 			$body .= "Content-Type: text/html; charset=utf-8\r\n";
 			$body .= "Content-Transfer-Encoding: quoted-printable\r\n\r\n";
 			$body .= $this->makeQuotedPrintable($this->html_body) . "\r\n\r\n";
-			$body .= '--' . $boundary . "\r\n";
+			$body .= '--' . $boundary . "--\r\n";
 		
 		// If there is no HTML, just encode the body
 		} else {
@@ -564,15 +595,16 @@ class fEmail
 			$multipart_body  = $mime_notice . "\r\n";
 			$multipart_body .= '--' . $boundary . "\r\n";
 			$multipart_body .= $body . "\r\n";
-			$multipart_body .= '--' . $boundary . "\r\n";
 			
 			foreach ($this->attachments as $filename => $file_info) {
+				$multipart_body .= '--' . $boundary . "\r\n";
 				$multipart_body .= 'Content-Type: ' . $file_info['mime-type'] . "\r\n";
 				$multipart_body .= "Content-Transfer-Encoding: base64\r\n";
 				$multipart_body .= 'Content-Disposition: attachment; filename="' . $filename . "\";\r\n\r\n";
 				$multipart_body .= $this->makeBase64($file_info['contents']) . "\r\n\r\n";
-				$multipart_body .= '--' . $boundary . "\r\n";
 			}
+			
+			$multipart_body .= '--' . $boundary . "--\r\n"; 
 			
 			$body = $multipart_body;
 		}
@@ -609,9 +641,7 @@ class fEmail
 			$headers .= "Sender: " . trim($this->sender_email) . "\r\n";
 		}
 		
-		if ($this->html_body || $this->attachments) {
-			$headers .= "MIME-Version: 1.0\r\n";
-		}
+		$headers .= "MIME-Version: 1.0\r\n";
 		
 		if ($this->html_body && !$this->attachments) {
 			$headers .= 'Content-Type: multipart/alternative; boundary="' . $boundary . "\"\r\n";
@@ -782,7 +812,7 @@ class fEmail
 		
 		// Decode characters that don't have to be coded
 		$decodings = array(
-			'=20' => ' ', '=21' => '!', '=22' => '"',  '=23' => '#',
+			'=20' => '_', '=21' => '!', '=22' => '"',  '=23' => '#',
 			'=24' => '$', '=25' => '%', '=26' => '&',  '=27' => "'",
 			'=28' => '(', '=29' => ')', '=2A' => '*',  '=2B' => '+',
 			'=2C' => ',', '=2D' => '-', '=2E' => '.',  '=2F' => '/',
@@ -924,7 +954,7 @@ class fEmail
 	/**
 	 * Sends the email
 	 * 
-	 * @throws fValidationException
+	 * @throws fValidationException  When ::validate() throws an exception
 	 * 
 	 * @return void
 	 */
@@ -1174,7 +1204,7 @@ class fEmail
 	/**
 	 * Validates that all of the parts of the email are valid
 	 * 
-	 * @throws fValidationException
+	 * @throws fValidationException  When part of the email is missing or formatted incorrectly
 	 * 
 	 * @return void
 	 */
@@ -1192,11 +1222,11 @@ class fEmail
 		foreach ($multi_address_field_list as $field => $name) {
 			foreach ($this->$field as $email) {
 				if ($email && !preg_match(self::NAME_EMAIL_REGEX, $email) && !preg_match(self::EMAIL_REGEX, $email)) {
-					$validation_messages[] = self::compose(
+					$validation_messages[] = htmlspecialchars(self::compose(
 						'The %1$s %2$s is not a valid email address. Should be like "John Smith" <name@example.com> or name@example.com.',
 						$name,
 						$email
-					);
+					), ENT_QUOTES, 'UTF-8');
 				}
 			}
 		}
@@ -1211,11 +1241,11 @@ class fEmail
 		
 		foreach ($single_address_field_list as $field => $name) {
 			if ($this->$field && !preg_match(self::NAME_EMAIL_REGEX, $this->$field) && !preg_match(self::EMAIL_REGEX, $this->$field)) {
-				$validation_messages[] = self::compose(
+				$validation_messages[] = htmlspecialchars(self::compose(
 					'The %1$s %2$s is not a valid email address. Should be like "John Smith" <name@example.com> or name@example.com.',
 					$name,
 					$this->$field
-				);
+				), ENT_QUOTES, 'UTF-8');
 			}
 		}
 		
@@ -1281,7 +1311,7 @@ class fEmail
 
 
 /**
- * Copyright (c) 2008-2009 Will Bond <will@flourishlib.com>
+ * Copyright (c) 2008-2009 Will Bond <will@flourishlib.com>, others
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal

@@ -9,7 +9,12 @@
  * @package    Flourish
  * @link       http://flourishlib.com/fFilesystem
  * 
- * @version    1.0.0b4
+ * @version    1.0.0b9
+ * @changes    1.0.0b9  Added some performance tweaks to ::createObject() [wb, 2009-08-06]
+ * @changes    1.0.0b8  Changed ::formatFilesize() to not use decimal places for bytes, add a space before and drop the `B` in suffixes [wb, 2009-07-12]
+ * @changes    1.0.0b7  Fixed ::formatFilesize() to work when `$bytes` equals zero [wb, 2009-07-08]
+ * @changes    1.0.0b6  Changed replacement values in preg_replace() calls to be properly escaped [wb, 2009-06-11]
+ * @changes    1.0.0b5  Changed ::formatFilesize() to use proper uppercase letters instead of lowercase [wb, 2009-06-02]
  * @changes    1.0.0b4  Added the ::createObject() method [wb, 2009-01-21]
  * @changes    1.0.0b3  Removed some unnecessary error suppresion operators [wb, 2008-12-11]
  * @changes    1.0.0b2  Fixed a bug where the filepath and exception maps weren't being updated after a rollback [wb, 2008-12-11]
@@ -187,7 +192,7 @@ class fFilesystem
 	/**
 	 * Takes a filesystem path and creates either an fDirectory, fFile or fImage object from it
 	 * 
-	 * @throws fValidationException
+	 * @throws fValidationException  When no path was specified or the path specified does not exist
 	 * 
 	 * @param  string $path  The path to the filesystem object
 	 * @return fDirectory|fFile|fImage
@@ -200,27 +205,27 @@ class fFilesystem
 			);
 		}
 		
-		if (!file_exists($path)) {
+		if (!is_readable($path)) {
 			throw new fValidationException(
-				'The path specified, %s, does not exist',
+				'The path specified, %s, does not exist or is not readable',
 				$path
 			);
 		}
 		
 		if (is_dir($path)) {
-			return new fDirectory($path);	
+			return new fDirectory($path, TRUE);
 		}
 		
 		if (fImage::isImageCompatible($path)) {
-			return new fImage($path);	
+			return new fImage($path, TRUE);
 		}
 		
-		return new fFile($path);
+		return new fFile($path, TRUE);
 	}
 	
 	
 	/**
-	 * Takes the size of a file in bytes and returns a friendly size in b/kb/mb/gb/tb
+	 * Takes the size of a file in bytes and returns a friendly size in B/K/M/G/T
 	 * 
 	 * @param  integer $bytes           The size of the file in bytes
 	 * @param  integer $decimal_places  The number of decimal places to display
@@ -231,10 +236,10 @@ class fFilesystem
 		if ($bytes < 0) {
 			$bytes = 0;
 		}
-		$suffixes  = array('b', 'kb', 'mb', 'gb', 'tb');
+		$suffixes  = array('B', 'K', 'M', 'G', 'T');
 		$sizes     = array(1, 1024, 1048576, 1073741824, 1099511627776);
-		$suffix    = floor(log($bytes)/6.9314718);
-		return number_format($bytes/$sizes[$suffix], $decimal_places) . $suffixes[$suffix];
+		$suffix    = (!$bytes) ? 0 : floor(log($bytes)/6.9314718);
+		return number_format($bytes/$sizes[$suffix], ($suffix == 0) ? 0 : $decimal_places) . ' ' . $suffixes[$suffix];
 	}
 	
 	
@@ -447,7 +452,11 @@ class fFilesystem
 		// Handle all of the directories and files inside this directory
 		foreach (self::$filename_map as $filename => $ignore) {
 			if (preg_match('#^' . preg_quote($existing_dirname, '#') . '#', $filename)) {
-				$new_filename = preg_replace('#^' . preg_quote($existing_dirname, '#') . '#', $new_dirname, $filename);
+				$new_filename = preg_replace(
+					'#^' . preg_quote($existing_dirname, '#') . '#',
+					strtr($new_dirname, array('\\' => '\\\\', '$' => '\\$')),
+					$filename
+				);
 				
 				self::$filename_map[$new_filename]  =& self::$filename_map[$filename];
 				self::$exception_map[$new_filename] =& self::$exception_map[$filename];
@@ -629,7 +638,11 @@ class fFilesystem
 		$translations = array(realpath($_SERVER['DOCUMENT_ROOT']) => '') + self::$web_path_translations;
 		
 		foreach ($translations as $search => $replace) {
-			$path = preg_replace('#^' . preg_quote($search, '#') . '#', $replace, $path);
+			$path = preg_replace(
+				'#^' . preg_quote($search, '#') . '#',
+				strtr($replace, array('\\' => '\\\\', '$' => '\\$')),
+				$path
+			);
 		}
 		
 		return $path;

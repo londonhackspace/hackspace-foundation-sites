@@ -9,23 +9,33 @@
  * @package    Flourish
  * @link       http://flourishlib.com/fORM
  * 
- * @version    1.0.0b6
- * @changes    1.0.0b6  Added the ability to pass a class instance to ::addCustomClassTableMapping() [wb, 2009-02-23]
- * @changes    1.0.0b5  Backwards compatibility break - renamed ::addCustomTableClassMapping() to ::addCustomClassTableMapping() and swapped the parameters [wb, 2009-01-26]
- * @changes    1.0.0b4  Fixed a bug with retrieving fActiveRecord methods registered for all classes [wb, 2009-01-14]
- * @changes    1.0.0b3  Fixed a static method callback constant [wb, 2008-12-17]
- * @changes    1.0.0b2  Added ::replicate() and ::registerReplicateCallback() for fActiveRecord::replicate() [wb, 2008-12-12]
- * @changes    1.0.0b   The initial implementation [wb, 2007-08-04]
+ * @version    1.0.0b14
+ * @changes    1.0.0b14  Updated documentation for ::registerActiveRecordMethod() to include info about prefix method matches [wb, 2009-08-07]
+ * @changes    1.0.0b13  Updated documentation for ::registerRecordSetMethod() [wb, 2009-07-14]
+ * @changes    1.0.0b12  Updated ::callReflectCallbacks() to accept a class name instead of an object [wb, 2009-07-13]
+ * @changes    1.0.0b11  Added ::registerInspectCallback() and ::callInspectCallbacks() [wb, 2009-07-13]
+ * @changes    1.0.0b10  Fixed a bug with ::objectify() caching during NULL date/time/timestamp values and breaking further objectification [wb, 2009-06-18]
+ * @changes    1.0.0b9   Added caching for performance and changed some method APIs to only allow class names instead of instances [wb, 2009-06-15]
+ * @changes    1.0.0b8   Updated documentation to reflect removal of `$associate` parameter for callbacks passed to ::registerRecordSetMethod() [wb, 2009-06-02]
+ * @changes    1.0.0b7   Added ::enableSchemaCaching() to replace fORMSchema::enableSmartCaching() [wb, 2009-05-04]
+ * @changes    1.0.0b6   Added the ability to pass a class instance to ::addCustomClassTableMapping() [wb, 2009-02-23]
+ * @changes    1.0.0b5   Backwards compatibility break - renamed ::addCustomTableClassMapping() to ::addCustomClassTableMapping() and swapped the parameters [wb, 2009-01-26]
+ * @changes    1.0.0b4   Fixed a bug with retrieving fActiveRecord methods registered for all classes [wb, 2009-01-14]
+ * @changes    1.0.0b3   Fixed a static method callback constant [wb, 2008-12-17]
+ * @changes    1.0.0b2   Added ::replicate() and ::registerReplicateCallback() for fActiveRecord::replicate() [wb, 2008-12-12]
+ * @changes    1.0.0b    The initial implementation [wb, 2007-08-04]
  */
 class fORM
 {
 	// The following constants allow for nice looking callbacks to static methods
 	const addCustomClassTableMapping = 'fORM::addCustomClassTableMapping';
 	const callHookCallbacks          = 'fORM::callHookCallbacks';
+	const callInspectCallbacks       = 'fORM::callInspectCallbacks';
 	const callReflectCallbacks       = 'fORM::callReflectCallbacks';
 	const checkHookCallback          = 'fORM::checkHookCallback';
 	const classize                   = 'fORM::classize';
 	const defineActiveRecordClass    = 'fORM::defineActiveRecordClass';
+	const enableSchemaCaching        = 'fORM::enableSchemaCaching';
 	const getActiveRecordMethod      = 'fORM::getActiveRecordMethod';
 	const getClass                   = 'fORM::getClass';
 	const getColumnName              = 'fORM::getColumnName';
@@ -37,6 +47,7 @@ class fORM
 	const parseMethod                = 'fORM::parseMethod';
 	const registerActiveRecordMethod = 'fORM::registerActiveRecordMethod';
 	const registerHookCallback       = 'fORM::registerHookCallback';
+	const registerInspectCallback    = 'fORM::registerInspectCallback';
 	const registerObjectifyCallback  = 'fORM::registerObjectifyCallback';
 	const registerRecordSetMethod    = 'fORM::registerRecordSetMethod';
 	const registerReflectCallback    = 'fORM::registerReflectCallback';
@@ -54,6 +65,17 @@ class fORM
 	 * @var array
 	 */
 	static private $active_record_method_callbacks = array();
+	
+	/**
+	 * Cache for repetitive computation
+	 * 
+	 * @var array
+	 */
+	static private $cache = array(
+		'parseMethod'           => array(),
+		'getActiveRecordMethod' => array(),
+		'objectify'             => array()
+	);
 	
 	/**
 	 * Custom mappings for class <-> table
@@ -77,6 +99,13 @@ class fORM
 	static private $hook_callbacks = array();
 	
 	/**
+	 * Callbacks for ::callInspectCallbacks()
+	 * 
+	 * @var array
+	 */
+	static private $inspect_callbacks = array();
+	
+	/**
 	 * Callbacks for ::objectify()
 	 * 
 	 * @var array
@@ -98,7 +127,7 @@ class fORM
 	static private $record_set_method_callbacks = array();
 	
 	/**
-	 * Callbacks for ::reflect()
+	 * Callbacks for ::callReflectCallbacks()
 	 * 
 	 * @var array
 	 */
@@ -155,7 +184,7 @@ class fORM
 	 */
 	static public function callHookCallbacks($object, $hook, &$values, &$old_values, &$related_records, &$cache, &$parameter=NULL)
 	{
-		$class = self::getClass($object);
+		$class = get_class($object);
 		
 		if (empty(self::$hook_callbacks[$class][$hook]) && empty(self::$hook_callbacks['*'][$hook])) {
 			return;
@@ -190,19 +219,45 @@ class fORM
 	
 	
 	/**
-	 * Calls all reflect callbacks for the object passed
+	 * Calls all inspect callbacks for the class and column specified
 	 * 
 	 * @internal
 	 * 
-	 * @param  fActiveRecord $object                The instance of the class to call the hook for
-	 * @param  array         &$signatures           The associative array of `{method_name} => {signature}`
-	 * @param  boolean       $include_doc_comments  If the doc comments should be included in the signature
+	 * @param  string $class      The class to inspect the column of
+	 * @param  string $column     The column to inspect
+	 * @param  array  &$metadata  The associative array of data about the column
 	 * @return void
 	 */
-	static public function callReflectCallbacks($object, &$signatures, $include_doc_comments)
+	static public function callInspectCallbacks($class, $column, &$metadata)
 	{
-		$class = self::getClass($object);
+		if (!isset(self::$inspect_callbacks[$class][$column])) {
+			return;
+		}
 		
+		foreach (self::$inspect_callbacks[$class][$column] as $callback) {
+			// This is the only way to pass by reference
+			$parameters = array(
+				$class,
+				$column,
+				&$metadata
+			);
+			call_user_func_array($callback, $parameters);
+		}
+	}
+	
+	
+	/**
+	 * Calls all reflect callbacks for the class passed
+	 * 
+	 * @internal
+	 * 
+	 * @param  string  $class                 The class to call the callbacks for
+	 * @param  array   &$signatures           The associative array of `{method_name} => {signature}`
+	 * @param  boolean $include_doc_comments  If the doc comments should be included in the signature
+	 * @return void
+	 */
+	static public function callReflectCallbacks($class, &$signatures, $include_doc_comments)
+	{
 		if (!isset(self::$reflect_callbacks[$class]) && !isset(self::$reflect_callbacks['*'])) {
 			return;
 		}
@@ -238,15 +293,13 @@ class fORM
 	 *
 	 * @internal
 	 * 
-	 * @param  mixed  $class     The name of the class, or an instance of it
+	 * @param  string $class     The name of the class
 	 * @param  string $hook      The hook to check
 	 * @param  array  $callback  The specific callback to check for
 	 * @return boolean  If the specified callback exists
 	 */
 	static public function checkHookCallback($class, $hook, $callback=NULL)
 	{
-		$class = self::getClass($class);
-		
 		if (empty(self::$hook_callbacks[$class][$hook]) && empty(self::$hook_callbacks['*'][$hook])) {
 			return FALSE;
 		}
@@ -316,40 +369,76 @@ class fORM
 	
 	
 	/**
+	 * Enables caching on the fDatabase, fSQLTranslation and fSchema objects used for the ORM
+	 * 
+	 * This method will cache database schema information to the three objects
+	 * that use it during normal ORM operation: fDatabase, fSQLTranslation and
+	 * fSchema. To allow for schema changes without having to manually clear
+	 * the cache, all cached information will be cleared if any
+	 * fUnexpectedException objects are thrown.
+	 * 
+	 * This method should be called right after fORMDatabase::attach().
+	 *          
+	 * @param  fCache $cache  The object to cache schema information to
+	 * @return void
+	 */
+	static public function enableSchemaCaching($cache)
+	{
+		$db = fORMDatabase::retrieve();
+		$db->enableCaching($cache);
+		fException::registerCallback($db->clearCache, 'fUnexpectedException');
+		
+		$sql_translation = $db->getSQLTranslation();
+		$sql_translation->enableCaching($cache);
+		fException::registerCallback($sql_translation->clearCache, 'fUnexpectedException');
+		
+		$schema = fORMSchema::retrieve();
+		$schema->enableCaching($cache);
+		fException::registerCallback($schema->clearCache, 'fUnexpectedException');	
+	}
+	
+	
+	/**
 	 * Returns a matching callback for the class and method specified
 	 * 
 	 * The callback returned will be determined by the following logic:
 	 * 
 	 *  1. If an exact callback has been defined for the method, it will be returned
-	 *  2. If a callback in the form `{action}*` has been defined that matches the method, it will be returned
+	 *  2. If a callback in the form `{prefix}*` has been defined that matches the method, it will be returned
 	 *  3. `NULL` will be returned
 	 * 
 	 * @internal
 	 * 
-	 * @param  mixed  $class   The name of the class, or an instance of it
+	 * @param  string $class   The name of the class
 	 * @param  string $method  The method to get the callback for
 	 * @return string|null  The callback for the method or `NULL` if none exists - see method description for details
 	 */
 	static public function getActiveRecordMethod($class, $method)
 	{
-		$class = self::getClass($class);
+		// This caches method lookups, providing a significant performance
+		// boost to pages with lots of method calls that get passed to
+		// fActiveRecord::__call()
+		if (isset(self::$cache['getActiveRecordMethod'][$class . '::' . $method])) {
+			return (!$method = self::$cache['getActiveRecordMethod'][$class . '::' . $method]) ? NULL : $method; 	
+		}
+		
+		$callback = NULL;
 		
 		if (isset(self::$active_record_method_callbacks[$class][$method])) {
-			return self::$active_record_method_callbacks[$class][$method];	
-		}
+			$callback = self::$active_record_method_callbacks[$class][$method];	
 		
-		if (isset(self::$active_record_method_callbacks['*'][$method])) {
-			return self::$active_record_method_callbacks['*'][$method];	
-		}
+		} elseif (isset(self::$active_record_method_callbacks['*'][$method])) {
+			$callback = self::$active_record_method_callbacks['*'][$method];	
 		
-		if (preg_match('#[A-Z0-9]#', $method)) {
+		} elseif (preg_match('#[A-Z0-9]#', $method)) {
 			list($action, $subject) = self::parseMethod($method);
 			if (isset(self::$active_record_method_callbacks[$class][$action . '*'])) {
-				return self::$active_record_method_callbacks[$class][$action . '*'];	
+				$callback = self::$active_record_method_callbacks[$class][$action . '*'];	
 			}	
 		}
 		
-		return NULL;	
+		self::$cache['getActiveRecordMethod'][$class . '::' . $method] = ($callback === NULL) ? FALSE : $callback;
+		return $callback;
 	}
 	
 	
@@ -376,14 +465,12 @@ class fORM
 	 * 
 	 * @internal
 	 * 
-	 * @param  mixed  $class   The class name or instance of the class the column is part of
+	 * @param  string $class   The class name the column is part of
 	 * @param  string $column  The database column
 	 * @return string  The column name for the column specified
 	 */
 	static public function getColumnName($class, $column)
 	{
-		$class = self::getClass($class);
-		
 		if (!isset(self::$column_names[$class])) {
 			self::$column_names[$class] = array();
 		}
@@ -404,13 +491,11 @@ class fORM
 	 * 
 	 * @internal
 	 * 
-	 * @param  mixed $class  The class name or instance of the class to get the record name of
+	 * @param  string $class  The class name to get the record name of
 	 * @return string  The record name for the class specified
 	 */
 	static public function getRecordName($class)
 	{
-		$class = self::getClass($class);
-		
 		if (!isset(self::$record_names[$class])) {
 			self::$record_names[$class] = fGrammar::humanize($class);
 		}
@@ -462,7 +547,11 @@ class fORM
 	 */
 	static public function objectify($class, $column, $value)
 	{
-		$class = self::getClass($class);
+		// This short-circuits computation for already checked columns, providing
+		// a nice little performance boost to pages with lots of records
+		if (isset(self::$cache['objectify'][$class . '::' . $column])) {
+			return $value;	
+		}
 		
 		if (!empty(self::$objectify_callbacks[$class][$column])) {
 			return call_user_func(self::$objectify_callbacks[$class][$column], $class, $column, $value);
@@ -473,7 +562,12 @@ class fORM
 		// Turn date/time values into objects
 		$column_type = fORMSchema::retrieve()->getColumnInfo($table, $column, 'type');
 		
-		if ($value !== NULL && in_array($column_type, array('date', 'time', 'timestamp'))) {
+		if (in_array($column_type, array('date', 'time', 'timestamp'))) {
+			
+			if ($value === NULL) {
+				return $value;	
+			}
+			
 			try {
 				
 				// Explicit calls to the constructors are used for dependency detection
@@ -486,6 +580,9 @@ class fORM
 			} catch (fValidationException $e) {
 				// Validation exception results in the raw value being saved
 			}
+		
+		} else {
+			self::$cache['objectify'][$class . '::' . $column] = TRUE;	
 		}
 		
 		return $value;
@@ -542,13 +639,18 @@ class fORM
 	 */
 	static public function parseMethod($method)
 	{
+		if (isset(self::$cache['parseMethod'][$method])) {
+			return self::$cache['parseMethod'][$method];	
+		}
+		
 		if (!preg_match('#^([a-z]+)(.*)$#D', $method, $matches)) {
 			throw new fProgrammerException(
 				'Invalid method, %s(), called',
 				$method
 			);	
 		}
-		return array($matches[1], fGrammar::underscorize($matches[2]));
+		self::$cache['parseMethod'][$method] = array($matches[1], fGrammar::underscorize($matches[2]));
+		return self::$cache['parseMethod'][$method];
 	}
 	
 	
@@ -566,7 +668,7 @@ class fORM
 	 *  - **`&$parameters`**:      The parameters passed to the method
 	 * 
 	 * @param  mixed    $class     The class name or instance of the class to register for, `'*'` will register for all classes
-	 * @param  string   $method    The method to hook for
+	 * @param  string   $method    The method to hook for - this can be a complete method name or `{prefix}*` where `*` will match any column name
 	 * @param  callback $callback  The callback to execute - see method description for parameter list
 	 * @return void
 	 */
@@ -583,6 +685,8 @@ class fORM
 		}
 		
 		self::$active_record_method_callbacks[$class][$method] = $callback;
+		
+		self::$cache['getActiveRecordMethod'] = array();
 	}
 	
 	
@@ -679,6 +783,33 @@ class fORM
 	
 	
 	/**
+	 * Registers a callback to modify the results of fActiveRecord::inspect() methods
+	 * 
+	 * @param  mixed    $class     The class name or instance of the class to register for
+	 * @param  string   $column    The column to register for
+	 * @param  callback $callback  The callback to register. Callback should accept a single parameter by reference, an associative array of the various metadata about a column.
+	 * @return void
+	 */
+	static public function registerInspectCallback($class, $column, $callback)
+	{
+		$class = self::getClass($class);
+		
+		if (!isset(self::$inspect_callbacks[$class])) {
+			self::$inspect_callbacks[$class] = array();
+		}
+		if (!isset(self::$inspect_callbacks[$class][$column])) {
+			self::$inspect_callbacks[$class][$column] = array();
+		}
+		
+		if (is_string($callback) && strpos($callback, '::') !== FALSE) {
+			$callback = explode('::', $callback);	
+		}
+		
+		self::$inspect_callbacks[$class][$column][] = $callback;
+	}
+	
+	
+	/**
 	 * Registers a callback for when ::objectify() is called on a specific column
 	 * 
 	 * @param  mixed    $class     The class name or instance of the class to register for
@@ -699,6 +830,8 @@ class fORM
 		}
 		
 		self::$objectify_callbacks[$class][$column] = $callback;
+		
+		self::$cache['objectify'] = array();
 	}
 	
 	
@@ -711,7 +844,7 @@ class fORM
 	 *  - **`$class`**:       The class of each record
 	 *  - **`&$records`**:    The ordered array of fActiveRecord objects
 	 *  - **`&$pointer`**:    The current array pointer for the records array
-	 *  - **`&$associate`**:  If the record should be associated with an fActiveRecord holding it
+	 *  - **`$parameters`**:  Any parameters passed to the method
 	 * 
 	 * @param  string   $method    The method to hook for
 	 * @param  callback $callback  The callback to execute - see method description for parameter list
@@ -816,15 +949,13 @@ class fORM
 	 *
 	 * @internal
 	 * 
-	 * @param  mixed  $class   The class name or instance of the class the column is part of
+	 * @param  string $class   The class the column is part of
 	 * @param  string $column  The database column
 	 * @param  mixed  $value   The value to copy/clone
 	 * @return mixed  The copied/cloned value
 	 */
 	static public function replicate($class, $column, $value)
 	{
-		$class = self::getClass($class);
-		
 		if (!empty(self::$replicate_callbacks[$class][$column])) {
 			return call_user_func(self::$replicate_callbacks[$class][$column], $class, $column, $value);
 		}
@@ -846,10 +977,16 @@ class fORM
 	 */
 	static public function reset()
 	{
-		self::$class_table_map                = array();
 		self::$active_record_method_callbacks = array();
+		self::$cache                          = array(
+			'parseMethod'           => array(),
+			'getActiveRecordMethod' => array(),
+			'objectify'             => array()
+		);
+		self::$class_table_map                = array();
 		self::$column_names                   = array();
 		self::$hook_callbacks                 = array();
+		self::$inspect_callbacks              = array();
 		self::$objectify_callbacks            = array();
 		self::$record_names                   = array();
 		self::$record_set_method_callbacks    = array();
@@ -895,8 +1032,6 @@ class fORM
 	 */
 	static public function tablize($class)
 	{
-		$class = self::getClass($class);
-		
 		if (!isset(self::$class_table_map[$class])) {
 			self::$class_table_map[$class] = fGrammar::underscorize(fGrammar::pluralize($class));
 		}

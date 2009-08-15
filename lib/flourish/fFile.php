@@ -9,7 +9,19 @@
  * @package    Flourish
  * @link       http://flourishlib.com/fFile
  * 
- * @version    1.0.0b11
+ * @version    1.0.0b23
+ * @changes    1.0.0b23  Added the ability to skip checks in ::__construct() for better performance in conjunction with fFilesystem::createObject() [wb, 2009-08-06]
+ * @changes    1.0.0b22  Fixed ::__toString() to never throw an exception [wb, 2009-08-06]
+ * @changes    1.0.0b21  Fixed a bug in ::determineMimeType() [wb, 2009-07-21]
+ * @changes    1.0.0b20  Fixed the exception message thrown by ::output() when output buffering is turned on [wb, 2009-06-26]
+ * @changes    1.0.0b19  ::rename() will now rename the file in its current directory if the new filename has no directory separator [wb, 2009-05-04]
+ * @changes    1.0.0b18  Changed ::__sleep() to not reset the iterator since it can cause side-effects [wb, 2009-05-04]
+ * @changes    1.0.0b17  Added ::__sleep() and ::__wakeup() for proper serialization with the filesystem map [wb, 2009-05-03]
+ * @changes    1.0.0b16  ::output() now accepts `TRUE` in the second parameter to use the current filename as the attachment filename [wb, 2009-03-23]
+ * @changes    1.0.0b15  Added support for mime type detection of MP3s based on the MPEG-2 (as opposed to MPEG-1) standard [wb, 2009-03-23]
+ * @changes    1.0.0b14  Fixed a bug with detecting the mime type of some MP3s [wb, 2009-03-22]
+ * @changes    1.0.0b13  Fixed a bug with overwriting files via ::rename() on Windows [wb, 2009-03-11]
+ * @changes    1.0.0b12  Backwards compatibility break - Changed the second parameter of ::output() from `$ignore_output_buffer` to `$filename` [wb, 2009-03-05]
  * @changes    1.0.0b11  Changed ::__clone() and ::duplicate() to copy file permissions to the new file [wb, 2009-01-05] 
  * @changes    1.0.0b10  Fixed ::duplicate() so an exception is not thrown when no parameters are passed [wb, 2009-01-05]
  * @changes    1.0.0b9   Removed the dependency on fBuffer [wb, 2009-01-05]
@@ -33,7 +45,7 @@ class fFile implements Iterator
 	 * 
 	 * This operation will be reverted by a filesystem transaction being rolled back.
 	 * 
-	 * @throws fValidationException
+	 * @throws fValidationException  When no file was specified or the file already exists
 	 * 
 	 * @param  string $file_path  The path to the new file
 	 * @param  string $contents   The contents to write to the file, must be a non-NULL value to be written
@@ -80,31 +92,35 @@ class fFile implements Iterator
 	 * 
 	 * @internal
 	 * 
-	 * @param  string $file  The file to check the mime type for
+	 * @param  string $file      The file to check the mime type for - must be a valid filesystem path if no `$contents` are provided, otherwise just a filename
+	 * @param  string $contents  The first 4096 bytes of the file content - the `$file` parameter only need be a filename if this is provided
 	 * @return string  The mime type of the file
 	 */
-	static public function determineMimeType($file)
+	static public function determineMimeType($file, $contents=NULL)
 	{
-		if (!file_exists($file)) {
-			throw new fValidationException(
-				'The file specified, %s, does not exist',
-				$file
-			);
+		// If no contents are provided, we must get them
+		if ($contents === NULL) {
+			if (!file_exists($file)) {
+				throw new fValidationException(
+					'The file specified, %s, does not exist',
+					$file
+				);
+			}
+			
+			// The first 4k should be enough for content checking
+			$handle   = fopen($file, 'r');
+			$contents = fread($handle, 4096);
+			fclose($handle);
 		}
-		
-		// The first 4k should be enough for content checking
-		$handle  = fopen($file, 'r');
-		$content = fread($handle, 4096);
-		fclose($handle);
 		
 		$extension = strtolower(fFilesystem::getPathInfo($file, 'extension'));
 		
 		// If there are no low ASCII chars and no easily distinguishable tokens, we need to detect by file extension
-		if (!preg_match('#[\x00-\x08\x0B\x0C\x0E-\x1F]|%PDF-|<\?php|\%\!PS-Adobe-3|<\?xml|\{\\\\rtf|<\?=|<html|<\!doctype|<rss|\#\![/a-z0-9]+(python|ruby|perl|php)\b#i', $content)) {
+		if (!preg_match('#[\x00-\x08\x0B\x0C\x0E-\x1F]|%PDF-|<\?php|\%\!PS-Adobe-3|<\?xml|\{\\\\rtf|<\?=|<html|<\!doctype|<rss|\#\![/a-z0-9]+(python|ruby|perl|php)\b#i', $contents)) {
 			return self::determineMimeTypeByExtension($extension);		
 		}
 		
-		return self::determineMimeTypeByContents($content, $extension);
+		return self::determineMimeTypeByContents($contents, $extension);
 	}
 	
 	
@@ -186,8 +202,8 @@ class fFile implements Iterator
 		}
 		
 		// MP3
-		if ($_0_2 & "\xFF\xFE" == "\xFF\xFA") {
-			if (in_array($content[2] & "\xF0", array("\x10", "\x20", "\x30", "\x40", "\x50", "\x60", "\x70", "\x80", "\x90", "\xA0", "\xB0", "\xC0", "\xD0", "\xE0"))) {
+		if (($_0_2 & "\xFF\xF6") == "\xFF\xF2") {
+			if (($content[2] & "\xF0") != "\xF0" && ($content[2] & "\x0C") != "\x0C") {
 				return 'audio/mpeg';
 			}	
 		}
@@ -439,6 +455,8 @@ class fFile implements Iterator
 	/**
 	 * Duplicates a file in the current directory when the object is cloned
 	 * 
+	 * @internal
+	 * 
 	 * @return fFile  The new fFile object
 	 */
 	public function __clone()
@@ -475,36 +493,33 @@ class fFile implements Iterator
 	 * If multiple fFile objects are created for a single file, they will
 	 * reflect changes in each other including rename and delete actions.
 	 * 
-	 * @throws fValidationException
+	 * @throws fValidationException  When no file was specified, the file does not exist or the path specified is not a file
 	 * 
-	 * @param  string $file  The path to the file
+	 * @param  string  $file         The path to the file
+	 * @param  boolean $skip_checks  If file checks should be skipped, which improves performance, but may cause undefined behavior - only skip these if they are duplicated elsewhere
 	 * @return fFile
 	 */
-	public function __construct($file)
+	public function __construct($file, $skip_checks=FALSE)
 	{
-		if (empty($file)) {
-			throw new fValidationException(
-				'No filename was specified'
-			);
-		}
-		
-		if (!file_exists($file)) {
-			throw new fValidationException(
-				'The file specified, %s, does not exist',
-				$file
-			);
-		}
-		if (!is_readable($file)) {
-			throw new fEnvironmentException(
-				'The file specified, %s, is not readable',
-				$file
-			);
-		}
-		if (is_dir($file)) {
-			throw new fValidationException(
-				'The file specified, %s, is actually a directory',
-				$file
-			);
+		if (!$skip_checks) {
+			if (empty($file)) {
+				throw new fValidationException(
+					'No filename was specified'
+				);
+			}
+			
+			if (!is_readable($file)) {
+				throw new fEnvironmentException(
+					'The file specified, %s, does not exist or is not readable',
+					$file
+				);
+			}
+			if (is_dir($file)) {
+				throw new fValidationException(
+					'The file specified, %s, is actually a directory',
+					$file
+				);
+			}
 		}
 		
 		// Store the file as an absolute path
@@ -519,6 +534,8 @@ class fFile implements Iterator
 	/**
 	 * All requests that hit this method should be requests for callbacks
 	 * 
+	 * @internal
+	 * 
 	 * @param  string $method  The method to create a callback for
 	 * @return callback  The callback for the method requested
 	 */
@@ -529,20 +546,58 @@ class fFile implements Iterator
 	
 	
 	/**
+	 * The iterator information doesn't need to be serialized since a resource can't be
+	 *
+	 * @internal
+	 * 
+	 * @return array  The instance variables to serialize
+	 */
+	public function __sleep()
+	{
+		return array('exception', 'file');
+	}
+	
+	
+	/**
 	 * Returns the filename of the file
 	 * 
 	 * @return string  The filename
 	 */
 	public function __toString()
 	{
-		return $this->getFilename();
+		try {
+			return $this->getFilename();
+		} catch (Exception $e) {
+			return '';	
+		}
+	}
+	
+	
+	/**
+	 * Re-inserts the file back into the filesystem map when unserialized
+	 *
+	 * @internal
+	 * 
+	 * @return void
+	 */
+	public function __wakeup()
+	{
+		$file      = $this->file;
+		$exception = $this->exception;
+		
+		$this->file      =& fFilesystem::hookFilenameMap($file);
+		$this->exception =& fFilesystem::hookExceptionMap($file);
+		
+		if ($exception !== NULL) {
+			fFilesystem::updateExceptionMap($file, $exception);
+		}
 	}
 	
 	
 	/**
 	 * Returns the current line of the file (required by iterator interface)
 	 * 
-	 * @throws fNoRemainingException
+	 * @throws fNoRemainingException   When there are no remaining lines in the file
 	 * @internal
 	 * 
 	 * @return array  The current row
@@ -863,7 +918,7 @@ class fFile implements Iterator
 	/**
 	 * Returns the current one-based line number (required by iterator interface)
 	 * 
-	 * @throws fNoRemainingException
+	 * @throws fNoRemainingException  When there are no remaining lines in the file
 	 * @internal
 	 * 
 	 * @return integer  The current line number
@@ -886,7 +941,7 @@ class fFile implements Iterator
 	/**
 	 * Advances to the next line in the file (required by iterator interface)
 	 * 
-	 * @throws fNoRemainingException
+	 * @throws fNoRemainingException  When there are no remaining lines in the file
 	 * @internal
 	 * 
 	 * @return void
@@ -915,25 +970,30 @@ class fFile implements Iterator
 	 * This method is primarily intended for when PHP is used to control access
 	 * to files. 
 	 * 
-	 * @param  boolean $headers               If HTTP headers for the file should be included
-	 * @param  boolean $ignore_output_buffer  If the current state of the output buffer should be ignored
+	 * @param  boolean $headers   If HTTP headers for the file should be included
+	 * @param  mixed   $filename  Present the file as an attachment instead of just outputting type headers - if a string is passed, that will be used for the filename, if `TRUE` is passed, the current filename will be used
 	 * @return fFile  The file object, to allow for method chaining
 	 */
-	public function output($headers, $ignore_output_buffer=FALSE)
+	public function output($headers, $filename=NULL)
 	{
 		$this->tossIfException();
 		
-		if (!$ignore_output_buffer) {
-			if (ob_get_level() > 0) {
-				throw new fProgrammerException(
-					'The method requested, %s(), should not normally be used when output buffering is turned off, due to memory issues. If it is neccessary to have output buffering on, please pass %s as the second parameter to this method.',
-					'output',
-					'TRUE'
-				);
-			}	
+		if (ob_get_level() > 0) {
+			throw new fProgrammerException(
+				'The method requested, %1$s, can not be used when output buffering is turned on, due to potential memory issues. Please call %2$s, %3$s and %4$s, or %5$s as appropriate to turn off output buffering.',
+				'output()',
+				'ob_end_clean()',
+				'fBuffer::erase()',
+				'fBuffer::stop()',
+				'fTemplating::destroy()'
+			);
 		}
 		
 		if ($headers) {
+			if ($filename !== NULL) {
+				if ($filename === TRUE) { $filename = $this->getFilename();	}
+				header('Content-Disposition: attachment; filename="' . $filename . '"');		
+			}
 			header('Cache-Control: ');
 			header('Content-Length: ' . $this->getFilesize());
 			header('Content-Type: ' . $this->getMimeType());
@@ -976,7 +1036,7 @@ class fFile implements Iterator
 	 * This operation will be reverted if a filesystem transaction is in
 	 * progress and is later rolled back.
 	 * 
-	 * @param  string  $new_filename  The new full path to the file
+	 * @param  string  $new_filename  The new full path to the file or a new filename in the current directory
 	 * @param  boolean $overwrite     If the new filename already exists, `TRUE` will cause the file to be overwritten, `FALSE` will cause the new filename to change
 	 * @return fFile  The file object, to allow for method chaining
 	 */
@@ -989,6 +1049,11 @@ class fFile implements Iterator
 				'The file, %s, can not be renamed because the directory containing it is not writable',
 				$this->file
 			);
+		}
+		
+		// If the filename does not contain any folder traversal, rename the file in the current directory
+		if (preg_match('#^[^/\\\\]+$#D', $new_filename)) {
+			$new_filename = $this->getDirectory()->getPath() . $new_filename;		
 		}
 		
 		$info = fFilesystem::getPathInfo($new_filename);
@@ -1010,9 +1075,18 @@ class fFile implements Iterator
 					$new_filename
 				);
 			}
+			
 			if (!$overwrite) {
 				$new_filename = fFilesystem::makeUniqueName($new_filename);
+			
+			} else {
+				if (fFilesystem::isInsideTransaction()) {
+					fFilesystem::recordWrite(new fFile($new_filename));
+				}
+				// Windows requires that the existing file be deleted before being replaced
+				unlink($new_filename);	
 			}
+				
 		} else {
 			$new_dir = new fDirectory($info['dirname']);
 			if (!$new_dir->isWritable()) {

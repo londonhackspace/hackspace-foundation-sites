@@ -2,27 +2,41 @@
 /**
  * Provides fSchema class related functions for ORM code
  * 
- * @copyright  Copyright (c) 2007-2008 Will Bond
+ * @copyright  Copyright (c) 2007-2009 Will Bond
  * @author     Will Bond [wb] <will@flourishlib.com>
  * @license    http://flourishlib.com/license
  * 
  * @package    Flourish
  * @link       http://flourishlib.com/fORMSchema
  * 
- * @version    1.0.0b
- * @changes    1.0.0b  The initial implementation [wb, 2007-06-14]
+ * @version    1.0.0b5
+ * @changes    1.0.0b5  Fixed some error messaging to not include {empty_string} in some situations [wb, 2009-07-31]
+ * @changes    1.0.0b4  Added ::isOneToOne() [wb, 2009-07-21]
+ * @changes    1.0.0b3  Added routes caching for performance [wb, 2009-06-15]
+ * @changes    1.0.0b2  Backwards Compatiblity Break - removed ::enableSmartCaching(), fORM::enableSchemaCaching() now provides equivalent functionality [wb, 2009-05-04]
+ * @changes    1.0.0b   The initial implementation [wb, 2007-06-14]
  */
 class fORMSchema
 {
 	// The following constants allow for nice looking callbacks to static methods
 	const attach                       = 'fORMSchema::attach';
-	const enableSmartCaching           = 'fORMSchema::enableSmartCaching';
 	const getRoute                     = 'fORMSchema::getRoute';
 	const getRouteName                 = 'fORMSchema::getRouteName';
 	const getRouteNameFromRelationship = 'fORMSchema::getRouteNameFromRelationship';
 	const getRoutes                    = 'fORMSchema::getRoutes';
+	const isOneToOne                   = 'fORMSchema::isOneToOne';
 	const reset                        = 'fORMSchema::reset';
 	const retrieve                     = 'fORMSchema::retrieve';
+	
+	
+	/**
+	 * A cache for computed information
+	 * 
+	 * @var array
+	 */
+	static private $cache = array(
+		'getRoutes' => array()
+	);
 	
 	
 	/**
@@ -42,24 +56,6 @@ class fORMSchema
 	static public function attach($schema)
 	{
 		self::$schema_object = $schema;
-	}
-	
-	
-	/**
-	 * Turns on schema caching, using fUnexpectedException flushing
-	 *
-	 * @param  string  $cache_file  The file to use for caching
-	 * @return void
-	 */
-	static public function enableSmartCaching($cache_file)
-	{
-		if (!self::retrieve() instanceof fSchema) {
-			throw new fProgrammerException(
-				'Smart caching is only available (and most likely only applicable) if you are using the fSchema object'
-			);
-		}
-		self::retrieve()->setCacheFile($cache_file);
-		fException::registerCallback(array(self::retrieve(), 'flushInfo'), 'fUnexpectedException');
 	}
 	
 	
@@ -155,20 +151,18 @@ class fORMSchema
 		$keys = array_keys($routes);
 		
 		if (sizeof($keys) > 1) {
-			$relationship_type .= ($relationship_type) ? ' ' : '';
 			throw new fProgrammerException(
-				'There is more than one route for the %1$srelationship between %2$s and %3$s',
-				$relationship_type,
+				'There is more than one route for the%1$srelationship between %2$s and %3$s',
+				($relationship_type) ? ' ' . $relationship_type . ' ' : ' ',
 				$table,
 				$related_table
 			);
 		}
 		if (sizeof($keys) == 0) {
-			$relationship_type .= ($relationship_type) ? ' ' : '';
 			throw new fProgrammerException(
-				'The table %1$s is not in a %2$srelationship with the table %3$s',
+				'The table %1$s is not in a%2$srelationship with the table %3$s',
 				$table,
-				$relationship_type,
+				($relationship_type) ? ' ' . $relationship_type . ' ' : ' ',
 				$related_table
 			);
 		}
@@ -221,6 +215,11 @@ class fORMSchema
 	 */
 	static public function getRoutes($table, $related_table, $relationship_type=NULL)
 	{
+		$key = $table . '::' . $related_table . '::' . $relationship_type;
+		if (isset(self::$cache['getRoutes'][$key])) {
+			return self::$cache['getRoutes'][$key];	
+		}
+		
 		$valid_relationship_types = array(
 			NULL,
 			'*-to-many',
@@ -266,7 +265,45 @@ class fORMSchema
 			}
 		}
 		
+		self::$cache['getRoutes'][$key] = $routes;
+		
 		return $routes;
+	}
+	
+	
+	/**
+	 * Indicates if the relationship specified is a one-to-one relationship
+	 * 
+	 * @internal
+	 * 
+	 * @param  string $table          The main table we are searching on behalf of
+	 * @param  string $related_table  The related table we are trying to find the routes for
+	 * @param  string $route          The route between the two tables
+	 * @return boolean  If the table is in a one-to-one relationship with the related table over the route specified
+	 */
+	static public function isOneToOne($table, $related_table, $route=NULL)
+	{
+		$relationships = self::getRoutes($table, $related_table, 'one-to-one', $route);
+		
+		if ($route === NULL && sizeof($relationships) > 1) {
+			throw new fProgrammerException(
+				'There is more than one route for the%1$srelationship between %2$s and %3$s',
+				' one-to-one ',
+				$table,
+				$related_table
+			);
+		}
+		if (!$relationships) {
+			return FALSE;	
+		}
+		
+		foreach ($relationships as $relationship) {
+			if ($route === NULL || $route == $relationship['column']) {
+				return TRUE;
+			} 		
+		}
+		
+		return FALSE;
 	}
 	
 	
@@ -308,7 +345,7 @@ class fORMSchema
 
 
 /**
- * Copyright (c) 2007-2008 Will Bond <will@flourishlib.com>
+ * Copyright (c) 2007-2009 Will Bond <will@flourishlib.com>
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal

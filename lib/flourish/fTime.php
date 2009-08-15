@@ -9,7 +9,9 @@
  * @package    Flourish
  * @link       http://flourishlib.com/fTime
  * 
- * @version    1.0.0b6
+ * @version    1.0.0b8
+ * @changes    1.0.0b8  Added a call to fTimestamp::callUnformatCallback() in ::__construct() for localization support [wb, 2009-06-01]
+ * @changes    1.0.0b7  Backwards compatibility break - Removed ::getSecondsDifference(), added ::eq(), ::gt(), ::gte(), ::lt(), ::lte() [wb, 2009-03-05]
  * @changes    1.0.0b6  Fixed an outdated fCore method call [wb, 2009-02-23]
  * @changes    1.0.0b5  Updated for new fCore API [wb, 2009-02-16]
  * @changes    1.0.0b4  Fixed ::__construct() to properly handle the 5.0 to 5.1 change in strtotime() [wb, 2009-01-21]
@@ -53,7 +55,7 @@ class fTime
 	/**
 	 * Creates the time to represent, no timezone is allowed since times don't have timezones
 	 * 
-	 * @throws fValidationException
+	 * @throws fValidationException  When `$time` is not a valid time
 	 * 
 	 * @param  fTime|object|string|integer $time  The time to represent, `NULL` is interpreted as now
 	 * @return fTime
@@ -61,7 +63,7 @@ class fTime
 	public function __construct($time=NULL)
 	{
 		if ($time === NULL) {
-			$timestamp = strtotime('now');
+			$timestamp = time();
 		} elseif (is_numeric($time) && ctype_digit($time)) {
 			$timestamp = (int) $time;
 		} elseif (is_string($time) && in_array(strtoupper($time), array('CURRENT_TIMESTAMP', 'CURRENT_TIME'))) {
@@ -72,6 +74,9 @@ class fTime
 			} elseif (is_numeric($time) || is_object($time)) {
 				$time = (string) $time;	
 			}
+			
+			$time = fTimestamp::callUnformatCallback($time);
+			
 			$timestamp = strtotime($time);
 		}
 		
@@ -91,6 +96,8 @@ class fTime
 	
 	/**
 	 * All requests that hit this method should be requests for callbacks
+	 * 
+	 * @internal
 	 * 
 	 * @param  string $method  The method to create a callback for
 	 * @return callback  The callback for the method requested
@@ -113,9 +120,9 @@ class fTime
 	
 	
 	/**
-	 * Changes the time by the adjustment specified, only asjustments of `'hours'`, `'minutes'`, and `'seconds'` are allowed
+	 * Changes the time by the adjustment specified, only adjustments of `'hours'`, `'minutes'`, and `'seconds'` are allowed
 	 * 
-	 * @throws fValidationException
+	 * @throws fValidationException  When `$adjustment` is not a valid relative time measurement
 	 * 
 	 * @param  string $adjustment  The adjustment to make
 	 * @return fTime  The adjusted time
@@ -136,9 +143,22 @@ class fTime
 	
 	
 	/**
+	 * If this time is equal to the time passed
+	 * 
+	 * @param  fTime|object|string|integer $other_time  The time to compare with, `NULL` is interpreted as today
+	 * @return boolean  If this time is equal to the one passed
+	 */
+	public function eq($other_time=NULL)
+	{
+		$other_time = new fTime($other_time);
+		return $this->time == $other_time->time;
+	}
+	
+	
+	/**
 	 * Formats the time
 	 * 
-	 * @throws fValidationException
+	 * @throws fValidationException  When a non-time formatting character is included in `$format`
 	 * 
 	 * @param  string $format  The [http://php.net/date date()] function compatible formatting string, or a format name from fTimestamp::defineFormat()
 	 * @return string  The formatted time
@@ -249,15 +269,54 @@ class fTime
 	
 	
 	/**
-	 * Returns the difference between the two times in seconds
+	 * If this time is greater than the time passed
 	 * 
-	 * @param  fTime|object|string|integer $other_time  The time to calculate the difference with, `NULL` is interpreted as now
-	 * @return integer  The difference between the two times in seconds, positive if $other_time is before this time or negative if after
+	 * @param  fTime|object|string|integer $other_time  The time to compare with, `NULL` is interpreted as now
+	 * @return boolean  If this time is greater than the one passed
 	 */
-	public function getSecondsDifference($other_time=NULL)
+	public function gt($other_time=NULL)
 	{
 		$other_time = new fTime($other_time);
-		return $this->time - $other_time->time;
+		return $this->time > $other_time->time;
+	}
+	
+	
+	/**
+	 * If this time is greater than or equal to the time passed
+	 * 
+	 * @param  fTime|object|string|integer $other_time  The time to compare with, `NULL` is interpreted as now
+	 * @return boolean  If this time is greater than or equal to the one passed
+	 */
+	public function gte($other_time=NULL)
+	{
+		$other_time = new fTime($other_time);
+		return $this->time >= $other_time->time;
+	}
+	
+	
+	/**
+	 * If this time is less than the time passed
+	 * 
+	 * @param  fTime|object|string|integer $other_time  The time to compare with, `NULL` is interpreted as today
+	 * @return boolean  If this time is less than the one passed
+	 */
+	public function lt($other_time=NULL)
+	{
+		$other_time = new fTime($other_time);
+		return $this->time < $other_time->time;
+	}
+	
+	
+	/**
+	 * If this time is less than or equal to the time passed
+	 * 
+	 * @param  fTime|object|string|integer $other_time  The time to compare with, `NULL` is interpreted as today
+	 * @return boolean  If this time is less than or equal to the one passed
+	 */
+	public function lte($other_time=NULL)
+	{
+		$other_time = new fTime($other_time);
+		return $this->time <= $other_time->time;
 	}
 	
 	

@@ -9,7 +9,9 @@
  * @package    Flourish
  * @link       http://flourishlib.com/fDate
  * 
- * @version    1.0.0b5
+ * @version    1.0.0b7
+ * @changes    1.0.0b7  Added a call to fTimestamp::callUnformatCallback() in ::__construct() for localization support [wb, 2009-06-01]
+ * @changes    1.0.0b6  Backwards compatibility break - Removed ::getSecondsDifference(), added ::eq(), ::gt(), ::gte(), ::lt(), ::lte() [wb, 2009-03-05]
  * @changes    1.0.0b5  Updated for new fCore API [wb, 2009-02-16]
  * @changes    1.0.0b4  Fixed ::__construct() to properly handle the 5.0 to 5.1 change in strtotime() [wb, 2009-01-21]
  * @changes    1.0.0b3  Added support for CURRENT_TIMESTAMP and CURRENT_DATE SQL keywords [wb, 2009-01-11]
@@ -52,7 +54,7 @@ class fDate
 	/**
 	 * Creates the date to represent, no timezone is allowed since dates don't have timezones
 	 * 
-	 * @throws fValidationException
+	 * @throws fValidationException  When `$date` is not a valid date
 	 * 
 	 * @param  fDate|object|string|integer $date  The date to represent, `NULL` is interpreted as today
 	 * @return fDate
@@ -60,7 +62,7 @@ class fDate
 	public function __construct($date=NULL)
 	{
 		if ($date === NULL) {
-			$timestamp = strtotime('now');
+			$timestamp = time();
 		} elseif (is_numeric($date) && ctype_digit($date)) {
 			$timestamp = (int) $date;
 		} elseif (is_string($date) && in_array(strtoupper($date), array('CURRENT_TIMESTAMP', 'CURRENT_DATE'))) {
@@ -71,6 +73,9 @@ class fDate
 			} elseif (is_numeric($date) || is_object($date)) {
 				$date = (string) $date;	
 			}
+			
+			$date = fTimestamp::callUnformatCallback($date);
+			
 			$timestamp = strtotime(fTimestamp::fixISOWeek($date));
 		}
 		
@@ -90,6 +95,8 @@ class fDate
 	
 	/**
 	 * All requests that hit this method should be requests for callbacks
+	 * 
+	 * @internal
 	 * 
 	 * @param  string $method  The method to create a callback for
 	 * @return callback  The callback for the method requested
@@ -114,7 +121,7 @@ class fDate
 	/**
 	 * Changes the date by the adjustment specified, only adjustments of a day or more will be made
 	 * 
-	 * @throws fValidationException
+	 * @throws fValidationException  When `$adjustment` is not a relative date measurement
 	 * 
 	 * @param  string $adjustment  The adjustment to make
 	 * @return fDate  The adjusted date
@@ -135,9 +142,22 @@ class fDate
 	
 	
 	/**
+	 * If this date is equal to the date passed
+	 * 
+	 * @param  fDate|object|string|integer $other_date  The date to compare with, `NULL` is interpreted as today
+	 * @return boolean  If this date is equal to the one passed
+	 */
+	public function eq($other_date=NULL)
+	{
+		$other_date = new fDate($other_date);
+		return $this->date == $other_date->date;
+	}
+	
+	
+	/**
 	 * Formats the date
 	 * 
-	 * @throws fValidationException
+	 * @throws fValidationException  When a non-date formatting character is included in `$format`
 	 * 
 	 * @param  string $format  The [http://php.net/date date()] function compatible formatting string, or a format name from fTimestamp::defineFormat()
 	 * @return string  The formatted date
@@ -256,15 +276,54 @@ class fDate
 	
 	
 	/**
-	 * Returns the difference between the two dates in seconds
+	 * If this date is greater than the date passed
 	 * 
-	 * @param  fDate|object|string|integer $other_date  The date to calculate the difference with, `NULL` is interpreted as today
-	 * @return integer  The difference between the two dates in seconds, positive if `$other_date` is before this date or negative if after
+	 * @param  fDate|object|string|integer $other_date  The date to compare with, `NULL` is interpreted as today
+	 * @return boolean  If this date is greater than the one passed
 	 */
-	public function getSecondsDifference($other_date=NULL)
+	public function gt($other_date=NULL)
 	{
 		$other_date = new fDate($other_date);
-		return $this->date - $other_date->date;
+		return $this->date > $other_date->date;
+	}
+	
+	
+	/**
+	 * If this date is greater than or equal to the date passed
+	 * 
+	 * @param  fDate|object|string|integer $other_date  The date to compare with, `NULL` is interpreted as today
+	 * @return boolean  If this date is greater than or equal to the one passed
+	 */
+	public function gte($other_date=NULL)
+	{
+		$other_date = new fDate($other_date);
+		return $this->date >= $other_date->date;
+	}
+	
+	
+	/**
+	 * If this date is less than the date passed
+	 * 
+	 * @param  fDate|object|string|integer $other_date  The date to compare with, `NULL` is interpreted as today
+	 * @return boolean  If this date is less than the one passed
+	 */
+	public function lt($other_date=NULL)
+	{
+		$other_date = new fDate($other_date);
+		return $this->date < $other_date->date;
+	}
+	
+	
+	/**
+	 * If this date is less than or equal to the date passed
+	 * 
+	 * @param  fDate|object|string|integer $other_date  The date to compare with, `NULL` is interpreted as today
+	 * @return boolean  If this date is less than or equal to the one passed
+	 */
+	public function lte($other_date=NULL)
+	{
+		$other_date = new fDate($other_date);
+		return $this->date <= $other_date->date;
 	}
 	
 	

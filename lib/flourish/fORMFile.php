@@ -9,16 +9,22 @@
  * @package    Flourish
  * @link       http://flourishlib.com/fORMFile
  * 
- * @version    1.0.0b9
- * @changes    1.0.0b9  ::upload() and ::set() now set the `$values` entry to `NULL` for filenames that are empty [wb, 2009-03-02]
- * @changes    1.0.0b8  Changed ::set() to accept objects and reject directories [wb, 2009-01-21]
- * @changes    1.0.0b7  Changed the class to use the new fFilesystem::createObject() method [wb, 2009-01-21]
- * @changes    1.0.0b6  Old files are now checked against the current file to prevent removal of an in-use file [wb, 2008-12-23]
- * @changes    1.0.0b5  Fixed ::replicate() to ensure the temp directory exists and ::set() to use the temp directory [wb, 2008-12-23]
- * @changes    1.0.0b4  ::objectify() no longer throws an exception when a file can't be found [wb, 2008-12-18]
- * @changes    1.0.0b3  Added ::replicate() so that replicated files get pu in the temp directory [wb, 2008-12-12]
- * @changes    1.0.0b2  Fixed a bug with objectifying file columns [wb, 2008-11-24]
- * @changes    1.0.0b   The initial implementation [wb, 2008-05-28]
+ * @version    1.0.0b15
+ * @changes    1.0.0b15  ::addFImageMethodCall() no longer requires column be an image upload column, inheritance to an image column now only happens for fImage objects [wb, 2009-07-29] 
+ * @changes    1.0.0b14  Updated to use new fORM::registerInspectCallback() method [wb, 2009-07-13]
+ * @changes    1.0.0b13  Updated code for new fORM API [wb, 2009-06-15]
+ * @changes    1.0.0b12  Changed replacement values in preg_replace() calls to be properly escaped [wb, 2009-06-11]
+ * @changes    1.0.0b11  Updated code to use new fValidationException::formatField() method [wb, 2009-06-04]  
+ * @changes    1.0.0b10  Fixed a bug where an inherited file upload column would not be properly re-set with an `existing-` input [wb, 2009-05-26]
+ * @changes    1.0.0b9   ::upload() and ::set() now set the `$values` entry to `NULL` for filenames that are empty [wb, 2009-03-02]
+ * @changes    1.0.0b8   Changed ::set() to accept objects and reject directories [wb, 2009-01-21]
+ * @changes    1.0.0b7   Changed the class to use the new fFilesystem::createObject() method [wb, 2009-01-21]
+ * @changes    1.0.0b6   Old files are now checked against the current file to prevent removal of an in-use file [wb, 2008-12-23]
+ * @changes    1.0.0b5   Fixed ::replicate() to ensure the temp directory exists and ::set() to use the temp directory [wb, 2008-12-23]
+ * @changes    1.0.0b4   ::objectify() no longer throws an exception when a file can't be found [wb, 2008-12-18]
+ * @changes    1.0.0b3   Added ::replicate() so that replicated files get pu in the temp directory [wb, 2008-12-12]
+ * @changes    1.0.0b2   Fixed a bug with objectifying file columns [wb, 2008-11-24]
+ * @changes    1.0.0b    The initial implementation [wb, 2008-05-28]
  */
 class fORMFile
 {
@@ -115,9 +121,9 @@ class fORMFile
 	{
 		$class = fORM::getClass($class);
 		
-		if (!array_key_exists($column, self::$image_upload_columns[$class])) {
+		if (empty(self::$file_upload_columns[$class][$column])) {
 			throw new fProgrammerException(
-				'The column specified, %s, has not been configured as an image upload column.',
+				'The column specified, %s, has not been configured as a file or image upload column',
 				$column
 			);
 		}
@@ -159,7 +165,7 @@ class fORMFile
 		
 		if (empty(self::$file_upload_columns[$class][$column])) {
 			throw new fProgrammerException(
-				'The column specified, %s, has not been configured as a file or image upload column.',
+				'The column specified, %s, has not been configured as a file or image upload column',
 				$column
 			);
 		}
@@ -292,12 +298,6 @@ class fORMFile
 		
 		fORM::registerActiveRecordMethod(
 			$class,
-			'inspect' . $camelized_column,
-			self::inspect
-		);
-		
-		fORM::registerActiveRecordMethod(
-			$class,
 			'upload' . $camelized_column,
 			self::upload
 		);
@@ -320,22 +320,10 @@ class fORMFile
 			self::prepare
 		);
 		
-		fORM::registerReflectCallback(
-			$class,
-			self::reflect
-		);
-		
-		fORM::registerReplicateCallback(
-			$class,
-			$column,
-			self::replicate
-		);
-		
-		fORM::registerObjectifyCallback(
-			$class,
-			$column,
-			self::objectify
-		);
+		fORM::registerReflectCallback($class, self::reflect);
+		fORM::registerInspectCallback($class, $column, self::inspect);
+		fORM::registerReplicateCallback($class, $column, self::replicate);
+		fORM::registerObjectifyCallback($class, $column, self::objectify);
 		
 		$only_once_hooks = array(
 			'post-begin::delete()'    => self::begin,
@@ -537,41 +525,25 @@ class fORMFile
 	
 	
 	/**
-	 * Returns the metadata about a column including features added by this class
+	 * Adds metadata about features added by this class
 	 * 
 	 * @internal
 	 * 
-	 * @param  fActiveRecord $object            The fActiveRecord instance
-	 * @param  array         &$values           The current values
-	 * @param  array         &$old_values       The old values
-	 * @param  array         &$related_records  Any records related to this record
-	 * @param  array         &$cache            The cache array for the record
-	 * @param  string        $method_name       The method that was called
-	 * @param  array         $parameters        The parameters passed to the method
-	 * @return mixed  The metadata array or element specified
+	 * @param  string $class      The class being inspected
+	 * @param  string $column     The column being inspected
+	 * @param  array  &$metadata  The array of metadata about a column
+	 * @return void
 	 */
-	static public function inspect($object, &$values, &$old_values, &$related_records, &$cache, $method_name, $parameters)
+	static public function inspect($class, $column, &$metadata)
 	{
-		list ($action, $column) = fORM::parseMethod($method_name);
-		
-		$class   = get_class($object);
-		$info    = fORMSchema::retrieve()->getColumnInfo(fORM::tablize($class), $column);
-		$element = (isset($parameters[0])) ? $parameters[0] : NULL;
-		
 		if (!empty(self::$image_upload_columns[$class][$column])) {
-			$info['feature'] = 'image';
+			$metadata['feature'] = 'image';
 			
 		} elseif (!empty(self::$file_upload_columns[$class][$column])) {
-			$info['feature'] = 'file';
+			$metadata['feature'] = 'file';
 		}
 		
-		$info['directory'] = self::$file_upload_columns[$class][$column]->getPath();
-		
-		if ($element) {
-			return (isset($info[$element])) ? $info[$element] : NULL;
-		}
-		
-		return $info;
+		$metadata['directory'] = self::$file_upload_columns[$class][$column]->getPath();
 	}
 	
 	
@@ -697,6 +669,32 @@ class fORMFile
 	
 	
 	/**
+	 * Takes a directory and creates a temporary directory inside of it - if the temporary folder exists, all files older than 6 hours will be deleted
+	 * 
+	 * @param  string $folder  The folder to create a temporary directory inside of
+	 * @return fDirectory  The temporary directory for the folder specified
+	 */
+	static private function prepareTempDir($folder)
+	{
+		// Let's clean out the upload temp dir
+		try {
+			$temp_dir = new fDirectory($folder->getPath() . self::TEMP_DIRECTORY);
+		} catch (fValidationException $e) {
+			$temp_dir = fDirectory::create($folder->getPath() . self::TEMP_DIRECTORY);
+		}
+		
+		$temp_files = $temp_dir->scan();
+		foreach ($temp_files as $temp_file) {
+			if (filemtime($temp_file->getPath()) < strtotime('-6 hours')) {
+				unlink($temp_file->getPath());
+			}
+		}
+		
+		return $temp_dir;	
+	}
+	
+	
+	/**
 	 * Handles re-processing an existing image file 
 	 * 
 	 * @internal
@@ -714,7 +712,7 @@ class fORMFile
 	{
 		list ($action, $column) = fORM::parseMethod($method_name);
 		
-		$class = fORM::getClass($object);
+		$class = get_class($object);
 		
 		self::processImage($class, $column, $values[$column]);
 	}
@@ -744,8 +742,8 @@ class fORMFile
 				$parameters = $method_call['parameters'];
 				if (!is_callable($callback)) {
 					throw new fProgrammerException(
-						'The fImage method specified, %s(), is not a valid method',
-						$method_call['method']
+						'The fImage method specified, %s, is not a valid method',
+						$method_call['method'] . '()'
 					);
 				}
 				call_user_func_array($callback, $parameters);
@@ -987,8 +985,8 @@ class fORMFile
 		
 		if (!array_key_exists(0, $parameters)) {
 			throw new fProgrammerException(
-				'The method %s() requires exactly one parameter',
-				$method_name
+				'The method %s requires exactly one parameter',
+				$method_name . '()'
 			);
 		}
 		
@@ -1061,8 +1059,8 @@ class fORMFile
 			foreach (self::$fupload_method_calls[$class][$column] as $method_call) {
 				if (!is_callable($upload->{$method_call['method']})) {
 					throw new fProgrammerException(
-						'The fUpload method specified, %s(), is not a valid method',
-						$method_call['method']
+						'The fUpload method specified, %s, is not a valid method',
+						$method_call['method'] . '()'
 					);
 				}
 				call_user_func_array($upload->{$method_call['method']}, $method_call['parameters']);
@@ -1094,20 +1092,9 @@ class fORMFile
 		list ($action, $column) = fORM::parseMethod($method_name);
 		
 		$upload_dir = self::$file_upload_columns[$class][$column];
+		$temp_dir   = self::prepareTempDir($upload_dir);
 		
-		// Let's clean out the upload temp dir
-		try {
-			$temp_dir = new fDirectory($upload_dir->getPath() . self::TEMP_DIRECTORY);
-		} catch (fValidationException $e) {
-			$temp_dir = fDirectory::create($upload_dir->getPath() . self::TEMP_DIRECTORY);
-		}
-		
-		$temp_files = $temp_dir->scan();
-		foreach ($temp_files as $temp_file) {
-			if (filemtime($temp_file->getPath()) < strtotime('-6 hours')) {
-				unlink($temp_file->getPath());
-			}
-		}
+		$existing_temp_file = FALSE;
 		
 		// Try to upload the file putting it in the temp dir incase there is a validation problem with the record
 		try {
@@ -1131,10 +1118,13 @@ class fORMFile
 				$file      = fFilesystem::createObject($file_path);
 				
 				$current_file = $values[$column];
-				if (!$current_file || ($current_file && $file->getPath() != $current_file->getPath())) {
-					fActiveRecord::assign($values, $old_values, $column, $file);
+				
+				// If the existing file is the same as the current file, we can just exit now
+				if ($current_file && $file->getPath() == $current_file->getPath()) {
+					return;	
 				}
-				return;
+				
+				$existing_temp_file = TRUE;
 				
 			} else {
 				$file = NULL;
@@ -1149,22 +1139,20 @@ class fORMFile
 			foreach (self::$column_inheritence[$class][$column] as $other_column) {
 				
 				if ($file) {
-					// Let's clean out the upload temp dir
-					try {
-						$other_upload_dir = self::$file_upload_columns[$class][$other_column];
-						$other_temp_dir   = new fDirectory($other_upload_dir->getPath() . self::TEMP_DIRECTORY);
-					} catch (fValidationException $e) {
-						$other_temp_dir   = fDirectory::create($other_upload_dir->getPath() . self::TEMP_DIRECTORY);
+					
+					// Image columns will only inherit if it is an fImage object
+					if (!$file instanceof fImage && isset(self::$image_upload_columns[$class][$other_column])) {
+						continue;		
 					}
 					
-					$temp_files = $other_temp_dir->scan();
-					foreach ($temp_files as $temp_file) {
-						if (filemtime($temp_file->getPath()) < strtotime('-6 hours')) {
-							unlink($temp_file->getPath());
-						}
-					}
+					$other_upload_dir = self::$file_upload_columns[$class][$other_column];
+					$other_temp_dir   = self::prepareTempDir($other_upload_dir);
 					
-					$other_file = $file->duplicate($other_temp_dir, FALSE);
+					if ($existing_temp_file) {
+						$other_file = fFilesystem::createObject($other_temp_dir->getPath() . $file->getFilename());
+					} else {
+						$other_file = $file->duplicate($other_temp_dir, FALSE);
+					}
 					
 				} else {
 					$other_file = $file;
@@ -1172,14 +1160,14 @@ class fORMFile
 				
 				fActiveRecord::assign($values, $old_values, $other_column, $other_file);
 				
-				if ($other_file) {
+				if (!$existing_temp_file && $other_file) {
 					self::processImage($class, $other_column, $other_file);
 				}
 			}
 		}
 		
 		// Process the file
-		if ($file) {
+		if (!$existing_temp_file && $file) {
 			self::processImage($class, $column, $file);
 		}
 	}
@@ -1205,9 +1193,9 @@ class fORMFile
 		foreach (self::$file_upload_columns[$class] as $column => $directory) {
 			$column_name = fORM::getColumnName($class, $column);
 			
-			$search_message  = self::compose('#%s: Please enter a value$#', $column_name);
-			$replace_message = self::compose('%s: Please upload a file', $column_name);;
-			$validation_messages = preg_replace($search_message, $replace_message, $validation_messages);
+			$search_message  = self::compose('%sPlease enter a value', fValidationException::formatField($column_name));
+			$replace_message = self::compose('%sPlease upload a file', fValidationException::formatField($column_name));
+			$validation_messages = preg_replace('#^' . preg_quote($search_message, '#') . '$#', strtr($replace_message, array('\\' => '\\\\', '$' => '\\$')), $validation_messages);
 			
 			// Grab the error that occured
 			try {
@@ -1217,7 +1205,7 @@ class fORMFile
 				}
 			} catch (fValidationException $e) {
 				if ($e->getMessage() != self::compose('Please upload a file')) {
-					$validation_messages[] = $column_name . ': ' . $e->getMessage();
+					$validation_messages[] = fValidationException::formatField($column_name) . $e->getMessage();
 				}
 			}
 		}

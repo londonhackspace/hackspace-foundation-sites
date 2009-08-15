@@ -2,16 +2,26 @@
 /**
  * Allows a column in an fActiveRecord class to be a relative sort order column
  * 
- * @copyright  Copyright (c) 2008-2009 Will Bond
+ * @copyright  Copyright (c) 2008-2009 Will Bond, others
  * @author     Will Bond [wb] <will@flourishlib.com>
+ * @author     Dan Collins, iMarc LLC [dc-imarc] <dan@imarc.net>
  * @license    http://flourishlib.com/license
  * 
  * @package    Flourish
  * @link       http://flourishlib.com/fORMOrdering
  * 
- * @version    1.0.0b2
- * @changes    1.0.0b2  Fixed a bug with ::inspect(), 'max_ordering_value' was being returned as 'max_ordering_index' [wb, 2009-03-02]
- * @changes    1.0.0b   The initial implementation [wb, 2008-06-25]
+ * @version    1.0.0b11
+ * @changes    1.0.0b11  Fixed another bug with deleting records in the middle of a set, added support for reordering multiple records at once [dc-imarc, 2009-07-17]
+ * @changes    1.0.0b10  Fixed a bug with deleting multiple in-memory records in the same set [dc-imarc, 2009-07-15]
+ * @changes    1.0.0b9   Fixed a bug with using fORM::registerInspectCallback() [wb, 2009-07-15]
+ * @changes    1.0.0b8   Updated to use new fORM::registerInspectCallback() method [wb, 2009-07-13]
+ * @changes    1.0.0b7   Fixed ::validate() so it properly ignores ordering columns in multi-column unique constraints [wb, 2009-06-17]
+ * @changes    1.0.0b6   Updated code for new fORM API [wb, 2009-06-15]
+ * @changes    1.0.0b5   Updated class to automatically correct ordering values that are too high [wb, 2009-06-14]
+ * @changes    1.0.0b4   Updated code to use new fValidationException::formatField() method [wb, 2009-06-04]  
+ * @changes    1.0.0b3   Fixed a bug with setting a new record to anywhere but the end of a set [wb, 2009-03-18]
+ * @changes    1.0.0b2   Fixed a bug with ::inspect(), 'max_ordering_value' was being returned as 'max_ordering_index' [wb, 2009-03-02]
+ * @changes    1.0.0b    The initial implementation [wb, 2008-06-25]
  */
 class fORMOrdering
 {
@@ -98,36 +108,13 @@ class fORMOrdering
 			);
 		}
 		
-		$camelized_column = fGrammar::camelize($column, TRUE);
+		fORM::registerHookCallback($class, 'post::validate()', self::validate);
+		fORM::registerHookCallback($class, 'post-validate::store()', self::reorder);
+		fORM::registerHookCallback($class, 'pre-commit::delete()', self::delete);
 		
-		fORM::registerActiveRecordMethod(
-			$class,
-			'inspect' . $camelized_column,
-			self::inspect
-		);
+		fORM::registerReflectCallback($class, self::reflect);
 		
-		fORM::registerHookCallback(
-			$class,
-			'post::validate()',
-			self::validate
-		);
-		
-		fORM::registerHookCallback(
-			$class,
-			'post-validate::store()',
-			self::reorder
-		);
-		
-		fORM::registerHookCallback(
-			$class,
-			'pre-commit::delete()',
-			self::delete
-		);
-		
-		fORM::registerReflectCallback(
-			$class,
-			self::reflect
-		);
+		fORM::registerActiveRecordMethod($class, 'inspect' . fGrammar::camelize($column, TRUE), self::inspect);
 		
 		// Ensure we only ever have one ordering column by overwriting
 		self::$ordering_columns[$class]['column']        = $column;
@@ -149,7 +136,7 @@ class fORMOrdering
 		$conditions = array();
 		foreach ($other_columns as $other_column) {
 			$other_value  = fActiveRecord::retrieveOld($old_values, $other_column, $values[$other_column]);
-			$conditions[] = $other_column . fORMDatabase::escapeBySchema($table, $other_column, $other_value, '=');
+			$conditions[] = $table . "." . $other_column . fORMDatabase::escapeBySchema($table, $other_column, $other_value, '=');
 		}
 		
 		return join(' AND ', $conditions);
@@ -209,6 +196,23 @@ class fORMOrdering
 		$shift_down = $current_max_value + 10;
 		$shift_up   = $current_max_value + 9;
 		
+		$sql = "SELECT " . $table . "." . $column . " FROM " . $table . " LEFT JOIN " . $table . " AS t2 ON " . $table . "." . $column . " = t2." . $column . " + 1";
+		foreach ($other_columns as $other_column) {
+			$sql .= " AND " . $table . "." . $other_column . " = t2." . $other_column;	
+		}
+		$sql .= " WHERE t2." . $column . " IS NULL AND " . $table . "." . $column . " != 1";
+		if ($other_columns) {
+			$sql .= " AND " . self::createOldOtherFieldsWhereClause($table, $other_columns, $values, $old_values);
+		}
+		
+		$res = fORMDatabase::retrieve()->translatedQuery($sql);
+		
+		if (!$res->countReturnedRows()) {
+			return;		
+		}
+		
+		$old_value = $res->fetchScalar() - 1;
+		
 		// Close the gap for all records after this one in the set
 		$sql  = "UPDATE " . $table . " SET " . $column . ' = ' . $column . ' - ' . $shift_down . ' ';
 		$sql .= 'WHERE ' . $column . ' > ' . $old_value;
@@ -234,23 +238,23 @@ class fORMOrdering
 	 * 
 	 * @internal
 	 * 
-	 * @param  fActiveRecord $object            The fActiveRecord instance
-	 * @param  array         &$values           The current values
-	 * @param  array         &$old_values       The old values
-	 * @param  array         &$related_records  Any records related to this record
-	 * @param  array         &$cache            The cache array for the record
-	 * @param  string        $method_name       The method that was called
-	 * @param  array         $parameters        The parameters passed to the method
-	 * @return mixed  The metadata array or element specified
-	 */
-	static public function inspect($object, &$values, &$old_values, &$related_records, &$cache, $method_name, $parameters)
-	{
-		list ($action, $column) = fORM::parseMethod($method_name);
-		
+	 * @param  fActiveRecord $object            The fActiveRecord instance 
+	 * @param  array         &$values           The current values 
+	 * @param  array         &$old_values       The old values 
+	 * @param  array         &$related_records  Any records related to this record 
+	 * @param  array         &$cache            The cache array for the record 
+	 * @param  string        $method_name       The method that was called 
+	 * @param  array         $parameters        The parameters passed to the method 
+	 * @return mixed  The metadata array or element specified 
+	 */ 
+	static public function inspect($object, &$values, &$old_values, &$related_records, &$cache, $method_name, $parameters) 
+	{ 
+		list ($action, $column) = fORM::parseMethod($method_name); 
+		 
 		$class = get_class($object);
 		$table = fORM::tablize($class);
 		
-		$info       = fORMSchema::retrieve()->getColumnInfo($table, $column);
+		$info       = fORMSchema::retrieve()->getColumnInfo($table, $column); 
 		$element    = (isset($parameters[0])) ? $parameters[0] : NULL;
 		
 		$column        = self::$ordering_columns[$class]['column'];
@@ -268,13 +272,15 @@ class fORMOrdering
 			$max_value += 1;
 		}
 		
-		$info['max_ordering_value'] = $max_value;
-		$info['feature']            = 'ordering';
-				
-		if ($element) {
-			return (isset($info[$element])) ? $info[$element] : NULL;
-		}
+		$info['max_ordering_value'] = $max_value; 
+		$info['feature']            = 'ordering'; 
 		
+		fORM::callInspectCallbacks($class, $column, $info);
+				 
+		if ($element) { 
+			return (isset($info[$element])) ? $info[$element] : NULL; 
+		} 
+		 
 		return $info;
 	}
 	
@@ -376,7 +382,14 @@ class fORMOrdering
 		$other_columns = self::$ordering_columns[$class]['other_columns'];
 		
 		$current_value = $values[$column];
-		$old_value     = fActiveRecord::retrieveOld($old_values, $column);
+		if (!$object->exists()) {
+			$old_value = fActiveRecord::retrieveOld($old_values, $column);
+		} else {
+			$old_value = fORMDatabase::retrieve()->translatedQuery(
+				"SELECT " . $column . " FROM " . $table . " WHERE " .
+				fORMDatabase::createPrimaryKeyWhereClause($table, $table, $values, $old_values)
+			)->fetchScalar();	
+		}
 		
 		// Figure out the range we are dealing with
 		$sql = "SELECT max(" . $column . ") FROM " . $table;
@@ -391,6 +404,8 @@ class fORMOrdering
 			$new_max_value = $current_max_value + 1;
 		}
 		
+		$changed = FALSE;
+		
 		// If a blank value was set, correct it to the old value (if there
 		// was one), or a new value at the end of the set
 		if ($current_value === '' || $current_value === NULL) {
@@ -399,13 +414,23 @@ class fORMOrdering
 			} else {
 				$current_value = $new_max_value;
 			}
-			fActiveRecord::assign($values, $old_values, $column, $current_value);
+			$changed = TRUE;
 		}
 		
 		// When we move an object into a new set and the value didn't change then move it to the end of the new set
-		if ($new_set && ($old_value === NULL || $old_value == $current_value)) {
+		if ($new_set && $object->exists() && ($old_value === NULL || $old_value == $current_value)) {
 			$current_value = $new_max_value;
-			fActiveRecord::assign($values, $old_values, $column, $current_value);		
+			$changed = TRUE;		
+		}
+		
+		// If the value is too high, then set it to the last value
+		if ($current_value > $new_max_value) {
+			$current_value = $new_max_value;
+			$changed = TRUE;
+		}
+		
+		if ($changed) {
+			fActiveRecord::assign($values, $old_values, $column, $current_value);
 		}
 		
 		// If the value didn't change, we can exit
@@ -544,7 +569,7 @@ class fORMOrdering
 	 */
 	static public function validate($object, &$values, &$old_values, &$related_records, &$cache, &$validation_messages)
 	{
-		$class = fORM::getClass($object);
+		$class = get_class($object);
 		$table = fORM::tablize($class);
 		
 		$column        = self::$ordering_columns[$class]['column'];
@@ -571,7 +596,7 @@ class fORMOrdering
 		// Remove any previous validation warnings
 		$filtered_messages = array();
 		foreach ($validation_messages as $validation_message) {
-			if (!preg_match('#^[^:]*\b' . preg_quote($column_name, '#') . '\b#', $validation_message)) {
+			if (!preg_match('#^' . str_replace('___', '(.*?)', preg_quote(fValidationException::formatField('___' . $column_name . '___'), '#')) . '#', $validation_message)) {
 				$filtered_messages[] = $validation_message;
 			}
 		}
@@ -583,13 +608,11 @@ class fORMOrdering
 		}
 		
 		if (!is_numeric($current_value) || strlen((int) $current_value) != strlen($current_value)) {
-			$validation_messages[] = self::compose('%s: Please enter an integer', $column_name);
+			$validation_messages[] = self::compose('%sPlease enter an integer', fValidationException::formatField($column_name));
 		
 		} elseif ($current_value < 1) {
-			$validation_messages[] = self::compose('%s: The value can not be less than 1', $column_name);
+			$validation_messages[] = self::compose('%sThe value can not be less than 1', fValidationException::formatField($column_name));
 			
-		} elseif ((!$new_set || $new_set_new_value) && $current_value > $new_max_value) {
-			$validation_messages[] = self::compose('%1$s: The value can not be greater than %2$s', $column_name, $new_max_value);
 		}
 	}
 	
@@ -605,7 +628,7 @@ class fORMOrdering
 
 
 /**
- * Copyright (c) 2008-2009 Will Bond <will@flourishlib.com>
+ * Copyright (c) 2008-2009 Will Bond <will@flourishlib.com>, others
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal

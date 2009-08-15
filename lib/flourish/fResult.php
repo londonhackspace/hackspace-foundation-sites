@@ -9,7 +9,11 @@
  * @package    Flourish
  * @link       http://flourishlib.com/fResult
  * 
- * @version    1.0.0b2
+ * @version    1.0.0b6
+ * @changes    1.0.0b6  Fixed a bug where ::fetchAllRows() would throw a fNoRowsException [wb, 2009-06-30]
+ * @changes    1.0.0b5  Added the method ::asObjects() to allow for returning objects instead of associative arrays [wb, 2009-06-23]
+ * @changes    1.0.0b4  Fixed a bug with not properly converting SQL Server text to UTF-8 [wb, 2009-06-18]
+ * @changes    1.0.0b3  Added support for Oracle, various bug fixes [wb, 2009-05-04]
  * @changes    1.0.0b2  Updated for new fCore API [wb, 2009-02-16]
  * @changes    1.0.0b   The initial implementation [wb, 2007-09-25]
  */
@@ -74,6 +78,13 @@ class fResult implements Iterator
 	private $extension = NULL;
 	
 	/**
+	 * If rows should be converted to objects
+	 * 
+	 * @var boolean
+	 */
+	private $output_objects = FALSE;
+	
+	/**
 	 * The position of the pointer in the result set
 	 * 
 	 * @var integer
@@ -121,14 +132,14 @@ class fResult implements Iterator
 	 * 
 	 * @internal
 	 * 
-	 * @param  string $type           The type of database: `'mssql'`, `'mysql'`, `'postgresql'`, `'sqlite'`
+	 * @param  string $type           The type of database: `'mssql'`, `'mysql'`, `'oracle'`, `'postgresql'`, `'sqlite'`
 	 * @param  string $extension      The database extension used: `'array'`, `'mssql'`, `'mysql'`, `'mysqli'`, `'pgsql'`, `'sqlite'`
 	 * @param  string $character_set  MSSQL only: the character set to transcode from since MSSQL doesn't do UTF-8
 	 * @return fResult
 	 */
 	public function __construct($type, $extension, $character_set=NULL)
 	{
-		$valid_types = array('mssql', 'mysql', 'postgresql', 'sqlite');
+		$valid_types = array('mssql', 'mysql', 'oracle', 'postgresql', 'sqlite');
 		if (!in_array($type, $valid_types)) {
 			throw new fProgrammerException(
 				'The database type specified, %1$s, is invalid. Must be one of: %2$s.',
@@ -138,7 +149,7 @@ class fResult implements Iterator
 		}
 		
 		// Certain extensions don't offer a buffered query, so it is emulated using an array
-		if (in_array($extension, array('odbc', 'pdo', 'sqlsrv'))) {
+		if (in_array($extension, array('oci8', 'odbc', 'pdo', 'sqlsrv'))) {
 			$extension = 'array';
 		}
 		
@@ -181,11 +192,15 @@ class fResult implements Iterator
 		} elseif ($this->extension == 'sqlite') {
 			// SQLite doesn't have a way to free a result
 		}
+		
+		$this->result = NULL;
 	}
 	
 	
 	/**
 	 * All requests that hit this method should be requests for callbacks
+	 * 
+	 * @internal
 	 * 
 	 * @param  string $method  The method to create a callback for
 	 * @return callback  The callback for the method requested
@@ -205,12 +220,8 @@ class fResult implements Iterator
 	{
 		if ($this->extension == 'mssql') {
 			$row = mssql_fetch_assoc($this->result);
-			$row = $this->fixDblibMSSQLDriver($row);
-			
-			// This is an unfortunate fix that required for databases that don't support limit
-			// clauses with an offset. It prevents unrequested columns from being returned.
-			if ($this->untranslated_sql !== NULL && isset($row['__flourish_limit_offset_row_num'])) {
-				unset($row['__flourish_limit_offset_row_num']);
+			if (!empty($row)) {
+				$row = $this->fixDblibMSSQLDriver($row);
 			}
 				
 		} elseif ($this->extension == 'mysql') {
@@ -225,11 +236,28 @@ class fResult implements Iterator
 			$row = $this->result[$this->pointer];
 		}
 		
+		// Fix uppercase column names to lowercase
+		if ($row && $this->type == 'oracle') {
+			$new_row = array();
+			foreach ($row as $column => $value) {
+				$new_row[strtolower($column)] = $value;
+			}	
+			$row = $new_row;
+		}
+		
+		// This is an unfortunate fix that required for databases that don't support limit
+		// clauses with an offset. It prevents unrequested columns from being returned.
+		if ($row && ($this->type == 'mssql' || $this->type == 'oracle')) {
+			if ($this->untranslated_sql !== NULL && isset($row['flourish__row__num'])) {
+				unset($row['flourish__row__num']);
+			}	
+		}
+		
 		// This decodes the data coming out of MSSQL into UTF-8
-		if ($this->type == 'mssql') {
+		if ($row && $this->type == 'mssql') {
 			if ($this->character_set) {
 				foreach ($row as $key => $value) {
-					if (!is_string($value) || strpos($key, '__flourish_mssqln_') === 0) {
+					if (!is_string($value) || strpos($key, 'fmssqln__') === 0 || isset($row['fmssqln__' . $key]) || preg_match('#[\x0-\x8\xB\xC\xE-\x1F]#', $value)) {
 						continue;
 					} 		
 					$row[$key] = iconv($this->character_set, 'UTF-8', $value);
@@ -239,6 +267,18 @@ class fResult implements Iterator
 		} 
 		
 		$this->current_row = $row;
+	}
+	
+	
+	/**
+	 * Sets the object to return rows as objects instead of associative arrays (the default)
+	 * 
+	 * @return fResult  The result object, to allow for method chaining
+	 */
+	public function asObjects()
+	{
+		$this->output_objects = TRUE;
+		return $this;
 	}
 	
 	
@@ -267,8 +307,8 @@ class fResult implements Iterator
 	/**
 	 * Returns the current row in the result set (required by iterator interface)
 	 * 
-	 * @throws fNoRowsException
-	 * @throws fNoRemainingException
+	 * @throws fNoRowsException       When the query did not return any rows
+	 * @throws fNoRemainingException  When there are no remaining rows in the result
 	 * @internal
 	 * 
 	 * @return array  The current row
@@ -289,6 +329,9 @@ class fResult implements Iterator
 			$this->advanceCurrentRow();
 		}
 		
+		if ($this->output_objects) {
+			return (object) $this->current_row;	
+		}
 		return $this->current_row;
 	}
 	
@@ -301,18 +344,18 @@ class fResult implements Iterator
 	 */
 	private function decodeMSSQLNationalColumns($row)
 	{
-		if (strpos($this->sql, '__flourish_mssqln_') === FALSE) {
+		if (strpos($this->sql, 'fmssqln__') === FALSE) {
 			return $row;
 		}
 		
 		$columns = array_keys($row);
 		
 		foreach ($columns as $column) {
-			if (substr($column, 0, 18) != '__flourish_mssqln_') {
+			if (substr($column, 0, 9) != 'fmssqln__') {
 				continue;
 			}	
 			
-			$real_column = substr($column, 18);
+			$real_column = substr($column, 9);
 			
 			$row[$real_column] = iconv('ucs-2le', 'utf-8', $row[$column]);
 			unset($row[$column]);
@@ -329,8 +372,6 @@ class fResult implements Iterator
 	 */
 	public function fetchAllRows()
 	{
-		$this->seek(0);
-		
 		$all_rows = array();
 		foreach ($this as $row) {
 			$all_rows[] = $row;
@@ -342,8 +383,8 @@ class fResult implements Iterator
 	/**
 	 * Returns the row next row in the result set (where the pointer is currently assigned to)
 	 * 
-	 * @throws fNoRowsException
-	 * @throws fNoRemainingException
+	 * @throws fNoRowsException       When the query did not return any rows
+	 * @throws fNoRemainingException  When there are no rows left in the result
 	 * 
 	 * @return array  The associative array of the row
 	 */
@@ -358,8 +399,8 @@ class fResult implements Iterator
 	/**
 	 * Wraps around ::fetchRow() and returns the first field from the row instead of the whole row
 	 * 
-	 * @throws fNoRowsException
-	 * @throws fNoRemainingException
+	 * @throws fNoRowsException       When the query did not return any rows
+	 * @throws fNoRemainingException  When there are no rows left in the result
 	 * 
 	 * @return string|number  The first scalar value from ::fetchRow()
 	 */
@@ -393,7 +434,7 @@ class fResult implements Iterator
 				$module_info = ob_get_contents();
 				ob_end_clean();
 				
-				$using_dblib = preg_match('#FreeTDS#ims', $module_info, $match);
+				$using_dblib = !preg_match('#FreeTDS#ims', $module_info, $match);
 			}
 		}
 		
@@ -485,7 +526,8 @@ class fResult implements Iterator
 	/**
 	 * Returns the current row number (required by iterator interface)
 	 * 
-	 * @throws fNoRowsException
+	 * @throws fNoRowsException       When the query did not return any rows
+	 * @throws fNoRemainingException  When there are no remaining rows in the result
 	 * @internal
 	 * 
 	 * @return integer  The current row number
@@ -503,7 +545,8 @@ class fResult implements Iterator
 	/**
 	 * Advances to the next row in the result (required by iterator interface)
 	 * 
-	 * @throws fNoRowsException
+	 * @throws fNoRowsException       When the query did not return any rows
+	 * @throws fNoRemainingException  When there are no remaining rows in the result
 	 * @internal
 	 * 
 	 * @return void
@@ -542,7 +585,7 @@ class fResult implements Iterator
 	/** 
 	 * Seeks to the specified zero-based row for the specified SQL query
 	 * 
-	 * @throws fNoRowsException
+	 * @throws fNoRowsException  When the query did not return any rows
 	 * 
 	 * @param  integer $row  The row number to seek to (zero-based)
 	 * @return void
@@ -595,6 +638,7 @@ class fResult implements Iterator
 	 */
 	public function setAffectedRows($affected_rows)
 	{
+		if ($affected_rows === -1) { $affected_rows = 0; }
 		$this->affected_rows = (int) $affected_rows;
 	}
 	
@@ -675,7 +719,7 @@ class fResult implements Iterator
 	/**
 	 * Throws an fNoResultException if the query did not return any rows
 	 * 
-	 * @throws fNoRowsException
+	 * @throws fNoRowsException  When the query did not return any rows
 	 * 
 	 * @param  string $message  The message to use for the exception if there are no rows in this result set
 	 * @return void
