@@ -15,14 +15,14 @@ if ($user) {
 </p>
 
 <p>
-    Foundation membership is paid monthly. Initially we're asking for a donation of £10 per 
+    Foundation membership is paid monthly. We're asking for a subscription of £20 per 
     month &mdash; we need to build up cash to pay a deposit as well as have enough in reserve.
     In return for this you'll get full transparency on where your money is going, as well
     as a say in what we do with it.
 </p>
 
 <p>
-    If you genuinely can't afford £10, you are free to pay less within reason.
+    If you genuinely can't afford £20, you are free to pay less within reason. More is also good.
 </p>
 <h3>What happens if it all goes wrong?</h3>
 <p>
