@@ -20,9 +20,8 @@ require('header.php');
 <p>If you're interested, get in touch!</p>
 
 <ul>
-    <li>Drop into <a href="irc://irc.freenode.net/#hackspacefoundation">#hackspacefoundation</a> on irc.freenode.net</li>
-    <li>Contact Russ at 
-    russ (at) hackspace (dot) org (dot) uk.</li>
+    <li>Drop into <a href="http://hackspace.org.uk/irc/">our irc channels on freenode</a>.</li>
+    <li>Email us <b>contact (at) hackspace (dot) org (dot) uk</b>.</li>
 </p>
 
 
