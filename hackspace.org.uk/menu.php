@@ -22,11 +22,6 @@ function menulink($url, $name, $title) {
     <ul id="menu">
         <?=menulink('/', 'about', 'About');?>
         <?=menulink('/organisation', 'organisation', 'Organisation');?>
-        <li><a href="http://wiki.hackspace.org.uk">Wiki</a></li>
-        <?=menulink('/irc', 'irc', 'IRC');?>
-        <?=menulink('/donate', 'donate', 'Donate');?>
-        <?=menulink('/membership.php', 'membership', 'Membership');?>
-        <?=menulink('/reports', 'reports', 'Reports');?>
-        <?=menulink('/contact', 'contact', 'Contact Us');?>
+        <?=menulink('http://london.hackspace.org.uk', 'london', 'London Hackspace');?>
     </ul>
 </div>
