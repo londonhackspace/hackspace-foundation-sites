@@ -17,6 +17,7 @@ to the lack of hacker spaces in the UK. Since then, we've helped groups in more 
 <p>We are the parent organisation of the <a href="http://london.hackspace.org.uk">London Hackspace</a>, but we are also coordinating
 many other spaces in the UK. Currently we know of the following spaces:</p>
 <ul>
+    <li><a href="http://london.hackspace.org.uk">London Hackspace</a></li>
     <li><a href="http://www.fizzpop.org.uk">fizzPOP (Birmingham)</a></li>
     <li><a href="http://groups.google.com/group/NW-hack-space">North West Hackspace</a></li>
     <li><a href="http://leeds.hackspace.org.uk">Leeds Hack Space</a></li>

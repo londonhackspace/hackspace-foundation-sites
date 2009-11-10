@@ -22,6 +22,5 @@ function menulink($url, $name, $title) {
     <ul id="menu">
         <?=menulink('/', 'about', 'About');?>
         <?=menulink('/organisation', 'organisation', 'Organisation');?>
-        <?=menulink('http://london.hackspace.org.uk', 'london', 'London Hackspace');?>
     </ul>
 </div>
