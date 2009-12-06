@@ -35,7 +35,7 @@ ofx.bank_account.statement.transactions.each do |transaction|
 end
 
 db.execute("SELECT users.*, (SELECT max(timestamp) FROM transactions WHERE user_id = users.id) AS lastsubscription 
-		FROM users WHERE users.subscribed = 1 AND lastsubscription < date('now', '-1 month')") do |user|
+		FROM users WHERE users.subscribed = 1 AND lastsubscription < date('now', '-1 month', '-14 days')") do |user|
 	puts "Unsubscribing #{user['full_name']}."
   	db.execute("UPDATE users SET subscribed = 0 WHERE id = ?", user['id'])
 end
