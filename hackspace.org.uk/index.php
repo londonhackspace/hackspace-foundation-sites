@@ -27,6 +27,7 @@ many other spaces in the UK. Currently we know of the following spaces:</p>
     <li><a href="http://stockport.hackspace.org.uk">Stockport/South-east Manchester Hackspace</a></li>
     <li><a href="http://groups.google.com/group/brightonhackerspace">BuildBrighton (Brighton)</a></li>
     <li><a href="http://www.geekchique.org/wiki">E-Space (Exeter)</a></li>
+    <li><a href="http://groups.google.com/group/salop-hackspace">Shropshire Hackspace</a></li>
 </ul>
 
 <p>If you're thinking of starting a hacker space in the UK, <a href="/starting.php">we can help you</a>.</p>
