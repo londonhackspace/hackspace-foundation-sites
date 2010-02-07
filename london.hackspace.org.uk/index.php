@@ -18,7 +18,7 @@ or <a href="http://twitter.com/londonhackspace">follow us on twitter</a>.</p>
 
 <br>
 <h2>Join us!</h2>
-<p>If you want to use our space you must <a href="/donate">subscribe</a>, however attending 
+<p>If you want to use our space you must <a href="/membership.php">subscribe</a>, however attending 
 our <a href="/events">events</a> is free!</p>
 
 <? require('footer.php'); ?>

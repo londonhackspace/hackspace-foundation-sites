@@ -18,5 +18,4 @@ financial and organisational health of the Foundation.</p>
     <li><a href="/reports/200910.php">October</a></li>
     <li><a href="/reports/200911.php">November</a></li>
 </ul>
-</ul>
 <? require('../footer.php'); ?>
