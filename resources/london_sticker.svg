@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="265.74802"
+   height="265.74802"
+   id="svg2"
+   version="1.1"
+   inkscape:version="0.47pre4 r22446"
+   sodipodi:docname="hackspacesticker.svg"
+   inkscape:export-filename="/home/russ/hackspacesticker.png"
+   inkscape:export-xdpi="300.07339"
+   inkscape:export-ydpi="300.07339">
+  <defs
+     id="defs4">
+    <inkscape:perspective
+       sodipodi:type="inkscape:persp3d"
+       inkscape:vp_x="0 : 526.18109 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_z="744.09448 : 526.18109 : 1"
+       inkscape:persp3d-origin="372.04724 : 350.78739 : 1"
+       id="perspective10" />
+    <inkscape:perspective
+       id="perspective247"
+       inkscape:persp3d-origin="57 : 38 : 1"
+       inkscape:vp_z="114 : 57 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 57 : 1"
+       sodipodi:type="inkscape:persp3d" />
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#000000"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="2.8284271"
+     inkscape:cx="146.453"
+     inkscape:cy="125.24479"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer3"
+     showgrid="false"
+     units="mm"
+     inkscape:showpageshadow="false"
+     inkscape:window-width="1280"
+     inkscape:window-height="950"
+     inkscape:window-x="0"
+     inkscape:window-y="25"
+     inkscape:window-maximized="1"
+     showborder="false" />
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Template"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(0,-786.61286)"
+     style="display:inline"
+     sodipodi:insensitive="true">
+    <path
+       sodipodi:type="arc"
+       style="fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:#b2b2b2;stroke-width:0.36633512;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       id="path2949"
+       sodipodi:cx="121.72338"
+       sodipodi:cy="183.42058"
+       sodipodi:rx="136.87567"
+       sodipodi:ry="136.87567"
+       d="m 258.59905,183.42058 a 136.87567,136.87567 0 1 1 -273.75134,0 136.87567,136.87567 0 1 1 273.75134,0 z"
+       transform="matrix(0.96723106,0,0,0.96723106,15.649543,742.57679)" />
+  </g>
+  <g
+     inkscape:groupmode="layer"
+     id="layer2"
+     inkscape:label="Logo"
+     style="display:inline"
+     sodipodi:insensitive="true">
+    <g
+       style="display:inline"
+       id="g2942"
+       transform="matrix(1.8772377,0,0,1.8772377,26.317171,26.373067)">
+      <circle
+         style="fill:#3528a8;fill-opacity:1"
+         id="circle236"
+         r="57"
+         cy="57"
+         cx="57"
+         sodipodi:cx="57"
+         sodipodi:cy="57"
+         sodipodi:rx="57"
+         sodipodi:ry="57"
+         d="M 114,57 C 114,88.480231 88.480231,114 57,114 25.519769,114 0,88.480231 0,57 0,25.519769 25.519769,0 57,0 c 31.480231,0 57,25.519769 57,57 z" />
+      <g
+         id="g238">
+        <path
+           id="path240"
+           d="M 57,98.501 43.999,85.5 46.217,83.282 30.717,67.781 28.499,70 15.498,57 34.987,37.51 l 13.002,13 -4.234,4.235 2.66,2.661 10.992,-10.993 -2.66,-2.66 -4.089,4.089 L 37.656,34.841 57,15.497 70.001,28.498 67.784,30.716 83.282,46.216 85.501,43.998 98.503,57 79.159,76.343 66.157,63.342 70.246,59.253 68.083,57.09 57.091,68.083 59.253,70.245 63.487,66.011 76.49,79.014 57,98.501 z"
+           style="fill:#ffffff" />
+      </g>
+    </g>
+  </g>
+  <g
+     inkscape:groupmode="layer"
+     id="layer3"
+     inkscape:label="Text">
+    <text
+       xml:space="preserve"
+       style="font-size:10px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;font-family:Helvetica Neue;-inkscape-font-specification:Helvetica Neue"
+       id="text2830"
+       sodipodi:linespacing="125%"
+       transform="matrix(0.71697437,-0.69709953,0.69709953,0.71697437,-53.881429,129.79384)"
+       inkscape:transform-center-y="-73.052356"
+       inkscape:transform-center-x="71.962103"><textPath
+         xlink:href="#path3625"
+         id="textPath3630"
+         style="font-size:16px;font-weight:bold;-inkscape-font-specification:AlArabiya Bold">London Hackspace</textPath></text>
+    <path
+       style="fill:#ffffff;fill-opacity:0;fill-rule:evenodd;stroke:#000000;stroke-width:0.31113124;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:0;display:inline"
+       d="M 72.048943,34.083452 C 139.52392,-0.13499048 199.90442,20.145051 237.11539,85.33157"
+       id="path3625"
+       sodipodi:nodetypes="cc" />
+    <text
+       inkscape:transform-center-x="-110.145"
+       inkscape:transform-center-y="-3.0129859"
+       transform="matrix(0.02888836,0.99958265,-0.99958265,0.02888836,261.7351,-3.4849559)"
+       sodipodi:linespacing="125%"
+       id="text3639"
+       style="font-size:10px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;font-family:Helvetica Neue;-inkscape-font-specification:Helvetica Neue"
+       xml:space="preserve"><textPath
+         id="textPath3641"
+         xlink:href="#path3625">http://london.hackspace.org.uk</textPath></text>
+  </g>
+</svg>
