@@ -15,10 +15,10 @@
    id="svg2"
    version="1.1"
    inkscape:version="0.47pre4 r22446"
-   sodipodi:docname="hackspacesticker.svg"
+   sodipodi:docname="london_sticker.svg"
    inkscape:export-filename="/home/russ/hackspacesticker.png"
-   inkscape:export-xdpi="300.07339"
-   inkscape:export-ydpi="300.07339">
+   inkscape:export-xdpi="300"
+   inkscape:export-ydpi="300">
   <defs
      id="defs4">
     <inkscape:perspective
@@ -43,9 +43,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
-     inkscape:zoom="2.8284271"
-     inkscape:cx="146.453"
-     inkscape:cy="125.24479"
+     inkscape:zoom="0.99999999"
+     inkscape:cx="52.004707"
+     inkscape:cy="145.31796"
      inkscape:document-units="px"
      inkscape:current-layer="layer3"
      showgrid="false"
@@ -56,7 +56,9 @@
      inkscape:window-x="0"
      inkscape:window-y="25"
      inkscape:window-maximized="1"
-     showborder="false" />
+     showborder="false"
+     showguides="true"
+     inkscape:guide-bbox="true" />
   <metadata
      id="metadata7">
     <rdf:RDF>
@@ -96,7 +98,7 @@
     <g
        style="display:inline"
        id="g2942"
-       transform="matrix(1.8772377,0,0,1.8772377,26.317171,26.373067)">
+       transform="matrix(2.3176288,0,0,2.3176288,1.21488,1.2265818)">
       <circle
          style="fill:#3528a8;fill-opacity:1"
          id="circle236"
@@ -120,32 +122,38 @@
   <g
      inkscape:groupmode="layer"
      id="layer3"
-     inkscape:label="Text">
+     inkscape:label="Text"
+     style="display:inline">
     <text
        xml:space="preserve"
-       style="font-size:10px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;font-family:Helvetica Neue;-inkscape-font-specification:Helvetica Neue"
+       style="font-size:10px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#ffffff;fill-opacity:1;stroke:#b2b2b2;stroke-opacity:0;font-family:Helvetica Neue;-inkscape-font-specification:Helvetica Neue"
        id="text2830"
        sodipodi:linespacing="125%"
-       transform="matrix(0.71697437,-0.69709953,0.69709953,0.71697437,-53.881429,129.79384)"
-       inkscape:transform-center-y="-73.052356"
-       inkscape:transform-center-x="71.962103"><textPath
-         xlink:href="#path3625"
-         id="textPath3630"
-         style="font-size:16px;font-weight:bold;-inkscape-font-specification:AlArabiya Bold">London Hackspace</textPath></text>
-    <path
-       style="fill:#ffffff;fill-opacity:0;fill-rule:evenodd;stroke:#000000;stroke-width:0.31113124;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:0;display:inline"
-       d="M 72.048943,34.083452 C 139.52392,-0.13499048 199.90442,20.145051 237.11539,85.33157"
-       id="path3625"
-       sodipodi:nodetypes="cc" />
+       inkscape:transform-center-y="-107.45933"
+       inkscape:transform-center-x="-1.9459722"><textPath
+         xlink:href="#path3675"
+         id="textPath3680"
+         style="font-size:22px;font-weight:bold;fill:#ffffff;fill-opacity:1;stroke:#b2b2b2;stroke-opacity:0;-inkscape-font-specification:AlArabiya Bold">London Hackspace</textPath></text>
     <text
-       inkscape:transform-center-x="-110.145"
-       inkscape:transform-center-y="-3.0129859"
-       transform="matrix(0.02888836,0.99958265,-0.99958265,0.02888836,261.7351,-3.4849559)"
+       inkscape:transform-center-x="77.457675"
+       inkscape:transform-center-y="82.155254"
        sodipodi:linespacing="125%"
        id="text3639"
-       style="font-size:10px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;font-family:Helvetica Neue;-inkscape-font-specification:Helvetica Neue"
-       xml:space="preserve"><textPath
-         id="textPath3641"
-         xlink:href="#path3625">http://london.hackspace.org.uk</textPath></text>
+       style="font-size:10px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#ffffff;fill-opacity:1;stroke:#b2b2b2;stroke-opacity:0;font-family:Helvetica Neue;-inkscape-font-specification:Helvetica Neue"
+       xml:space="preserve"
+       transform="matrix(0.94152999,-0.3369292,0.3369292,0.94152999,-36.344383,52.608062)"><textPath
+         xlink:href="#path2896"
+         id="textPath3673">london.hackspace.org.uk</textPath></text>
+    <path
+       style="fill:#ffffff;fill-opacity:0;fill-rule:evenodd;stroke:#b2b2b2;stroke-width:0.33428180000000002;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:0;display:inline"
+       d="M 8.0447492,121.39682 C 1.3861357,190.33273 51.426216,251.57115 119.8124,258.17666"
+       id="path2896"
+       sodipodi:nodetypes="sc"
+       inkscape:transform-center-x="68.419991"
+       inkscape:transform-center-y="56.579871" />
+    <path
+       style="fill:#ffffff;fill-opacity:0;fill-rule:evenodd;stroke:#b2b2b2;stroke-width:0.28411075000000002;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:0;display:inline"
+       d="M 49.32087,69.314628 C 81.727848,21.304469 146.97847,10.617181 195.06221,45.443917 243.14595,80.270646 255.85446,147.42323 223.44748,195.43339 191.04049,243.44355 125.78988,254.13083 77.706139,219.3041 29.622401,184.47736 16.913884,117.32479 49.32087,69.314628 z"
+       id="path3675" />
   </g>
 </svg>
