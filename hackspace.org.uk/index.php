@@ -20,8 +20,8 @@ many other spaces in the UK. Currently we know of the following spaces:</p>
     <li><a href="http://london.hackspace.org.uk">London Hackspace</a></li>
     <li><a href="http://www.fizzpop.org.uk">fizzPOP (Birmingham)</a></li>
     <li><a href="http://nwhackspace.wordpress.com">North West Hackspace (Liverpool)</a></li>
-    <li><a href="http://leeds.hackspace.org.uk">Leeds Hack Space</a></li>
-    <li><a href="http://bristol.hackspace.org.uk">Bristol Hack Space</a></li>
+    <li><a href="http://leeds.hackspace.org.uk">Leeds Hackspace</a></li>
+    <li><a href="http://bristol.hackspace.org.uk">Bristol Hackspace</a></li>
     <li><a href="http://www.southackton.org.uk/">SoutHACKton (Southampton)</a></li>
     <li><a href="http://groups.google.com/group/york-hack-space">York Hackspace</a></li>
     <li><a href="http://hacman.org.uk">HACMan (Manchester)</a></li>
