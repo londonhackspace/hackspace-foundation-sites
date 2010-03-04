@@ -21,7 +21,7 @@ require('../header.php');
     <tr><td>Total Revenue</td><td class="amount">£5,805.00</td></tr>
     <tr><th colspan="2">Expenses</th></tr>
     <tr><td class="sub">Rent</td><td class="amount">£420.00</td></tr>
-    <tr><td>Total Expenses</td><td class="amount">£420.32</td></tr>
+    <tr><td>Total Expenses</td><td class="amount">£420.00</td></tr>
     <tr><th>Net Income</th><td class="amount">£5,385.68</td></tr>
     <tr></tr>
 </table>
