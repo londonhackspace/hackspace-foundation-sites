@@ -31,6 +31,8 @@ many other spaces in the UK. Currently we know of the following spaces:</p>
     <li><a href="http://madlab.org.uk">Madlab (Manchester)</a></li>
     <li><a href="http://www.meetup.com/Nottinghack/">Nottinghack (Nottingham)</a></li>
     <li><a href="http://groups.google.com/group/reading-hackspace/">Reading Hackspace</a></li>
+    <li><a href="http://dek.spc.org/">Deckspace (London)</a></li>
+    <li><a href="http://www.makespace.org/">Makespace (Cambridge)</a></li>
 </ul>
 
 <p>If you're thinking of starting a hacker space in the UK, <a href="/starting.php">we can help you</a>.</p>
