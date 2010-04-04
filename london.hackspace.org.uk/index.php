@@ -9,7 +9,11 @@ require('header.php'); ?>
 free <a href="/events">hack evenings and workshops</a> which are open to everyone.</p>
 
 <p><a href="http://wiki.hackspace.org.uk"><img src="/images/electronics.jpg" /><img src="/images/drawers.jpg" /></a>
-<script type="text/javascript" src="http://www.flickr.com/badge_code_v2.gne?count=7&display=random&size=s&layout=h&context=in%2Fpool-1183951%40N23%2F&source=group&group=1183951%40N23"></script></p>
+<div style="margin-left:10px">
+<script type="text/javascript" 
+    src="http://www.flickr.com/badge_code_v2.gne?count=7&display=random&size=s&layout=h&context=in%2Fpool-1183951%40N23%2F&source=group&group=1183951%40N23"></script>
+</div>
+</p>
 <p><strong>Learn more about the London Hackspace on <a href="http://wiki.hackspace.org.uk">our wiki</a>.</strong></p>
 
 <p>To get involved, join the <a href="http://webchat.freenode.net/?channels=london-hack-space">IRC channel</a>, 
