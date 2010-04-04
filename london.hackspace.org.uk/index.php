@@ -1,9 +1,9 @@
 <? 
 $page = 'about';
-$desc = 'The London Hackspace runs a non-profit, collaboratively-run hacker space in central London. We provide infrastructure for our members to make and learn things.';
+$desc = 'The London Hackspace is a non-profit, community-run hacker space in central London. We provide infrastructure for our members to make and learn things.';
 require('header.php'); ?>
 
-<p class="blurb"><strong>We're a non-profit, collaboratively-run <a href="http://en.wikipedia.org/wiki/Hackerspace">hacker space</a> in central London. We provide infrastructure for our members to make and learn things.</strong></p>
+<p class="blurb"><strong>The London Hackspace is a non-profit, community-run <a href="http://en.wikipedia.org/wiki/Hackerspace">hacker space</a> in central London. We provide a space where people who make things can come to share tools and knowledge.</strong></p>
 
 <p>We have a space near King's Cross which is open to our members, and we hold regular 
 free <a href="/events">hack evenings and workshops</a> which are open to everyone.</p>
