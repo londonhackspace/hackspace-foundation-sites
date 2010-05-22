@@ -10,9 +10,7 @@ if (!$user) {
 <?
 
 if($user->isMember()) {
-
-	// FIXME: Need to work out how to obtain members e-mail addresses.
-	$email = 'robert@rhl.me.k';
+	$email = $user->getEmail();
 
 	// Make database connection.
 	require $_SERVER['DOCUMENT_ROOT'] . '../var/mediawiki.php';
@@ -69,7 +67,7 @@ if($user->isMember()) {
 		} catch (fValidationException $e) {
 			$error = $e->getMessage();
 		} catch (fSQLException $e) {
-			echo "<p>An unexpected error occurred, please try again later</p>";
+			$error = "<p>An unexpected error occurred, please contact IRC.</p>";
 			trigger_error( $e );
 		}
 	}
@@ -127,11 +125,11 @@ if($user->isMember()) {
 				</tr>
 				<tr>
 					<td><label for="password">Wiki password</label></td>
-					<td><input type="text" name="password"></td>
+					<td><input type="password" name="password"></td>
 				</tr>
 				<tr>
 					<td><label for="passwordconfirm">Confirm wiki password</label></td>
-					<td><input type="text" name="passwordconfirm"></td>
+					<td><input type="password" name="passwordconfirm"></td>
 				</tr>
 				<tr>
 					<td colspan="2"><input type="submit" name="create" value="Create"></td>
