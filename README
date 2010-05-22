@@ -1,3 +1,9 @@
 This is the source code for the Hackspace Foundation web sites:
 
 http://www.hackspace.org.uk
+
+Configuring MediaWiki users panel:
+ - Create a file in ./var/mediawiki.php with the $type, $server, $username,
+   $password, $database, and $path variables set (where $type is a string
+   describing the database type, and $path is a complete path including trailing
+   slash to the MediaWiki instance).

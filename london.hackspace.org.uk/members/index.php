@@ -17,6 +17,11 @@ if (!$user) {
     <tr><td><?=$transaction->getTimestamp()?></td><td>£<?=$transaction->getAmount()?></td></tr>
 <? } ?>
 </table>
+<h3>Tools</h3>
+    <ul>
+        <li><a href="/webcams.html">Webcams</a> (Hourly Timelapses: <a href="http://lhs.tormentedtechnologies.com/last24.avi">Last 24 Hours</a>, <a href="http://lhs.tormentedtechnologies.com/daySoFar.avi">Day So Far</a>)</li>
+        <li><a href="wiki.php">Link Wiki Accounts</a></li>
+    </ul>
 <? } else { ?>
     <p>You're not currently a member of the Hackspace Foundation.
         Membership is a recommended donation of £20 per month, with a 
