@@ -13,7 +13,7 @@ if($user->isMember()) {
     $email = $user->getEmail();
 
     // Make database connection.
-    require $_SERVER['DOCUMENT_ROOT'] . '../etc/mediawiki.php';
+    require $_SERVER['DOCUMENT_ROOT'] . '/../etc/mediawiki.php';
     mysql_connect( $server, $username, $password );
     mysql_select_db( $database );
 
