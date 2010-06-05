@@ -22,22 +22,22 @@ if($user->isMember()) {
         $user = (int) $_POST['wikiuser'];
         // Check that the MediaWiki and Hackspace e-mails match (and the former is confirmed).
         $confirmed = (bool) mysql_fetch_object( mysql_query('SELECT user_email,user_email_authenticated FROM user WHERE
-                user_id=' . $user . ' and
-                user_email="' . $email . '" and
+                user_id=' . mysql_escape_string($user) . ' and
+                user_email="' . mysql_escape_string($email) . '" and
                 user_email_authenticated is not null' ) );
         if( $confirmed ) {
             if( array_key_exists( 'link', $_POST ) ) {
                 // Check that the MediaWiki user is not already a member of the 'sysop' group.
                 $exists = (bool) mysql_fetch_object( mysql_query( 'SELECT ug_user FROM user_groups WHERE
-                    ug_user=' . $user . ' and
+                    ug_user=' . mysql_escape_string($user) . ' and
                     ug_group="sysop"' ) );
                 if( !$exists ) {
                     // Add the MediaWiki user to the 'sysop' group.
-                    mysql_query( 'INSERT INTO user_groups SET ug_user=' . $user . ',ug_group="sysop"' );
+                    mysql_query( 'INSERT INTO user_groups SET ug_user=' . mysql_escape_string($user) . ',ug_group="sysop"' );
                 }
             } elseif( array_key_exists( 'unlink', $_POST ) ) {
                 // Delete the MediaWiki user from the 'sysop' group.
-                mysql_query( 'DELETE FROM user_groups WHERE ug_user=' . $user . ' AND ug_group="sysop"' );
+                mysql_query( 'DELETE FROM user_groups WHERE ug_user=' . mysql_escape_string($user) . ' AND ug_group="sysop"' );
             }
         }
     } elseif( array_key_exists( 'create', $_POST ) ) {
