@@ -24,7 +24,7 @@ if (!$user) {
     </ul>
 <? } else { ?>
     <p>You're not currently a member of the Hackspace Foundation.
-        Membership is a recommended donation of £20 per month, with a 
+        Membership is a recommended donation of £40 per month, with a 
         minimum of £5 per month. To become a member, you can pay by 
         standing order.</p>
 

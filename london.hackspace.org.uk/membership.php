@@ -14,14 +14,14 @@ if ($user) {
 </p>
 
 <p>
-    Membership is paid monthly by standing order. We're currently asking for a subscription of £20 per 
-    month, although this will increase once we find a larger space. In return for this 
+    Membership is paid monthly by standing order. We're currently asking for a subscription of £40 per 
+    month. In return for this 
     you'll get full transparency on where your money is going, as well as a say in what 
     we do with it.
 </p>
 
 <p>
-    If you genuinely can't afford £20, you are free to pay less within reason. More is also good.
+    If you genuinely can't afford £40, you are free to pay less within reason. More is also good.
 </p>
 
 <h3>How do I join?</h3>
