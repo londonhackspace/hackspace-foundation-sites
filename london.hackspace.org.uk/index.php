@@ -5,7 +5,7 @@ require('header.php'); ?>
 
 <p class="blurb"><strong>The London Hackspace is a non-profit, community-run <a href="http://en.wikipedia.org/wiki/Hackerspace">hacker space</a> in central London. We provide a space where people who make things can come to share tools and knowledge.</strong></p>
 
-<p>We have a space near King's Cross which is open to our members, and we hold regular 
+<p>We have a <a href="http://wiki.hackspace.org.uk/wiki/Laboratory_24">great space</a> in Shoreditch, right next to Hoxton station, which is open to our members 24 hours a day, and we hold regular 
 free <a href="/events">hack evenings and workshops</a> which are open to everyone.</p>
 
 <p><a href="http://wiki.hackspace.org.uk"><img src="/images/electronics.jpg" /><img src="/images/drawers.jpg" /></a>
