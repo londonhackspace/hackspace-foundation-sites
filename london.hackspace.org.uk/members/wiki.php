@@ -13,8 +13,8 @@ if($user->isMember()) {
 	$email = $user->getEmail();
 
 	// Make database connection.
-	require $_SERVER['DOCUMENT_ROOT'] . '../var/mediawiki.php';
-	$db = new fDatabase( 'mysql', $database, $username, $password, $host, $port );
+	require $_SERVER['DOCUMENT_ROOT'] . '/../var/mediawiki.php';
+	$db = new fDatabase($type, $database, $username, $password, $host, $port );
 
 	// Link or unlink a user.
 	if( ( array_key_exists( 'link', $_POST ) || array_key_exists( 'unlink', $_POST ) ) && array_key_exists( 'wikiuser', $_POST ) ) {
