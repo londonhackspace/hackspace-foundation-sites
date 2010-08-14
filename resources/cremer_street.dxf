@@ -59,7 +59,7 @@ $DIMTXT
   9
 $CLAYER
   8
-Pipes
+Desks
   0
 ENDSEC
   0
@@ -8495,62 +8495,6 @@ ByLayer
   2
 Desk
  10
-3998.3913323699171087
- 20
-3749.472971240887091
- 30
-0.0
- 44
-1.0
- 45
-1.0
-  0
-INSERT
-  5
-14D
-100
-AcDbEntity
-100
-AcDbBlockReference
-  8
-Desks
- 62
-256
-370
--1
-  6
-ByLayer
-  2
-Desk
- 10
-3009.4454111275540527
- 20
-3744.9879557250487778
- 30
-0.0
- 44
-1.0
- 45
-1.0
-  0
-INSERT
-  5
-14E
-100
-AcDbEntity
-100
-AcDbBlockReference
-  8
-Desks
- 62
-256
-370
--1
-  6
-ByLayer
-  2
-Desk
- 10
 4000.0
  20
 6800.0
@@ -8565,7 +8509,7 @@ Desk
   0
 INSERT
   5
-14F
+14D
 100
 AcDbEntity
 100
@@ -8595,7 +8539,7 @@ Desk
   0
 CIRCLE
   5
-150
+14E
 100
 AcDbEntity
 100
@@ -8619,7 +8563,7 @@ ByLayer
   0
 CIRCLE
   5
-151
+14F
 100
 AcDbEntity
 100
@@ -8643,7 +8587,7 @@ ByLayer
   0
 CIRCLE
   5
-152
+150
 100
 AcDbEntity
 100
@@ -8667,7 +8611,7 @@ ByLayer
   0
 CIRCLE
   5
-153
+151
 100
 AcDbEntity
 100
@@ -8688,6 +8632,622 @@ ByLayer
 0.0
  40
 60.0
+  0
+LINE
+  5
+152
+100
+AcDbEntity
+100
+AcDbLine
+  8
+Desks
+ 62
+256
+370
+-1
+  6
+ByLayer
+ 10
+4000.0
+ 20
+3500.0
+ 30
+0.0
+ 11
+5220.0
+ 21
+3500.0
+ 31
+0.0
+  0
+LINE
+  5
+153
+100
+AcDbEntity
+100
+AcDbLine
+  8
+Desks
+ 62
+256
+370
+-1
+  6
+ByLayer
+ 10
+5220.0
+ 20
+3500.0
+ 30
+0.0
+ 11
+5220.0
+ 21
+2890.0
+ 31
+0.0
+  0
+LINE
+  5
+154
+100
+AcDbEntity
+100
+AcDbLine
+  8
+Desks
+ 62
+256
+370
+-1
+  6
+ByLayer
+ 10
+5220.0
+ 20
+2890.0
+ 30
+0.0
+ 11
+4000.0
+ 21
+2890.0
+ 31
+0.0
+  0
+LINE
+  5
+155
+100
+AcDbEntity
+100
+AcDbLine
+  8
+Desks
+ 62
+256
+370
+-1
+  6
+ByLayer
+ 10
+4000.0
+ 20
+2890.0
+ 30
+0.0
+ 11
+4000.0
+ 21
+3500.0
+ 31
+0.0
+  0
+LINE
+  5
+156
+100
+AcDbEntity
+100
+AcDbLine
+  8
+Desks
+ 62
+256
+370
+-1
+  6
+ByLayer
+ 10
+0.0
+ 20
+3500.0
+ 30
+0.0
+ 11
+2260.0
+ 21
+3500.0
+ 31
+0.0
+  0
+LINE
+  5
+157
+100
+AcDbEntity
+100
+AcDbLine
+  8
+Desks
+ 62
+256
+370
+-1
+  6
+ByLayer
+ 10
+2260.0
+ 20
+3500.0
+ 30
+0.0
+ 11
+2260.0
+ 21
+2880.0
+ 31
+0.0
+  0
+LINE
+  5
+158
+100
+AcDbEntity
+100
+AcDbLine
+  8
+Desks
+ 62
+256
+370
+-1
+  6
+ByLayer
+ 10
+2260.0
+ 20
+2880.0
+ 30
+0.0
+ 11
+0.0
+ 21
+2880.0
+ 31
+0.0
+  0
+LINE
+  5
+159
+100
+AcDbEntity
+100
+AcDbLine
+  8
+Desks
+ 62
+256
+370
+-1
+  6
+ByLayer
+ 10
+0.0
+ 20
+2880.0
+ 30
+0.0
+ 11
+0.0
+ 21
+3500.0
+ 31
+0.0
+  0
+LINE
+  5
+15A
+100
+AcDbEntity
+100
+AcDbLine
+  8
+Desks
+ 62
+256
+370
+-1
+  6
+ByLayer
+ 10
+-800.0
+ 20
+2600.0
+ 30
+0.0
+ 11
+-400.0
+ 21
+2600.0
+ 31
+0.0
+  0
+LINE
+  5
+15B
+100
+AcDbEntity
+100
+AcDbLine
+  8
+Desks
+ 62
+256
+370
+-1
+  6
+ByLayer
+ 10
+-400.0
+ 20
+2600.0
+ 30
+0.0
+ 11
+-400.0
+ 21
+1420.0
+ 31
+0.0
+  0
+LINE
+  5
+15C
+100
+AcDbEntity
+100
+AcDbLine
+  8
+Desks
+ 62
+256
+370
+-1
+  6
+ByLayer
+ 10
+-400.0
+ 20
+1420.0
+ 30
+0.0
+ 11
+-800.0
+ 21
+1420.0
+ 31
+0.0
+  0
+LINE
+  5
+15D
+100
+AcDbEntity
+100
+AcDbLine
+  8
+Desks
+ 62
+256
+370
+-1
+  6
+ByLayer
+ 10
+-800.0
+ 20
+1420.0
+ 30
+0.0
+ 11
+-800.0
+ 21
+2600.0
+ 31
+0.0
+  0
+LINE
+  5
+15E
+100
+AcDbEntity
+100
+AcDbLine
+  8
+Desks
+ 62
+256
+370
+-1
+  6
+ByLayer
+ 10
+6200.0
+ 20
+500.0
+ 30
+0.0
+ 11
+6200.0
+ 21
+20.0
+ 31
+0.0
+  0
+LINE
+  5
+15F
+100
+AcDbEntity
+100
+AcDbLine
+  8
+Desks
+ 62
+256
+370
+-1
+  6
+ByLayer
+ 10
+6200.0
+ 20
+20.0
+ 30
+0.0
+ 11
+5560.0
+ 21
+20.0
+ 31
+0.0
+  0
+LINE
+  5
+160
+100
+AcDbEntity
+100
+AcDbLine
+  8
+Desks
+ 62
+256
+370
+-1
+  6
+ByLayer
+ 10
+5560.0
+ 20
+20.0
+ 30
+0.0
+ 11
+5560.0
+ 21
+500.0
+ 31
+0.0
+  0
+LINE
+  5
+161
+100
+AcDbEntity
+100
+AcDbLine
+  8
+Desks
+ 62
+256
+370
+-1
+  6
+ByLayer
+ 10
+5560.0
+ 20
+500.0
+ 30
+0.0
+ 11
+6200.0
+ 21
+500.0
+ 31
+0.0
+  0
+LINE
+  5
+162
+100
+AcDbEntity
+100
+AcDbLine
+  8
+Desks
+ 62
+256
+370
+-1
+  6
+ByLayer
+ 10
+1900.0
+ 20
+4800.0
+ 30
+0.0
+ 11
+3000.0
+ 21
+4800.0
+ 31
+0.0
+  0
+LINE
+  5
+163
+100
+AcDbEntity
+100
+AcDbLine
+  8
+Desks
+ 62
+256
+370
+-1
+  6
+ByLayer
+ 10
+3000.0
+ 20
+4800.0
+ 30
+0.0
+ 11
+3000.0
+ 21
+3700.0
+ 31
+0.0
+  0
+LINE
+  5
+164
+100
+AcDbEntity
+100
+AcDbLine
+  8
+Desks
+ 62
+256
+370
+-1
+  6
+ByLayer
+ 10
+3000.0
+ 20
+3700.0
+ 30
+0.0
+ 11
+1900.0
+ 21
+3700.0
+ 31
+0.0
+  0
+LINE
+  5
+165
+100
+AcDbEntity
+100
+AcDbLine
+  8
+Desks
+ 62
+256
+370
+-1
+  6
+ByLayer
+ 10
+1900.0
+ 20
+3700.0
+ 30
+0.0
+ 11
+1900.0
+ 21
+4800.0
+ 31
+0.0
+  0
+INSERT
+  5
+166
+100
+AcDbEntity
+100
+AcDbBlockReference
+  8
+Desks
+ 62
+256
+370
+-1
+  6
+ByLayer
+  2
+Desk
+ 10
+4500.0
+ 20
+3700.0
+ 30
+0.0
+ 44
+1.0
+ 45
+1.0
+  0
+INSERT
+  5
+167
+100
+AcDbEntity
+100
+AcDbBlockReference
+  8
+Desks
+ 62
+256
+370
+-1
+  6
+ByLayer
+  2
+Desk
+ 10
+3700.0
+ 20
+3700.0
+ 30
+0.0
+ 44
+1.0
+ 45
+1.0
   0
 ENDSEC
   0
@@ -8727,7 +9287,7 @@ E
   3
 AcDbVariableDictionary
 350
-154
+168
   0
 DICTIONARY
   5
@@ -9191,7 +9751,7 @@ Layout2
   0
 DICTIONARY
   5
-154
+168
 100
 AcDbDictionary
 281
@@ -9199,15 +9759,15 @@ AcDbDictionary
   3
 DIMASSOC
 350
-156
+16A
   3
 HIDETEXT
 350
-155
+169
   0
 DICTIONARYVAR
   5
-155
+169
 100
 DictionaryVariables
 280
@@ -9217,7 +9777,7 @@ DictionaryVariables
   0
 DICTIONARYVAR
   5
-156
+16A
 100
 DictionaryVariables
 280
