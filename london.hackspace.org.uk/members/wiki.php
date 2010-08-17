@@ -13,15 +13,15 @@ if($user->isMember()) {
 	$email = $user->getEmail();
 
 	// Make database connection.
-	require $_SERVER['DOCUMENT_ROOT'] . '../var/mediawiki.php';
-	$db = new fDatabase( 'mysql', $database, $username, $password, $host, $port );
+	require $_SERVER['DOCUMENT_ROOT'] . '/../var/mediawiki.php';
+	$db = new fDatabase($type, $database, $username, $password, $host, $port );
 
 	// Link or unlink a user.
 	if( ( array_key_exists( 'link', $_POST ) || array_key_exists( 'unlink', $_POST ) ) && array_key_exists( 'wikiuser', $_POST ) ) {
 		$user = (int) $_POST['wikiuser'];
 		// Check that the MediaWiki and Hackspace e-mails match (and the former is confirmed).
 		try {
-			$db->translatedQuery( 'SELECT user_id FROM user WHERE user_id=%i AND user_email=%s AND user_email_authenticated IS NOT NULL', $user, $email )->fetchRow();
+			$db->translatedQuery( 'SELECT user_id FROM mwuser WHERE user_id=%i AND user_email=%s AND user_email_authenticated IS NOT NULL', $user, $email )->fetchRow();
 			if( array_key_exists( 'link', $_POST ) ) {
 				// Check that the MediaWiki user is not already a member of the 'sysop' group.
 				try {
@@ -70,7 +70,7 @@ if($user->isMember()) {
 
 	// Prepare an array of users with MediaWiki and Hackspace e-mails that match (and the former is confirmed).
 	$accounts = array();
-	$result = $db->translatedQuery( 'SELECT user_id,user_name FROM user WHERE user_email=%s AND user_email_authenticated IS NOT NULL', $email );
+	$result = $db->translatedQuery( 'SELECT user_id,user_name FROM mwuser WHERE user_email=%s AND user_email_authenticated IS NOT NULL', $email );
 	foreach( $result as $row ) {
 		// Identify whether or not the account is a 'sysop'.
 		$admin = $db->translatedQuery( 'SELECT COUNT(*) FROM user_groups WHERE ug_user=%i AND ug_group=\'sysop\'', $row['user_id'] )->fetchRow();
