@@ -19,6 +19,7 @@ if (!$user) {
 </table>
 <h3>Tools</h3>
     <ul>
+        <li><a href="members.php">Members list</a></li>
         <li><a href="/webcams.html">Webcams</a> (<a href="http://lhs.tormentedtechnologies.com/">Timelapses</a>)</li>
         <li><a href="wiki.php">Link Wiki Accounts</a></li>
     </ul>
