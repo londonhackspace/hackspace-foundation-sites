@@ -27,7 +27,7 @@ $users = $db->translatedQuery( 'SELECT full_name FROM users' );
 foreach( $users as $row ):
 ?>
 			<tr>
-				<td><?php echo $row['full_name'] ?></td>
+				<td><?php echo htmlspecialchars( $row['full_name'] ) ?></td>
 			</tr>
 <?php endforeach; ?>
 		</tbody>
