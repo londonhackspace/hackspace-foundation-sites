@@ -28,7 +28,7 @@ if($user->isMember()) {
 					$db->translatedQuery( 'SELECT ug_user FROM user_groups WHERE ug_user=%i AND ug_group=\'sysop\'', $user )->fetchRow();
 				} catch( fNoRowsException $e ) {
 					// Add the MediaWiki user to the 'sysop' group.
-					$db->translatedQuery( 'INSERT INTO user_groups SET ug_user=%i,ug_group=\'sysop\'', $user );
+					$db->translatedQuery( 'INSERT INTO user_groups VALUES (%i,\'sysop\')', $user );
 				}
 			} elseif( array_key_exists( 'unlink', $_POST ) ) {
 				// Delete the MediaWiki user from the 'sysop' group.
@@ -58,7 +58,7 @@ if($user->isMember()) {
 				// Update e-mail address for created user.
 				error_reporting( E_ALL );
 				$username = $_POST['username'];
-				$db->translatedQuery( 'UPDATE user SET user_email=%s,user_email_authenticated=%s WHERE user_name=%s', $email, date( 'YmsHis' ), $username );
+				$db->translatedQuery( 'UPDATE mwuser SET user_email=%s,user_email_authenticated=%s WHERE user_name=%s', $email, date( 'Y-m-s H:i:s' ), $username );
 			}
 		} catch (fValidationException $e) {
 			$error = $e->getMessage();
@@ -76,7 +76,7 @@ if($user->isMember()) {
 		$admin = $db->translatedQuery( 'SELECT COUNT(*) FROM user_groups WHERE ug_user=%i AND ug_group=\'sysop\'', $row['user_id'] )->fetchRow();
 		$accounts[$row['user_id']] = array(
 			'username' => $row['user_name'],
-			'linked' => (int) $admin['COUNT(*)'] > 0
+			'linked' => (int) ( $admin['count'] > 0 )
 		);
 	}
 ?>
