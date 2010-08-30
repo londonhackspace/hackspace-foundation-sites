@@ -23,7 +23,7 @@ $db = new fDatabase('sqlite', dirname(__FILE__) . '/../../var/database.db');
 		</thead>
 		<tbody>
 <?php
-$users = $db->translatedQuery( 'SELECT full_name FROM users' );
+$users = $db->translatedQuery( 'SELECT full_name FROM users WHERE subscribed=1 ORDER BY full_name' );
 foreach( $users as $row ):
 ?>
 			<tr>
