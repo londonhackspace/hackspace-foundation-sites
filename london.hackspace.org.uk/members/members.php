@@ -23,7 +23,7 @@ $db = new fDatabase('sqlite', dirname(__FILE__) . '/../../var/database.db');
 		</thead>
 		<tbody>
 <?php
-$users = $db->translatedQuery( 'SELECT full_name FROM users WHERE subscribed=1 ORDER BY full_name' );
+$users = $db->translatedQuery( 'SELECT count(*),full_name FROM users WHERE subscribed=1 ORDER BY full_name' );
 foreach( $users as $row ):
 ?>
 			<tr>
@@ -32,6 +32,7 @@ foreach( $users as $row ):
 <?php endforeach; ?>
 		</tbody>
 	</table>
+	<p><strong>Total:</strong> <?php echo $row['count(*)'] ?></p>
 	<p><a href="index.php">Return to membership home</a></p>
 <? } else { ?>
 	<p>You must be a member to use this page.</p>
