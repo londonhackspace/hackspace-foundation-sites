@@ -56,15 +56,14 @@ if($user->isMember()) {
 				throw new fValidationException( '<p>An unknown error ocurred while creating that wiki account, please contact IRC.</p>' );
 			} else {
 				// Update e-mail address for created user.
-				error_reporting( E_ALL );
 				$username = $_POST['username'];
-				$db->translatedQuery( 'UPDATE mwuser SET user_email=%s,user_email_authenticated=%s WHERE user_name=%s', $email, date( 'Y-m-s H:i:s' ), $username );
+				$db->translatedQuery( 'UPDATE mwuser SET user_email=%s,user_email_authenticated=%s WHERE user_name=%s', $email, date( 'Y-m-d H:i:s' ), $username );
 			}
 		} catch (fValidationException $e) {
 			$error = $e->getMessage();
 		} catch (fSQLException $e) {
-			$error = "<p>An unexpected error occurred, please contact IRC.</p>";
-			trigger_error( $e );
+			$error = "<p>An unexpected SQL error occurred, please contact IRC.</p>";
+			trigger_error( $e->getMessage() );
 		}
 	}
 
