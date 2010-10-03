@@ -2,18 +2,24 @@
 /**
  * An exception caused by a data not matching a rule or set of rules
  * 
- * @copyright  Copyright (c) 2007-2008 Will Bond
+ * @copyright  Copyright (c) 2007-2010 Will Bond
  * @author     Will Bond [wb] <will@flourishlib.com>
  * @license    http://flourishlib.com/license
  * 
  * @package    Flourish
  * @link       http://flourishlib.com/fValidationException
  * 
- * @version    1.0.0b
- * @changes    1.0.0b  The initial implementation [wb, 2007-06-14]
+ * @version    1.0.0b3
+ * @changes    1.0.0b3  Added ::removeFieldNames() [wb, 2010-05-26]
+ * @changes    1.0.0b2  Added a custom ::__construct() to handle arrays of messages [wb, 2009-09-17]
+ * @changes    1.0.0b   The initial implementation [wb, 2007-06-14]
  */
 class fValidationException extends fExpectedException
 {
+	const formatField      = 'fValidationException::formatField';
+	const removeFieldNames = 'fValidationException::removeFieldNames';
+	const setFieldFormat   = 'fValidationException::setFieldFormat';
+	
 	/**
 	 * The formatting string to use for field names
 	 * 
@@ -31,6 +37,26 @@ class fValidationException extends fExpectedException
 	static public function formatField($field)
 	{
 		return sprintf(self::$field_format, $field);	
+	}
+	
+	
+	/**
+	 * Removes the field names from normal validation messages, leaving just the message part
+	 * 
+	 * @param array $messages  The messages to remove the field names from
+	 * @return array  The messages without field names
+	 */
+	static public function removeFieldNames($messages)
+	{
+		$token_field   = self::formatField('__TOKEN__');
+		$replace_regex = '#^' . str_replace('__TOKEN__', '(.*?)', preg_quote($token_field, '#')) . '#';
+		
+		$output = array();
+		foreach ($messages as $column => $message) {
+			$output[$column] = preg_replace($replace_regex, '', $message);
+		}
+		
+		return $output;
 	}
 	
 	
@@ -56,14 +82,80 @@ class fValidationException extends fExpectedException
 				$format
 			);	
 		}
-		self::$field_format = $format;		
+		self::$field_format = $format;
+	}
+	
+	
+	/**
+	 * Sets the message for the exception, allowing for custom formatting beyond fException
+	 * 
+	 * If this method receives exactly two parameters, a string and an array,
+	 * the string will be used as a message in a HTML `<p>` tag and the array
+	 * will be turned into an unorder list `<ul>` tag with each element in the
+	 * array being an `<li>` tag. It is possible to pass an optional exception
+	 * code as a third parameter.
+	 * 
+	 * The following PHP:
+	 * 
+	 * {{{
+	 * #!php
+	 * throw new fValidationException(
+	 *     'The following problems were found:',
+	 *     array(
+	 *         'Please provide your name',
+	 *         'Please provide your email address'
+	 *     )
+	 * );
+	 * }}}
+	 * 
+	 * Would create the message:
+	 * 
+	 * {{{
+	 * #!text/html
+	 * <p>The following problems were found:</p>
+	 * <ul>
+	 *     <li>Please provide your name</li>
+	 *     <li>Please provide your email address</li>
+	 * </ul>
+	 * }}}
+	 * 
+	 * If the parameters are anything else, they will be passed to
+	 * fException::__construct().
+	 * 
+	 * @param  string $message       The beginning message for the exception. This will be placed in a `<p>` tag.
+	 * @param  array  $sub_messages  An array of strings to place in a `<ul>` tag
+	 * @param  mixed  $code          The optional exception code
+	 * @return fException
+	 */
+	public function __construct($message='')
+	{
+		$params = func_get_args();
+		
+		if ((count($params) == 2 || count($params) == 3) && is_string($params[0]) && is_array($params[1])) {
+			$message = sprintf(
+				"<p>%1\$s</p>\n<ul>\n<li>%2\$s</li>\n</ul>",
+				self::compose($params[0]),
+				join("</li>\n<li>", $params[1])
+			);
+			$params = array_merge(
+				// This escapes % signs since fException is going to look for sprintf formatting codes
+				array(str_replace('%', '%%', $message)),
+				// This grabs the exception code if one is defined
+				array_slice($params, 2)
+			);		
+		}
+		
+		call_user_func_array(
+			array($this, 'fException::__construct'),
+			$params
+		);		
 	}
 }
 
 
 
 /**
- * Copyright (c) 2007-2008 Will Bond <will@flourishlib.com>
+ * Copyright (c) 2007-2010 Will Bond <will@flourishlib.com>
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal

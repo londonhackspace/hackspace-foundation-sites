@@ -2,14 +2,18 @@
 /**
  * Provides fSchema class related functions for ORM code
  * 
- * @copyright  Copyright (c) 2007-2009 Will Bond
+ * @copyright  Copyright (c) 2007-2010 Will Bond
  * @author     Will Bond [wb] <will@flourishlib.com>
  * @license    http://flourishlib.com/license
  * 
  * @package    Flourish
  * @link       http://flourishlib.com/fORMSchema
  * 
- * @version    1.0.0b5
+ * @version    1.0.0b9
+ * @changes    1.0.0b9  Enhanced various exception messages [wb, 2010-09-19]
+ * @changes    1.0.0b8  Added 'one-to-one' support to ::getRouteNameFromRelationship(), '!many-to-one' to ::getRoute() [wb, 2010-03-03]
+ * @changes    1.0.0b7  Added support for multiple databases [wb, 2009-10-28]
+ * @changes    1.0.0b6  Internal Backwards Compatibility Break - Added the `$schema` parameter to the beginning of ::getRoute(), ::getRouteName(), ::getRoutes() and ::isOneToOne() - added '!many-to-one' relationship type handling [wb, 2009-10-22]
  * @changes    1.0.0b5  Fixed some error messaging to not include {empty_string} in some situations [wb, 2009-07-31]
  * @changes    1.0.0b4  Added ::isOneToOne() [wb, 2009-07-21]
  * @changes    1.0.0b3  Added routes caching for performance [wb, 2009-06-15]
@@ -40,22 +44,23 @@ class fORMSchema
 	
 	
 	/**
-	 * The schema object to use for all ORM functionality
+	 * The schema objects to use for all ORM functionality
 	 * 
-	 * @var fSchema
+	 * @var array
 	 */
-	static private $schema_object = NULL;
+	static private $schema_objects = array();
 	
 	
 	/**
 	 * Allows attaching an fSchema-compatible object as the schema singleton for ORM code
 	 * 
 	 * @param  fSchema $schema  An object that is compatible with fSchema
+	 * @param  string  $name    The name of the database this schema is for
 	 * @return void
 	 */
-	static public function attach($schema)
+	static public function attach($schema, $name='default')
 	{
-		self::$schema_object = $schema;
+		self::$schema_objects[$name] = $schema;
 	}
 	
 	
@@ -64,18 +69,20 @@ class fORMSchema
 	 * 
 	 * @internal
 	 * 
-	 * @param  string $table              The main table we are searching on behalf of
-	 * @param  string $related_table      The related table we are searching under
-	 * @param  string $route              The route to get info about
-	 * @param  string $relationship_type  The relationship type: `NULL`, `'*-to-many'`, `'*-to-one'`, `'one-to-one'`, `'one-to-meny'`, `'many-to-one'`, `'many-to-many'`
+	 * @param  fSchema $schema             The schema object to get the route from
+	 * @param  string  $table              The main table we are searching on behalf of
+	 * @param  string  $related_table      The related table we are searching under
+	 * @param  string  $route              The route to get info about
+	 * @param  string  $relationship_type  The relationship type: `NULL`, `'*-to-many'`, `'*-to-one'`, `'!many-to-one'`, `'one-to-one'`, `'one-to-meny'`, `'many-to-one'`, `'many-to-many'`
 	 * @return void
 	 */
-	static public function getRoute($table, $related_table, $route, $relationship_type=NULL)
+	static public function getRoute($schema, $table, $related_table, $route, $relationship_type=NULL)
 	{
 		$valid_relationship_types = array(
 			NULL,
 			'*-to-many',
 			'*-to-one',
+			'!many-to-one',
 			'many-to-many',
 			'many-to-one',
 			'one-to-many',
@@ -91,19 +98,19 @@ class fORMSchema
 		}
 		
 		if ($route === NULL) {
-			$route = self::getRouteName($table, $related_table, $route, $relationship_type);
+			$route = self::getRouteName($schema, $table, $related_table, $route, $relationship_type);
 		}
 		
-		$routes = self::getRoutes($table, $related_table, $relationship_type);
+		$routes = self::getRoutes($schema, $table, $related_table, $relationship_type);
 		
 		if (!isset($routes[$route])) {
-			$relationship_type .= ($relationship_type) ? ' ' : '';
 			throw new fProgrammerException(
-				'The route specified, %1$s, for the %2$srelationship between %3$s and %4$s does not exist',
+				'The route specified, %1$s, for the%2$srelationship between %3$s and %4$s does not exist. Must be one of: %5$s.',
 				$route,
-				$relationship_type,
+				($relationship_type) ? ' ' . $relationship_type . ' ' : ' ',
 				$table,
-				$related_table
+				$related_table,
+				join(', ', array_keys($routes))
 			);
 		}
 		
@@ -116,18 +123,20 @@ class fORMSchema
 	 * 
 	 * @internal
 	 * 
-	 * @param  string $table              The main table we are searching on behalf of
-	 * @param  string $related_table      The related table we are trying to find the routes for
-	 * @param  string $route              The route that was preselected, will be verified if present
-	 * @param  string $relationship_type  The relationship type: `NULL`, `'*-to-many'`, `'*-to-one'`, `'one-to-one'`, `'one-to-meny'`, `'many-to-one'`, `'many-to-many'`
+	 * @param  fSchema $schema             The schema object to get the route name from
+	 * @param  string  $table              The main table we are searching on behalf of
+	 * @param  string  $related_table      The related table we are trying to find the routes for
+	 * @param  string  $route              The route that was preselected, will be verified if present
+	 * @param  string  $relationship_type  The relationship type: `NULL`, `'*-to-many'`, `'*-to-one'`, `'!many-to-one'`, `'one-to-one'`, `'one-to-many'`, `'many-to-one'`, `'many-to-many'`
 	 * @return string  The only route from the main table to the related table
 	 */
-	static public function getRouteName($table, $related_table, $route=NULL, $relationship_type=NULL)
+	static public function getRouteName($schema, $table, $related_table, $route=NULL, $relationship_type=NULL)
 	{
 		$valid_relationship_types = array(
 			NULL,
 			'*-to-many',
 			'*-to-one',
+			'!many-to-one',
 			'many-to-many',
 			'many-to-one',
 			'one-to-many',
@@ -142,20 +151,30 @@ class fORMSchema
 			);
 		}
 		
-		$routes = self::getRoutes($table, $related_table, $relationship_type);
+		$routes = self::getRoutes($schema, $table, $related_table, $relationship_type);
 		
-		if (!empty($route) && isset($routes[$route])) {
-			return $route;
+		if (!empty($route)) {
+			if (isset($routes[$route])) {
+				return $route;
+			}
+			throw new fProgrammerException(
+				'The route specified, %1$s, is not a valid route between %2$s and %3$s. Must be one of: %4$s.',
+				$route,
+				$table,
+				$related_table,
+				join(', ', array_keys($routes))
+			);
 		}
 		
 		$keys = array_keys($routes);
 		
 		if (sizeof($keys) > 1) {
 			throw new fProgrammerException(
-				'There is more than one route for the%1$srelationship between %2$s and %3$s',
+				'There is more than one route for the%1$srelationship between %2$s and %3$s. Please specify one of the following: %4$s.',
 				($relationship_type) ? ' ' . $relationship_type . ' ' : ' ',
 				$table,
-				$related_table
+				$related_table,
+				join(', ', array_keys($routes))
 			);
 		}
 		if (sizeof($keys) == 0) {
@@ -176,13 +195,13 @@ class fORMSchema
 	 * 
 	 * @internal
 	 * 
-	 * @param  string $type          The type of relationship: `'one-to-one'`, `'one-to-many'`, `'many-to-one'`, `'many-to-many'`
+	 * @param  string $type          The type of relationship: `'*-to-one'`, `'one-to-one'`, `'one-to-many'`, `'many-to-one'`, `'many-to-many'`
 	 * @param  array  $relationship  The relationship array from fSchema::getKeys()
 	 * @return string  The name of the route
 	 */
 	static public function getRouteNameFromRelationship($type, $relationship)
 	{
-		$valid_types = array('one-to-one', 'one-to-many', 'many-to-one', 'many-to-many');
+		$valid_types = array('*-to-one', 'one-to-one', 'one-to-many', 'many-to-one', 'many-to-many');
 		if (!in_array($type, $valid_types)) {
 			throw new fProgrammerException(
 				'The relationship type specified, %1$s, is invalid. Must be one of: %2$s.',
@@ -208,12 +227,13 @@ class fORMSchema
 	 * 
 	 * @internal
 	 * 
-	 * @param  string $table              The main table we are searching on behalf of
-	 * @param  string $related_table      The related table we are trying to find the routes for
-	 * @param  string $relationship_type  The relationship type: `NULL`, `'*-to-many'`, `'*-to-one'`, `'one-to-one'`, `'one-to-meny'`, `'many-to-one'`, `'many-to-many'`
+	 * @param  fSchema $schema             The schema object to get the routes for
+	 * @param  string  $table              The main table we are searching on behalf of
+	 * @param  string  $related_table      The related table we are trying to find the routes for
+	 * @param  string  $relationship_type  The relationship type: `NULL`, `'*-to-many'`, `'*-to-one'`, `'!many-to-one'`, `'one-to-one'`, `'one-to-many'`, `'many-to-one'`, `'many-to-many'`
 	 * @return array  All of the routes from the main table to the related table
 	 */
-	static public function getRoutes($table, $related_table, $relationship_type=NULL)
+	static public function getRoutes($schema, $table, $related_table, $relationship_type=NULL)
 	{
 		$key = $table . '::' . $related_table . '::' . $relationship_type;
 		if (isset(self::$cache['getRoutes'][$key])) {
@@ -224,6 +244,7 @@ class fORMSchema
 			NULL,
 			'*-to-many',
 			'*-to-one',
+			'!many-to-one',
 			'many-to-many',
 			'many-to-one',
 			'one-to-many',
@@ -238,7 +259,14 @@ class fORMSchema
 			);
 		}
 		
-		$all_relationships = self::retrieve()->getRelationships($table);
+		$all_relationships = $schema->getRelationships($table);
+		
+		if (!in_array($related_table, $schema->getTables())) {
+			throw new fProgrammerException(
+				'The related table specified, %1$s, does not exist in the database',
+				$related_table
+			);
+		}
 		
 		$routes = array();
 		
@@ -246,9 +274,14 @@ class fORMSchema
 			
 			// Filter the relationships by the relationship type
 			if ($relationship_type !== NULL) {
-				$match = strpos($type, str_replace('*', '', $relationship_type)) !== FALSE;
-				if (!$match) {
-					continue;
+				if ($relationship_type == '!many-to-one') {
+					if ($type == 'many-to-one') {
+						continue;
+					}
+				} else {
+					if (strpos($type, str_replace('*', '', $relationship_type)) === FALSE) {
+						continue;
+					}
 				}
 			}
 			
@@ -276,21 +309,23 @@ class fORMSchema
 	 * 
 	 * @internal
 	 * 
-	 * @param  string $table          The main table we are searching on behalf of
-	 * @param  string $related_table  The related table we are trying to find the routes for
-	 * @param  string $route          The route between the two tables
+	 * @param  fSchema $schema         The schema object the tables are from
+	 * @param  string  $table          The main table we are searching on behalf of
+	 * @param  string  $related_table  The related table we are trying to find the routes for
+	 * @param  string  $route          The route between the two tables
 	 * @return boolean  If the table is in a one-to-one relationship with the related table over the route specified
 	 */
-	static public function isOneToOne($table, $related_table, $route=NULL)
+	static public function isOneToOne($schema, $table, $related_table, $route=NULL)
 	{
-		$relationships = self::getRoutes($table, $related_table, 'one-to-one', $route);
+		$relationships = self::getRoutes($schema, $table, $related_table, 'one-to-one', $route);
 		
 		if ($route === NULL && sizeof($relationships) > 1) {
 			throw new fProgrammerException(
-				'There is more than one route for the%1$srelationship between %2$s and %3$s',
+				'There is more than one route for the%1$srelationship between %2$s and %3$s. Please specify one of the following: %4$s.',
 				' one-to-one ',
 				$table,
-				$related_table
+				$related_table,
+				join(', ', array_keys($relationships))
 			);
 		}
 		if (!$relationships) {
@@ -316,21 +351,29 @@ class fORMSchema
 	 */
 	static public function reset()
 	{
-		self::$schema_object = NULL;
+		self::$schema_objects = array();
 	}
 	
 	
 	/**
 	 * Return the instance of the fSchema class
 	 * 
+	 * @param  string $class  The class the object will be used with
 	 * @return fSchema  The schema instance
 	 */
-	static public function retrieve()
+	static public function retrieve($class='fActiveRecord')
 	{
-		if (!self::$schema_object) {
-			self::$schema_object = new fSchema(fORMDatabase::retrieve());
+		if (substr($class, 0, 5) == 'name:') {
+			$database_name = substr($class, 5);
+		} else {
+			$database_name = fORM::getDatabaseName($class);
 		}
-		return self::$schema_object;
+		
+		if (!isset(self::$schema_objects[$database_name])) {
+			self::$schema_objects[$database_name] = new fSchema(fORMDatabase::retrieve($class));
+		}
+		
+		return self::$schema_objects[$database_name];
 	}
 	
 	
@@ -345,7 +388,7 @@ class fORMSchema
 
 
 /**
- * Copyright (c) 2007-2009 Will Bond <will@flourishlib.com>
+ * Copyright (c) 2007-2010 Will Bond <will@flourishlib.com>
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal

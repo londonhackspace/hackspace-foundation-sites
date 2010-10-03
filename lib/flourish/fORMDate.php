@@ -2,14 +2,20 @@
 /**
  * Provides additional date/time functionality for fActiveRecord classes
  * 
- * @copyright  Copyright (c) 2008-2009 Will Bond
+ * @copyright  Copyright (c) 2008-2010 Will Bond
  * @author     Will Bond [wb] <will@flourishlib.com>
  * @license    http://flourishlib.com/license
  * 
  * @package    Flourish
  * @link       http://flourishlib.com/fORMDate
  * 
- * @version    1.0.0b3
+ * @version    1.0.0b9
+ * @changes    1.0.0b9  Updated code to work with the new fORM API [wb, 2010-08-06]
+ * @changes    1.0.0b8  Changed validation messages array to use column name keys [wb, 2010-05-26]
+ * @changes    1.0.0b7  Fixed the `set` methods to return the record object in order to be consistent with all other `set` methods [wb, 2010-03-15]
+ * @changes    1.0.0b6  Fixed an issue with calling a non-existent method on fTimestamp instances [wb, 2009-11-03]
+ * @changes    1.0.0b5  Updated code for the new fORMDatabase and fORMSchema APIs [wb, 2009-10-28]
+ * @changes    1.0.0b4  Fixed setting up the inspect callback in ::configureTimezoneColumn() [wb, 2009-10-11]
  * @changes    1.0.0b3  Updated to use new fORM::registerInspectCallback() method [wb, 2009-07-13]
  * @changes    1.0.0b2  Updated code to use new fValidationException::formatField() method [wb, 2009-06-04]  
  * @changes    1.0.0b   The initial implementation [wb, 2008-09-05]
@@ -97,7 +103,8 @@ class fORMDate
 	{
 		$class     = fORM::getClass($class);
 		$table     = fORM::tablize($class);
-		$data_type = fORMSchema::retrieve()->getColumnInfo($table, $column, 'type');
+		$schema    = fORMSchema::retrieve($class);
+		$data_type = $schema->getColumnInfo($table, $column, 'type');
 		
 		$valid_data_types = array('date', 'time', 'timestamp');
 		if (!in_array($data_type, $valid_data_types)) {
@@ -135,7 +142,8 @@ class fORMDate
 	{
 		$class     = fORM::getClass($class);
 		$table     = fORM::tablize($class);
-		$data_type = fORMSchema::retrieve()->getColumnInfo($table, $column, 'type');
+		$schema    = fORMSchema::retrieve($class);
+		$data_type = $schema->getColumnInfo($table, $column, 'type');
 		
 		$valid_data_types = array('date', 'time', 'timestamp');
 		if (!in_array($data_type, $valid_data_types)) {
@@ -176,7 +184,8 @@ class fORMDate
 	{
 		$class               = fORM::getClass($class);
 		$table               = fORM::tablize($class);
-		$timestamp_data_type = fORMSchema::retrieve()->getColumnInfo($table, $timestamp_column, 'type');
+		$schema              = fORMSchema::retrieve($class);
+		$timestamp_data_type = $schema->getColumnInfo($table, $timestamp_column, 'type');
 		
 		if ($timestamp_data_type != 'timestamp') {
 			throw new fProgrammerException(
@@ -187,7 +196,7 @@ class fORMDate
 			);
 		}
 		
-		$timezone_column_data_type = fORMSchema::retrieve()->getColumnInfo($table, $timezone_column, 'type');
+		$timezone_column_data_type = $schema->getColumnInfo($table, $timezone_column, 'type');
 		$valid_timezone_column_data_types = array('varchar', 'char', 'text');
 		if (!in_array($timezone_column_data_type, $valid_timezone_column_data_types)) {
 			throw new fProgrammerException(
@@ -210,7 +219,7 @@ class fORMDate
 			fORM::registerHookCallback($class, 'pre::validate()', self::makeTimestampObjects);
 		}
 		
-		fORM::registerInspectCallback($class, $column, self::inspect);
+		fORM::registerInspectCallback($class, $timezone_column, self::inspect);
 		
 		fORM::registerActiveRecordMethod(
 			$class,
@@ -328,7 +337,7 @@ class fORMDate
 			}
 			
 			if ($values[$timezone_column] === NULL) {
-				fActiveRecord::assign($values, $old_values, $timezone_column, $value->getTimezone());
+				fActiveRecord::assign($values, $old_values, $timezone_column, $value->format('e'));
 			}
 			 
 		// If there was some error creating the timestamp object, we just leave all values alone
@@ -440,13 +449,14 @@ class fORMDate
 	 * @param  array         &$cache            The cache array for the record
 	 * @param  string        $method_name       The method that was called
 	 * @param  array         $parameters        The parameters passed to the method
-	 * @return void
+	 * @return fActiveRecord  The record object, to allow for method chaining
 	 */
 	static public function setTimestampColumn($object, &$values, &$old_values, &$related_records, &$cache, $method_name, $parameters)
 	{
-		list ($action, $column) = fORM::parseMethod($method_name);
+		list ($action, $subject) = fORM::parseMethod($method_name);
 		
-		$class = get_class($object);
+		$column = fGrammar::underscorize($subject);
+		$class  = get_class($object);
 		
 		if (!isset($parameters[0])) {
 			throw new fProgrammerException(
@@ -465,8 +475,10 @@ class fORMDate
 		self::objectifyTimestampWithTimezone($values, $old_values, $column, $timezone_column);
 		
 		if ($value instanceof fTimestamp) {
-			fActiveRecord::assign($values, $old_values, $timezone_column, $value->getTimezone());
-		}	
+			fActiveRecord::assign($values, $old_values, $timezone_column, $value->format('e'));
+		}
+		
+		return $object;
 	}
 	
 	
@@ -482,13 +494,14 @@ class fORMDate
 	 * @param  array         &$cache            The cache array for the record
 	 * @param  string        $method_name       The method that was called
 	 * @param  array         $parameters        The parameters passed to the method
-	 * @return void
+	 * @return fActiveRecord  The record object, to allow for method chaining
 	 */
 	static public function setTimezoneColumn($object, &$values, &$old_values, &$related_records, &$cache, $method_name, $parameters)
 	{
-		list ($action, $column) = fORM::parseMethod($method_name);
+		list ($action, $subject) = fORM::parseMethod($method_name);
 		
-		$class = get_class($object);
+		$column = fGrammar::underscorize($subject);
+		$class  = get_class($object);
 		
 		if (!isset($parameters[0])) {
 			throw new fProgrammerException(
@@ -506,6 +519,8 @@ class fORMDate
 			self::$timezone_columns[$class][$column],
 			$column
 		);
+		
+		return $object;
 	}
 	
 	
@@ -535,13 +550,13 @@ class fORMDate
 				continue;
 			}
 			if (!fTimestamp::isValidTimezone($values[$timezone_column])) {
-				$validation_messages[] = self::compose(
+				$validation_messages[$timezone_column] = self::compose(
 					'%sThe timezone specified is invalid',
 					fValidationException::formatField(fORM::getColumnName($class, $timezone_column))
 				);	
 				
 			} else {
-				$validation_messages[] = self::compose(
+				$validation_messages[$timestamp_column] = self::compose(
 					'%sPlease enter a date/time',
 					fValidationException::formatField(fORM::getColumnName($class, $timestamp_column))
 				);
@@ -561,7 +576,7 @@ class fORMDate
 
 
 /**
- * Copyright (c) 2008-2009 Will Bond <will@flourishlib.com>
+ * Copyright (c) 2008-2010 Will Bond <will@flourishlib.com>
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal

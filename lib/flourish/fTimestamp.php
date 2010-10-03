@@ -2,21 +2,24 @@
 /**
  * Represents a date and time as a value object
  * 
- * @copyright  Copyright (c) 2008-2009 Will Bond
+ * @copyright  Copyright (c) 2008-2010 Will Bond
  * @author     Will Bond [wb] <will@flourishlib.com>
  * @license    http://flourishlib.com/license
  * 
  * @package    Flourish
  * @link       http://flourishlib.com/fTimestamp
  * 
- * @version    1.0.0b7
- * @changes    1.0.0b7  Fixed a translation bug with ::getFuzzyDifference() [wb, 2009-07-11]
- * @changes    1.0.0b6  Added ::registerUnformatCallback() and ::callUnformatCallback() to allow for localization of date/time parsing [wb, 2009-06-01]
- * @changes    1.0.0b5  Backwards compatibility break - Removed ::getSecondsDifference() and ::getSeconds(), added ::eq(), ::gt(), ::gte(), ::lt(), ::lte() [wb, 2009-03-05]
- * @changes    1.0.0b4  Updated for new fCore API [wb, 2009-02-16]
- * @changes    1.0.0b3  Removed a useless double check of the strtotime() return value in ::__construct() [wb, 2009-01-21]
- * @changes    1.0.0b2  Added support for CURRENT_TIMESTAMP, CURRENT_DATE and CURRENT_TIME SQL keywords [wb, 2009-01-11]
- * @changes    1.0.0b   The initial implementation [wb, 2008-02-12]
+ * @version    1.0.0b10
+ * @changes    1.0.0b10  Fixed a bug in ::__construct() with specifying a timezone other than the default for a relative time string such as "now" or "+2 hours" [wb, 2010-07-05]
+ * @changes    1.0.0b9   Added the `$simple` parameter to ::getFuzzyDifference() [wb, 2010-03-15]
+ * @changes    1.0.0b8   Fixed a bug with ::fixISOWeek() not properly parsing some ISO week dates [wb, 2009-10-06]
+ * @changes    1.0.0b7   Fixed a translation bug with ::getFuzzyDifference() [wb, 2009-07-11]
+ * @changes    1.0.0b6   Added ::registerUnformatCallback() and ::callUnformatCallback() to allow for localization of date/time parsing [wb, 2009-06-01]
+ * @changes    1.0.0b5   Backwards compatibility break - Removed ::getSecondsDifference() and ::getSeconds(), added ::eq(), ::gt(), ::gte(), ::lt(), ::lte() [wb, 2009-03-05]
+ * @changes    1.0.0b4   Updated for new fCore API [wb, 2009-02-16]
+ * @changes    1.0.0b3   Removed a useless double check of the strtotime() return value in ::__construct() [wb, 2009-01-21]
+ * @changes    1.0.0b2   Added support for CURRENT_TIMESTAMP, CURRENT_DATE and CURRENT_TIME SQL keywords [wb, 2009-01-11]
+ * @changes    1.0.0b    The initial implementation [wb, 2008-02-12]
  */
 class fTimestamp
 {
@@ -161,9 +164,10 @@ class fTimestamp
 			$after  = $matches[5];
 			
 			$first_of_year  = strtotime($year . '-01-01');
-			$iso_year_start = strtotime('-' . date('N', $first_of_year) . ' days', $first_of_year);
+			$first_thursday = strtotime('thursday', $first_of_year);
+			$iso_year_start = strtotime('last monday', $first_thursday);
 			
-			$ymd = date('Y-m-d', strtotime('+' . ($week-1) . ' weeks +' . $day . ' days', $iso_year_start));	
+			$ymd = date('Y-m-d', strtotime('+' . ($week-1) . ' weeks +' . ($day-1) . ' days', $iso_year_start));	
 			
 			$date = $before . $ymd . $after;
 		}
@@ -792,7 +796,13 @@ class fTimestamp
 			
 			$datetime = self::callUnformatCallback($datetime);
 			
-			$timestamp = strtotime(self::fixISOWeek($datetime) . ' ' . $timezone);
+			if ($timezone != $default_tz) {
+				date_default_timezone_set($timezone);
+			}
+			$timestamp = strtotime(self::fixISOWeek($datetime));
+			if ($timezone != $default_tz) {
+				date_default_timezone_set($default_tz);
+			}
 		}
 		
 		if ($timestamp === FALSE) {
@@ -929,10 +939,17 @@ class fTimestamp
 	 *  - `'29 days'` would be represented as `'1 month'`, but `'21 days'` would be shown as `'3 weeks'`
 	 * 
 	 * @param  fTimestamp|object|string|integer $other_timestamp  The timestamp to create the difference with, `NULL` is interpreted as now
+	 * @param  boolean                          $simple           When `TRUE`, the returned value will only include the difference in the two timestamps, but not `from now`, `ago`, `after` or `before`
+	 * @param  boolean                          :$simple
 	 * @return string  The fuzzy difference in time between the this timestamp and the one provided
 	 */
-	public function getFuzzyDifference($other_timestamp=NULL)
+	public function getFuzzyDifference($other_timestamp=NULL, $simple=FALSE)
 	{
+		if (is_bool($other_timestamp)) {
+			$simple          = $other_timestamp;
+			$other_timestamp = NULL;
+		}
+		
 		$relative_to_now = FALSE;
 		if ($other_timestamp === NULL) {
 			$relative_to_now = TRUE;
@@ -973,35 +990,23 @@ class fTimestamp
 			break;
 		}
 		
+		if ($simple) {
+			return self::compose('%1$s %2$s', $unit_diff, $units);
+		}
+		
 		if ($relative_to_now) {
 			if ($diff > 0) {
-				return self::compose(
-					'%1$s %2$s from now',
-					$unit_diff,
-					$units
-				);
+				return self::compose('%1$s %2$s from now', $unit_diff, $units);
 			}
 		
-			return self::compose(
-				'%1$s %2$s ago',
-				$unit_diff,
-				$units
-			);
+			return self::compose('%1$s %2$s ago', $unit_diff, $units);
 		}
 		
 		if ($diff > 0) {
-			return self::compose(
-				'%1$s %2$s after',
-				$unit_diff,
-				$units
-			);
+			return self::compose('%1$s %2$s after', $unit_diff, $units);
 		}
 		
-		return self::compose(
-			'%1$s %2$s before',
-			$unit_diff,
-			$units
-		);
+		return self::compose('%1$s %2$s before', $unit_diff, $units);
 	}
 	
 	
@@ -1082,7 +1087,7 @@ class fTimestamp
 
 
 /**
- * Copyright (c) 2008-2009 Will Bond <will@flourishlib.com>
+ * Copyright (c) 2008-2010 Will Bond <will@flourishlib.com>
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal

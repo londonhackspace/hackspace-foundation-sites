@@ -2,24 +2,31 @@
 /**
  * Provides cryptography functionality, including hashing, symmetric-key encryption and public-key encryption
  * 
- * @copyright  Copyright (c) 2007-2009 Will Bond
+ * @copyright  Copyright (c) 2007-2010 Will Bond
  * @author     Will Bond [wb] <will@flourishlib.com>
  * @license    http://flourishlib.com/license
  * 
  * @package    Flourish
  * @link       http://flourishlib.com/fCryptography
  * 
- * @version    1.0.0b5
- * @changes    1.0.0b5  Fixed a bug where some windows machines would throw an exception when generating random strings or numbers [wb, 2009-06-09]
- * @changes    1.0.0b4  Updated for new fCore API [wb, 2009-02-16]
- * @changes    1.0.0b3  Changed @ error suppression operator to `error_reporting()` calls [wb, 2009-01-26]
- * @changes    1.0.0b2  Backwards compatibility break - changed ::symmetricKeyEncrypt() to not encrypt the IV since we are using HMAC on it [wb, 2009-01-26]
- * @changes    1.0.0b   The initial implementation [wb, 2007-11-27]
+ * @version    1.0.0b11
+ * @changes    1.0.0b11  Updated class to use fCore::startErrorCapture() instead of `error_reporting()` [wb, 2010-08-09]
+ * @changes    1.0.0b10  Added a missing parameter to an fProgrammerException in ::randomString() [wb, 2010-07-29]
+ * @changes    1.0.0b9   Added ::hashHMAC() [wb, 2010-04-20]
+ * @changes    1.0.0b8   Fixed ::seedRandom() to pass a directory instead of a file to [http://php.net/disk_free_space `disk_free_space()`] [wb, 2010-03-09]
+ * @changes    1.0.0b7   SECURITY FIX: fixed issue with ::random() and ::randomString() not producing random output on OSX, made ::seedRandom() more robust [wb, 2009-10-06]
+ * @changes    1.0.0b6   Changed ::symmetricKeyEncrypt() to throw an fValidationException when the $secret_key is less than 8 characters [wb, 2009-09-30]
+ * @changes    1.0.0b5   Fixed a bug where some windows machines would throw an exception when generating random strings or numbers [wb, 2009-06-09]
+ * @changes    1.0.0b4   Updated for new fCore API [wb, 2009-02-16]
+ * @changes    1.0.0b3   Changed @ error suppression operator to `error_reporting()` calls [wb, 2009-01-26]
+ * @changes    1.0.0b2   Backwards compatibility break - changed ::symmetricKeyEncrypt() to not encrypt the IV since we are using HMAC on it [wb, 2009-01-26]
+ * @changes    1.0.0b    The initial implementation [wb, 2007-11-27]
  */
 class fCryptography
 {
 	// The following constants allow for nice looking callbacks to static methods
 	const checkPasswordHash   = 'fCryptography::checkPasswordHash';
+	const hashHMAC            = 'fCryptography::hashHMAC';
 	const hashPassword        = 'fCryptography::hashPassword';
 	const publicKeyDecrypt    = 'fCryptography::publicKeyDecrypt';
 	const publicKeyEncrypt    = 'fCryptography::publicKeyEncrypt';
@@ -124,6 +131,35 @@ class fCryptography
 	
 	
 	/**
+	 * Provides a pure PHP implementation of `hash_hmac()` for when the hash extension is not installed
+	 * 
+	 * @internal
+	 * 
+	 * @param  string $algorithm  The hashing algorithm to use: `'md5'` or `'sha1'`
+	 * @param  string $data       The data to create an HMAC for
+	 * @param  string $key        The key to generate the HMAC with 
+	 * @return string  The HMAC
+	 */
+	static public function hashHMAC($algorithm, $data, $key)
+	{
+		if (function_exists('hash_hmac')) {
+			return hash_hmac($algorithm, $data, $key);
+		}
+		
+		// Algorithm from http://www.ietf.org/rfc/rfc2104.txt
+		if (strlen($key) > 64) {
+			$key = pack('H*', $algorithm($key));
+		}
+		$key  = str_pad($key, 64, "\x0");
+		
+		$ipad = str_repeat("\x36", 64);
+		$opad = str_repeat("\x5C", 64);
+		
+		return $algorithm(($key ^ $opad) . pack('H*', $algorithm(($key ^ $ipad) . $data)));
+	}
+	
+	
+	/**
 	 * Hashes a password using a loop of sha1 hashes and a salt, making rainbow table attacks infeasible
 	 * 
 	 * @param  string $password  The password to hash
@@ -198,7 +234,7 @@ class fCryptography
 			);
 		}
 		
-		$hmac = hash_hmac('sha1', $encrypted_key . $ciphertext, $plaintext);
+		$hmac = self::hashHMAC('sha1', $encrypted_key . $ciphertext, $plaintext);
 		
 		// By verifying the HMAC we ensure the integrity of the data
 		if ($hmac != $provided_hmac) {
@@ -238,7 +274,7 @@ class fCryptography
 			);
 		}
 		
-		$hmac = hash_hmac('sha1', $encrypted_keys[0] . $ciphertext, $plaintext);
+		$hmac = self::hashHMAC('sha1', $encrypted_keys[0] . $ciphertext, $plaintext);
 		
 		return 'fCryptography::public#' . base64_encode($encrypted_keys[0]) . '#' . base64_encode($ciphertext) . '#' . $hmac;
 	}
@@ -360,7 +396,8 @@ class fCryptography
 			default:
 				throw new fProgrammerException(
 					'The type specified, %1$s, is invalid. Must be one of: %2$s.',
-					$type
+					$type,
+					join(', ', array('alphanumeric', 'alpha', 'numeric', 'hexadecimal'))
 				);
 		}
 		
@@ -388,13 +425,13 @@ class fCryptography
 			return;
 		}
 		
-		$old_level = error_reporting(error_reporting() & ~E_WARNING);
+		fCore::startErrorCapture(E_WARNING);
 		
 		$bytes = NULL;
 		
 		// On linux/unix/solaris we should be able to use /dev/urandom
 		if (!fCore::checkOS('windows') && $handle = fopen('/dev/urandom', 'rb')) {
-			$bytes = fread($handle, 32);
+			$bytes = fread($handle, 4);
 			fclose($handle);
 				
 		// On windows we should be able to use the Cryptographic Application Programming Interface COM object
@@ -402,21 +439,20 @@ class fCryptography
 			try {
 				// This COM object no longer seems to work on PHP 5.2.9+, no response on the bug report yet
 				$capi  = new COM('CAPICOM.Utilities.1');
-				$bytes = base64_decode($capi->getrandom(32, 0));
+				$bytes = base64_decode($capi->getrandom(4, 0));
 				unset($capi);
 			} catch (Exception $e) { }
 		}
 		
 		// If we could not use the OS random number generators we get some of the most unique info we can		
 		if (!$bytes) {
-			$bytes = microtime(TRUE) . uniqid('', TRUE) . join('', stat(__FILE__)) . disk_free_space(__FILE__);	
+			$string = microtime(TRUE) . uniqid('', TRUE) . join('', stat(__FILE__)) . disk_free_space(dirname(__FILE__));
+			$bytes  = substr(pack('H*', md5($string)), 0, 4);
 		}
 		
-		error_reporting($old_level);
+		fCore::stopErrorCapture();
 		
-		$seed = md5($bytes);
-		$seed = base_convert($seed, 16, 10);
-		$seed = (double) substr($seed, 0, 13) + (double) substr($seed, 14, 13);
+		$seed = (int) (base_convert(bin2hex($bytes), 16, 10) - 2147483647);
 		
 		mt_srand($seed);
 		
@@ -454,7 +490,7 @@ class fCryptography
 		$ciphertext    = base64_decode($elements[2]);
 		$provided_hmac = $elements[3];
 		
-		$hmac = hash_hmac('sha1', $iv . '#' . $ciphertext, $secret_key);
+		$hmac = self::hashHMAC('sha1', $iv . '#' . $ciphertext, $secret_key);
 		
 		// By verifying the HMAC we ensure the integrity of the data
 		if ($hmac != $provided_hmac) {
@@ -468,9 +504,9 @@ class fCryptography
 		$key      = substr(sha1($secret_key), 0, mcrypt_enc_get_key_size($module));
 		mcrypt_generic_init($module, $key, $iv);
 		
-		$old_level = error_reporting(error_reporting() & ~E_WARNING);
+		fCore::startErrorCapture(E_WARNING);
 		$plaintext = mdecrypt_generic($module, $ciphertext);
-		error_reporting($old_level);
+		fCore::stopErrorCapture();
 		
 		mcrypt_generic_deinit($module);
 		mcrypt_module_close($module);
@@ -484,15 +520,17 @@ class fCryptography
 	 *
 	 * Since this is symmetric-key cryptography, the same key is used for
 	 * encryption and decryption.
+	 * 
+	 * @throws fValidationException  When the $secret_key is less than 8 characters long
 	 *  
 	 * @param  string $plaintext   The content to be encrypted
-	 * @param  string $secret_key  The secret key to use for encryption
+	 * @param  string $secret_key  The secret key to use for encryption - must be at least 8 characters
 	 * @return string  An encrypted and base-64 encoded result containing a Flourish fingerprint and suitable for decryption using ::symmetricKeyDecrypt()
 	 */
 	static public function symmetricKeyEncrypt($plaintext, $secret_key)
 	{
 		if (strlen($secret_key) < 8) {
-			throw new fProgrammerException(
+			throw new fValidationException(
 				'The secret key specified does not meet the minimum requirement of being at least %s characters long',
 				8
 			);
@@ -511,16 +549,16 @@ class fCryptography
 		// Finish the main encryption
 		mcrypt_generic_init($module, $key, $iv);
 		
-		$old_level = error_reporting(error_reporting() & ~E_WARNING);
+		fCore::startErrorCapture(E_WARNING);
 		$ciphertext = mcrypt_generic($module, $plaintext);
-		error_reporting($old_level);
+		fCore::stopErrorCapture();
 		
 		// Clean up the main encryption
 		mcrypt_generic_deinit($module);
 		mcrypt_module_close($module);
 		
 		// Here we are generating the HMAC for the encrypted data to ensure data integrity
-		$hmac = hash_hmac('sha1', $iv . '#' . $ciphertext, $secret_key);
+		$hmac = self::hashHMAC('sha1', $iv . '#' . $ciphertext, $secret_key);
 		
 		// All of the data is then encoded using base64 to prevent issues with character sets
 		$encoded_iv         = base64_encode($iv);
@@ -560,12 +598,6 @@ class fCryptography
 				'mcrypt'
 			);
 		}
-		if (!extension_loaded('hash')) {
-			throw new fEnvironmentException(
-				'The PHP %s extension is required, however is does not appear to be loaded',
-				'hash'
-			);
-		}
 		if (!function_exists('mcrypt_module_open')) {
 			throw new fEnvironmentException(
 				'The cipher used, %1$s (also known as %2$s), requires libmcrypt version 2.4.x or newer. The version installed does not appear to meet this requirement.',
@@ -594,7 +626,7 @@ class fCryptography
 
 
 /**
- * Copyright (c) 2007-2009 Will Bond <will@flourishlib.com>
+ * Copyright (c) 2007-2010 Will Bond <will@flourishlib.com>
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal

@@ -2,7 +2,7 @@
 /**
  * Allows a column in an fActiveRecord class to be a relative sort order column
  * 
- * @copyright  Copyright (c) 2008-2009 Will Bond, others
+ * @copyright  Copyright (c) 2008-2010 Will Bond, others
  * @author     Will Bond [wb] <will@flourishlib.com>
  * @author     Dan Collins, iMarc LLC [dc-imarc] <dan@imarc.net>
  * @license    http://flourishlib.com/license
@@ -10,7 +10,15 @@
  * @package    Flourish
  * @link       http://flourishlib.com/fORMOrdering
  * 
- * @version    1.0.0b11
+ * @version    1.0.0b19
+ * @changes    1.0.0b19  Updated code to work with the new fORM API [wb, 2010-08-06]
+ * @changes    1.0.0b18  Changed ::configureOrderingColumn() to ensure the column specified can store negative values [wb, 2010-07-21]
+ * @changes    1.0.0b17  Changed validation messages array to use column name keys [wb, 2010-05-26]
+ * @changes    1.0.0b16  Updated the class to allow for multiple ordering columns per class [dc-imarc, 2010-05-10]
+ * @changes    1.0.0b15  Fixed a bug with ordering columns that are part of a multi-column unique constraint [wb, 2009-11-13]
+ * @changes    1.0.0b14  Fixed a bug affecting where conditions with columns that are not null but have a default value [wb, 2009-11-03]
+ * @changes    1.0.0b13  Updated code for the new fORMDatabase and fORMSchema APIs [wb, 2009-10-28]
+ * @changes    1.0.0b12  Changed SQL statements to use value placeholders, identifier escaping and schema support [wb, 2009-10-22]
  * @changes    1.0.0b11  Fixed another bug with deleting records in the middle of a set, added support for reordering multiple records at once [dc-imarc, 2009-07-17]
  * @changes    1.0.0b10  Fixed a bug with deleting multiple in-memory records in the same set [dc-imarc, 2009-07-15]
  * @changes    1.0.0b9   Fixed a bug with using fORM::registerInspectCallback() [wb, 2009-07-15]
@@ -80,14 +88,22 @@ class fORMOrdering
 	{
 		$class       = fORM::getClass($class);
 		$table       = fORM::tablize($class);
-		$data_type   = fORMSchema::retrieve()->getColumnInfo($table, $column, 'type');
-		$unique_keys = fORMSchema::retrieve()->getKeys($table, 'unique');
+		$schema      = fORMSchema::retrieve($class);
+		$info        = $schema->getColumnInfo($table, $column);
+		$unique_keys = $schema->getKeys($table, 'unique');
 		
-		if ($data_type != 'integer') {
+		if ($info['type'] != 'integer') {
 			throw new fProgrammerException(
 				'The column specified, %1$s, is a %2$s column. It must be an integer column to be set as an ordering column.',
 				$column,
 				$data_type
+			);
+		}
+		
+		if ($info['min_value'] && $info['min_value']->eq(0)) {
+			throw new fProgrammerException(
+				'The column specified, %1$s, does not allow for negative values. Please adjust the data type to an integer type that allows for negative values.',
+				$column
 			);
 		}
 		
@@ -108,57 +124,92 @@ class fORMOrdering
 			);
 		}
 		
-		fORM::registerHookCallback($class, 'post::validate()', self::validate);
-		fORM::registerHookCallback($class, 'post-validate::store()', self::reorder);
-		fORM::registerHookCallback($class, 'pre-commit::delete()', self::delete);
+		if (!fORM::checkHookCallback($class, 'post::validate()', self::validate)) {
+			fORM::registerHookCallback($class, 'post::validate()', self::validate);
+		}
+		if (!fORM::checkHookCallback($class, 'post-validate::store()', self::reorder)) {
+			fORM::registerHookCallback($class, 'post-validate::store()', self::reorder);
+		}
+		if (!fORM::checkHookCallback($class, 'pre-commit::delete()', self::delete)) {
+			fORM::registerHookCallback($class, 'pre-commit::delete()', self::delete);
+		}
 		
 		fORM::registerReflectCallback($class, self::reflect);
 		
 		fORM::registerActiveRecordMethod($class, 'inspect' . fGrammar::camelize($column, TRUE), self::inspect);
 		
-		// Ensure we only ever have one ordering column by overwriting
-		self::$ordering_columns[$class]['column']        = $column;
-		self::$ordering_columns[$class]['other_columns'] = $other_columns;
+		self::$ordering_columns[$class][$column] = $other_columns;
 	}
 	
 	
 	/**
-	 * Creates a `WHERE` clause for the //old// multi-column set a record was part of
+	 * Add params for a `WHERE` clause for the //old// multi-column set a record was part of
 	 * 
-	 * @param  string $table          The table the `WHERE` clause is for
-	 * @param  array  $other_columns  The other columns in the multi-column unique constraint
-	 * @param  array  &$values        The record's current values
-	 * @param  array  &$old_values    The record's old values
-	 * @return string  An SQL `WHERE` clause for the //old// other columns in a multi-column `UNIQUE` constraint
+	 * @param  fSchema $schema         The schema of the database the query will be executed on
+	 * @param  array   $params         The params for the fDatabase::query() call
+	 * @param  string  $table          The table the `WHERE` clause is for
+	 * @param  array   $other_columns  The other columns in the multi-column unique constraint
+	 * @param  array   &$values        The record's current values
+	 * @param  array   &$old_values    The record's old values
+	 * @return array  The updated params for fDatabase::query()
 	 */
-	static private function createOldOtherFieldsWhereClause($table, $other_columns, &$values, &$old_values)
+	static private function addOldOtherFieldsWhereParams($schema, $params, $table, $other_columns, &$values, &$old_values)
 	{
+		$column_info = $schema->getColumnInfo($table);
+		
 		$conditions = array();
 		foreach ($other_columns as $other_column) {
-			$other_value  = fActiveRecord::retrieveOld($old_values, $other_column, $values[$other_column]);
-			$conditions[] = $table . "." . $other_column . fORMDatabase::escapeBySchema($table, $other_column, $other_value, '=');
+			$value = fActiveRecord::retrieveOld($old_values, $other_column, $values[$other_column]);
+			
+			// This makes sure the query performs the way an insert will
+			if ($value === NULL && $column_info[$other_column]['not_null'] && $column_info[$other_column]['default'] !== NULL) {
+				$value = $column_info[$other_column]['default'];
+			}
+			
+			$params[] = $table . '.' . $other_column;
+			$params[] = $value;
+			
+			$conditions[] = fORMDatabase::makeCondition($schema, $table, $other_column, '=', $value);
 		}
 		
-		return join(' AND ', $conditions);
+		$params[0] .= join(' AND ', $conditions);
+		
+		return $params;
 	}
 	
 	
 	/**
-	 * Creates a `WHERE` clause to ensure a database call is only selecting from rows that are part of the same set when an ordering field is in multi-column `UNIQUE` constraint.
+	 * Adds params for a `WHERE` clause to ensure a database call is only selecting from rows that are part of the same set when an ordering field is in multi-column `UNIQUE` constraint.
 	 * 
-	 * @param  string $table          The table the `WHERE` clause is for
-	 * @param  array  $other_columns  The other columns in the multi-column unique constraint
-	 * @param  array  &$values        The values to match with
-	 * @return string  An SQL `WHERE` clause for the other columns in a multi-column `UNIQUE` constraint
+	 * @param  fSchema $schema         The schema of the database the query will be executed on
+	 * @param  array   $params         The parameters for the fDatabase::query() call
+	 * @param  string  $table          The table the `WHERE` clause is for
+	 * @param  array   $other_columns  The other columns in the multi-column unique constraint
+	 * @param  array   &$values        The values to match with
+	 * @return array  The updated params for fDatabase::query()
 	 */
-	static private function createOtherFieldsWhereClause($table, $other_columns, &$values)
+	static private function addOtherFieldsWhereParams($schema, $params, $table, $other_columns, &$values)
 	{
+		$column_info = $schema->getColumnInfo($table);
+		
 		$conditions = array();
 		foreach ($other_columns as $other_column) {
-			$conditions[] = $other_column . fORMDatabase::escapeBySchema($table, $other_column, $values[$other_column], '=');
+			$value = $values[$other_column];
+			
+			// This makes sure the query performs the way an insert will
+			if ($value === NULL && $column_info[$other_column]['not_null'] && $column_info[$other_column]['default'] !== NULL) {
+				$value = $column_info[$other_column]['default'];
+			}
+			
+			$params[] = $table . '.' . $other_column;
+			$params[] = $value;
+			
+			$conditions[] = fORMDatabase::makeCondition($schema, $table, $other_column, '=', $value);
 		}
 		
-		return join(' AND ', $conditions);
+		$params[0] .= join(' AND ', $conditions);
+		
+		return $params;
 	}
 	
 	
@@ -179,59 +230,92 @@ class fORMOrdering
 		$class = get_class($object);
 		$table = fORM::tablize($class);
 		
-		$column        = self::$ordering_columns[$class]['column'];
-		$other_columns = self::$ordering_columns[$class]['other_columns'];
+		$db     = fORMDatabase::retrieve($class, 'write');
+		$schema = fORMSchema::retrieve($class);
 		
-		$current_value = $values[$column];
-		$old_value     = fActiveRecord::retrieveOld($old_values, $column, $current_value);
+		foreach (self::$ordering_columns[$class] as $column => $other_columns) {
 		
-		// Figure out the range we are dealing with
-		$sql = "SELECT max(" . $column . ") FROM " . $table;
-		if ($other_columns) {
-			$sql .= " WHERE " . self::createOtherFieldsWhereClause($table, $other_columns, $values);
+			$current_value = $values[$column];
+			$old_value     = fActiveRecord::retrieveOld($old_values, $column, $current_value);
+			
+			// Figure out the range we are dealing with
+			$params = array("SELECT MAX(%r) FROM %r", $column, $table);
+			if ($other_columns) {
+				$params[0] .= " WHERE ";
+				$params     = self::addOtherFieldsWhereParams($schema, $params, $table, $other_columns, $values);
+			}
+			
+			$current_max_value = (integer) call_user_func_array($db->translatedQuery, $params)->fetchScalar();
+			
+			$shift_down = $current_max_value + 10;
+			$shift_up   = $current_max_value + 9;
+			
+			$params = array(
+				"SELECT %r FROM %r LEFT JOIN %r t2 ON %r = t2.%r + 1",
+				$table . '.' . $column,
+				$table,
+				$table,
+				$table . '.' . $column,
+				$column
+			);
+			
+			foreach ($other_columns as $other_column) {
+				$params[0] .= " AND %r = t2.%r";
+				$params[] = $table . '.' . $other_column;
+				$params[] = $other_column;	
+			} 
+			
+			$params[0] .= " WHERE t2.%r IS NULL AND %r != 1";
+			$params[] = $column;
+			$params[] = $table . '.' . $column;
+			
+			if ($other_columns) {
+				$params[0] .= " AND ";
+				$params = self::addOldOtherFieldsWhereParams($schema, $params, $table, $other_columns, $values, $old_values);
+			}
+			
+			$res = call_user_func_array($db->translatedQuery, $params);
+			
+			if (!$res->countReturnedRows()) {
+				continue;		
+			}
+			
+			$old_value = $res->fetchScalar() - 1;
+			
+			// Close the gap for all records after this one in the set
+			$params = array(
+				'UPDATE %r SET %r = %r - %i WHERE %r > %i',
+				$table,
+				$column,
+				$column,
+				$shift_down,
+				$column,
+				$old_value
+			);
+			if ($other_columns) {
+				$params[0] .= " AND ";
+				$params = self::addOldOtherFieldsWhereParams($schema, $params, $table, $other_columns, $values, $old_values);
+			}
+			
+			call_user_func_array($db->translatedQuery, $params);
+			
+			// Close the gap for all records after this one in the set
+			$params = array(
+				'UPDATE %r SET %r = %r + %i WHERE %r < 0',
+				$table,
+				$column,
+				$column,
+				$shift_up,
+				$column
+			);
+			if ($other_columns) {
+				$params[0] .= " AND ";
+				$params = self::addOldOtherFieldsWhereParams($schema, $params, $table, $other_columns, $values, $old_values);
+			}
+			
+			call_user_func_array($db->translatedQuery, $params);
 		}
-		
-		$current_max_value = (integer) fORMDatabase::retrieve()->translatedQuery($sql)->fetchScalar();
-		
-		$shift_down = $current_max_value + 10;
-		$shift_up   = $current_max_value + 9;
-		
-		$sql = "SELECT " . $table . "." . $column . " FROM " . $table . " LEFT JOIN " . $table . " AS t2 ON " . $table . "." . $column . " = t2." . $column . " + 1";
-		foreach ($other_columns as $other_column) {
-			$sql .= " AND " . $table . "." . $other_column . " = t2." . $other_column;	
-		}
-		$sql .= " WHERE t2." . $column . " IS NULL AND " . $table . "." . $column . " != 1";
-		if ($other_columns) {
-			$sql .= " AND " . self::createOldOtherFieldsWhereClause($table, $other_columns, $values, $old_values);
-		}
-		
-		$res = fORMDatabase::retrieve()->translatedQuery($sql);
-		
-		if (!$res->countReturnedRows()) {
-			return;		
-		}
-		
-		$old_value = $res->fetchScalar() - 1;
-		
-		// Close the gap for all records after this one in the set
-		$sql  = "UPDATE " . $table . " SET " . $column . ' = ' . $column . ' - ' . $shift_down . ' ';
-		$sql .= 'WHERE ' . $column . ' > ' . $old_value;
-		if ($other_columns) {
-			$sql .= " AND " . self::createOldOtherFieldsWhereClause($table, $other_columns, $values, $old_values);
-		}
-		
-		fORMDatabase::retrieve()->translatedQuery($sql);
-		
-		// Close the gap for all records after this one in the set
-		$sql  = "UPDATE " . $table . " SET " . $column . ' = ' . $column . ' + ' . $shift_up . ' ';
-		$sql .= 'WHERE ' . $column . ' < 0';
-		if ($other_columns) {
-			$sql .= " AND " . self::createOldOtherFieldsWhereClause($table, $other_columns, $values, $old_values);
-		}
-		
-		fORMDatabase::retrieve()->translatedQuery($sql);
 	}
-	
 	
 	/**
 	 * Returns the metadata about a column including features added by this class
@@ -249,23 +333,27 @@ class fORMOrdering
 	 */ 
 	static public function inspect($object, &$values, &$old_values, &$related_records, &$cache, $method_name, $parameters) 
 	{ 
-		list ($action, $column) = fORM::parseMethod($method_name); 
-		 
-		$class = get_class($object);
-		$table = fORM::tablize($class);
+		list ($action, $subject) = fORM::parseMethod($method_name); 
 		
-		$info       = fORMSchema::retrieve()->getColumnInfo($table, $column); 
+		$column = fGrammar::underscorize($subject);
+		$class  = get_class($object);
+		$table  = fORM::tablize($class);
+		
+		$db     = fORMDatabase::retrieve($class, 'read');
+		$schema = fORMSchema::retrieve($class);
+		
+		$info       = $schema->getColumnInfo($table, $column); 
 		$element    = (isset($parameters[0])) ? $parameters[0] : NULL;
 		
-		$column        = self::$ordering_columns[$class]['column'];
-		$other_columns = self::$ordering_columns[$class]['other_columns'];
+		$other_columns = self::$ordering_columns[$class][$column];
 		
 		// Retrieve the current max ordering index from the database
-		$sql = "SELECT max(" . $column . ") FROM " . $table;
+		$params = array("SELECT MAX(%r) FROM %r", $column, $table);
 		if ($other_columns) {
-			$sql .= " WHERE " . self::createOtherFieldsWhereClause($table, $other_columns, $values);
+			$params[0] .= " WHERE ";
+			$params = self::addOtherFieldsWhereParams($schema, $params, $table, $other_columns, $values);
 		}
-		$max_value = (integer) fORMDatabase::retrieve()->translatedQuery($sql)->fetchScalar();
+		$max_value = (integer) call_user_func_array($db->translatedQuery, $params)->fetchScalar();
 		
 		// If this is a new record, or in a new set, we need one more space in the ordering index
 		if (self::isInNewSet($column, $other_columns, $values, $old_values)) {
@@ -276,7 +364,7 @@ class fORMOrdering
 		$info['feature']            = 'ordering'; 
 		
 		fORM::callInspectCallbacks($class, $column, $info);
-				 
+		
 		if ($element) { 
 			return (isset($info[$element])) ? $info[$element] : NULL; 
 		} 
@@ -378,164 +466,221 @@ class fORMOrdering
 		$class = get_class($object);
 		$table = fORM::tablize($class);
 		
-		$column        = self::$ordering_columns[$class]['column'];
-		$other_columns = self::$ordering_columns[$class]['other_columns'];
+		$db     = fORMDatabase::retrieve($class, 'write');
+		$schema = fORMSchema::retrieve($class);
 		
-		$current_value = $values[$column];
-		if (!$object->exists()) {
-			$old_value = fActiveRecord::retrieveOld($old_values, $column);
-		} else {
-			$old_value = fORMDatabase::retrieve()->translatedQuery(
-				"SELECT " . $column . " FROM " . $table . " WHERE " .
-				fORMDatabase::createPrimaryKeyWhereClause($table, $table, $values, $old_values)
-			)->fetchScalar();	
-		}
-		
-		// Figure out the range we are dealing with
-		$sql = "SELECT max(" . $column . ") FROM " . $table;
-		if ($other_columns) {
-			$sql .= " WHERE " . self::createOtherFieldsWhereClause($table, $other_columns, $values);
-		}
-		
-		$current_max_value = (integer) fORMDatabase::retrieve()->translatedQuery($sql)->fetchScalar();
-		$new_max_value     = $current_max_value;
-		
-		if ($new_set = self::isInNewSet($column, $other_columns, $values, $old_values)) {
-			$new_max_value = $current_max_value + 1;
-		}
-		
-		$changed = FALSE;
-		
-		// If a blank value was set, correct it to the old value (if there
-		// was one), or a new value at the end of the set
-		if ($current_value === '' || $current_value === NULL) {
-			if ($old_value) {
-				$current_value = $old_value;
+		foreach (self::$ordering_columns[$class] as $column => $other_columns) {
+			
+			$current_value = $values[$column];
+			if (!$object->exists()) {
+				$old_value = fActiveRecord::retrieveOld($old_values, $column);
 			} else {
+				$params = array("SELECT %r FROM %r WHERE ", $column, $table);
+				$params = fORMDatabase::addPrimaryKeyWhereParams($schema, $params, $table, $table, $values, $old_values);
+				$old_value = call_user_func_array($db->translatedQuery, $params)->fetchScalar();	
+			}
+			
+			// Figure out the range we are dealing with
+			$params = array("SELECT MAX(%r) FROM %r", $column, $table);
+			if ($other_columns) {
+				$params[0] .= ' WHERE ';
+				$params = self::addOtherFieldsWhereParams($schema, $params, $table, $other_columns, $values);
+			}
+			
+			$current_max_value = (integer) call_user_func_array($db->translatedQuery, $params)->fetchScalar();
+			$new_max_value     = $current_max_value;
+			
+			if ($new_set = self::isInNewSet($column, $other_columns, $values, $old_values)) {
+				$new_max_value = $current_max_value + 1;
+			}
+			
+			$changed = FALSE;
+			
+			// If a blank value was set, correct it to the old value (if there
+			// was one), or a new value at the end of the set
+			if ($current_value === '' || $current_value === NULL) {
+				if ($old_value) {
+					$current_value = $old_value;
+				} else {
+					$current_value = $new_max_value;
+				}
+				$changed = TRUE;
+			}
+			
+			// When we move an object into a new set and the value didn't change then move it to the end of the new set
+			if ($new_set && $object->exists() && ($old_value === NULL || $old_value == $current_value)) {
 				$current_value = $new_max_value;
-			}
-			$changed = TRUE;
-		}
-		
-		// When we move an object into a new set and the value didn't change then move it to the end of the new set
-		if ($new_set && $object->exists() && ($old_value === NULL || $old_value == $current_value)) {
-			$current_value = $new_max_value;
-			$changed = TRUE;		
-		}
-		
-		// If the value is too high, then set it to the last value
-		if ($current_value > $new_max_value) {
-			$current_value = $new_max_value;
-			$changed = TRUE;
-		}
-		
-		if ($changed) {
-			fActiveRecord::assign($values, $old_values, $column, $current_value);
-		}
-		
-		// If the value didn't change, we can exit
-		$value_didnt_change = ($old_value && $current_value == $old_value) || !$old_value;
-		if (!$new_set && $value_didnt_change) {
-			return;
-		}
-		
-		// If we are entering a new record at the end of the set we don't need to shuffle anything either
-		if (!$object->exists() && $new_set && $current_value == $new_max_value) {
-			return;
-		}
-		
-		
-		// If the object already exists in the database, grab the ordering value
-		// right now in case some other object reordered it since it was loaded
-		if ($object->exists()) {
-			$sql  = "SELECT " . $column . " FROM " . $table . " WHERE ";
-			$sql .= fORMDatabase::createPrimaryKeyWhereClause($table, $table, $values, $old_values);
-			$db_value = (integer) fORMDatabase::retrieve()->translatedQuery($sql)->fetchScalar();
-		}
-		
-		
-		// We only need to move things in the new set around if we are inserting into the middle
-		// of a new set, or if we are moving around in the current set
-		if (!$new_set || ($new_set && $current_value != $new_max_value)) {
-			$shift_down = $new_max_value + 10;
-			
-			// If we are moving into the middle of a new set we just push everything up one value
-			if ($new_set) {
-				$shift_up       = $new_max_value + 11;
-				$down_condition = $column . " >= " . $current_value;
-			
-			// If we are moving a value down in a set, we push values in the difference zone up one
-			} elseif ($current_value < $db_value) {
-				$shift_up       = $new_max_value + 11;
-				$down_condition = $column . " < " . $db_value . " AND " . $column . " >= " . $current_value;
-					
-			// If we are moving a value up in a set, we push values in the difference zone down one
-			} else {
-				$shift_up       = $new_max_value + 9;
-				$down_condition = $column . " > " . $db_value . " AND " . $column . " <= " . $current_value;
+				$changed = TRUE;		
 			}
 			
-			// To prevent issues with the unique constraint, we move everything below 0
-			$sql  = "UPDATE " . $table . " SET " . $column . " = " . $column . " - " . $shift_down;
-			$sql .= " WHERE " . $down_condition;
-			if ($other_columns) {
-				$sql .= " AND " . self::createOtherFieldsWhereClause($table, $other_columns, $values);
+			// If the value is too high, then set it to the last value
+			if ($current_value > $new_max_value) {
+				$current_value = $new_max_value;
+				$changed = TRUE;
 			}
-			fORMDatabase::retrieve()->translatedQuery($sql);
 			
+			if ($changed) {
+				fActiveRecord::assign($values, $old_values, $column, $current_value);
+			}
+			
+			// If the value didn't change, we can exit
+			$value_didnt_change = ($old_value && $current_value == $old_value) || !$old_value;
+			if (!$new_set && $value_didnt_change) {
+				continue;
+			}
+			
+			// If we are entering a new record at the end of the set we don't need to shuffle anything either
+			if (!$object->exists() && $new_set && $current_value == $new_max_value) {
+				continue;
+			}
+			
+			
+			// If the object already exists in the database, grab the ordering value
+			// right now in case some other object reordered it since it was loaded
 			if ($object->exists()) {
-				// Put the actual record we are changing in limbo to be updated when the actual update happens
-				$sql  = "UPDATE " . $table . " SET " . $column . " = 0";
-				$sql .= " WHERE " . $column . " = " . $db_value;
+				$params = array("SELECT %r FROM %r WHERE ", $column, $table);
+				$params = fORMDatabase::addPrimaryKeyWhereParams($schema, $params, $table, $table, $values, $old_values);
+				$db_value = (integer) call_user_func_array($db->translatedQuery, $params)->fetchScalar();
+			}
+			
+			
+			// We only need to move things in the new set around if we are inserting into the middle
+			// of a new set, or if we are moving around in the current set
+			if (!$new_set || ($new_set && $current_value != $new_max_value)) {
+				$shift_down = $new_max_value + 10;
+				
+				// To prevent issues with the unique constraint, we move everything below 0
+				$params = array(
+					"UPDATE %r SET %r = %r - %i WHERE ",
+					$table,
+					$column,
+					$column,
+					$shift_down
+				);
+				$conditions = array();
+				
+				// If we are moving into the middle of a new set we just push everything up one value
+				if ($new_set) {
+					$shift_up     = $new_max_value + 11;
+					$conditions[] = fORMDatabase::makeCondition($schema, $table, $column, '>=', $current_value);
+					$params[]     = $table . '.' . $column;
+					$params[]     = $current_value;
+					
+				// If we are moving a value down in a set, we push values in the difference zone up one
+				} elseif ($current_value < $db_value) {
+					$shift_up     = $new_max_value + 11;
+					$conditions[] = fORMDatabase::makeCondition($schema, $table, $column, '<', $db_value);
+					$params[]     = $table . '.' . $column;
+					$params[]     = $db_value;
+					$conditions[] = fORMDatabase::makeCondition($schema, $table, $column, '>=', $current_value);
+					$params[]     = $table . '.' . $column;
+					$params[]     = $current_value;
+						
+				// If we are moving a value up in a set, we push values in the difference zone down one
+				} else {
+					$shift_up     = $new_max_value + 9;
+					$conditions[] = fORMDatabase::makeCondition($schema, $table, $column, '>', $db_value);
+					$params[]     = $table . '.' . $column;
+					$params[]     = $db_value;
+					$conditions[] = fORMDatabase::makeCondition($schema, $table, $column, '<=', $current_value);
+					$params[]     = $table . '.' . $column;
+					$params[]     = $current_value;
+				}
+				
+				$params[0] .= join(' AND ', $conditions);
 				if ($other_columns) {
-					$sql .= " AND " . self::createOldOtherFieldsWhereClause($table, $other_columns, $values, $old_values);
+					$params[0] .= " AND ";
+					$params = self::addOtherFieldsWhereParams($schema, $params, $table, $other_columns, $values);
 				}
-				fORMDatabase::retrieve()->translatedQuery($sql);
-			}
-			
-			// Anything below zero needs to be moved back up into its new position
-			$sql  = "UPDATE " . $table . " SET " . $column . " = " . $column . " + " . $shift_up;
-			$sql .= " WHERE " . $column . " < 0";
-			if ($other_columns) {
-				$sql .= " AND " . self::createOtherFieldsWhereClause($table, $other_columns, $values);
-			}
-			fORMDatabase::retrieve()->translatedQuery($sql);
-		}
-		
-		
-		// If there was an old set, we need to close the gap
-		if ($object->exists() && $new_set) {
-			
-			$sql  = "SELECT max(" . $column . ") FROM " . $table . " WHERE ";
-			$sql .= self::createOldOtherFieldsWhereClause($table, $other_columns, $values, $old_values);
-			
-			$old_set_max = (integer) fORMDatabase::retrieve()->translatedQuery($sql)->fetchScalar();
-			
-			// We only need to close the gap if the record was not at the end
-			if ($db_value < $old_set_max) {
-				$shift_down = $old_set_max + 10;
-				$shift_up   = $old_set_max + 9;
+				call_user_func_array($db->translatedQuery, $params);
 				
-				// To prevent issues with the unique constraint, we move everything below 0 and then back up above
-				$sql  = "UPDATE " . $table . " SET " . $column . ' = ' . $column . ' - ' . $shift_down . " WHERE ";
-				$sql .= self::createOldOtherFieldsWhereClause($table, $other_columns, $values, $old_values);
-				$sql .= " AND " . $column . " > " . $db_value;
-				fORMDatabase::retrieve()->translatedQuery($sql);
-				
-				if ($current_value == $new_max_value) {
+				if ($object->exists()) {
 					// Put the actual record we are changing in limbo to be updated when the actual update happens
-					$sql  = "UPDATE " . $table . " SET " . $column . " = 0";
-					$sql .= " WHERE " . $column . " = " . $db_value;
+					$params = array(
+						"UPDATE %r SET %r = 0 WHERE %r = %i",
+						$table,
+						$column,
+						$column,
+						$db_value
+					);
 					if ($other_columns) {
-						$sql .= " AND " . self::createOldOtherFieldsWhereClause($table, $other_columns, $values, $old_values);
+						$params[0] .= " AND ";
+						$params = self::addOldOtherFieldsWhereParams($schema, $params, $table, $other_columns, $values, $old_values);
 					}
-					fORMDatabase::retrieve()->translatedQuery($sql);
+					call_user_func_array($db->translatedQuery, $params);
 				}
 				
-				$sql  = "UPDATE " . $table . " SET " . $column . ' = ' . $column . ' + ' . $shift_up . " WHERE ";
-				$sql .= self::createOldOtherFieldsWhereClause($table, $other_columns, $values, $old_values);
-				$sql .= " AND " . $column . " < 0";
-				fORMDatabase::retrieve()->translatedQuery($sql);
+				// Anything below zero needs to be moved back up into its new position
+				$params = array(
+					"UPDATE %r SET %r = %r + %i WHERE %r < 0",
+					$table,
+					$column,
+					$column,
+					$shift_up,
+					$column
+				);
+				if ($other_columns) {
+					$params[0] .= " AND ";
+					$params = self::addOtherFieldsWhereParams($schema, $params, $table, $other_columns, $values);
+				}
+				call_user_func_array($db->translatedQuery, $params);
+			}
+			
+			
+			// If there was an old set, we need to close the gap
+			if ($object->exists() && $new_set) {
+				
+				$params = array("SELECT MAX(%r) FROM %r WHERE ", $column, $table);
+				$params = self::addOldOtherFieldsWhereParams($schema, $params, $table, $other_columns, $values, $old_values);
+				
+				$old_set_max = (integer) call_user_func_array($db->translatedQuery, $params)->fetchScalar();
+				
+				// We only need to close the gap if the record was not at the end
+				if ($db_value < $old_set_max) {
+					$shift_down = $old_set_max + 10;
+					$shift_up   = $old_set_max + 9;
+					
+					// To prevent issues with the unique constraint, we move everything below 0 and then back up above
+					
+					$params = array(
+						"UPDATE %r SET %r = %r - %i WHERE %r > %i AND ",
+						$table,
+						$column,
+						$column,
+						$shift_down,
+						$column,
+						$db_value
+					);
+					$params = self::addOldOtherFieldsWhereParams($schema, $params, $table, $other_columns, $values, $old_values);
+					call_user_func_array($db->translatedQuery, $params);
+					
+					if ($current_value == $new_max_value) {
+						// Put the actual record we are changing in limbo to be updated when the actual update happens
+						$params = array(
+							"UPDATE %r SET %r = 0 WHERE %r = %i",
+							$table,
+							$column,
+							$column,
+							$db_value
+						);
+						if ($other_columns) {
+							$params[0] .= " AND ";
+							$params = self::addOldOtherFieldsWhereParams($schema, $params, $table, $other_columns, $values, $old_values);
+						}
+						call_user_func_array($db->translatedQuery, $params);
+					}
+					
+					$params = array(
+						"UPDATE %r SET %r = %r + %i WHERE %r < 0 AND ",
+						$table,
+						$column,
+						$column,
+						$shift_up,
+						$column
+					);
+					$params = self::addOldOtherFieldsWhereParams($schema, $params, $table, $other_columns, $values, $old_values);
+					call_user_func_array($db->translatedQuery, $params);
+				}
 			}
 		}
 	}
@@ -572,47 +717,51 @@ class fORMOrdering
 		$class = get_class($object);
 		$table = fORM::tablize($class);
 		
-		$column        = self::$ordering_columns[$class]['column'];
-		$other_columns = self::$ordering_columns[$class]['other_columns'];
+		$db     = fORMDatabase::retrieve($class, 'read');
+		$schema = fORMSchema::retrieve($class);
 		
-		$current_value = $values[$column];
-		$old_value     = fActiveRecord::retrieveOld($old_values, $column);
+		foreach (self::$ordering_columns[$class] as $column => $other_columns) {
 		
-		$sql = "SELECT max(" . $column . ") FROM " . $table;
-		if ($other_columns) {
-			$sql .= " WHERE " . self::createOtherFieldsWhereClause($table, $other_columns, $values);
-		}
-		
-		$current_max_value = (integer) fORMDatabase::retrieve()->translatedQuery($sql)->fetchScalar();
-		$new_max_value     = $current_max_value;
-		
-		if ($new_set = self::isInNewSet($column, $other_columns, $values, $old_values)) {
-			$new_max_value     = $current_max_value + 1;
-			$new_set_new_value = fActiveRecord::changed($values, $old_values, $column);
-		}
-		
-		$column_name = fORM::getColumnName($class, $column);
-		
-		// Remove any previous validation warnings
-		$filtered_messages = array();
-		foreach ($validation_messages as $validation_message) {
-			if (!preg_match('#^' . str_replace('___', '(.*?)', preg_quote(fValidationException::formatField('___' . $column_name . '___'), '#')) . '#', $validation_message)) {
-				$filtered_messages[] = $validation_message;
-			}
-		}
-		$validation_messages = $filtered_messages;
-		
-		// If we have a completely empty value, we don't need to validate since a valid value will be generated
-		if ($current_value === '' || $current_value === NULL) {
-			return;
-		}
-		
-		if (!is_numeric($current_value) || strlen((int) $current_value) != strlen($current_value)) {
-			$validation_messages[] = self::compose('%sPlease enter an integer', fValidationException::formatField($column_name));
-		
-		} elseif ($current_value < 1) {
-			$validation_messages[] = self::compose('%sThe value can not be less than 1', fValidationException::formatField($column_name));
+			$current_value = $values[$column];
+			$old_value     = fActiveRecord::retrieveOld($old_values, $column);
 			
+			$params = array("SELECT MAX(%r) FROM %r", $column, $table);
+			if ($other_columns) {
+				$params[0] .= " WHERE ";
+				$params = self::addOtherFieldsWhereParams($schema, $params, $table, $other_columns, $values);
+			}
+			
+			$current_max_value = (integer) call_user_func_array($db->translatedQuery, $params)->fetchScalar();
+			$new_max_value     = $current_max_value;
+			
+			if ($new_set = self::isInNewSet($column, $other_columns, $values, $old_values)) {
+				$new_max_value     = $current_max_value + 1;
+				$new_set_new_value = fActiveRecord::changed($values, $old_values, $column);
+			}
+			
+			$column_name = fORM::getColumnName($class, $column);
+			
+			// Remove any previous validation warnings
+			$filtered_messages = array();
+			foreach ($validation_messages as $validation_column => $validation_message) {
+				if (!preg_match('#(^|,)' . preg_quote($column, '#') . '(,|$)#D', $validation_column)) {
+					$filtered_messages[$validation_column] = $validation_message;
+				}
+			}
+			$validation_messages = $filtered_messages;
+			
+			// If we have a completely empty value, we don't need to validate since a valid value will be generated
+			if ($current_value === '' || $current_value === NULL) {
+				continue;
+			}
+			
+			if (!is_numeric($current_value) || strlen((int) $current_value) != strlen($current_value)) {
+				$validation_messages[$column] = self::compose('%sPlease enter an integer', fValidationException::formatField($column_name));
+			
+			} elseif ($current_value < 1) {
+				$validation_messages[$column] = self::compose('%sThe value can not be less than 1', fValidationException::formatField($column_name));
+				
+			}
 		}
 	}
 	
@@ -628,7 +777,7 @@ class fORMOrdering
 
 
 /**
- * Copyright (c) 2008-2009 Will Bond <will@flourishlib.com>, others
+ * Copyright (c) 2008-2010 Will Bond <will@flourishlib.com>, others
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal

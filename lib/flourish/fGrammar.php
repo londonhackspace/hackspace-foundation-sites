@@ -2,18 +2,27 @@
 /**
  * Provides english word inflection, notation conversion, grammar helpers and internationlization support
  * 
- * @copyright  Copyright (c) 2007-2009 Will Bond
+ * @copyright  Copyright (c) 2007-2010 Will Bond
  * @author     Will Bond [wb] <will@flourishlib.com>
  * @license    http://flourishlib.com/license
  * 
  * @package    Flourish
  * @link       http://flourishlib.com/fGrammar
  * 
- * @version    1.0.0b4
- * @changes    1.0.0b4  Added caching for various methods - provided significant performance boost to ORM [wb, 2009-06-15] 
- * @changes    1.0.0b3  Changed replacement values in preg_replace() calls to be properly escaped [wb, 2009-06-11]
- * @changes    1.0.0b2  Fixed a bug where some words would lose capitalization with ::pluralize() and ::singularize() [wb, 2009-01-25]
- * @changes    1.0.0b   The initial implementation [wb, 2007-09-25]
+ * @version    1.0.0b13
+ * @changes    1.0.0b13  Fixed the pluralization of video [wb, 2010-08-10]
+ * @changes    1.0.0b12  Updated ::singularize() and ::pluralize() to be able to handle underscore_CamelCase [wb, 2010-08-06]
+ * @changes    1.0.0b11  Fixed custom camelCase to underscore_notation rules [wb, 2010-06-23]
+ * @changes    1.0.0b10  Removed `e` flag from preg_replace() calls [wb, 2010-06-08]
+ * @changes    1.0.0b9   Fixed a bug with ::camelize() and human-friendly strings [wb, 2010-06-08]
+ * @changes    1.0.0b8   Added the ::stem() method [wb, 2010-05-27]
+ * @changes    1.0.0b7   Added the `$return_error` parameter to ::pluralize() and ::singularize() [wb, 2010-03-30]
+ * @changes    1.0.0b6   Added missing ::compose() method [wb, 2010-03-03]
+ * @changes    1.0.0b5   Fixed ::reset() to properly reset the singularization and pluralization rules [wb, 2009-10-28]
+ * @changes    1.0.0b4   Added caching for various methods - provided significant performance boost to ORM [wb, 2009-06-15] 
+ * @changes    1.0.0b3   Changed replacement values in preg_replace() calls to be properly escaped [wb, 2009-06-11]
+ * @changes    1.0.0b2   Fixed a bug where some words would lose capitalization with ::pluralize() and ::singularize() [wb, 2009-01-25]
+ * @changes    1.0.0b    The initial implementation [wb, 2007-09-25]
  */
 class fGrammar
 {
@@ -29,6 +38,7 @@ class fGrammar
 	const registerJoinArrayCallback = 'fGrammar::registerJoinArrayCallback';
 	const reset                     = 'fGrammar::reset';
 	const singularize               = 'fGrammar::singularize';
+	const stem                      = 'fGrammar::stem';
 	const underscorize              = 'fGrammar::underscorize';
 	
 	
@@ -100,7 +110,7 @@ class fGrammar
 	static private $singular_to_plural_rules = array(
 		'([ml])ouse$'                  => '\1ice',
 		'(media|info(rmation)?|news)$' => '\1',
-		'(phot|log)o$'                 => '\1os',
+		'(phot|log|vide)o$'            => '\1os',
 		'^(q)uiz$'                     => '\1uizzes',
 		'(c)hild$'                     => '\1hildren',
 		'(p)erson$'                    => '\1eople',
@@ -200,7 +210,7 @@ class fGrammar
 	{
 		$upper = (int) $upper;
 		if (isset(self::$cache['camelize'][$upper][$string])) {
-			return self::$cache['camelize'][$upper][$string];		
+			return self::$cache['camelize'][$upper][$string];
 		}
 		
 		$original = $string;
@@ -209,30 +219,68 @@ class fGrammar
 		if (isset(self::$camelize_rules[$string])) {
 			$string = self::$camelize_rules[$string];
 			if ($upper) {
-				$string = strtoupper($camel[0]) . substr($camel, 1);
+				$string = ucfirst($string);
 			}
 		
-		// Make a humanized string like underscore notation
-		} elseif (strpos($string, ' ') !== FALSE) {
-			$string = strtolower(preg_replace('#\s+#', '_', $string));
-		
-		// Check to make sure this is not already camel case
-		} elseif (strpos($string, '_') === FALSE) {
-			if ($upper) {
-				$string = strtoupper($string[0]) . substr($string, 1);
+		} else {
+			// Make a humanized string like underscore notation
+			if (strpos($string, ' ') !== FALSE) {
+				$string = strtolower(preg_replace('#\s+#', '_', $string));
 			}
 			
-		// Handle underscore notation
-		} else {
-			$string = strtolower($string);
-			if ($upper) {
-				$string = strtoupper($string[0]) . substr($string, 1);
+			// Check to make sure this is not already camel case
+			if (strpos($string, '_') === FALSE) {
+				if ($upper) {
+					$string = ucfirst($string);
+				}
+				
+			// Handle underscore notation
+			} else {
+				$string[0] = strtolower($string[0]);
+				if ($upper) {
+					$string = ucfirst($string);
+				}
+				$string = preg_replace_callback('#_([a-z0-9])#i', array('self', 'camelizeCallback'), $string);		
 			}
-			$string = preg_replace('/(_([a-z0-9]))/e', 'strtoupper("\2")', $string);		
 		}
 		
 		self::$cache['camelize'][$upper][$original] = $string;
 		return $string;
+	}
+	
+	
+	/**
+	 * A callback used by ::camelize() to handle converting underscore to camelCase
+	 * 
+	 * @param array $match  The regular expression match
+	 * @return string  The value to replace the string with
+	 */
+	static private function camelizeCallback($match)
+	{
+		return strtoupper($match[1]);
+	}
+	
+	
+	/**
+	 * Composes text using fText if loaded
+	 * 
+	 * @param  string  $message    The message to compose
+	 * @param  mixed   $component  A string or number to insert into the message
+	 * @param  mixed   ...
+	 * @return string  The composed and possible translated message
+	 */
+	static protected function compose($message)
+	{
+		$args = array_slice(func_get_args(), 1);
+		
+		if (class_exists('fText', FALSE)) {
+			return call_user_func_array(
+				array('fText', 'compose'),
+				array($message, $args)
+			);
+		} else {
+			return vsprintf($message, $args);
+		}
 	}
 	
 	
@@ -261,9 +309,9 @@ class fGrammar
 				$string = self::underscorize($string);
 			}
 			
-			$string = preg_replace(
-				'/(\b(api|css|gif|html|id|jpg|js|mp3|pdf|php|png|sql|swf|url|xhtml|xml)\b|\b\w)/e',
-				'strtoupper("\1")',
+			$string = preg_replace_callback(
+				'/(\b(api|css|gif|html|id|jpg|js|mp3|pdf|php|png|sql|swf|url|xhtml|xml)\b|\b\w)/',
+				array('self', 'camelizeCallback'),
 				str_replace('_', ' ', $string)
 			);
 		}
@@ -378,10 +426,11 @@ class fGrammar
 	/**
 	 * Returns the plural version of a singular noun
 	 * 
-	 * @param  string $singular_noun  The singular noun to pluralize
+	 * @param  string  $singular_noun  The singular noun to pluralize
+	 * @param  boolean $return_error   If this is `TRUE` and the noun can't be pluralized, `FALSE` will be returned instead
 	 * @return string  The pluralized noun
 	 */
-	static public function pluralize($singular_noun)
+	static public function pluralize($singular_noun, $return_error=FALSE)
 	{
 		if (isset(self::$cache['pluralize'][$singular_noun])) {
 			return self::$cache['pluralize'][$singular_noun];		
@@ -399,6 +448,10 @@ class fGrammar
 		}
 		
 		if (!$plural_noun) {
+			if ($return_error) {
+				self::$cache['pluralize'][$singular_noun] = FALSE;
+				return FALSE;
+			}
 			throw new fProgrammerException('The noun specified could not be pluralized');
 		}
 		
@@ -448,10 +501,10 @@ class fGrammar
 		self::$plural_to_singular_rules = array(
 			'([ml])ice'                    => '\1ouse',
 			'(media|info(rmation)?|news)$' => '\1',
-			'quizzes$'                     => 'quiz',
-			'children$'                    => 'child',
-			'people$'                      => 'person',
-			'men$'                         => 'man',
+			'(q)uizzes$'                   => '\1uiz',
+			'(c)hildren$'                  => '\1hild',
+			'(p)eople$'                    => '\1erson',
+			'(m)en$'                       => '\1an',
 			'((?!sh).)oes$'                => '\1o',
 			'((?<!o)[ieu]s|[ieuo]x)es$'    => '\1',
 			'([cs]h)es$'                   => '\1',
@@ -468,11 +521,11 @@ class fGrammar
 		self::$singular_to_plural_rules = array(
 			'([ml])ouse$'                  => '\1ice',
 			'(media|info(rmation)?|news)$' => '\1',
-			'(phot|log)o$'                 => '\1os',
-			'^(q)uiz$'                     => 'quizzes',
-			'child$'                       => 'children',
-			'person$'                      => 'people',
-			'man$'                         => 'men',
+			'(phot|log|vide)o$'            => '\1os',
+			'^(q)uiz$'                     => '\1uizzes',
+			'(c)hild$'                     => '\1hildren',
+			'(p)erson$'                    => '\1eople',
+			'(m)an$'                       => '\1en',
 			'([ieu]s|[ieuo]x)$'            => '\1es',
 			'([cs]h)$'                     => '\1es',
 			'(ss)$'                        => '\1es',
@@ -492,10 +545,11 @@ class fGrammar
 	/**
 	 * Returns the singular version of a plural noun
 	 * 
-	 * @param  string $plural_noun  The plural noun to singularize
+	 * @param  string  $plural_noun   The plural noun to singularize
+	 * @param  boolean $return_error  If this is `TRUE` and the noun can't be pluralized, `FALSE` will be returned instead
 	 * @return string  The singularized noun
 	 */
-	static public function singularize($plural_noun)
+	static public function singularize($plural_noun, $return_error=FALSE)
 	{
 		if (isset(self::$cache['singularize'][$plural_noun])) {
 			return self::$cache['singularize'][$plural_noun];		
@@ -513,6 +567,10 @@ class fGrammar
 		}
 		
 		if (!$singular_noun) {
+			if ($return_error) {
+				self::$cache['singularize'][$plural_noun] = FALSE;
+				return FALSE;
+			}
 			throw new fProgrammerException('The noun specified could not be singularized');
 		}
 		
@@ -542,11 +600,129 @@ class fGrammar
 		}
 		
 		// Handle camel case
-		if (preg_match('#(.*)((?<=[a-zA-Z]|^)(?:[0-9]+|[A-Z][a-z]*)|(?<=[0-9A-Z]|^)(?:[A-Z][a-z]*))$#D', $string, $match)) {
+		if (preg_match('#(.*)((?<=[a-zA-Z_]|^)(?:[0-9]+|[A-Z][a-z]*)|(?<=[0-9A-Z_]|^)(?:[A-Z][a-z]*))$#D', $string, $match)) {
 			return array($match[1], $match[2]);
 		}
 		
 		return array('', $string);
+	}
+	
+	
+	/**
+	 * Uses the Porter Stemming algorithm to create the stem of a word, which is useful for searching
+	 * 
+	 * See http://tartarus.org/~martin/PorterStemmer/ for details about the
+	 * algorithm.
+	 * 
+	 * @param string $word  The word to get the stem of
+	 * @return string  The stem of the word
+	 */
+	static public function stem($word)
+	{
+		$s_v  = '^([^aeiou][^aeiouy]*)?[aeiouy]';
+		$mgr0 = $s_v . '[aeiou]*[^aeiou][^aeiouy]*';
+		
+		$s_v_regex  = '#' . $s_v . '#';
+		$mgr0_regex = '#' . $mgr0 . '#';
+		$meq1_regex = '#' . $mgr0 . '([aeiouy][aeiou]*)?$#';
+		$mgr1_regex = '#' . $mgr0 . '[aeiouy][aeiou]*[^aeiou][^aeiouy]*#';
+		
+		$word = fUTF8::ascii($word);
+		$word = strtolower($word);
+		
+		if (strlen($word) < 3) {
+			return $word;
+		}
+		
+		if ($word[0] == 'y') {
+			$word = 'Y' . substr($word, 1);
+		}
+		
+		// Step 1a
+		$word = preg_replace('#^(.+?)(?:(ss|i)es|([^s])s)$#', '\1\2\3', $word);
+		
+		// Step 1b
+		if (preg_match('#^(.+?)eed$#', $word, $match)) {
+			if (preg_match($mgr0_regex, $match[1])) {
+				$word = substr($word, 0, -1);
+			}
+			
+		} elseif (preg_match('#^(.+?)(ed|ing)$#', $word, $match)) {
+			if (preg_match($s_v_regex, $match[1])) {
+				$word = $match[1];
+				if (preg_match('#(at|bl|iz)$#', $word)) {
+					$word .= 'e';
+				} elseif (preg_match('#([^aeiouylsz])\1$#', $word)) {
+					$word = substr($word, 0, -1);
+				} elseif (preg_match('#^[^aeiou][^aeiouy]*[aeiouy][^aeiouwxy]$#', $word)) {
+					$word .= 'e';
+				}
+			}
+		}
+		
+		// Step 1c
+		if (substr($word, -1) == 'y') {
+			$stem = substr($word, 0, -1);
+			if (preg_match($s_v_regex, $stem)) {
+				$word = $stem . 'i';
+			}
+		}
+		
+		// Step 2
+		if (preg_match('#^(.+?)(ational|tional|enci|anci|izer|bli|alli|entli|eli|ousli|ization|ation|ator|alism|iveness|fulness|ousness|aliti|iviti|biliti|logi)$#', $word, $match)) {
+			if (preg_match($mgr0_regex, $match[1])) {
+				$word = $match[1] . strtr(
+					$match[2],
+					array(
+						'ational' => 'ate',  'tional'  => 'tion', 'enci'    => 'ence',
+						'anci'    => 'ance', 'izer'    => 'ize',  'bli'     => 'ble',
+						'alli'    => 'al',   'entli'   => 'ent',  'eli'     => 'e',
+						'ousli'   => 'ous',  'ization' => 'ize',  'ation'   => 'ate',
+						'ator'    => 'ate',  'alism'   => 'al',   'iveness' => 'ive',
+						'fulness' => 'ful',  'ousness' => 'ous',  'aliti'   => 'al',
+						'iviti'   => 'ive',  'biliti'  => 'ble',  'logi'    => 'log'
+					)
+				);
+			}
+		}
+		
+		// Step 3
+		if (preg_match('#^(.+?)(icate|ative|alize|iciti|ical|ful|ness)$#', $word, $match)) {
+			if (preg_match($mgr0_regex, $match[1])) {
+				$word = $match[1] . strtr(
+					$match[2],
+					array(
+						'icate' => 'ic', 'ative' => '', 'alize' => 'al', 'iciti' => 'ic',
+						'ical'  => 'ic', 'ful'   => '', 'ness'  => ''
+					)
+				);
+			}
+		}
+		
+		// Step 4
+		if (preg_match('#^(.+?)(al|ance|ence|er|ic|able|ible|ant|ement|ment|ent|ou|ism|ate|iti|ous|ive|ize|(?<=[st])ion)$#', $word, $match) && preg_match($mgr1_regex, $match[1])) {
+			$word = $match[1];
+		}
+		
+		// Step 5
+		if (substr($word, -1) == 'e') {
+			$stem = substr($word, 0, -1);
+			if (preg_match($mgr1_regex, $stem)) {
+				$word = $stem;
+			} elseif (preg_match($meq1_regex, $stem) && !preg_match('#^[^aeiou][^aeiouy]*[aeiouy][^aeiouwxy]$#', $stem)) {
+				$word = $stem;
+			}
+		}
+		
+		if (preg_match('#ll$#', $word) && preg_match($mgr1_regex, $word)) {
+			$word = substr($word, 0, -1);
+		}
+		
+		if ($word[0] == 'Y') {
+			$word = 'y' . substr($word, 1);
+		}
+		
+		return $word;
 	}
 	
 	
@@ -570,7 +746,7 @@ class fGrammar
 			$string = self::$underscorize_rules[$string];
 		
 		// If the string is already underscore notation then leave it
-		} elseif (strpos($string, '_') !== FALSE) {
+		} elseif (strpos($string, '_') !== FALSE && strtolower($string) == $string) {
 		
 		// Allow humanized string to be passed in
 		} elseif (strpos($string, ' ') !== FALSE) {
@@ -603,7 +779,7 @@ class fGrammar
 
 
 /**
- * Copyright (c) 2007-2009 Will Bond <will@flourishlib.com>
+ * Copyright (c) 2007-2010 Will Bond <will@flourishlib.com>
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal

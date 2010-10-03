@@ -3,12 +3,13 @@
  * Allows creating and sending a single email containing plaintext, HTML, attachments and S/MIME encryption
  * 
  * Please note that this class uses the [http://php.net/function.mail mail()]
- * function, and thus would have poor performance if used for mass mailing.
+ * function by default. Developers that are sending multiple emails, or need
+ * SMTP support, should use fSMTP with this class.
  * 
  * This class is implemented to use the UTF-8 character encoding. Please see
  * http://flourishlib.com/docs/UTF-8 for more information.
  * 
- * @copyright  Copyright (c) 2008-2009 Will Bond, others
+ * @copyright  Copyright (c) 2008-2010 Will Bond, others
  * @author     Will Bond [wb] <will@flourishlib.com>
  * @author     Bill Bushee, iMarc LLC [bb-imarc] <bill@imarc.net>
  * @license    http://flourishlib.com/license
@@ -16,7 +17,20 @@
  * @package    Flourish
  * @link       http://flourishlib.com/fEmail
  * 
- * @version    1.0.0b10
+ * @version    1.0.0b23
+ * @changes    1.0.0b23  Fixed a bug on Windows where emails starting with a `.` would have the `.` removed [wb, 2010-09-11]
+ * @changes    1.0.0b22  Revamped the FQDN code and added ::getFQDN() [wb, 2010-09-07]
+ * @changes    1.0.0b21  Added a check to prevent permissions warnings when getting the FQDN on Windows machines [wb, 2010-09-02]
+ * @changes    1.0.0b20  Fixed ::send() to only remove the name of a recipient when dealing with the `mail()` function on Windows and to leave it when using fSMTP [wb, 2010-06-22]
+ * @changes    1.0.0b19  Changed ::send() to return the message id for the email, fixed the email regexes to require [] around IPs [wb, 2010-05-05]
+ * @changes    1.0.0b18  Fixed the name of the static method ::unindentExpand() [wb, 2010-04-28]
+ * @changes    1.0.0b17  Added the static method ::unindentExpand() [wb, 2010-04-26]
+ * @changes    1.0.0b16  Added support for sending emails via fSMTP [wb, 2010-04-20]
+ * @changes    1.0.0b15  Added the `$unindent_expand_constants` parameter to ::setBody(), added ::loadBody() and ::loadHTMLBody(), fixed HTML emails with attachments [wb, 2010-03-14]
+ * @changes    1.0.0b14  Changed ::send() to not double `.`s at the beginning of lines on Windows since it seemed to break things rather than fix them [wb, 2010-03-05]
+ * @changes    1.0.0b13  Fixed the class to work when safe mode is turned on [wb, 2009-10-23]
+ * @changes    1.0.0b12  Removed duplicate MIME-Version headers that were being included in S/MIME encrypted emails [wb, 2009-10-05]
+ * @changes    1.0.0b11  Updated to use the new fValidationException API [wb, 2009-09-17]
  * @changes    1.0.0b10  Fixed a bug with sending both an HTML and a plaintext body [bb-imarc, 2009-06-18]
  * @changes    1.0.0b9   Fixed a bug where the MIME headers were not being set for all emails [wb, 2009-06-12]
  * @changes    1.0.0b8   Added the method ::clearRecipients() [wb, 2009-05-29]
@@ -31,8 +45,11 @@
 class fEmail
 {
 	// The following constants allow for nice looking callbacks to static methods
-	const fixQmail = 'fEmail::fixQmail';
-	const reset    = 'fEmail::reset';
+	const fixQmail       = 'fEmail::fixQmail';
+	const getFQDN        = 'fEmail::getFQDN';
+	const reset          = 'fEmail::reset';
+	const unindentExpand = 'fEmail::unindentExpand';
+	
 	
 	/**
 	 * A regular expression to match an email address, exluding those with comments and folding whitespace
@@ -45,13 +62,13 @@ class fEmail
 	 * 
 	 * @var string
 	 */
-	const EMAIL_REGEX = '~^[ \t]*(                                                                    # Allow leading whitespace
-						   (?:[^\x00-\x20\(\)<>@,;:\\\\"\.\[\]]+|"[^"\\\\\n\r]+")                     # An "atom" or a quoted string
-						   (?:\.[ \t]*(?:[^\x00-\x20\(\)<>@,;:\\\\"\.\[\]]+|"[^"\\\\\n\r]+"[ \t]*))*  # A . plus another "atom" or a quoted string, any number of times
-						 )@(                                                                          # The @ symbol
-						   (?:[a-z0-9\\-]+\.)+[a-z]{2,}|                                              # Domain name
-						   (?:(?:[01]?\d?\d|2[0-4]\d|25[0-5])\.){3}(?:[01]?\d?\d|2[0-4]\d|25[0-5])    # (or) IP addresses
-						 )[ \t]*$~ixD';                                                               # Allow Trailing whitespace
+	const EMAIL_REGEX = '~^[ \t]*(                                                                      # Allow leading whitespace
+						   (?:[^\x00-\x20\(\)<>@,;:\\\\"\.\[\]]+|"[^"\\\\\n\r]+")                       # An "atom" or a quoted string
+						   (?:\.[ \t]*(?:[^\x00-\x20\(\)<>@,;:\\\\"\.\[\]]+|"[^"\\\\\n\r]+"[ \t]*))*    # A . plus another "atom" or a quoted string, any number of times
+						 )@(                                                                            # The @ symbol
+						   (?:[a-z0-9\\-]+\.)+[a-z]{2,}|                                                # Domain name
+						   \[(?:(?:[01]?\d?\d|2[0-4]\d|25[0-5])\.){3}(?:[01]?\d?\d|2[0-4]\d|25[0-5])\]  # (or) IP addresses
+						 )[ \t]*$~ixD';                                                                 # Allow Trailing whitespace
 	
 	/**
 	 * A regular expression to match a `name <email>` string, exluding those with comments and folding whitespace
@@ -74,16 +91,9 @@ class fEmail
 								(?:\.[ \t]*(?:[^\x00-\x20\(\)<>@,;:\\\\"\.\[\]]+|"[^"\\\\\n\r]+"[ \t]*))*          # A . plus another "atom" or a quoted string, any number of times
 							  )@(                                                                                  # The @ symbol
 								(?:[a-z0-9\\-]+\.)+[a-z]{2,}|                                                      # Domain nam
-								(?:(?:[01]?\d?\d|2[0-4]\d|25[0-5])\.){3}(?:[01]?\d?\d|2[0-4]\d|25[0-5])            # (or) IP addresses
+								\[(?:(?:[01]?\d?\d|2[0-4]\d|25[0-5])\.){3}(?:[01]?\d?\d|2[0-4]\d|25[0-5])\]        # (or) IP addresses
 							  ))[ \t]*>[ \t]*$~ixD';                                                               # Closing > and trailing whitespace
 	
-	
-	/**
-	 * Flags if the class should use [http://php.net/popen popen()] to send mail via sendmail
-	 * 
-	 * @var boolean
-	 */
-	static private $popen_sendmail = FALSE;
 	
 	/**
 	 * Flags if the class should convert `\r\n` to `\n` for qmail. This makes invalid email headers that may work.
@@ -91,6 +101,18 @@ class fEmail
 	 * @var boolean
 	 */
 	static private $convert_crlf  = FALSE;
+	
+	/**
+	 * The local fully-qualified domain name
+	 */
+	static private $fqdn;
+	
+	/**
+	 * Flags if the class should use [http://php.net/popen popen()] to send mail via sendmail
+	 * 
+	 * @var boolean
+	 */
+	static private $popen_sendmail = FALSE;
 	
 	
 	/**
@@ -118,6 +140,9 @@ class fEmail
 	
 	/**
 	 * Sets the class to try and fix broken qmail implementations that add `\r` to `\r\n`
+	 * 
+	 * Before trying to fix qmail with this method, please try using fSMTP
+	 * to connect to `localhost` and pass the fSMTP object to ::send().
 	 * 
 	 * @return void
 	 */
@@ -197,6 +222,75 @@ class fEmail
 	
 	
 	/**
+	 * Returns the fully-qualified domain name of the server
+	 * 
+	 * @internal
+	 * 
+	 * @return string  The fully-qualified domain name of the server
+	 */
+	static public function getFQDN()
+	{
+		if (self::$fqdn !== NULL) {
+			return self::$fqdn;
+		}
+		
+		if (isset($_ENV['HOST'])) {
+			self::$fqdn = $_ENV['HOST'];
+		}
+		if (strpos(self::$fqdn, '.') === FALSE && isset($_ENV['HOSTNAME'])) {
+			self::$fqdn = $_ENV['HOSTNAME'];
+		}
+		if (strpos(self::$fqdn, '.') === FALSE) {
+			self::$fqdn = php_uname('n');
+		}
+		
+		if (strpos(self::$fqdn, '.') === FALSE) {
+			
+			$can_exec = !in_array('exec', array_map('trim', explode(',', ini_get('disable_functions')))) && !ini_get('safe_mode');
+			if (fCore::checkOS('linux') && $can_exec) {
+				self::$fqdn = trim(shell_exec('hostname --fqdn'));
+				
+			} elseif (fCore::checkOS('windows')) {
+				$shell = new COM('WScript.Shell');
+				$tcpip_key = 'HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Tcpip';
+				try {
+					$domain = $shell->RegRead($tcpip_key . '\Parameters\NV Domain');
+				} catch (com_exception $e) {
+					try {
+						$domain = $shell->RegRead($tcpip_key . '\Parameters\DhcpDomain');
+					} catch (com_exception $e) {
+						try {
+							$adapters = $shell->RegRead($tcpip_key . '\Linkage\Route');
+							foreach ($adapters as $adapter) {
+								if ($adapter[0] != '{') { continue; }
+								try {
+									$domain = $shell->RegRead($tcpip_key . '\Interfaces\\' . $adapter . '\Domain');
+								} catch (com_exception $e) {
+									try {
+										$domain = $shell->RegRead($tcpip_key . '\Interfaces\\' . $adapter . '\DhcpDomain');
+									} catch (com_exception $e) { }
+								}
+							}
+						} catch (com_exception $e) { }
+					}
+				}
+				if ($domain) {
+					self::$fqdn = '.' . $domain;
+				} 
+				
+			} elseif (!fCore::checkOS('bsd', 'osx', 'linux', 'solaris') && !ini_get('open_basedir') && file_exists('/etc/resolv.conf')) {
+				$output = file_get_contents('/etc/resolv.conf');
+				if (preg_match('#^domain ([a-z0-9_.-]+)#im', $output, $match)) {
+					self::$fqdn .= '.' . $match[1];
+				}
+			}
+		}
+		
+		return self::$fqdn;
+	}
+	
+	
+	/**
 	 * Resets the configuration of the class
 	 * 
 	 * @internal
@@ -205,8 +299,9 @@ class fEmail
 	 */
 	static public function reset()
 	{
-		self::$popen_sendmail = FALSE;
 		self::$convert_crlf   = FALSE;
+		self::$fqdn           = NULL;
+		self::$popen_sendmail = FALSE;
 	}
 	
 	
@@ -223,6 +318,30 @@ class fEmail
 		}
 		
 		return TRUE;
+	}
+	
+	
+	/**
+	 * Takes a block of text, unindents it and replaces {CONSTANT} tokens with the constant's value
+	 * 
+	 * @param string $text  The text to unindent and replace constants in
+	 * @return string  The unindented text
+	 */
+	static public function unindentExpand($text)
+	{
+		$text = preg_replace('#^[ \t]*\n|\n[ \t]*$#D', '', $text);
+			
+		if (preg_match('#^[ \t]+(?=\S)#m', $text, $match)) {
+			$text = preg_replace('#^' . preg_quote($match[0]) . '#m', '', $text);
+		}
+		
+		preg_match_all('#\{([a-z][a-z0-9_]*)\}#i', $text, $constants, PREG_SET_ORDER);
+		foreach ($constants as $constant) {
+			if (!defined($constant[1])) { continue; }
+			$text = preg_replace('#' . preg_quote($constant[0], '#') . '#', constant($constant[1]), $text, 1);
+		}
+		
+		return $text;
 	}
 	
 	
@@ -347,6 +466,17 @@ class fEmail
 	
 	
 	/**
+	 * Initializes fEmail for creating message ids
+	 * 
+	 * @return fEmail
+	 */
+	public function __construct()
+	{
+		
+	}
+	
+	
+	/**
 	 * All requests that hit this method should be requests for callbacks
 	 * 
 	 * @internal
@@ -461,7 +591,7 @@ class fEmail
 		}
 		
 		$first = TRUE;
-		$line = 0;
+		$line  = 1;
 		foreach ($emails as $email) {
 			if ($first) { $first = FALSE; } else { $header .= ', '; }
 			
@@ -502,7 +632,7 @@ class fEmail
 		$last_index = strlen($chars) - 1;
 		$output     = '';
 		
-		for ($i = 0; $i < 32; $i++) {
+		for ($i = 0; $i < 28; $i++) {
 			$output .= $chars[rand(0, $last_index)];
 		}
 		return $output;
@@ -526,7 +656,7 @@ class fEmail
 		$email = preg_replace('#[\x0-\x19]+#', '', $email);
 		$name  = preg_replace('#[\x0-\x19]+#', '', $name);
 		
-		if (!$name || fCore::checkOS('windows')) {
+		if (!$name) {
 			return $email;
 		}
 		
@@ -551,7 +681,7 @@ class fEmail
 	private function createBody($boundary)
 	{
 		$mime_notice = self::compose(
-			"This message has been formatted using MIME. It does not appear that your email client supports MIME."
+			"This message has been formatted using MIME. It does not appear that your\r\nemail client supports MIME."
 		);
 		
 		$body = '';
@@ -559,23 +689,25 @@ class fEmail
 		// Build the multi-part/alternative section for the plaintext/HTML combo
 		if ($this->html_body) {
 			
+			$alternative_boundary = $boundary;
+			
 			// Depending on the other content, we may need to create a new boundary
 			if ($this->attachments) {
-				$boundary = $this->createBoundary();
-				$body    .= 'Content-Type: multipart/alternative; boundary="' . $boundary . "\"\r\n\r\n";
+				$alternative_boundary = $this->createBoundary();
+				$body    .= 'Content-Type: multipart/alternative; boundary="' . $alternative_boundary . "\"\r\n\r\n";
 			} else {
-				$body .= $mime_notice . "\r\n";
+				$body .= $mime_notice . "\r\n\r\n";
 			}
 			
-			$body .= '--' . $boundary . "\r\n";
+			$body .= '--' . $alternative_boundary . "\r\n";
 			$body .= "Content-Type: text/plain; charset=utf-8\r\n";
 			$body .= "Content-Transfer-Encoding: quoted-printable\r\n\r\n";
-			$body .= $this->makeQuotedPrintable($this->plaintext_body) . "\r\n\r\n";
-			$body .= '--' . $boundary . "\r\n";
+			$body .= $this->makeQuotedPrintable($this->plaintext_body) . "\r\n";
+			$body .= '--' . $alternative_boundary . "\r\n";
 			$body .= "Content-Type: text/html; charset=utf-8\r\n";
 			$body .= "Content-Transfer-Encoding: quoted-printable\r\n\r\n";
-			$body .= $this->makeQuotedPrintable($this->html_body) . "\r\n\r\n";
-			$body .= '--' . $boundary . "--\r\n";
+			$body .= $this->makeQuotedPrintable($this->html_body) . "\r\n";
+			$body .= '--' . $alternative_boundary . "--\r\n";
 		
 		// If there is no HTML, just encode the body
 		} else {
@@ -586,22 +718,22 @@ class fEmail
 				$body .= "Content-Transfer-Encoding: quoted-printable\r\n\r\n";
 			}
 			
-			$body .= $this->makeQuotedPrintable($this->plaintext_body) . "\r\n\r\n";
+			$body .= $this->makeQuotedPrintable($this->plaintext_body) . "\r\n";
 		}
 		
 		// If we have attachments, we need to wrap a multipart/mixed around the current body
 		if ($this->attachments) {
 			
-			$multipart_body  = $mime_notice . "\r\n";
+			$multipart_body  = $mime_notice . "\r\n\r\n";
 			$multipart_body .= '--' . $boundary . "\r\n";
-			$multipart_body .= $body . "\r\n";
+			$multipart_body .= $body;
 			
 			foreach ($this->attachments as $filename => $file_info) {
 				$multipart_body .= '--' . $boundary . "\r\n";
 				$multipart_body .= 'Content-Type: ' . $file_info['mime-type'] . "\r\n";
 				$multipart_body .= "Content-Transfer-Encoding: base64\r\n";
 				$multipart_body .= 'Content-Disposition: attachment; filename="' . $filename . "\";\r\n\r\n";
-				$multipart_body .= $this->makeBase64($file_info['contents']) . "\r\n\r\n";
+				$multipart_body .= $this->makeBase64($file_info['contents']) . "\r\n";
 			}
 			
 			$multipart_body .= '--' . $boundary . "--\r\n"; 
@@ -616,10 +748,11 @@ class fEmail
 	/**
 	 * Builds the headers for the email
 	 * 
-	 * @param  string $boundary  The boundary to use for the top level mime block
+	 * @param  string $boundary    The boundary to use for the top level mime block
+	 * @param  string $message_id  The message id for the message
 	 * @return string  The headers to be sent to the [http://php.net/function.mail mail()] function
 	 */
-	private function createHeaders($boundary)
+	private function createHeaders($boundary, $message_id)
 	{
 		$headers = '';
 		
@@ -641,6 +774,7 @@ class fEmail
 			$headers .= "Sender: " . trim($this->sender_email) . "\r\n";
 		}
 		
+		$headers .= "Message-ID: " . $message_id . "\r\n";
 		$headers .= "MIME-Version: 1.0\r\n";
 		
 		if ($this->html_body && !$this->attachments) {
@@ -653,7 +787,7 @@ class fEmail
 		}
 		
 		if ($this->attachments) {
-			$headers .= 'Content-Type: multipart/mixed; boundary="' . $boundary . "\"\r\n\r\n";
+			$headers .= 'Content-Type: multipart/mixed; boundary="' . $boundary . "\"\r\n";
 		}
 		
 		return $headers . "\r\n";
@@ -746,6 +880,7 @@ class fEmail
 		
 		$new_headers = preg_replace('#^To:[^\n]+\n( [^\n]+\n)*#mi', '', $new_headers);
 		$new_headers = preg_replace('#^Subject:[^\n]+\n( [^\n]+\n)*#mi', '', $new_headers);
+		$new_headers = preg_replace("#^MIME-Version: 1.0\r?\n#mi", '', $new_headers, 1);
 		$new_headers = preg_replace('#^Content-Type:\s+' . preg_quote($headers_array['Content-Type'], '#') . "\r?\n#mi", '', $new_headers);
 		$new_headers = preg_replace('#^Content-Transfer-Encoding:\s+' . preg_quote($headers_array['Content-Transfer-Encoding'], '#') . "\r?\n#mi", '', $new_headers);
 		
@@ -768,6 +903,13 @@ class fEmail
 	 */
 	public function encrypt($recipients_smime_cert_file)
 	{
+		if (!extension_loaded('openssl')) {
+			throw new fEnvironmentException(
+				'S/MIME encryption was requested for an email, but the %s extension is not installed',
+				'openssl'
+			);
+		}
+		
 		if (!self::stringlike($recipients_smime_cert_file)) {
 			throw new fProgrammerException(
 				"The recipient's S/MIME certificate filename specified, %s, does not appear to be a valid filename",
@@ -777,6 +919,82 @@ class fEmail
 		
 		$this->smime_encrypt              = TRUE;
 		$this->recipients_smime_cert_file = $recipients_smime_cert_file;
+	}
+	
+	
+	/**
+	 * Extracts just the email addresses from an array of strings containing an
+	 * <email@address.com> or "Name" <email@address.com> combination.
+	 * 
+	 * @param array $list  The list of email or name/email to extract from
+	 * @return array  The email addresses
+	 */
+	private function extractEmails($list)
+	{
+		$output = array();
+		foreach ($list as $email) {
+			if (preg_match(self::NAME_EMAIL_REGEX, $email, $match)) {
+				$output[] = $match[2];
+			} else {
+				preg_match(self::EMAIL_REGEX, $email, $match);
+				$output[] = $match[0];
+			}
+		}
+		return $output;
+	}
+	
+	
+	/**
+	 * Loads the plaintext version of the email body from a file and applies replacements
+	 * 
+	 * The should contain either ASCII or UTF-8 encoded text. Please see
+	 * http://flourishlib.com/docs/UTF-8 for more information.
+	 * 
+	 * @throws fValidationException  When no file was specified, the file does not exist or the path specified is not a file
+	 * 
+	 * @param  string|fFile $file          The plaintext version of the email body
+	 * @param  array        $replacements  The method will search the contents of the file for each key and replace it with the corresponding value
+	 * @return void
+	 */
+	public function loadBody($file, $replacements=array())
+	{
+		if (!$file instanceof fFile) {
+			$file = new fFile($file);	
+		}
+		
+		$plaintext = $file->read();
+		if ($replacements) {
+			$plaintext = strtr($plaintext, $replacements);	
+		}
+		
+		$this->plaintext_body = $plaintext;
+	}
+	
+	
+	/**
+	 * Loads the plaintext version of the email body from a file and applies replacements
+	 * 
+	 * The should contain either ASCII or UTF-8 encoded text. Please see
+	 * http://flourishlib.com/docs/UTF-8 for more information.
+	 * 
+	 * @throws fValidationException  When no file was specified, the file does not exist or the path specified is not a file
+	 * 
+	 * @param  string|fFile $file          The plaintext version of the email body
+	 * @param  array        $replacements  The method will search the contents of the file for each key and replace it with the corresponding value
+	 * @return void
+	 */
+	public function loadHTMLBody($file, $replacements=array())
+	{
+		if (!$file instanceof fFile) {
+			$file = new fFile($file);	
+		}
+		
+		$html = $file->read();
+		if ($replacements) {
+			$html = strtr($html, $replacements);	
+		}
+		
+		$this->html_body = $html;
 	}
 	
 	
@@ -931,7 +1149,7 @@ class fEmail
 			}
 			
 			// If we have too long a line, wrap it
-			if ($char != "\r" && $char != "\n" && $line_length + $char_length > 76) {
+			if ($char != "\r" && $char != "\n" && $line_length + $char_length > 75) {
 				$output .= "=\r\n";
 				$line_length = 0;
 			}
@@ -954,18 +1172,47 @@ class fEmail
 	/**
 	 * Sends the email
 	 * 
+	 * The return value is the message id, which should be included as the
+	 * `Message-ID` header of the email. While almost all SMTP servers will not
+	 * modify this value, testing has indicated at least one (smtp.live.com
+	 * for Windows Live Mail) does.
+	 * 
 	 * @throws fValidationException  When ::validate() throws an exception
 	 * 
-	 * @return void
+	 * @param  fSMTP $connection  The SMTP connection to send the message over
+	 * @return string  The message id for the message - see method description for details
 	 */
-	public function send()
+	public function send($connection=NULL)
 	{
 		$this->validate();
 		
+		// The mail() function on Windows doesn't support names in headers so
+		// we must strip them down to just the email address
+		if ($connection === NULL && fCore::checkOS('windows')) {
+			$vars = array('bcc_emails', 'bounce_to_email', 'cc_emails', 'from_email', 'reply_to_email', 'sender_email', 'to_emails');
+			foreach ($vars as $var) {
+				if (!is_array($this->$var)) {
+					if (preg_match(self::NAME_EMAIL_REGEX, $this->$var, $match)) {
+						$this->$var = $match[2];
+					}
+				} else {
+					$new_emails = array();
+					foreach ($this->$var as $email) {
+						if (preg_match(self::NAME_EMAIL_REGEX, $email, $match)) {
+							$email = $match[2];
+						}
+						$new_emails[] = $email;
+					}
+					$this->$var = $new_emails;
+				}
+			}
+		}
+		
 		$to = trim($this->buildMultiAddressHeader("", $this->to_emails));
 		
+		$message_id         = '<' . fCryptography::randomString(32, 'hexadecimal') . '@' . self::getFQDN() . '>';
 		$top_level_boundary = $this->createBoundary();
-		$headers            = $this->createHeaders($top_level_boundary);
+		$headers            = $this->createHeaders($top_level_boundary, $message_id);
 		
 		$subject = str_replace(array("\r", "\n"), '', $this->subject);
 		$subject = $this->makeEncodedWord($subject);
@@ -976,28 +1223,31 @@ class fEmail
 			list($headers, $body) = $this->createSMIMEBody($to, $subject, $headers, $body);
 		}
 		
-		// Sendmail when not in safe mode will allow you to set the envelope from address via the -f parameter
-		$parameters = NULL;
-		if (!fCore::checkOS('windows') && $this->bounce_to_email && !ini_get('safe_mode')) {
-			preg_match(self::EMAIL_REGEX, $this->bounce_to_email, $matches);
-			$parameters = '-f ' . $matches[0];
+		// Remove extra line breaks
+		$headers = trim($headers);
+		$body    = trim($body);
+		
+		if ($connection) {
+			$to_emails = $this->extractEmails($this->to_emails);
+			$to_emails = array_merge($to_emails, $this->extractEmails($this->cc_emails));
+			$to_emails = array_merge($to_emails, $this->extractEmails($this->bcc_emails));
+			$from = $this->bounce_to_email ? $this->bounce_to_email : current($this->extractEmails(array($this->from_email)));
+			$connection->send($from, $to_emails, "To: " . $to . "\r\nSubject: " . $subject . "\r\n" . $headers, $body);
+			return $message_id;
 		}
 		
+		// Sendmail when not in safe mode will allow you to set the envelope from address via the -f parameter
+		$parameters = NULL;
+		if (!fCore::checkOS('windows') && $this->bounce_to_email) {
+			preg_match(self::EMAIL_REGEX, $this->bounce_to_email, $matches);
+			$parameters = '-f ' . $matches[0];
+		
 		// Windows takes the Return-Path email from the sendmail_from ini setting
-		if (fCore::checkOS('windows') && $this->bounce_to_email) {
+		} elseif (fCore::checkOS('windows') && $this->bounce_to_email) {
 			$old_sendmail_from = ini_get('sendmail_from');
 			preg_match(self::EMAIL_REGEX, $this->bounce_to_email, $matches);
 			ini_set('sendmail_from', $matches[0]);
 		}
-		
-		// Apparently SMTP server strip a leading . from lines
-		if (fCore::checkOS('windows')) {
-			$body = str_replace("\r\n.", "\r\n..", $body);
-		}
-		
-		// Remove extra line breaks
-		$headers = trim($headers);
-		$body    = trim($body);
 		
 		// This is a gross qmail fix that is a last resort
 		if (self::$popen_sendmail || self::$convert_crlf) {
@@ -1025,7 +1275,17 @@ class fEmail
 			
 		// This is the normal way to send mail
 		} else {
-			$error = !mail($to, $subject, $body, $headers, $parameters);
+			// On Windows, mail() sends directly to an SMTP server and will
+			// strip a leading . from the body
+			if (fCore::checkOS('windows')) {
+				$body = preg_replace('#^\.#', '..', $body);
+			}
+			
+			if ($parameters) {
+				$error = !mail($to, $subject, $body, $headers, $parameters);
+			} else {
+				$error = !mail($to, $subject, $body, $headers);
+			}
 		}
 		
 		if (fCore::checkOS('windows') && $this->bounce_to_email) {
@@ -1038,6 +1298,28 @@ class fEmail
 				$this->subject
 			);
 		}
+		
+		return $message_id;
+	}
+	
+	
+	/**
+	 * Sets the plaintext version of the email body
+	 * 
+	 * This method accepts either ASCII or UTF-8 encoded text. Please see
+	 * http://flourishlib.com/docs/UTF-8 for more information.
+	 * 
+	 * @param  string  $plaintext                  The plaintext version of the email body
+	 * @param  boolean $unindent_expand_constants  If this is `TRUE`, the body will be unindented as much as possible and {CONSTANT_NAME} will be replaced with the value of the constant
+	 * @return void
+	 */
+	public function setBody($plaintext, $unindent_expand_constants=FALSE)
+	{
+		if ($unindent_expand_constants) {
+			$plaintext = self::unindentExpand($plaintext);
+		}
+		
+		$this->plaintext_body = $plaintext;
 	}
 	
 	
@@ -1051,6 +1333,9 @@ class fEmail
 	 */
 	public function setBounceToEmail($email)
 	{
+		if (ini_get('safe_mode') && !fCore::checkOS('windows')) {
+			throw new fProgrammerException('It is not possible to set a Bounce-To Email address when safe mode is enabled on a non-Windows server');
+		}
 		if (!$email) {
 			return;
 		}
@@ -1088,21 +1373,6 @@ class fEmail
 	public function setHTMLBody($html)
 	{
 		$this->html_body = $html;
-	}
-	
-	
-	/**
-	 * Sets the plaintext version of the email body
-	 * 
-	 * This method accepts either ASCII or UTF-8 encoded text. Please see
-	 * http://flourishlib.com/docs/UTF-8 for more information.
-	 * 
-	 * @param  string $plaintext  The plaintext version of the email body
-	 * @return void
-	 */
-	public function setBody($plaintext)
-	{
-		$this->plaintext_body = $plaintext;
 	}
 	
 	
@@ -1168,6 +1438,13 @@ class fEmail
 	 */
 	public function sign($senders_smime_cert_file, $senders_smime_pk_file, $senders_smime_pk_password)
 	{
+		if (!extension_loaded('openssl')) {
+			throw new fEnvironmentException(
+				'An S/MIME signature was requested for an email, but the %s extension is not installed',
+				'openssl'
+			);
+		}
+		
 		if (!self::stringlike($senders_smime_cert_file)) {
 			throw new fProgrammerException(
 				"The sender's S/MIME certificate file specified, %s, does not appear to be a valid filename",
@@ -1298,11 +1575,8 @@ class fEmail
 		
 		if ($validation_messages) {
 			throw new fValidationException(
-				sprintf(
-					"<p>%1\$s</p>\n<ul>\n<li>%2\$s</li>\n</ul>",
-					self::compose("The email could not be sent because:"),
-					join("</li>\n<li>", $validation_messages)
-				)
+				'The email could not be sent because:',
+				$validation_messages
 			);	
 		}
 	}
@@ -1311,7 +1585,7 @@ class fEmail
 
 
 /**
- * Copyright (c) 2008-2009 Will Bond <will@flourishlib.com>, others
+ * Copyright (c) 2008-2010 Will Bond <will@flourishlib.com>, others
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal

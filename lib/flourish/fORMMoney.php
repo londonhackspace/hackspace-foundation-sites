@@ -2,18 +2,25 @@
 /**
  * Provides money functionality for fActiveRecord classes
  * 
- * @copyright  Copyright (c) 2008-2009 Will Bond
+ * @copyright  Copyright (c) 2008-2010 Will Bond, others
  * @author     Will Bond [wb] <will@flourishlib.com>
+ * @author     Dan Collins, iMarc LLC [dc-imarc] <dan@imarc.net>
  * @license    http://flourishlib.com/license
  * 
  * @package    Flourish
  * @link       http://flourishlib.com/fORMMoney
  * 
- * @version    1.0.0b4
- * @changes    1.0.0b4  Updated to use new fORM::registerInspectCallback() method [wb, 2009-07-13]
- * @changes    1.0.0b3  Updated code to use new fValidationException::formatField() method [wb, 2009-06-04]  
- * @changes    1.0.0b2  Fixed bugs with objectifying money columns [wb, 2008-11-24]
- * @changes    1.0.0b   The initial implementation [wb, 2008-09-05]
+ * @version    1.0.0b10
+ * @changes    1.0.0b10  Updated code to work with the new fORM API [wb, 2010-08-06]
+ * @changes    1.0.0b9   Added the `$remove_zero_fraction` parameter to prepare methods [wb, 2010-06-09]
+ * @changes    1.0.0b8   Changed validation messages array to use column name keys [wb, 2010-05-26]
+ * @changes    1.0.0b7   Fixed the `set` methods to return the record object in order to be consistent with all other `set` methods [wb, 2010-03-15]
+ * @changes    1.0.0b6   Fixed duplicate validation messages and fProgrammerException object being thrown when NULL is set [dc-imarc+wb, 2010-03-03]
+ * @changes    1.0.0b5   Updated code for the new fORMDatabase and fORMSchema APIs [wb, 2009-10-28]
+ * @changes    1.0.0b4   Updated to use new fORM::registerInspectCallback() method [wb, 2009-07-13]
+ * @changes    1.0.0b3   Updated code to use new fValidationException::formatField() method [wb, 2009-06-04]  
+ * @changes    1.0.0b2   Fixed bugs with objectifying money columns [wb, 2008-11-24]
+ * @changes    1.0.0b    The initial implementation [wb, 2008-09-05]
  */
 class fORMMoney
 {
@@ -82,7 +89,8 @@ class fORMMoney
 	{
 		$class     = fORM::getClass($class);
 		$table     = fORM::tablize($class);
-		$data_type = fORMSchema::retrieve()->getColumnInfo($table, $column, 'type');
+		$schema    = fORMSchema::retrieve($class);
+		$data_type = $schema->getColumnInfo($table, $column, 'type');
 		
 		$valid_data_types = array('float');
 		if (!in_array($data_type, $valid_data_types)) {
@@ -95,7 +103,7 @@ class fORMMoney
 		}
 		
 		if ($currency_column !== NULL) {
-			$currency_column_data_type = fORMSchema::retrieve()->getColumnInfo($table, $currency_column, 'type');
+			$currency_column_data_type = $schema->getColumnInfo($table, $currency_column, 'type');
 			$valid_currency_column_data_types = array('varchar', 'char', 'text');
 			if (!in_array($currency_column_data_type, $valid_currency_column_data_types)) {
 				throw new fProgrammerException(
@@ -186,9 +194,10 @@ class fORMMoney
 	 */
 	static public function encodeMoneyColumn($object, &$values, &$old_values, &$related_records, &$cache, $method_name, $parameters)
 	{
-		list ($action, $column) = fORM::parseMethod($method_name);
+		list ($action, $subject) = fORM::parseMethod($method_name);
 		
-		$value = $values[$column];
+		$column = fGrammar::underscorize($subject);
+		$value  = $values[$column];
 		
 		if ($value instanceof fMoney) {
 			$value = $value->__toString();
@@ -328,15 +337,21 @@ class fORMMoney
 	 */
 	static public function prepareMoneyColumn($object, &$values, &$old_values, &$related_records, &$cache, $method_name, $parameters)
 	{
-		list ($action, $column) = fORM::parseMethod($method_name);
+		list ($action, $subject) = fORM::parseMethod($method_name);
 		
+		$column = fGrammar::underscorize($subject);
 		if (empty($values[$column])) {
 			return $values[$column];
 		}
 		$value = $values[$column];
 		
+		$remove_zero_fraction = FALSE;
+		if (count($parameters)) {
+			$remove_zero_fraction = $parameters[0];
+		}
+		
 		if ($value instanceof fMoney) {
-			$value = $value->format();
+			$value = $value->format($remove_zero_fraction);
 		}
 		
 		return fHTML::prepare($value);
@@ -383,7 +398,7 @@ class fORMMoney
 				$signature .= " * Sets the value for " . $column . "\n";
 				$signature .= " * \n";
 				$signature .= " * @param  fMoney|string|integer \$" . $column . "  The new value - a string or integer will be converted to the default currency (if defined)\n";
-				$signature .= " * @return void\n";
+				$signature .= " * @return fActiveRecord  The record object, to allow for method chaining\n";
 				$signature .= " */\n";
 			}
 			$set_method = 'set' . $camelized_column;
@@ -415,11 +430,12 @@ class fORMMoney
 				$signature .= " * If the value is an fMoney object, the ->format() method will be called\n";
 				$signature .= " * resulting in the value including the currency symbol and thousands separators\n";
 				$signature .= " * \n";
+				$signature .= " * @param  boolean \$remove_zero_fraction  If a fraction of all zeros should be removed\n";
 				$signature .= " * @return string  The HTML-ready value\n";
 				$signature .= " */\n";
 			}
 			$prepare_method = 'prepare' . $camelized_column;
-			$signature .= 'public function ' . $prepare_method . '()';
+			$signature .= 'public function ' . $prepare_method . '($remove_zero_fraction=FALSE)';
 			
 			$signatures[$prepare_method] = $signature;
 		}
@@ -452,15 +468,16 @@ class fORMMoney
 	 * @param  array         &$cache            The cache array for the record
 	 * @param  string        $method_name       The method that was called
 	 * @param  array         $parameters        The parameters passed to the method
-	 * @return void
+	 * @return fActiveRecord  The record object, to allow for method chaining
 	 */
 	static public function setCurrencyColumn($object, &$values, &$old_values, &$related_records, &$cache, $method_name, $parameters)
 	{
-		list ($action, $column) = fORM::parseMethod($method_name);
+		list ($action, $subject) = fORM::parseMethod($method_name);
 		
-		$class = get_class($object);
+		$column = fGrammar::underscorize($subject);
+		$class  = get_class($object);
 		
-		if (!isset($parameters[0])) {
+		if (count($parameters) < 1) {
 			throw new fProgrammerException(
 				'The method, %s(), requires at least one parameter',
 				$method_name
@@ -476,6 +493,8 @@ class fORMMoney
 			self::$currency_columns[$class][$column],
 			$column
 		);
+		
+		return $object;
 	}
 	
 	
@@ -491,15 +510,16 @@ class fORMMoney
 	 * @param  array         &$cache            The cache array for the record
 	 * @param  string        $method_name       The method that was called
 	 * @param  array         $parameters        The parameters passed to the method
-	 * @return void
+	 * @return fActiveRecord  The record object, to allow for method chaining
 	 */
 	static public function setMoneyColumn($object, &$values, &$old_values, &$related_records, &$cache, $method_name, $parameters)
 	{
-		list ($action, $column) = fORM::parseMethod($method_name);
+		list ($action, $subject) = fORM::parseMethod($method_name);
 		
-		$class = get_class($object);
+		$column = fGrammar::underscorize($subject);
+		$class  = get_class($object);
 		
-		if (!isset($parameters[0])) {
+		if (count($parameters) < 1) {
 			throw new fProgrammerException(
 				'The method, %s(), requires at least one parameter',
 				$method_name
@@ -520,6 +540,8 @@ class fORMMoney
 				fActiveRecord::assign($values, $old_values, $currency_column, $value->getCurrency());
 			}	
 		}
+		
+		return $object;
 	}
 	
 	
@@ -548,16 +570,22 @@ class fORMMoney
 			if ($values[$column] instanceof fMoney || $values[$column] === NULL) {
 				continue;
 			}
+			
+			// Remove any previous validation warnings
+			unset($validation_messages[$column]);
+			
+			$column_name = fValidationException::formatField(fORM::getColumnName($class, $currency_column));
+			
 			if ($currency_column && !in_array($values[$currency_column], fMoney::getCurrencies())) {
-				$validation_messages[] = self::compose(
+				$validation_messages[$column] = self::compose(
 					'%sThe currency specified is invalid',
-					fValidationException::formatField(fORM::getColumnName($class, $currency_column))
+					$column_name
 				);	
 				
 			} else {
-				$validation_messages[] = self::compose(
+				$validation_messages[$column] = self::compose(
 					'%sPlease enter a monetary value',
-					fValidationException::formatField(fORM::getColumnName($class, $column))
+					$column_name
 				);
 			}
 		}
@@ -575,7 +603,7 @@ class fORMMoney
 
 
 /**
- * Copyright (c) 2008-2009 Will Bond <will@flourishlib.com>
+ * Copyright (c) 2008-2010 Will Bond <will@flourishlib.com>, others
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal

@@ -1,22 +1,32 @@
 <?php
 /**
- * Takes a subset of SQL from MySQL, PostgreSQL, Oracle, SQLite and MSSQL and translates into the various dialects allowing for cross-database code
+ * Takes a subset of SQL from IBM DB2, MySQL, PostgreSQL, Oracle, SQLite and MSSQL and translates into the various dialects allowing for cross-database code
  * 
- * @copyright  Copyright (c) 2007-2009 Will Bond
+ * @copyright  Copyright (c) 2007-2010 Will Bond
  * @author     Will Bond [wb] <will@flourishlib.com>
  * @license    http://flourishlib.com/license
  * 
  * @package    Flourish
  * @link       http://flourishlib.com/fSQLTranslation
  * 
- * @version    1.0.0b7
- * @changes    1.0.0b7  Fixed a bug with translating `NOT LIKE` operators in PostgreSQL [wb, 2009-07-15]
- * @changes    1.0.0b6  Changed replacement values in preg_replace() calls to be properly escaped [wb, 2009-06-11]
- * @changes    1.0.0b5  Update code to only translate data types inside of `CREATE TABLE` queries [wb, 2009-05-22]
- * @changes    1.0.0b4  Added the missing ::__get() method for callback support [wb, 2009-05-06]
- * @changes    1.0.0b3  Added Oracle and caching support, various bug fixes [wb, 2009-05-04]
- * @changes    1.0.0b2  Fixed a notice with SQLite foreign key constraints having no `ON` clauses [wb, 2009-02-21]
- * @changes    1.0.0b   The initial implementation [wb, 2007-09-25]
+ * @version    1.0.0b17
+ * @changes    1.0.0b17  Internal Backwards Compatiblity Break - changed the array keys for translated queries returned from ::translate() to include a number plus `:` before the original SQL, preventing duplicate keys [wb, 2010-07-14]
+ * @changes    1.0.0b16  Added IBM DB2 support [wb, 2010-04-13]
+ * @changes    1.0.0b15  Fixed a bug with MSSQL national character conversion when running a SQL statement with a sub-select containing joins [wb, 2009-12-18]
+ * @changes    1.0.0b14  Changed PostgreSQL to cast columns in LOWER() calls to VARCHAR to allow UUID columns (which are treated as a VARCHAR by fSchema) to work with default primary key ordering in fRecordSet [wb, 2009-12-16]
+ * @changes    1.0.0b13  Added a parameter to ::enableCaching() to provide a key token that will allow cached values to be shared between multiple databases with the same schema [wb, 2009-10-28]
+ * @changes    1.0.0b12  Backwards Compatibility Break - Removed date translation functionality, changed the signature of ::translate(), updated to support quoted identifiers, added support for PostgreSQL, MSSQL and Oracle schemas [wb, 2009-10-22]
+ * @changes    1.0.0b11  Fixed a bug with translating MSSQL national columns over an ODBC connection [wb, 2009-09-18]
+ * @changes    1.0.0b10  Changed last bug fix to support PHP 5.1.6 [wb, 2009-09-18]
+ * @changes    1.0.0b9   Fixed another bug with parsing table aliases for MSSQL national columns [wb, 2009-09-18]
+ * @changes    1.0.0b8   Fixed a bug with parsing table aliases that occurs when handling MSSQL national columns [wb, 2009-09-09] 
+ * @changes    1.0.0b7   Fixed a bug with translating `NOT LIKE` operators in PostgreSQL [wb, 2009-07-15]
+ * @changes    1.0.0b6   Changed replacement values in preg_replace() calls to be properly escaped [wb, 2009-06-11]
+ * @changes    1.0.0b5   Update code to only translate data types inside of `CREATE TABLE` queries [wb, 2009-05-22]
+ * @changes    1.0.0b4   Added the missing ::__get() method for callback support [wb, 2009-05-06]
+ * @changes    1.0.0b3   Added Oracle and caching support, various bug fixes [wb, 2009-05-04]
+ * @changes    1.0.0b2   Fixed a notice with SQLite foreign key constraints having no `ON` clauses [wb, 2009-02-21]
+ * @changes    1.0.0b    The initial implementation [wb, 2007-09-25]
  */
 class fSQLTranslation
 {
@@ -60,7 +70,7 @@ class fSQLTranslation
 		$aliases = array();
 		
 		// Turn comma joins into cross joins
-		if (preg_match('#^(?:\w+(?:\s+(?:as\s+)?(?:\w+))?)(?:\s*,\s*(?:\w+(?:\s+(?:as\s+)?(?:\w+))?))*$#isD', $sql)) {
+		if (preg_match('#^(?:"?:?\w+"?(?:\s+(?:as\s+)?(?:"?\w+"?))?)(?:\s*,\s*(?:"?\w+"?(?:\s+(?:as\s+)?(?:"?\w+"?))?))*$#isD', $sql)) {
 			$sql = str_replace(',', ' CROSS JOIN ', $sql);
 		}
 		
@@ -68,13 +78,16 @@ class fSQLTranslation
 		
 		foreach ($tables as $table) {
 			// This grabs the table name and alias (if there is one)
-			preg_match('#^\s*([\w.]+|\(((?:[^()]+|\((?2)\))*)\))(?:\s+(?:as\s+)?((?!ON|USING)[\w.]+))?\s*(?:(?:ON|USING)\s+(.*))?\s*$#im', $table, $parts);
+			preg_match('#^\s*([":\w.]+|\(((?:[^()]+|\((?2)\))*)\))(?:\s+(?:as\s+)?((?!ON|USING)["\w.]+))?\s*(?:(?:ON|USING)\s+(.*))?\s*$#im', $table, $parts);
 			
 			$table_name  = $parts[1];
-			$table_alias = (isset($parts[2])) ? $parts[2] : $parts[1]; 
+			$table_alias = (!empty($parts[3])) ? $parts[3] : $parts[1]; 
+			
+			$table_name  = str_replace('"', '', $table_name);
+			$table_alias = str_replace('"', '', $table_alias);
 			
 			$aliases[$table_alias] = $table_name;
-		}
+		}   
 		
 		return $aliases;
 	}
@@ -176,6 +189,13 @@ class fSQLTranslation
 	private $cache;
 	
 	/**
+	 * The cache prefix to use for cache entries
+	 * 
+	 * @var string
+	 */
+	private $cache_prefix;
+	
+	/**
 	 * The fDatabase instance
 	 * 
 	 * @var fDatabase
@@ -262,28 +282,28 @@ class fSQLTranslation
 		switch (strtolower($delete_clause)) {
 			case 'no action':
 			case 'restrict':
-				$extra_statements[] = "CREATE TRIGGER fkd_res_" . $referencing_table . "_" . $referencing_column . "
-							 BEFORE DELETE ON " . $referenced_table . "
+				$extra_statements[] = 'CREATE TRIGGER fkd_res_' . $referencing_table . '_' . $referencing_column . '
+							 BEFORE DELETE ON "' . $referenced_table . '"
 							 FOR EACH ROW BEGIN
-								 SELECT RAISE(ROLLBACK, 'delete on table \"" . $referenced_table . "\" can not be executed because it would violate the foreign key constraint on column \"" . $referencing_column . "\" of table \"" . $referencing_table . "\"')
-								 WHERE (SELECT " . $referencing_column . " FROM " . $referencing_table . " WHERE " . $referencing_column . " = OLD." . $referenced_table . ") IS NOT NULL;
-							 END";
+								 SELECT RAISE(ROLLBACK, \'delete on table "' . $referenced_table . '" can not be executed because it would violate the foreign key constraint on column "' . $referencing_column . '" of table "' . $referencing_table . '"\')
+								 WHERE (SELECT "' . $referencing_column . '" FROM "' . $referencing_table . '" WHERE "' . $referencing_column . '" = OLD."' . $referenced_table . '") IS NOT NULL;
+							 END';
 				break;
 			
 			case 'set null':
-				$extra_statements[] = "CREATE TRIGGER fkd_nul_" . $referencing_table . "_" . $referencing_column . "
-							 BEFORE DELETE ON " . $referenced_table . "
+				$extra_statements[] = 'CREATE TRIGGER fkd_nul_' . $referencing_table . '_' . $referencing_column . '
+							 BEFORE DELETE ON "' . $referenced_table . '"
 							 FOR EACH ROW BEGIN
-								 UPDATE " . $referencing_table . " SET " . $referencing_column . " = NULL WHERE " . $referencing_column . " = OLD." . $referenced_column . ";
-							 END";
+								 UPDATE "' . $referencing_table . '" SET "' . $referencing_column . '" = NULL WHERE "' . $referencing_column . '" = OLD."' . $referenced_column . '";
+							 END';
 				break;
 				
 			case 'cascade':
-				$extra_statements[] = "CREATE TRIGGER fkd_cas_" . $referencing_table . "_" . $referencing_column . "
-							 BEFORE DELETE ON " . $referenced_table . "
+				$extra_statements[] = 'CREATE TRIGGER fkd_cas_' . $referencing_table . '_' . $referencing_column . '
+							 BEFORE DELETE ON "' . $referenced_table . '"
 							 FOR EACH ROW BEGIN
-								 DELETE FROM " . $referencing_table . " WHERE " . $referencing_column . " = OLD." . $referenced_column . ";
-							 END";
+								 DELETE FROM "' . $referencing_table . '" WHERE "' . $referencing_column . '" = OLD."' . $referenced_column . '";
+							 END';
 				break;
 		}
 	}
@@ -305,28 +325,28 @@ class fSQLTranslation
 		switch (strtolower($update_clause)) {
 			case 'no action':
 			case 'restrict':
-				$extra_statements[] = "\nCREATE TRIGGER fku_res_" . $referencing_table . "_" . $referencing_column . "
-							 BEFORE UPDATE ON " . $referenced_table . "
+				$extra_statements[] = 'CREATE TRIGGER fku_res_' . $referencing_table . '_' . $referencing_column . '
+							 BEFORE UPDATE ON "' . $referenced_table . '"
 							 FOR EACH ROW BEGIN
-								 SELECT RAISE(ROLLBACK, 'update on table \"" . $referenced_table . "\" can not be executed because it would violate the foreign key constraint on column \"" . $referencing_column . "\" of table \"" . $referencing_table . "\"')
-								 WHERE (SELECT " . $referencing_column . " FROM " . $referencing_table . " WHERE " . $referencing_column . " = OLD." . $referenced_column . ") IS NOT NULL;
-							 END";
+								 SELECT RAISE(ROLLBACK, \'update on table "' . $referenced_table . '" can not be executed because it would violate the foreign key constraint on column "' . $referencing_column . '" of table "' . $referencing_table . '"\')
+								 WHERE (SELECT "' . $referencing_column . '" FROM "' . $referencing_table . '" WHERE "' . $referencing_column . '" = OLD."' . $referenced_column . '") IS NOT NULL;
+							 END';
 				break;
 			
 			case 'set null':
-				$extra_statements[] = "\nCREATE TRIGGER fku_nul_" . $referencing_table . "_" . $referencing_column . "
-							 BEFORE UPDATE ON " . $referenced_table . "
+				$extra_statements[] = 'CREATE TRIGGER fku_nul_' . $referencing_table . '_' . $referencing_column . '
+							 BEFORE UPDATE ON "' . $referenced_table . '"
 							 FOR EACH ROW BEGIN
-								 UPDATE " . $referencing_table . " SET " . $referencing_column . " = NULL WHERE OLD." . $referenced_column . " <> NEW." . $referenced_column . " AND " . $referencing_column . " = OLD." . $referenced_column . ";
-							 END";
+								 UPDATE "' . $referencing_table . '" SET "' . $referencing_column . '" = NULL WHERE OLD."' . $referenced_column . '" <> NEW."' . $referenced_column . '" AND "' . $referencing_column . '" = OLD."' . $referenced_column . '";
+							 END';
 				break;
 				
 			case 'cascade':
-				$extra_statements[] = "\nCREATE TRIGGER fku_cas_" . $referencing_table . "_" . $referencing_column . "
-							 BEFORE UPDATE ON " . $referenced_table . "
+				$extra_statements[] = 'CREATE TRIGGER fku_cas_' . $referencing_table . '_' . $referencing_column . '
+							 BEFORE UPDATE ON "' . $referenced_table . '"
 							 FOR EACH ROW BEGIN
-								 UPDATE " . $referencing_table . " SET " . $referencing_column . " = NEW." . $referenced_column . " WHERE OLD." . $referenced_column . " <> NEW." . $referenced_column . " AND " . $referencing_column . " = OLD." . $referenced_column . ";
-							 END";
+								 UPDATE "' . $referencing_table . '" SET "' . $referencing_column . '" = NEW."' . $referenced_column . '" WHERE OLD."' . $referenced_column . '" <> NEW."' . $referenced_column . '" AND "' . $referencing_column . '" = OLD."' . $referenced_column . '";
+							 END';
 				break;
 		}
 	}
@@ -346,30 +366,30 @@ class fSQLTranslation
 	private function createSQLiteForeignKeyTriggerValidInsertUpdate(&$extra_statements, $referencing_table, $referencing_column, $referenced_table, $referenced_column, $referencing_not_null)
 	{
 		// Verify key on inserts
-		$sql  = "\nCREATE TRIGGER fki_ver_" . $referencing_table . "_" . $referencing_column . "
-					  BEFORE INSERT ON " . $referencing_table . "
+		$sql  = 'CREATE TRIGGER fki_ver_' . $referencing_table . '_' . $referencing_column . '
+					  BEFORE INSERT ON "' . $referencing_table . '"
 					  FOR EACH ROW BEGIN
-						  SELECT RAISE(ROLLBACK, 'insert on table \"" . $referencing_table . "\" violates foreign key constraint on column \"" . $referencing_column . "\"')
-							  WHERE ";
+						  SELECT RAISE(ROLLBACK, \'insert on table "' . $referencing_table . '" violates foreign key constraint on column "' . $referencing_column . '"\')
+							  WHERE ';
 		if (!$referencing_not_null) {
-			$sql .= "NEW." . $referencing_column . " IS NOT NULL AND ";
+			$sql .= 'NEW."' . $referencing_column . '" IS NOT NULL AND ';
 		}
-		$sql .= " (SELECT " . $referenced_column . " FROM " . $referenced_table . " WHERE " . $referenced_column . " = NEW." . $referencing_column . ") IS NULL;
-					  END";
+		$sql .= ' (SELECT "' . $referenced_column . '" FROM "' . $referenced_table . '" WHERE "' . $referenced_column . '" = NEW."' . $referencing_column . '") IS NULL;
+					  END';
 					  
 		$extra_statements[] = $sql;
 					
 		// Verify key on updates
-		$sql = "\nCREATE TRIGGER fku_ver_" . $referencing_table . "_" . $referencing_column . "
-					  BEFORE UPDATE ON " . $referencing_table . "
+		$sql = 'CREATE TRIGGER fku_ver_' . $referencing_table . '_' . $referencing_column . '
+					  BEFORE UPDATE ON "' . $referencing_table . '"
 					  FOR EACH ROW BEGIN
-						  SELECT RAISE(ROLLBACK, 'update on table \"" . $referencing_table . "\" violates foreign key constraint on column \"" . $referencing_column . "\"')
-							  WHERE ";
+						  SELECT RAISE(ROLLBACK, \'update on table "' . $referencing_table . '" violates foreign key constraint on column "' . $referencing_column . '"\')
+							  WHERE ';
 		if (!$referencing_not_null) {
-			$sql .= "NEW." . $referencing_column . " IS NOT NULL AND ";
+			$sql .= 'NEW."' . $referencing_column . '" IS NOT NULL AND ';
 		}
-		$sql .= " (SELECT " . $referenced_column . " FROM " . $referenced_table . " WHERE " . $referenced_column . " = NEW." . $referencing_column . ") IS NULL;
-					  END";
+		$sql .= ' (SELECT "' . $referenced_column . '" FROM "' . $referenced_table . '" WHERE "' . $referenced_column . '" = NEW."' . $referencing_column . '") IS NULL;
+					  END';
 		
 		$extra_statements[] = $sql;
 	}
@@ -429,9 +449,14 @@ class fSQLTranslation
 	 * @param  fCache  $cache  The cache to cache to
 	 * @return void
 	 */
-	public function enableCaching($cache)
+	public function enableCaching($cache, $key_token=NULL)
 	{
-		$this->cache       = $cache;
+		$this->cache = $cache;
+		
+		if ($key_token !== NULL) {
+			$this->cache_prefix = 'fSQLTranslation::' . $this->database->getType() . '::' . $key_token . '::';
+		}
+		
 		$this->schema_info = $this->cache->get($this->makeCachePrefix() . 'schema_info', array());
 	}
 	
@@ -463,16 +488,17 @@ class fSQLTranslation
 		if (!isset($this->schema_info['national_columns'])) {
 			$result = $this->database->query(
 				"SELECT
-						c.table_name  AS 'table',						
-						c.column_name AS 'column',
-						c.data_type   AS 'type'
+						c.table_schema AS \"schema\",
+						c.table_name   AS \"table\",						
+						c.column_name  AS \"column\",
+						c.data_type    AS \"type\"
 					FROM
 						INFORMATION_SCHEMA.COLUMNS AS c
 					WHERE
 						(c.data_type = 'nvarchar' OR
 						 c.data_type = 'ntext' OR
 						 c.data_type = 'nchar') AND
-						c.table_catalog = '" . $this->database->getDatabase() . "'
+						c.table_catalog = DB_NAME()
 					ORDER BY
 						lower(c.table_name) ASC,
 						lower(c.column_name) ASC"
@@ -485,9 +511,13 @@ class fSQLTranslation
 				if (!isset($national_columns[$row['table']])) {
 					$national_columns[$row['table']] = array();	
 					$national_types[$row['table']]   = array();
+					$national_columns[$row['schema'] . '.' . $row['table']] = array();	
+					$national_types[$row['schema'] . '.' . $row['table']]   = array();
 				}	
 				$national_columns[$row['table']][] = $row['column'];
 				$national_types[$row['table']][$row['column']] = $row['type'];
+				$national_columns[$row['schema'] . '.' . $row['table']][] = $row['column'];
+				$national_types[$row['schema'] . '.' . $row['table']][$row['column']] = $row['type'];
 			}
 			
 			$this->schema_info['national_columns'] = $national_columns;
@@ -508,9 +538,12 @@ class fSQLTranslation
 			$select_clause = trim($select[1]);
 			$from_clause   = trim($select[3]);
 			
-			// This recursively fixes sub-selects
-			if (preg_match('#\bselect\b#', $from_clause)) {
-				$from_clause = $this->fixMSSQLNationalColumns($from_clause);	
+			$sub_selects = array();
+			if (preg_match_all('#\((\s*SELECT\s+((?:[^()]+|\((?2)\))*))\)#i', $from_clause, $from_matches)) {
+				$sub_selects = $from_matches[0];
+				foreach ($sub_selects as $i => $sub_select) {
+					$from_clause = preg_replace('#' . preg_quote($sub_select, '#') . '#', ':sub_select_' . $i, $from_clause, 1);
+				}
 			}
 			
 			$table_aliases = self::parseTableAliases($from_clause);
@@ -525,7 +558,8 @@ class fSQLTranslation
 					continue;	
 				}
 				
-				if (preg_match('#(\w+)\.\*#i', $selection, $match)) {
+				if (preg_match('#(("?\w+"?\.)"?\w+"?)\.\*#i', $selection, $match)) {
+					$match[1] = str_replace('"', '', $match[1]);
 					$table = $table_aliases[$match[1]];
 					if (empty($national_columns[$table])) {
 						continue;	
@@ -546,11 +580,16 @@ class fSQLTranslation
 						$to_fix[$table] = array_merge($to_fix[$table], $national_columns[$table]); 		
 					}
 					
-				} elseif (preg_match('#^(?:(\w+)\.(\w+)|((?:min|max|trim|rtrim|ltrim|substring|replace)\((\w+)\.(\w+).*?\)))(?:\s+as\s+(\w+))?$#iD', $selection, $match)) {
+				} elseif (preg_match('#^(?:((?:"?\w+"?\.)?"?\w+"?)\.("?\w+"?)|((?:min|max|trim|rtrim|ltrim|substring|replace)\(((?:"?\w+"?\.)"?\w+"?)\.("?\w+"?).*?\)))(?:\s+as\s+("?\w+"?))?$#iD', $selection, $match)) {
 					$table = $match[1] . ((isset($match[4])) ? $match[4] : '');
-					$table = $table_aliases[$table];
 					
 					$column = $match[2] . ((isset($match[5])) ? $match[5] : '');;
+					
+					// Unquote identifiers
+					$table  = str_replace('"', '', $table);
+					$column = str_replace('"', '', $column);
+					
+					$table = $table_aliases[$table];
 					
 					if (empty($national_columns[$table]) || !in_array($column, $national_columns[$table])) {
 						continue;	
@@ -562,7 +601,7 @@ class fSQLTranslation
 					
 					// Handle column aliasing
 					if (!empty($match[6])) {
-						$column = array('column' => $column, 'alias' => $match[6]);	
+						$column = array('column' => $column, 'alias' => str_replace('"', '', $match[6]));	
 					}
 					
 					if (!empty($match[3])) {
@@ -575,8 +614,12 @@ class fSQLTranslation
 					$to_fix[$table] = array_merge($to_fix[$table], array($column));
 				
 				// Match unqualified column names
-				} elseif (preg_match('#^(?:(\w+)|((?:min|max|trim|rtrim|ltrim|substring|replace)\((\w+).*?\)))(?:\s+as\s+(\w+))?$#iD', $selection, $match)) {
+				} elseif (preg_match('#^(?:("?\w+"?)|((?:min|max|trim|rtrim|ltrim|substring|replace)\(("?\w+"?).*?\)))(?:\s+as\s+("?\w+"?))?$#iD', $selection, $match)) {
 					$column = $match[1] . ((isset($match[3])) ? $match[3] : '');
+					
+					// Unquote the identifiers
+					$column = str_replace('"', '', $column);
+					
 					foreach ($table_aliases as $alias => $table) {
 						if (empty($national_columns[$table])) {
 							continue;	
@@ -590,7 +633,7 @@ class fSQLTranslation
 						
 						// Handle column aliasing
 						if (!empty($match[4])) {
-							$column = array('column' => $column, 'alias' => $match[4]);	
+							$column = array('column' => $column, 'alias' => str_replace('"', '', $match[4]));	
 						}
 						
 						if (!empty($match[2])) {
@@ -619,12 +662,12 @@ class fSQLTranslation
 						if (isset($column['expression'])) {
 							$expression = $column['expression'];	
 						} else {
-							$expression = $alias . '.' . $column['column'];
+							$expression = '"' . $alias . '"."' . $column['column'] . '"';
 						}
 						$column = $column['column'];
 					} else {
 						$as     = ' AS fmssqln__' . $column;
-						$expression = $alias . '.' . $column;
+						$expression = '"' . $alias . '"."' . $column . '"';
 					}
 					if ($national_types[$table][$column] == 'ntext') {
 						$cast = 'CAST(' . $expression . ' AS IMAGE)';	
@@ -635,7 +678,26 @@ class fSQLTranslation
 				}		
 			}
 			
-			$replace = preg_replace('#\bselect\s+' . preg_quote($select_clause, '#') . '#i', 'SELECT ' . strtr(join(', ', array_merge($selections, $additions)), array('\\' => '\\\\', '$' => '\\$')), $select);
+			foreach ($sub_selects as $i => $sub_select) {
+				$sql = preg_replace(
+					'#:sub_select_' . $i . '\b#',
+					strtr(
+						$this->fixMSSQLNationalColumns($sub_select),
+						array('\\' => '\\\\', '$' => '\\$')
+					),
+					$sql,
+					1
+				);	
+			}
+			
+			$replace = preg_replace(
+				'#\bselect\s+' . preg_quote($select_clause, '#') . '#i',
+				'SELECT ' . strtr(
+					join(', ', array_merge($selections, $additions)),
+					array('\\' => '\\\\', '$' => '\\$')
+				),
+				$select
+			);
 			$sql = str_replace($select, $replace, $sql);	
 		}
 		
@@ -644,30 +706,22 @@ class fSQLTranslation
 	
 	
 	/**
-	 * Fixes pulling unicode data out of national data type MSSQL columns
+	 * Fixes empty string comparisons in Oracle
 	 * 
-	 * @param  string $sql       The SQL to fix
-	 * @param  array  &$strings  The strings from the SQL
+	 * @param  string $sql The SQL to fix
 	 * @return string  The fixed SQL
 	 */
-	private function fixOracleEmptyStrings($sql, &$strings)
+	private function fixOracleEmptyStrings($sql)
 	{
-		if (preg_match('#^(UPDATE\s+(?:\w+\.)?\w+\s+)(SET((?:(?:(?!\bwhere\b|\breturning\b)[^()])+|\(((?:[^()]+|\((?3)\))*)\))*))(.*)$#i', $sql, $set_match)) {
+		if (preg_match('#^(UPDATE\s+(?:(?:"?\w+"?\.)?"?\w+"?\.)?"?\w+"?\s+)(SET((?:(?:(?!\bwhere\b|\breturning\b)[^()])+|\(((?:[^()]+|\((?3)\))*)\))*))(.*)$#i', $sql, $set_match)) {
 			$sql        = $set_match[1] . ':set_clause ' . $set_match[5];
 			$set_clause = $set_match[2];
 		} else {
 			$set_clause = FALSE;
 		}	
 		
-		foreach ($strings as $number => &$string) {
-			if ($string == "''") {
-				$sql = preg_replace('#(\s)=(?=\s+:string_' . $number . '\b)#',       '\1IS',     $sql, 1, $count_equal);
-				$sql = preg_replace('#(\s)(!=|<>)(?=\s+:string_' . $number . '\b)#', '\1IS NOT', $sql, 1, $count_not_equal);
-				if ($count_equal || $count_not_equal) {
-					$string = 'NULL';
-				}	
-			}
-		}
+		$sql = preg_replace('#(?<=[\sa-z"])=\s*\'\'(?=[^\']|$)#',       'IS NULL',     $sql);
+		$sql = preg_replace('#(?<=[\sa-z"])(!=|<>)\s*\'\'(?=[^\']|$)#', 'IS NOT NULL', $sql);
 		
 		if ($set_clause) {
 			$sql = preg_replace('#:set_clause\b#', strtr($set_clause, array('\\' => '\\\\', '$' => '\\$')), $sql, 1);	
@@ -680,22 +734,26 @@ class fSQLTranslation
 	/**
 	 * Creates a unique cache prefix to help prevent cache conflicts
 	 * 
-	 * @return void
+	 * @return string  The cache prefix to use
 	 */
 	private function makeCachePrefix()
 	{
-		$prefix  = 'fSQLTranslation::' . $this->database->getType() . '::';
-		if ($this->database->getHost()) {
-			$prefix .= $this->database->getHost() . '::';	
+		if (!$this->cache_prefix) {
+			$prefix  = 'fSQLTranslation::' . $this->database->getType() . '::';
+			if ($this->database->getHost()) {
+				$prefix .= $this->database->getHost() . '::';
+			}
+			if ($this->database->getPort()) {
+				$prefix .= $this->database->getPort() . '::';
+			}
+			$prefix .= $this->database->getDatabase() . '::';
+			if ($this->database->getUsername()) {
+				$prefix .= $this->database->getUsername() . '::';
+			}
+			$this->cache_prefix = $prefix;	
 		}
-		if ($this->database->getPort()) {
-			$prefix .= $this->database->getPort() . '::';	
-		}
-		$prefix .= $this->database->getDatabase() . '::';
-		if ($this->database->getUsername()) {
-			$prefix .= $this->database->getUsername() . '::';	
-		}
-		return $prefix;	
+		
+		return $this->cache_prefix;	
 	}
 	
 	
@@ -705,10 +763,9 @@ class fSQLTranslation
 	 * @internal
 	 * 
 	 * @param  array $statements  The SQL statements to translate
-	 * @param  array $strings     The strings to interpolate back into the SQL statements
-	 * @return array  The translated SQL statements all ready for execution. Statements that have been translated will have string key of the original SQL, all other will have a numeric key.
+	 * @return array  The translated SQL statements all ready for execution. Statements that have been translated will have string key of the number, `:` and the original SQL, all other will have a numeric key.
 	 */
-	public function translate($statements, $strings)
+	public function translate($statements)
 	{
 		$output = array();
 		
@@ -717,7 +774,7 @@ class fSQLTranslation
 			// These fixes don't need to know about strings
 			$new_sql = $this->translateBasicSyntax($sql);
 			
-			if ($this->database->getType() == 'mssql' || $this->database->getType() == 'oracle') {
+			if (in_array($this->database->getType(), array('mssql', 'oracle', 'db2'))) {
 				$new_sql = $this->translateLimitOffsetToRowNumber($new_sql);	
 			}
 			
@@ -728,25 +785,12 @@ class fSQLTranslation
 			
 			// Oracle has this nasty habit of silently translating empty strings to null
 			if ($this->database->getType() == 'oracle') {
-				$new_sql = $this->fixOracleEmptyStrings($new_sql, $strings[$number]);	
+				$new_sql = $this->fixOracleEmptyStrings($new_sql);
 			}
 			
-			// Unescape literal semicolons in the queries
-			$sql     = preg_replace('#(?<!\\\\)\\\\;#', ';', $sql);
-			$new_sql = preg_replace('#(?<!\\\\)\\\\;#', ';', $new_sql);
-				
 			$extra_statements = array();
 			$new_sql = $this->translateCreateTableStatements($new_sql, $extra_statements);
 				
-			// Put the strings back into the SQL
-			foreach ($strings[$number] as $index => $string) {
-				$string  = strtr($string, array('\\' => '\\\\', '$' => '\\$'));
-				$sql     = preg_replace('#:string_' . $index . '\b#', $string, $sql, 1);
-				$new_sql = preg_replace('#:string_' . $index . '\b#', $string, $new_sql, 1);	
-			}
-			
-			$new_sql = $this->translateDateFunctions($new_sql);
-			
 			if ($sql != $new_sql || $extra_statements) {
 				fCore::debug(
 					self::compose(
@@ -768,7 +812,7 @@ class fSQLTranslation
 				);
 			}
 			
-			$output = array_merge($output, array($sql => $new_sql), $extra_statements);	
+			$output = array_merge($output, array($number . ':' . $sql => $new_sql), $extra_statements);	
 		}
 		
 		return $output;
@@ -783,7 +827,21 @@ class fSQLTranslation
 	 */
 	private function translateBasicSyntax($sql)
 	{
-		if ($this->database->getType() == 'mssql') {
+		if ($this->database->getType() == 'db2') {
+			$regex = array(
+				'#\brandom\(#i'         => 'RAND(',
+				'#\bceil\(#i'           => 'CEILING(',
+				'#\btrue\b#i'           => "'1'",
+				'#\bfalse\b#i'          => "'0'",
+				'#\bpi\(\)#i'           => '3.14159265358979',
+				'#\bcot\(\s*((?>[^()\s]+|\(((?:[^()]+|\((?2)\))*)\))+)\s*\)#i' => '(1/TAN(\1))',
+				'#(?:\b|^)((?>[^()%\s]+|\(((?:[^()]+|\((?2)\))*)\))+)\s*%(?![lbdfristp]\b)\s*((?>[^()\s]+|\(((?:[^()]+|\((?4)\))*)\))+)(?:\b|$)#i' => 'MOD(\1, \3)',
+				'#(?<!["\w.])((?>[^()\s]+|\(((?:[^()]+|\((?2)\))*)\))+)\s+(NOT\s+)?LIKE\s+((?>[^()\s]+|\(((?:[^()]+|\((?4)\))*)\))+)(?:\b|$)#i'    => 'LOWER(\1) \3LIKE LOWER(\4)',
+				'#\blog\(\s*((?>[^(),]+|\((?1)(?:,(?1))?\)|\(\))+)\s*,\s*((?>[^(),]+|\((?2)(?:,(?2))?\)|\(\))+)\s*\)#i'                            => '(LN(\2)/LN(\1))'
+			);
+		
+		
+		} elseif ($this->database->getType() == 'mssql') {
 			$regex = array(
 				'#\bbegin\s*(?!tran)#i' => 'BEGIN TRANSACTION ',
 				'#\brandom\(#i'         => 'RAND(',
@@ -818,15 +876,16 @@ class fSQLTranslation
 				'#\bcot\(\s*((?>[^()\s]+|\(((?:[^()]+|\((?2)\))*)\))+)\s*\)#i'     => '(1/TAN(\1))',
 				'#\bdegrees\(\s*((?>[^()\s]+|\(((?:[^()]+|\((?2)\))*)\))+)\s*\)#i' => '(\1 * 57.295779513083)',
 				'#\bradians\(\s*((?>[^()\s]+|\(((?:[^()]+|\((?2)\))*)\))+)\s*\)#i' => '(\1 * 0.017453292519943)',
-				'#(?:\b|^)((?>[^()%\s]+|\(((?:[^()]+|\((?2)\))*)\))+)\s*%\s*((?>[^()\s]+|\(((?:[^()]+|\((?4)\))*)\))+)(?:\b|$)#i'   => 'MOD(\1, \3)',
-				'#(?:\b|^)((?>[^()\s]+|\(((?:[^()]+|\((?2)\))*)\))+)\s+LIKE\s+((?>[^()\s]+|\(((?:[^()]+|\((?4)\))*)\))+)(?:\b|$)#i' => 'LOWER(\1) LIKE LOWER(\3)'
+				'#(?:\b|^)((?>[^()%\s]+|\(((?:[^()]+|\((?2)\))*)\))+)\s*%(?![lbdfristp]\b)\s*((?>[^()\s]+|\(((?:[^()]+|\((?4)\))*)\))+)(?:\b|$)#i' => 'MOD(\1, \3)',
+				'#(?<!["\w.])((?>[^()\s]+|\(((?:[^()]+|\((?2)\))*)\))+)\s+(NOT\s+)?LIKE\s+((?>[^()\s]+|\(((?:[^()]+|\((?4)\))*)\))+)(?:\b|$)#i'    => 'LOWER(\1) \3LIKE LOWER(\4)'
 			);
 		
 		
 		} elseif ($this->database->getType() == 'postgresql') {
 			$regex = array(
-				'#\b([\w.]+)\s+(not\s+)?like\b#i' => 'CAST(\1 AS VARCHAR) \2ILIKE',
-				'#\blike\b#i'                     => 'ILIKE'
+				'#(?<!["\w.])(["\w.]+)\s+(not\s+)?like\b#i' => 'CAST(\1 AS VARCHAR) \2ILIKE',
+				'#\blower\(\s*(?<!["\w.])(["\w.]+)\s*\)#i'  => 'LOWER(CAST(\1 AS VARCHAR))',
+				'#\blike\b#i'                               => 'ILIKE'
 			);
 		
 		
@@ -866,13 +925,25 @@ class fSQLTranslation
 	 */
 	private function translateCreateTableStatements($sql, &$extra_statements)
 	{
-		if (!preg_match('#^\s*CREATE\s+TABLE\s+(\w+)#i', $sql, $table_matches) ) {
-			return $sql;	
+		if (!preg_match('#^\s*CREATE\s+TABLE\s+(["`\[]?\w+["`\]]?)#i', $sql, $table_matches) ) {
+			return $sql;
 		}
 		
 		$table = $table_matches[1];
 		
-		if ($this->database->getType() == 'mssql') {
+		if ($this->database->getType() == 'db2') {
+			
+			// Data type translation
+			$regex = array(
+				'#\btext\b#i'                                => 'CLOB',
+				'#("[^"]+"|\w+)\s+boolean(.*?)(,|\)|$)#im'   => '\1 CHAR(1)\2 CHECK(\1 IN (\'0\', \'1\'))\3',
+				'#\binteger(?:\(\d+\))?\s+autoincrement\b#i' => 'INTEGER GENERATED BY DEFAULT AS IDENTITY'
+			);
+			
+			$sql = preg_replace(array_keys($regex), array_values($regex), $sql);
+		
+			
+		} elseif ($this->database->getType() == 'mssql') {
 			
 			// Data type translation
 			$regex = array(
@@ -903,7 +974,7 @@ class fSQLTranslation
 			$sql = preg_replace(array_keys($regex), array_values($regex), $sql);
 			
 			// Make sure MySQL uses InnoDB tables, translate check constraints to enums and fix column-level foreign key definitions
-			preg_match_all('#(?<=,|\()\s*(\w+)\s+(?:[a-z]+)(?:\(\d+\))?(?:\s+unsigned|\s+zerofill|\s+character\s+set\s+[^ ]+|\s+collate\s+[^ ]+|\s+NULL|\s+NOT\s+NULL|(\s+DEFAULT\s+(?:[^, \']*|\'(?:\'\'|[^\']+)*\'))|\s+UNIQUE|\s+PRIMARY\s+KEY|(\s+CHECK\s*\(\w+\s+IN\s+(\(\s*(?:(?:[^, \']+|\'(?:\'\'|[^\']+)*\')\s*,\s*)*\s*(?:[^, \']+|\'(?:\'\'|[^\']+)*\')\))\)))*(\s+REFERENCES\s+\w+\s*\(\s*\w+\s*\)\s*(?:\s+(?:ON\s+DELETE|ON\s+UPDATE)\s+(?:CASCADE|NO\s+ACTION|RESTRICT|SET\s+NULL|SET\s+DEFAULT))*(?:\s+(?:DEFERRABLE|NOT\s+DEFERRABLE))?)?\s*(,|\s*(?=\)))#mi', $sql, $matches, PREG_SET_ORDER);
+			preg_match_all('#(?<=,|\()\s*(["`]?\w+["`]?)\s+(?:[a-z]+)(?:\(\d+\))?(?:\s+unsigned|\s+zerofill|\s+character\s+set\s+[^ ]+|\s+collate\s+[^ ]+|\s+NULL|\s+NOT\s+NULL|(\s+DEFAULT\s+(?:[^, \']*|\'(?:\'\'|[^\']+)*\'))|\s+UNIQUE|\s+PRIMARY\s+KEY|(\s+CHECK\s*\(\w+\s+IN\s+(\(\s*(?:(?:[^, \']+|\'(?:\'\'|[^\']+)*\')\s*,\s*)*\s*(?:[^, \']+|\'(?:\'\'|[^\']+)*\')\))\)))*(\s+REFERENCES\s+["`]?\w+["`]?\s*\(\s*["`]?\w+["`]?\s*\)\s*(?:\s+(?:ON\s+DELETE|ON\s+UPDATE)\s+(?:CASCADE|NO\s+ACTION|RESTRICT|SET\s+NULL|SET\s+DEFAULT))*(?:\s+(?:DEFERRABLE|NOT\s+DEFERRABLE))?)?\s*(,|\s*(?=\)))#mi', $sql, $matches, PREG_SET_ORDER);
 			
 			foreach ($matches as $match) {
 				// MySQL has the enum data type, so we switch check constraints to that
@@ -939,10 +1010,10 @@ class fSQLTranslation
 			$sql = preg_replace(array_keys($regex), array_values($regex), $sql);
 			
 			// Create sequences and triggers for Oracle
-			if (stripos($sql, 'autoincrement') !== FALSE && preg_match('#(?<=,|\()\s*(\w+)\s+(?:[a-z]+)(?:\((?:\d+)\))?.*?\bAUTOINCREMENT\b[^,\)]*(?:,|\s*(?=\)))#mi', $sql, $matches)) {
+			if (stripos($sql, 'autoincrement') !== FALSE && preg_match('#(?<=,|\()\s*("?\w+"?)\s+(?:[a-z]+)(?:\((?:\d+)\))?.*?\bAUTOINCREMENT\b[^,\)]*(?:,|\s*(?=\)))#mi', $sql, $matches)) {
 				$column        = $matches[1];
 				
-				$table_column  = substr($table . '_' . $column, 0, 26);
+				$table_column  = substr(str_replace('"' , '', $table) . '_' . str_replace('"', '', $column), 0, 26);
 				
 				$sequence_name = $table_column . '_seq';
 				$trigger_name  = $table_column . '_trg';
@@ -988,10 +1059,17 @@ class fSQLTranslation
 			// Create foreign key triggers for SQLite
 			if (stripos($sql, 'REFERENCES') !== FALSE) {
 				
-				preg_match_all('#(?:(?<=,|\()\s*(\w+)\s+(?:[a-z]+)(?:\((?:\d+)\))?(?:(\s+NOT\s+NULL)|(?:\s+DEFAULT\s+(?:[^, \']*|\'(?:\'\'|[^\']+)*\'))|(?:\s+UNIQUE)|(?:\s+PRIMARY\s+KEY(?:\s+AUTOINCREMENT)?)|(?:\s+CHECK\s*\(\w+\s+IN\s+\(\s*(?:(?:[^, \']+|\'(?:\'\'|[^\']+)*\')\s*,\s*)*\s*(?:[^, \']+|\'(?:\'\'|[^\']+)*\')\)\)))*(\s+REFERENCES\s+(\w+)\s*\(\s*(\w+)\s*\)\s*(?:\s+(?:ON\s+DELETE\s+(CASCADE|NO\s+ACTION|RESTRICT|SET\s+NULL)))?(?:\s+(?:ON\s+UPDATE\s+(CASCADE|NO\s+ACTION|RESTRICT|SET\s+NULL)))?)?\s*(?:,|\s*(?=\)))|(?<=,|\()\s*FOREIGN\s+KEY\s*(?:(\w+)|\((\w+)\))\s+REFERENCES\s+(\w+)\s*\(\s*(\w+)\s*\)\s*(?:\s+(?:ON\s+DELETE\s+(CASCADE|NO\s+ACTION|RESTRICT|SET\s+NULL)))?(?:\s+(?:ON\s+UPDATE\s+(CASCADE|NO\s+ACTION|RESTRICT|SET\s+NULL)))?\s*(?:,|\s*(?=\))))#mi', $sql, $matches, PREG_SET_ORDER);
+				preg_match_all('#(?:(?<=,|\()\s*(["`\[]?\w+["`\]]?)\s+(?:[a-z]+)(?:\((?:\d+)\))?(?:(\s+NOT\s+NULL)|(?:\s+DEFAULT\s+(?:[^, \']*|\'(?:\'\'|[^\']+)*\'))|(?:\s+UNIQUE)|(?:\s+PRIMARY\s+KEY(?:\s+AUTOINCREMENT)?)|(?:\s+CHECK\s*\(\w+\s+IN\s+\(\s*(?:(?:[^, \']+|\'(?:\'\'|[^\']+)*\')\s*,\s*)*\s*(?:[^, \']+|\'(?:\'\'|[^\']+)*\')\)\)))*(\s+REFERENCES\s+(["`\[]?\w+["`\]]?)\s*\(\s*(["`\[]?\w+["`\]]?)\s*\)\s*(?:\s+(?:ON\s+DELETE\s+(CASCADE|NO\s+ACTION|RESTRICT|SET\s+NULL)))?(?:\s+(?:ON\s+UPDATE\s+(CASCADE|NO\s+ACTION|RESTRICT|SET\s+NULL)))?)?\s*(?:,|\s*(?=\)))|(?<=,|\()\s*FOREIGN\s+KEY\s*(?:(["`\[]?\w+["`\]]?)|\((["`\[]?\w+["`\]]?)\))\s+REFERENCES\s+(["`\[]?\w+["`\]]?)\s*\(\s*(["`\[]?\w+["`\]]?)\s*\)\s*(?:\s+(?:ON\s+DELETE\s+(CASCADE|NO\s+ACTION|RESTRICT|SET\s+NULL)))?(?:\s+(?:ON\s+UPDATE\s+(CASCADE|NO\s+ACTION|RESTRICT|SET\s+NULL)))?\s*(?:,|\s*(?=\))))#mi', $sql, $matches, PREG_SET_ORDER);
 				
 				$not_null_columns = array();
 				foreach ($matches as $match) {
+					$fields_to_unquote = array(1, 4, 5, 9, 10, 11);
+					foreach ($fields_to_unquote as $field) {
+						if (isset($match[$field])) {
+							$match[$field] = str_replace(array('[', '"', '`', ']'), '', $match[$field]);
+						}	
+					}
+					
 					// Find all of the not null columns
 					if (!empty($match[2])) {
 						$not_null_columns[] = $match[1];
@@ -1041,126 +1119,6 @@ class fSQLTranslation
 			}
 		}
 		
-		
-		return $sql;
-	}
-	
-	
-	/**
-	 * Translates custom date/time functions to the current database
-	 * 
-	 * @param  string $sql  The SQL to translate
-	 * @return string  The translated SQL
-	 */
-	private function translateDateFunctions($sql)
-	{
-		// Handle diff_seconds()
-		// diff_seconds() accepts two parameters, the two dates to get the difference between
-		// Regex matches:
-		// 1 - The first date
-		// 2 - The second date
-		preg_match_all("#diff_seconds\(((?>(?:[^()',]+|'[^']+')|\((?1)(?:,(?1))?\)|\(\))+)\s*,\s*((?>(?:[^()',]+|'[^']+')|\((?2)(?:,(?2))?\)|\(\))+)\)#ims", $sql, $diff_matches, PREG_SET_ORDER);
-		foreach ($diff_matches as $match) {
-			
-			// SQLite
-			if ($this->database->getType() == 'sqlite') {
-				$sql = str_replace($match[0], "round((julianday(" . $match[2] . ") - julianday('1970-01-01 00:00:00')) * 86400) - round((julianday(" . $match[1] . ") - julianday('1970-01-01 00:00:00')) * 86400)", $sql);
-			
-			// PostgreSQL
-			} elseif ($this->database->getType() == 'postgresql') {
-				$sql = str_replace($match[0], "extract(EPOCH FROM age(" . $match[2] . ", " . $match[1] . "))", $sql);
-			
-			// Oracle
-			} elseif ($this->database->getType() == 'oracle') {
-				if (substr($match[1], 0, 1) == "'") {
-					$match[1] = 'CAST(' . $match[1] . " AS TIMESTAMP)";	
-				}
-				if (substr($match[2], 0, 1) == "'") {
-					$match[2] = 'CAST(' . $match[2] . " AS TIMESTAMP)";
-				}
-				$sql = str_replace($match[0], "((TO_NUMBER(TO_CHAR(" . $match[2] . ", 'J')) - TO_NUMBER(TO_CHAR(" . $match[1] . ", 'J'))) * 86400) + (TO_NUMBER(TO_CHAR(" . $match[2] . ", 'SSSSS')) - TO_NUMBER(TO_CHAR(" . $match[1] . ", 'SSSSS')))", $sql);
-			
-			// MySQL
-			} elseif ($this->database->getType() == 'mysql') {
-				$sql = str_replace($match[0], "(UNIX_TIMESTAMP(" . $match[2] . ") - UNIX_TIMESTAMP(" . $match[1] . "))", $sql);
-				
-			// MSSQL
-			} elseif ($this->database->getType() == 'mssql') {
-				$sql = str_replace($match[0], "DATEDIFF(second, " . $match[1] . ", " . $match[2] . ")", $sql);
-			}
-		}
-		
-		// Handle add_interval()
-		// add_interval() accepts two parameters, the date to modify and the interval to add
-		// Regex matches:
-		// 1 - The first parameter
-		// 2 - The second parameter
-		preg_match_all("#add_interval\(((?>(?:[^()',]+|'[^']+')|\((?1)(?:,(?1))?\)|\(\))+)\s*,\s*'([^']+)'\s*\)#i", $sql, $add_matches, PREG_SET_ORDER);
-		foreach ($add_matches as $match) {
-			
-			// SQLite
-			if ($this->database->getType() == 'sqlite') {
-				
-				// Regex matches:
-				// 0 - The adjustment in the form: +/- number units
-				preg_match_all("#(?:\\+|\\-)\\d+\\s+(?:year|month|day|hour|minute|second)(?:s)?#i", $match[2], $individual_matches);
-				$strings = "'" . join("', '", $individual_matches[0]) . "'";
-				$sql = str_replace($match[0], "datetime(" . $match[1] . ", " . $strings . ")", $sql);
-			
-			// PostgreSQL
-			} elseif ($this->database->getType() == 'postgresql') {
-				if (substr($match[1], 0, 1) == "'") {
-					if (preg_match('#^\'\d{4}-\d{2}-\d{2}\'$#', $match[1])) {
-						$match[1] = 'DATE ' . $match[1];
-					} elseif (preg_match('#^\'\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\'$#', $match[1])) {
-						$match[1] = 'TIMESTAMP ' . $match[1];
-					} elseif (preg_match('#^\'\d{2}:\d{2}:\d{2}\'$#', $match[1])) {
-						$match[1] = 'TIME ' . $match[1];
-					}	
-				}
-				$sql = str_replace($match[0], "(" . $match[1] . " + INTERVAL '" . $match[2] . "')", $sql);
-			
-			// MySQL and Oracle
-			} elseif ($this->database->getType() == 'mysql' || $this->database->getType() == 'oracle') {
-				
-				// Regex matches:
-				// 1 - The sign, +/-
-				// 2 - The number
-				// 3 - The units, hour, minute, etc
-				preg_match_all("#(\\+|\\-)(\\d+)\\s+(year|month|day|hour|minute|second)(?:s)?#i", $match[2], $individual_matches, PREG_SET_ORDER);
-				$intervals_string = '';
-				foreach ($individual_matches as $individual_match) {
-					$intervals_string .= ' ' . $individual_match[1] . " INTERVAL '" . $individual_match[2] . "' " . strtoupper($individual_match[3]);
-				}
-				
-				if ($this->database->getType() == 'oracle' && substr($match[1], 0, 1) == "'") {
-					if (preg_match('#^\'\d{4}-\d{2}-\d{2}\'$#', $match[1])) {
-						$match[1] = 'CAST(' . $match[1] . ' AS DATE)';
-					} elseif (preg_match('#^\'\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\'$#', $match[1])) {
-						$match[1] = 'CAST(' . $match[1] . ' AS TIMESTAMP)';
-					}	
-				}
-				
-				$sql = str_replace($match[0], "(" . $match[1] . $intervals_string . ")", $sql);
-			
-			// MSSQL
-			} elseif ($this->database->getType() == 'mssql') {
-				
-				// Regex matches:
-				// 1 - The sign, +/-
-				// 2 - The number
-				// 3 - The units, hour, minute, etc
-				preg_match_all("#(\\+|\\-)(\\d+)\\s+(year|month|day|hour|minute|second)(?:s)?#i", $match[2], $individual_matches, PREG_SET_ORDER);
-				$date_add_string = '';
-				$stack = 0;
-				foreach ($individual_matches as $individual_match) {
-					$stack++;
-					$date_add_string .= 'DATEADD(' . $individual_match[3] . ', ' . $individual_match[1] . $individual_match[2] . ', ';
-				}
-				$sql = str_replace($match[0], $date_add_string . $match[1] . str_pad('', $stack, ')'), $sql);
-				
-			}
-		}
 		
 		return $sql;
 	}
@@ -1218,6 +1176,27 @@ class fSQLTranslation
 				// Otherwise we just have a limit
 				} else {
 					$replacement = 'SELECT * FROM (SELECT' . $match[1] . $match[3] . $match[5] . ') WHERE rownum <= ' . $match[7];
+				}
+					
+			} elseif ($this->database->getType() == 'db2') {
+				
+				// This means we have an offset clause
+				if (!empty($match[8])) {
+					
+					if ($match[5] === '') {
+						$match[5] = "ORDER BY rand(1) ASC";	
+					}
+					
+					$select  = $match[1] . ', ROW_NUMBER() OVER (';
+					$select .= $match[5];
+					$select .= ') AS flourish__row__num ';
+					$select .= $match[3];
+					
+					$replacement = 'SELECT * FROM (SELECT ' . trim($match[1]) . ', ROW_NUMBER() OVER (' . $match[5] . ') AS flourish__row__num ' . $match[3] . ') AS original_query WHERE flourish__row__num > ' . $match[8] . ' AND flourish__row__num <= ' . ($match[7] + $match[8]) . ' ORDER BY flourish__row__num';
+				
+				// Otherwise we just have a limit
+				} else {
+					$replacement = 'SELECT ' . trim($match[1] . $match[3] . $match[5]) . ' FETCH FIRST ' . $match[7] . ' ROWS ONLY';
 				}
 					
 			}

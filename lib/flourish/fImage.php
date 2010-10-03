@@ -2,14 +2,24 @@
 /**
  * Represents an image on the filesystem, also provides image manipulation functionality
  * 
- * @copyright  Copyright (c) 2007-2009 Will Bond
+ * @copyright  Copyright (c) 2007-2010 Will Bond, others
  * @author     Will Bond [wb] <will@flourishlib.com>
  * @license    http://flourishlib.com/license
  * 
  * @package    Flourish
  * @link       http://flourishlib.com/fImage
  * 
- * @version    1.0.0b15
+ * @version    1.0.0b25
+ * @changes    1.0.0b25  Fixed the class to not generate multiple files when saving a JPG from an animated GIF or a TIF with a thumbnail [wb, 2010-09-12]
+ * @changes    1.0.0b24  Updated class to use fCore::startErrorCapture() instead of `error_reporting()` [wb, 2010-08-09]
+ * @changes    1.0.0b23  Fixed the class to detect when exec() is disabled and the function has a space before or after in the list [wb, 2010-07-21]
+ * @changes    1.0.0b22  Fixed ::isImageCompatible() to handle certain JPGs created with Photoshop [wb, 2010-04-03]
+ * @changes    1.0.0b21  Fixed ::resize() to allow dimensions to be numeric strings instead of just integers [wb, 2010-04-09]
+ * @changes    1.0.0b20  Added ::append() [wb, 2010-03-15]
+ * @changes    1.0.0b19  Updated for the new fFile API [wb-imarc, 2010-03-05]
+ * @changes    1.0.0b18  Fixed a bug in ::saveChanges() that would incorrectly cause new filenames to be created, added the $overwrite parameter to ::saveChanges(), added the $allow_upsizing parameter to ::resize() [wb, 2010-03-03]
+ * @changes    1.0.0b17  Fixed a couple of bug with using ImageMagick on Windows and BSD machines [wb, 2010-03-02]
+ * @changes    1.0.0b16  Fixed some bugs with GD not properly handling transparent backgrounds and desaturation of .gif files [wb, 2009-10-27]
  * @changes    1.0.0b15  Added ::getDimensions() [wb, 2009-08-07]
  * @changes    1.0.0b14  Performance updates for checking image type and compatiblity [wb, 2009-07-31]
  * @changes    1.0.0b13  Updated class to work even if the file extension is wrong or not present, ::saveChanges() detects files that aren't writable [wb, 2009-07-29]
@@ -78,7 +88,7 @@ class fImage extends fFile
 		if (self::isOpenBaseDirRestricted($path)) {
 			exec($path . 'convert -version', $executable);
 		} else {
-			$executable = is_executable($path . 'convert');
+			$executable = is_executable($path . (fCore::checkOS('windows') ? 'convert.exe' : 'convert'));
 		}
 		
 		if (!$executable) {
@@ -147,13 +157,13 @@ class fImage extends fFile
 			try {
 				
 				// If exec is disabled we can't use imagemagick
-				if (in_array('exec', explode(',', ini_get('disable_functions')))) {
-					throw new Exception();	
+				if (in_array('exec', array_map('trim', explode(',', ini_get('disable_functions'))))) {
+					throw new Exception();
 				}
 				
 				if (fCore::checkOS('windows')) {
 					
-						$win_search = 'dir /B "C:\Program Files\ImageMagick*"';
+						$win_search = 'dir /B "C:\Program Files\ImageMagick*" 2> NUL';
 						exec($win_search, $win_output);
 						$win_output = trim(join("\n", $win_output));
 						 
@@ -161,7 +171,7 @@ class fImage extends fFile
 							throw new Exception();
 						}
 						 
-						$path = 'C:\Program Files\\' . $win_output . '\\';
+						$path = 'C:\\Program Files\\' . $win_output . '\\';
 						
 				} elseif (fCore::checkOS('linux', 'bsd', 'solaris', 'osx')) {
 					
@@ -205,7 +215,7 @@ class fImage extends fFile
 					}
 					
 					// On linux and bsd can try whereis
-					if (!$found && fCore::checkOS('linux', 'bsd')) {
+					if (!$found && fCore::checkOS('linux', 'freebsd')) {
 						$nix_search = 'whereis -b convert';
 						exec($nix_search, $nix_output);
 						$nix_output = trim(str_replace('convert:', '', join("\n", $nix_output)));
@@ -218,7 +228,7 @@ class fImage extends fFile
 					}
 					
 					// OSX has a different whereis command
-					if (!$found && fCore::checkOS('osx')) {
+					if (!$found && fCore::checkOS('osx', 'netbsd', 'openbsd')) {
 						$osx_search = 'whereis convert';
 						exec($osx_search, $osx_output);
 						$osx_output = trim(join("\n", $osx_output));
@@ -307,9 +317,9 @@ class fImage extends fFile
 			}	
 		}
 		
-		$old_level  = error_reporting(error_reporting() & ~E_WARNING);
+		fCore::startErrorCapture(E_WARNING);
 		$image_info = getimagesize($image_path);
-		error_reporting($old_level);
+		fCore::stopErrorCapture();
 		
 		if ($image_info == FALSE) {
 			throw new fValidationException(
@@ -362,27 +372,28 @@ class fImage extends fFile
 		$contents = fread($handle, 12);
 		fclose($handle);
 		
-		$_0_8 = substr($contents, 0, 8);
-		$_0_4 = substr($contents, 0, 4);
-		$_6_4 = substr($contents, 6, 4);
+		$_0_8  = substr($contents, 0, 8);
+		$_0_4  = substr($contents, 0, 4);
+		$_6_4  = substr($contents, 6, 4);
+		$_20_4 = substr($contents, 20, 4);
 		
 		if ($_0_4 == "MM\x00\x2A" || $_0_4 == "II\x2A\x00") {
-			return 'tif';	
+			return 'tif';
 		}
 		
 		if ($_0_8 == "\x89PNG\x0D\x0A\x1A\x0A") {
-			return 'png';	
+			return 'png';
 		}
 		
 		if ($_0_4 == 'GIF8') {
-			return 'gif';	
+			return 'gif';
 		}
 		
-		if ($_6_4 == 'JFIF' || $_6_4 == 'Exif') {
-			return 'jpg';	
+		if ($_6_4 == 'JFIF' || $_6_4 == 'Exif' || ($_0_4 == "\xFF\xD8\xFF\xED" && $_20_4 == "8BIM")) {
+			return 'jpg';
 		}
 		
-		return NULL;	
+		return NULL;
 	}
 	
 	
@@ -551,6 +562,18 @@ class fImage extends fFile
 	
 	
 	/**
+	 * Prevents a programmer from trying to append an image
+	 * 
+	 * @param  mixed $data  The data to append to the image
+	 * @return void
+	 */
+	public function append($data)
+	{
+		throw new fProgrammerException('It is not possible to append an image');
+	}
+	
+	
+	/**
 	 * Crops the image by the exact pixel dimensions specified
 	 * 
 	 * The crop does not occur until ::saveChanges() is called.
@@ -563,7 +586,7 @@ class fImage extends fFile
 	 */
 	public function crop($crop_from_x, $crop_from_y, $new_width, $new_height)
 	{
-		$this->tossIfException();
+		$this->tossIfDeleted();
 		
 		// Get the original dimensions for our parameter checking
 		$dim = $this->getCurrentDimensions();
@@ -630,7 +653,7 @@ class fImage extends fFile
 	 */
 	public function cropToRatio($ratio_width, $ratio_height)
 	{
-		$this->tossIfException();
+		$this->tossIfDeleted();
 		
 		// Make sure the user input is valid
 		if ((!is_numeric($ratio_width) && $ratio_width !== NULL) || $ratio_width < 0) {
@@ -698,7 +721,7 @@ class fImage extends fFile
 	 */
 	public function desaturate()
 	{
-		$this->tossIfException();
+		$this->tossIfDeleted();
 		
 		$dim = $this->getCurrentDimensions();
 		
@@ -805,91 +828,122 @@ class fImage extends fFile
 	 */
 	private function processWithGD($output_file, $jpeg_quality)
 	{
-		$type = self::getImageType($this->file);
+		$type       = self::getImageType($this->file);
+		$save_alpha = FALSE;
+		
+		$path_info = fFilesystem::getPathInfo($output_file);
+		$new_type  = $path_info['extension'];
+		$new_type  = ($type == 'jpeg') ? 'jpg' : $type;
+		
+		if (!in_array($new_type, array('gif', 'jpg', 'png'))) {
+			$new_type = $type;	
+		}
 		
 		switch ($type) {
 			case 'gif':
 				$gd_res = imagecreatefromgif($this->file);
+				$save_alpha = TRUE;
 				break;
 			case 'jpg':
 				$gd_res = imagecreatefromjpeg($this->file);
 				break;
 			case 'png':
 				$gd_res = imagecreatefrompng($this->file);
+				$save_alpha = TRUE;
 				break;
 		}
 		
 		
 		foreach ($this->pending_modifications as $mod) {
 			
+			$new_gd_res = imagecreatetruecolor($mod['width'], $mod['height']);
+			if ($save_alpha) {
+				imagealphablending($new_gd_res, FALSE);
+				imagesavealpha($new_gd_res, TRUE);
+				if ($new_type == 'gif') {
+					$transparent = imagecolorallocatealpha($new_gd_res, 255, 255, 255, 127);
+					imagefilledrectangle($new_gd_res, 0, 0, $mod['width'], $mod['height'], $transparent);
+					imagecolortransparent($new_gd_res, $transparent);
+				}
+			}
+			
 			// Perform the resize operation
 			if ($mod['operation'] == 'resize') {
 				
-				$new_gd_res = imagecreatetruecolor($mod['width'], $mod['height']);
 				imagecopyresampled($new_gd_res,       $gd_res,
 								   0,                 0,
 								   0,                 0,
 								   $mod['width'],     $mod['height'],
 								   $mod['old_width'], $mod['old_height']);
-				imagedestroy($gd_res);
-				$gd_res = $new_gd_res;
-				
 				
 			// Perform the crop operation
 			} elseif ($mod['operation'] == 'crop') {
 			
-				$new_gd_res = imagecreatetruecolor($mod['width'], $mod['height']);
 				imagecopyresampled($new_gd_res,       $gd_res,
 								   0,                 0,
 								   $mod['start_x'],   $mod['start_y'],
 								   $mod['width'],     $mod['height'],
 								   $mod['width'],     $mod['height']);
-				imagedestroy($gd_res);
-				$gd_res = $new_gd_res;
-				
 				
 			// Perform the desaturate operation
 			} elseif ($mod['operation'] == 'desaturate') {
 			
-				$new_gd_res = imagecreate($mod['width'], $mod['height']);
-				
 				// Create a palette of grays
 				$grays = array();
 				for ($i=0; $i < 256; $i++) {
 					$grays[$i] = imagecolorallocate($new_gd_res, $i, $i, $i);
 				}
+				$transparent = imagecolorallocatealpha($new_gd_res, 255, 255, 255, 127);
 				
 				// Loop through every pixel and convert the rgb values to grays
 				for ($x=0; $x < $mod['width']; $x++) {
 					for ($y=0; $y < $mod['height']; $y++) {
 						
 						$color = imagecolorat($gd_res, $x, $y);
-						$red   = ($color >> 16) & 0xFF;
-						$green = ($color >> 8) & 0xFF;
-						$blue  = $color & 0xFF;
+						if ($type != 'gif') {
+							$red   = ($color >> 16) & 0xFF;
+							$green = ($color >> 8) & 0xFF;
+							$blue  = $color & 0xFF;
+							if ($save_alpha) {
+								$alpha = ($color >> 24) & 0x7F;
+							}
+						} else {
+							$color_info = imagecolorsforindex($gd_res, $color);
+							$red   = $color_info['red'];
+							$green = $color_info['green'];
+							$blue  = $color_info['blue'];
+							$alpha = $color_info['alpha'];
+						}
 						
-						// Get the appropriate gray (http://en.wikipedia.org/wiki/YIQ)
-						$yiq = round(($red * 0.299) + ($green * 0.587) + ($blue * 0.114));
-						imagesetpixel($new_gd_res, $x, $y, $grays[$yiq]);
+						if (!$save_alpha || $alpha != 127) {
+							
+							// Get the appropriate gray (http://en.wikipedia.org/wiki/YIQ)
+							$yiq = round(($red * 0.299) + ($green * 0.587) + ($blue * 0.114));
+							
+							if (!$save_alpha || $alpha == 0) {
+								$new_color = $grays[$yiq];	
+							} else {
+								$new_color = imagecolorallocatealpha($new_gd_res, $yiq, $yiq, $yiq, $alpha);	
+							}
+							
+						} else {
+							$new_color = $transparent;
+						}
+						
+						imagesetpixel($new_gd_res, $x, $y, $new_color);
 					}
 				}
-				
-				imagedestroy($gd_res);
-				$gd_res = $new_gd_res;
 			}
+			
+			imagedestroy($gd_res);
+				
+			$gd_res = $new_gd_res;	
 		}
 		
 		// Save the file
-		$path_info = fFilesystem::getPathInfo($output_file);
-		$new_type = $path_info['extension'];
-		$new_type = ($type == 'jpeg') ? 'jpg' : $type;
-		
-		if (!in_array($new_type, array('gif', 'jpg', 'png'))) {
-			$new_type = $type;	
-		}
-		
 		switch ($new_type) {
 			case 'gif':
+				imagetruecolortopalette($gd_res, TRUE, 256);
 				imagegif($gd_res, $output_file);
 				break;
 			case 'jpg':
@@ -914,14 +968,31 @@ class fImage extends fFile
 	private function processWithImageMagick($output_file, $jpeg_quality)
 	{
 		$type = self::getImageType($this->file);
-		
-		$command_line  = escapeshellcmd(self::$imagemagick_dir . 'convert');
+		if (fCore::checkOS('windows')) {
+			$command_line  = str_replace(' ', '" "', self::$imagemagick_dir . 'convert.exe');
+		} else {
+			$command_line  = escapeshellarg(self::$imagemagick_dir . 'convert');
+		}
 		
 		if (self::$imagemagick_temp_dir) {
 			$command_line .= ' -set registry:temporary-path ' . escapeshellarg(self::$imagemagick_temp_dir) . ' ';
 		}
 		
-		$command_line .= ' ' . escapeshellarg($this->file) . ' ';
+		// Determining in what format the file is going to be saved
+		$path_info = fFilesystem::getPathInfo($output_file);
+		$new_type = $path_info['extension'];
+		$new_type = ($new_type == 'jpeg') ? 'jpg' : $new_type;
+		
+		if (!in_array($new_type, array('gif', 'jpg', 'png'))) {
+			$new_type = $type;	
+		}
+		
+		$file = $this->file;
+		if ($type != 'gif' || $new_type != 'gif') {
+			$file .= '[0]';
+		}
+		
+		$command_line .= ' ' . escapeshellarg($file) . ' ';
 		
 		// Animated gifs need to be coalesced
 		if ($this->isAnimatedGif()) {
@@ -937,7 +1008,11 @@ class fImage extends fFile
 			
 			// Perform the resize operation
 			if ($mod['operation'] == 'resize') {
-				$command_line .= ' -resize ' . $mod['width'] . 'x' . $mod['height'] . ' ';
+				$command_line .= ' -resize "' . $mod['width'] . 'x' . $mod['height'];
+				if ($mod['old_width'] < $mod['width'] || $mod['old_height'] < $mod['height']) {
+					$command_line .= '<';
+				}
+				$command_line .= '" ';
 				
 			// Perform the crop operation
 			} elseif ($mod['operation'] == 'crop') {
@@ -954,15 +1029,6 @@ class fImage extends fFile
 		// Default to the RGB colorspace
 		if (strpos($command_line, ' -colorspace ')) {
 			$command_line .= ' -colorspace RGB ';
-		}
-		
-		// Set up jpeg compression
-		$path_info = fFilesystem::getPathInfo($output_file);
-		$new_type = $path_info['extension'];
-		$new_type = ($new_type == 'jpeg') ? 'jpg' : $new_type;
-		
-		if (!in_array($new_type, array('gif', 'jpg', 'png'))) {
-			$new_type = $type;	
 		}
 		
 		if ($new_type == 'jpg') {
@@ -982,22 +1048,23 @@ class fImage extends fFile
 	 * resized image is smooth in aappearance. Resizing does not occur until
 	 * ::saveChanges() is called.
 	 * 
-	 * @param  integer $canvas_width   The width of the canvas to fit the image on, `0` for no constraint
-	 * @param  integer $canvas_height  The height of the canvas to fit the image on, `0` for no constraint
+	 * @param  integer $canvas_width    The width of the canvas to fit the image on, `0` for no constraint
+	 * @param  integer $canvas_height   The height of the canvas to fit the image on, `0` for no constraint
+	 * @param  boolean $allow_upsizing  If the image is smaller than the desired canvas, the image will be increased in size
 	 * @return fImage  The image object, to allow for method chaining
 	 */
-	public function resize($canvas_width, $canvas_height)
+	public function resize($canvas_width, $canvas_height, $allow_upsizing=FALSE)
 	{
-		$this->tossIfException();
+		$this->tossIfDeleted();
 		
 		// Make sure the user input is valid
-		if ((!is_int($canvas_width) && $canvas_width !== NULL) || $canvas_width < 0) {
+		if ((!is_numeric($canvas_width) && $canvas_width !== NULL) || $canvas_width < 0) {
 			throw new fProgrammerException(
 				'The canvas width specified, %s, is not an integer or is less than zero',
 				$canvas_width
 			);
 		}
-		if ((!is_int($canvas_height) && $canvas_height !== NULL) || $canvas_height < 0) {
+		if ((!is_numeric($canvas_height) && $canvas_height !== NULL) || $canvas_height < 0) {
 			throw new fProgrammerException(
 				'The canvas height specified, %s is not an integer or is less than zero',
 				$canvas_height
@@ -1035,8 +1102,10 @@ class fImage extends fFile
 			}
 		}
 		
-		// If the size did not go down, don't even record the modification
-		if ($orig_width <= $new_width || $orig_height <= $new_height) {
+		// If the size did not change, don't even record the modification
+		$same_size   = $orig_width == $new_width || $orig_height == $new_height;
+		$wont_change = ($orig_width < $new_width || $orig_height < $new_height) && !$allow_upsizing;
+		if ($same_size || $wont_change) {
 			return $this;
 		}
 		
@@ -1065,12 +1134,22 @@ class fImage extends fFile
 	 * transaction is committed.
 	 * 
 	 * @param  string  $new_image_type  The new file format for the image: 'NULL` (no change), `'jpg'`, `'gif'`, `'png'`
-	 * @param  integer $jpeg_quality    The quality setting to use for JPEG images
+	 * @param  integer $jpeg_quality    The quality setting to use for JPEG images - this may be ommitted
+	 * @param  boolean $overwrite       If an existing file with the same name and extension should be overwritten
+	 * @param  string  :$new_image_type
+	 * @param  boolean :$overwrite
 	 * @return fImage  The image object, to allow for method chaining
 	 */
-	public function saveChanges($new_image_type=NULL, $jpeg_quality=90)
+	public function saveChanges($new_image_type=NULL, $jpeg_quality=90, $overwrite=FALSE)
 	{
-		$this->tossIfException();
+		// This allows ommitting the $jpeg_quality parameter, which is very useful for non-jpegs
+		$args = func_get_args();
+		if (count($args) == 2 && is_bool($args[1])) {
+			$overwrite    = $args[1];
+			$jpeg_quality = 90;
+		}
+		
+		$this->tossIfDeleted();
 		self::determineProcessor();
 		
 		if (self::$processor == 'none') {
@@ -1109,15 +1188,32 @@ class fImage extends fFile
 			);	
 		}
 		
-		if ($new_image_type) {
-			$output_file = fFilesystem::makeUniqueName($this->file, $new_image_type);
-			$output_dir  = dirname($output_file);
-			if (!is_writable($output_dir)) {
-				throw new fEnvironmentException(
-					'Changes to the image can not be saved because the directory to save the new file, %s, is not writable',
-					$output_dir
-				);		
+		if ($new_image_type && fFilesystem::getPathInfo($this->file, 'extension') != $new_image_type) {
+			if ($overwrite) {
+				$path_info   = fFilesystem::getPathInfo($this->file);
+				$output_file = $path_info['dirname'] . $path_info['filename'] . '.' . $new_image_type;
+			} else {
+				$output_file = fFilesystem::makeUniqueName($this->file, $new_image_type);
 			}
+			
+			if (file_exists($output_file)) {
+				if (!is_writable($output_file)) {
+					throw new fEnvironmentException(
+						'Changes to the image can not be saved because the file, %s, is not writable',
+						$output_file
+					);
+				}
+				
+			} else {
+				$output_dir = dirname($output_file);
+				if (!is_writable($output_dir)) {
+					throw new fEnvironmentException(
+						'Changes to the image can not be saved because the directory to save the new file, %s, is not writable',
+						$output_dir
+					);
+				}
+			}
+			
 		} else {
 			$output_file = $this->file;
 			if (!is_writable($output_file)) {
@@ -1162,7 +1258,7 @@ class fImage extends fFile
 
 
 /**
- * Copyright (c) 2007-2009 Will Bond <will@flourishlib.com>
+ * Copyright (c) 2007-2010 Will Bond <will@flourishlib.com>, others
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal

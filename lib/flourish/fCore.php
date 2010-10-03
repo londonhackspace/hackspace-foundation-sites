@@ -2,15 +2,23 @@
 /**
  * Provides low-level debugging, error and exception functionality
  * 
- * @copyright  Copyright (c) 2007-2009 Will Bond, others
+ * @copyright  Copyright (c) 2007-2010 Will Bond, others
  * @author     Will Bond [wb] <will@flourishlib.com>
  * @author     Will Bond, iMarc LLC [wb-imarc] <will@imarc.net>
+ * @author     Nick Trew [nt]
  * @license    http://flourishlib.com/license
  * 
  * @package    Flourish
  * @link       http://flourishlib.com/fCore
  * 
- * @version    1.0.0b10
+ * @version    1.0.0b17
+ * @changes    1.0.0b17  Fixed a bug with ::backtrace() triggering notices when an argument is not UTF-8 [wb, 2010-08-17]
+ * @changes    1.0.0b16  Added the `$types` and `$regex` parameters to ::startErrorCapture() and the `$regex` parameter to ::stopErrorCapture() [wb, 2010-08-09]
+ * @changes    1.0.0b15  Added ::startErrorCapture() and ::stopErrorCapture() [wb, 2010-07-05]
+ * @changes    1.0.0b14  Changed ::enableExceptionHandling() to only call fException::printMessage() when the destination is not `html` and no callback has been defined, added ::configureSMTP() to allow using fSMTP for error and exception emails [wb, 2010-06-04]
+ * @changes    1.0.0b13  Added the `$backtrace` parameter to ::backtrace() [wb, 2010-03-05]
+ * @changes    1.0.0b12  Added ::getDebug() to check for the global debugging flag, added more specific BSD checks to ::checkOS() [wb, 2010-03-02]
+ * @changes    1.0.0b11  Added ::detectOpcodeCache() [nt+wb, 2009-10-06]
  * @changes    1.0.0b10  Fixed ::expose() to properly display when output includes non-UTF-8 binary data [wb, 2009-06-29]
  * @changes    1.0.0b9   Added ::disableContext() to remove context info for exception/error handling, tweaked output for exceptions/errors [wb, 2009-06-28]
  * @changes    1.0.0b8   ::enableErrorHandling() and ::enableExceptionHandling() now accept multiple email addresses, and a much wider range of emails [wb-imarc, 2009-06-01]
@@ -30,7 +38,9 @@ class fCore
 	const callback                = 'fCore::callback';
 	const checkOS                 = 'fCore::checkOS';
 	const checkVersion            = 'fCore::checkVersion';
+	const configureSMTP           = 'fCore::configureSMTP';
 	const debug                   = 'fCore::debug';
+	const detectOpcodeCache       = 'fCore::detectOpcodeCache';
 	const disableContext          = 'fCore::disableContext';
 	const dump                    = 'fCore::dump';
 	const enableDebugging         = 'fCore::enableDebugging';
@@ -38,12 +48,43 @@ class fCore
 	const enableErrorHandling     = 'fCore::enableErrorHandling';
 	const enableExceptionHandling = 'fCore::enableExceptionHandling';
 	const expose                  = 'fCore::expose';
+	const getDebug                = 'fCore::getDebug';
 	const handleError             = 'fCore::handleError';
 	const handleException         = 'fCore::handleException';
 	const registerDebugCallback   = 'fCore::registerDebugCallback';
 	const reset                   = 'fCore::reset';
 	const sendMessagesOnShutdown  = 'fCore::sendMessagesOnShutdown';
+	const startErrorCapture       = 'fCore::startErrorCapture';
+	const stopErrorCapture        = 'fCore::stopErrorCapture';
 	
+	
+	/**
+	 * A regex to match errors to capture
+	 * 
+	 * @var string
+	 */
+	static private $captured_error_regex = NULL;
+	
+	/**
+	 * The previous error handler
+	 * 
+	 * @var callback
+	 */
+	static private $captured_errors_previous_handler = NULL;
+	
+	/**
+	 * The types of errors to capture
+	 * 
+	 * @var integer
+	 */
+	static private $captured_error_types = NULL;
+	
+	/**
+	 * An array of errors that have been captured
+	 * 
+	 * @var array
+	 */
+	static private $captured_errors = NULL;
 	
 	/**
 	 * If the context info has been shown
@@ -123,20 +164,42 @@ class fCore
 	static private $handles_errors = FALSE;
 	
 	/**
+	 * If this class is handling exceptions
+	 * 
+	 * @var boolean
+	 */
+	static private $handles_exceptions = FALSE;
+	
+	/**
 	 * If the context info should be shown with errors/exceptions
 	 * 
 	 * @var boolean
 	 */
 	static private $show_context = TRUE;
 	
+	/**
+	 * An SMTP connection for sending error and exception emails
+	 * 
+	 * @var fSMTP
+	 */
+	static private $smtp_connection = NULL;
+	
+	/**
+	 * The email address to send error emails from
+	 * 
+	 * @var string
+	 */
+	static private $smtp_from_email = NULL;
+	
 	
 	/**
 	 * Creates a nicely formatted backtrace to the the point where this method is called
 	 * 
 	 * @param  integer $remove_lines  The number of trailing lines to remove from the backtrace
+	 * @param  array   $backtrace     A backtrace from [http://php.net/backtrace `debug_backtrace()`] to format - this is not usually required or desired
 	 * @return string  The formatted backtrace
 	 */
-	static public function backtrace($remove_lines=0)
+	static public function backtrace($remove_lines=0, $backtrace=NULL)
 	{
 		if ($remove_lines !== NULL && !is_numeric($remove_lines)) {
 			$remove_lines = 0;
@@ -147,7 +210,9 @@ class fCore
 		$doc_root  = realpath($_SERVER['DOCUMENT_ROOT']);
 		$doc_root .= (substr($doc_root, -1) != DIRECTORY_SEPARATOR) ? DIRECTORY_SEPARATOR : '';
 		
-		$backtrace = debug_backtrace();
+		if ($backtrace === NULL) {
+			$backtrace = debug_backtrace();
+		}
 		
 		while ($remove_lines > 0) {
 			array_shift($backtrace);
@@ -191,9 +256,11 @@ class fCore
 						} elseif (is_string($arg)) {
 							// Shorten the UTF-8 string if it is too long
 							if (strlen(utf8_decode($arg)) > 18) {
-								preg_match('#^(.{0,15})#us', $arg, $short_arg);
-								$arg  = (isset($short_arg[1])) ? $short_arg[1] : $short_arg[0];
-								$arg .= '...';
+								// If we can't match as unicode, try single byte
+								if (!preg_match('#^(.{0,15})#us', $arg, $short_arg)) {
+									preg_match('#^(.{0,15})#s', $arg, $short_arg);
+								}
+								$arg  = $short_arg[0] . '...';
 							}
 							$bt_string .= "'" . $arg . "'";
 						} else {
@@ -249,7 +316,7 @@ class fCore
 		
 		$parameters = array_slice(func_get_args(), 1);
 		if (sizeof($parameters) == 1 && is_array($parameters[0])) {
-			$parameters = $parameters[0];	
+			$parameters = $parameters[0];
 		}
 		
 		return call_user_func_array($callback, $parameters);
@@ -265,7 +332,7 @@ class fCore
 	static public function callback($callback)
 	{
 		if (is_string($callback) && strpos($callback, '::') !== FALSE) {
-			return explode('::', $callback);	
+			return explode('::', $callback);
 		}
 		
 		return $callback;
@@ -335,14 +402,14 @@ class fCore
 	{
 		$oses = func_get_args();
 		
-		$valid_oses = array('linux', 'bsd', 'osx', 'solaris', 'windows');
+		$valid_oses = array('linux', 'bsd', 'freebsd', 'openbsd', 'netbsd', 'osx', 'solaris', 'windows');
 		
 		if ($invalid_oses = array_diff($oses, $valid_oses)) {
 			throw new fProgrammerException(
 				'One or more of the OSes specified, %$1s, is invalid. Must be one of: %2$s.',
 				join(' ', $invalid_oses),
 				join(', ', $valid_oses)
-			);		
+			);
 		}
 		
 		$uname = php_uname('s');
@@ -350,8 +417,14 @@ class fCore
 		if (stripos($uname, 'linux') !== FALSE) {
 			return in_array('linux', $oses);
 		
-		} elseif (stripos($uname, 'bsd') !== FALSE) {
-			return in_array('bsd', $oses);
+		} elseif (stripos($uname, 'netbsd') !== FALSE) {
+			return in_array('netbsd', $oses) || in_array('bsd', $oses);
+		
+		} elseif (stripos($uname, 'openbsd') !== FALSE) {
+			return in_array('openbsd', $oses) || in_array('bsd', $oses);
+		
+		} elseif (stripos($uname, 'freebsd') !== FALSE) {
+			return in_array('freebsd', $oses) || in_array('bsd', $oses);
 		
 		} elseif (stripos($uname, 'solaris') !== FALSE || stripos($uname, 'sunos') !== FALSE) {
 			return in_array('solaris', $oses);
@@ -412,21 +485,64 @@ class fCore
 	
 	
 	/**
+	 * Sets an fSMTP object to be used for sending error and exception emails
+	 * 
+	 * @param  fSMTP  $smtp        The SMTP connection to send emails over
+	 * @param  string $from_email  The email address to use in the `From:` header
+	 * @return void
+	 */
+	static public function configureSMTP($smtp, $from_email)
+	{
+		self::$smtp_connection = $smtp;
+		self::$smtp_from_email = $from_email;
+	}
+	
+	
+	/**
 	 * Prints a debugging message if global or code-specific debugging is enabled
 	 * 
 	 * @param  string  $message  The debug message
 	 * @param  boolean $force    If debugging should be forced even when global debugging is off
 	 * @return void
 	 */
-	static public function debug($message, $force)
+	static public function debug($message, $force=FALSE)
 	{
 		if ($force || self::$debug) {
 			if (self::$debug_callback) {
-				call_user_func(self::$debug_callback, $message);	
+				call_user_func(self::$debug_callback, $message);
 			} else {
 				self::expose($message, FALSE);
 			}
 		}
+	}
+	
+	
+	/**
+	 * Detects if a PHP opcode cache is installed
+	 * 
+	 * The following opcode caches are currently detected:
+	 * 
+	 *  - [http://pecl.php.net/package/APC APC]
+	 *  - [http://eaccelerator.net eAccelerator]
+	 *  - [http://www.nusphere.com/products/phpexpress.htm Nusphere PhpExpress]
+	 *  - [http://turck-mmcache.sourceforge.net/index_old.html Turck MMCache]
+	 *  - [http://xcache.lighttpd.net XCache]
+	 *  - [http://www.zend.com/en/products/server/ Zend Server (Optimizer+)]
+	 *  - [http://www.zend.com/en/products/platform/ Zend Platform (Code Acceleration)]
+	 * 
+	 * @return boolean  If a PHP opcode cache is loaded
+	 */
+	static public function detectOpcodeCache()
+	{		
+		$apc              = ini_get('apc.enabled');
+		$eaccelerator     = ini_get('eaccelerator.enable');
+		$mmcache          = ini_get('mmcache.enable');
+		$phpexpress       = function_exists('phpexpress');
+		$xcache           = ini_get('xcache.size') > 0 && ini_get('xcache.cacher');
+		$zend_accelerator = ini_get('zend_accelerator.enabled');
+		$zend_plus        = ini_get('zend_optimizerplus.enable');
+		
+		return $apc || $eaccelerator || $mmcache || $phpexpress || $xcache || $zend_accelerator || $zend_plus;
 	}
 	
 	
@@ -624,7 +740,7 @@ class fCore
 	 * email address, the email will contain both exceptions and errors.
 	 * 
 	 * @param  string   $destination   The destination for the exception and context information - an email address, a file path or the string `'html'`
-	 * @param  callback $closing_code  This callback will happen after the exception is handled and before page execution stops. Good for printing a footer.
+	 * @param  callback $closing_code  This callback will happen after the exception is handled and before page execution stops. Good for printing a footer. If no callback is provided and the exception extends fException, fException::printMessage() will be called.
 	 * @param  array    $parameters    The parameters to send to `$closing_code`
 	 * @return void
 	 */
@@ -633,12 +749,13 @@ class fCore
 		if (!self::checkDestination($destination)) {
 			return;
 		}
+		self::$handles_exceptions           = TRUE;
 		self::$exception_destination        = $destination;
 		self::$exception_handler_callback   = $closing_code;
 		if (!is_object($parameters)) {
 			settype($parameters, 'array');
 		} else {
-			$parameters = array($parameters);	
+			$parameters = array($parameters);
 		}
 		self::$exception_handler_parameters = $parameters;
 		set_exception_handler(self::callback(self::handleException));
@@ -675,6 +792,18 @@ class fCore
 	
 	
 	/**
+	 * If debugging is enabled
+	 * 
+	 * @param  boolean $force  If debugging is forced
+	 * @return boolean  If debugging is enabled
+	 */
+	static public function getDebug($force=FALSE)
+	{
+		return self::$debug || $force;
+	}
+	
+	
+	/**
 	 * Handles an error, creating the necessary context information and sending it to the specified destination
 	 * 
 	 * @internal
@@ -692,17 +821,18 @@ class fCore
 			if (preg_match("#^Use of undefined constant (\w+) - assumed '\w+'\$#D", $error_string, $matches)) {
 				define($matches[1], $matches[1]);
 				return;
-			}		
+			}
 		}
 		
-		if ((error_reporting() & $error_number) == 0) {
+		$capturing   = is_array(self::$captured_errors);
+		$level_match = (bool) (error_reporting() & $error_number);
+		
+		if (!$capturing && !$level_match) {
 			return;
 		}
 		
 		$doc_root  = realpath($_SERVER['DOCUMENT_ROOT']);
 		$doc_root .= (substr($doc_root, -1) != '/' && substr($doc_root, -1) != '\\') ? '/' : '';
-		
-		$error_file = str_replace($doc_root, '{doc_root}/', $error_file);
 		
 		$backtrace = self::backtrace(1);
 		
@@ -737,6 +867,36 @@ class fCore
 			case E_USER_DEPRECATED:   $type = self::compose('User Deprecated');   break;
 		}
 		
+		if ($capturing) {
+			$type_to_capture   = (bool) (self::$captured_error_types & $error_number);
+			$string_to_capture = !self::$captured_error_regex || (self::$captured_error_regex && preg_match(self::$captured_error_regex, $error_string));
+			if ($type_to_capture && $string_to_capture) {
+				self::$captured_errors[] = array(
+					'number'    => $error_number,
+					'type'      => $type,
+					'string'    => $error_string,
+					'file'      => str_replace($doc_root, '{doc_root}/', $error_file),
+					'line'      => $error_line,
+					'backtrace' => $backtrace,
+					'context'   => $error_context
+				);
+				return;
+			}
+			
+			// If the old handler is not this method, then we must have been trying to match a regex and failed
+			// so we pass the error on to the original handler to do its thing
+			if (self::$captured_errors_previous_handler != array('fCore', 'handleError')) {
+				if (self::$captured_errors_previous_handler === NULL) {
+					return FALSE;
+				}
+				return call_user_func(self::$captured_errors_previous_handler, $error_number, $error_string, $error_file, $error_line, $error_context);
+			
+			// If we get here, this method is the error handler, but we don't want to actually report the error so we return
+			} elseif (!$level_match) {
+				return;
+			}
+		}
+		
 		$error = $type . "\n" . str_pad('', strlen($type), '-') . "\n" . $backtrace . "\n" . $error_string;
 		
 		self::sendMessageToDestination('error', $error);
@@ -764,14 +924,13 @@ class fCore
 		$info       = $trace . "\n" . $message . $code;
 		$headline   = self::compose("Uncaught") . " " . get_class($exception);
 		$info_block = $headline . "\n" . str_pad('', strlen($headline), '-') . "\n" . trim($info);
-		
-		if (self::$exception_destination != 'html' && $exception instanceof fException) {
-			$exception->printMessage();
-		}
 				
 		self::sendMessageToDestination('exception', $info_block);
 		
 		if (self::$exception_handler_callback === NULL) {
+			if (self::$exception_destination != 'html' && $exception instanceof fException) {
+				$exception->printMessage();
+			}
 			return;
 		}
 				
@@ -810,21 +969,34 @@ class fCore
 	 */
 	static public function reset()
 	{
-		restore_error_handler();
-		restore_exception_handler();
+		if (self::$handles_errors) {
+			restore_error_handler();
+		}
+		if (self::$handles_exceptions) {
+			restore_exception_handler();
+		}
 		
-		self::$context_shown                = FALSE;
-		self::$debug                        = NULL;
-		self::$debug_callback               = NULL;
-		self::$dynamic_constants            = FALSE;
-		self::$error_destination            = 'html';
-		self::$error_message_queue          = array();
-		self::$exception_destination        = 'html';
-		self::$exception_handler_callback   = NULL;
-		self::$exception_handler_parameters = array();
-		self::$exception_message            = NULL;
-		self::$handles_errors               = FALSE;
-		self::$show_context                 = TRUE;
+		if (is_array(self::$captured_errors)) {
+			restore_error_handler();
+		}
+		
+		self::$captured_error_regex             = NULL;
+		self::$captured_errors_previous_handler = NULL;
+		self::$captured_error_types             = NULL;
+		self::$captured_errors                  = NULL;
+		self::$context_shown                    = FALSE;
+		self::$debug                            = NULL;
+		self::$debug_callback                   = NULL;
+		self::$dynamic_constants                = FALSE;
+		self::$error_destination                = 'html';
+		self::$error_message_queue              = array();
+		self::$exception_destination            = 'html';
+		self::$exception_handler_callback       = NULL;
+		self::$exception_handler_parameters     = array();
+		self::$exception_message                = NULL;
+		self::$handles_errors                   = FALSE;
+		self::$handles_exceptions               = FALSE;
+		self::$show_context                     = TRUE;
 	}
 	
 	
@@ -864,11 +1036,22 @@ class fCore
 		
 		foreach ($messages as $destination => $message) {
 			if (self::$show_context) {
-				$message .= "\n\n" . self::generateContext();	
+				$message .= "\n\n" . self::generateContext();
 			}
 			
 			if (self::checkDestination($destination) == 'email') {
-				mail($destination, $subject, $message);
+				if (self::$smtp_connection) {
+					$email = new fEmail();
+					foreach (explode(',', $destination) as $recipient) {
+						$email->addRecipient($recipient);
+					}
+					$email->setFromEmail(self::$smtp_from_email);
+					$email->setSubject($subject);
+					$email->setBody($message);
+					$email->send(self::$smtp_connection);
+				} else {
+					mail($destination, $subject, $message);
+				}
 			
 			} else {
 				$handle = fopen($destination, 'a');
@@ -919,6 +1102,54 @@ class fCore
 	
 	
 	/**
+	 * Temporarily enables capturing error messages 
+	 * 
+	 * @param  integer $types  The error types to capture - this should be as specific as possible - defaults to all (E_ALL | E_STRICT)
+	 * @param  string  $regex  A PCRE regex to match against the error message
+	 * @return void
+	 */
+	static public function startErrorCapture($types=NULL, $regex=NULL)
+	{
+		if ($types === NULL) {
+			$types = E_ALL | E_STRICT;
+		}
+		self::$captured_error_types             = $types;
+		self::$captured_errors                  = array();
+		self::$captured_errors_previous_handler = set_error_handler(self::callback(self::handleError));
+		self::$captured_error_regex             = $regex;
+	}
+	
+	
+	/**
+	 * Stops capturing error messages, returning all that have been captured
+	 * 
+	 * @param  string $regex  A PCRE regex to filter messages by
+	 * @return array  The captured error messages
+	 */
+	static public function stopErrorCapture($regex=NULL)
+	{
+		$captures = self::$captured_errors;
+		self::$captured_error_regex             = NULL;
+		self::$captured_errors_previous_handler = NULL;
+		self::$captured_error_types             = NULL;
+		self::$captured_errors                  = NULL;
+		
+		restore_error_handler();
+		
+		if ($regex) {
+			$new_captures = array();
+			foreach ($captures as $capture) {
+				if (!preg_match($regex, $capture['string'])) { continue; }
+				$new_captures[] = $capture;
+			}
+			$captures = $new_captures;
+		}
+		
+		return $captures;
+	}
+	
+	
+	/**
 	 * Forces use as a static class
 	 * 
 	 * @return fCore
@@ -929,7 +1160,7 @@ class fCore
 
 
 /**
- * Copyright (c) 2007-2009 Will Bond <will@flourishlib.com>, others
+ * Copyright (c) 2007-2010 Will Bond <will@flourishlib.com>, others
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
