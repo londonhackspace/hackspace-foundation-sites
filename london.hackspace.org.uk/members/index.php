@@ -23,10 +23,10 @@ if (!$user) {
         <li><a href="wiki.php">Link Wiki Accounts</a></li>
     </ul>
 <? } else { ?>
-    <p>You're not currently a member of the Hackspace Foundation.
-        Membership is a recommended donation of £40 per month, with a 
-        minimum of £5 per month. To become a member, you can pay by 
-        standing order.</p>
+    <p>You're not currently a member of the Hackspace Foundation. To become a member, we ask that you pay what you
+       think the space is worth to you. Running an organisation like this in London isn't cheap, so please be as
+         generous as you can. The minimum subscription is £5/month.
+</p>
 
 <h3>Standing Order</h3>
     <p>Set up a monthly standing order with your bank (most banks let you do this online), 
@@ -41,10 +41,10 @@ if (!$user) {
 </table>
 
     <p>Once your payment is set up, the site should reflect it once we reconcile 
-        our statements &mdash; this should happen at least twice a month.</p>
+        our statements &mdash; this happens regularly.</p>
 
 <h3>Can't do Standing Order?</h3>
-<p>If you aren't able to use a standing order to pay, please contact us at 
+<p>If you aren't able to use a standing order to pay, please contact Russ at 
     <a href="mailto:russ@hackspace.org.uk">russ@hackspace.org.uk</a> and we'll do our best to
     sort something out for you.
 </p>

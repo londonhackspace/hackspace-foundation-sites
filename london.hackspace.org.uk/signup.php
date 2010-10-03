@@ -1,5 +1,5 @@
 <? 
-$page = 'signup';
+$page = 'membership';
 require('header.php'); 
 
 if ($user) {
@@ -9,7 +9,7 @@ if ($user) {
 if (isset($_POST['submit'])) {
     try {
         $validator = new fValidation();
-        $validator->addRequiredFields('fullname', 'password', 'email');
+        $validator->addRequiredFields('fullname', 'password', 'email', 'address');
         $validator->addEmailFields('email');
 
         $validator->validate();
@@ -21,6 +21,7 @@ if (isset($_POST['submit'])) {
         $user = new User();
         $user->setEmail($_POST['email']);
         $user->setFullName($_POST['fullname']);
+        $user->setAddress($_POST['address']);
         $user->setPassword(fCryptography::hashPassword($_POST['password']));
         $user->store();
 
@@ -37,8 +38,22 @@ if (isset($_POST['submit'])) {
 }
 
 ?>
-<h2>Sign up to the Hackspace Foundation</h2>
-<p>To become a member of the Hackspace Foundation, we need a few details from you.</p>
+<h2>Membership</h2>
+<p>The London Hackspace is run by the <a href="http://hackspace.org.uk">Hackspace Foundation</a>, which is a members-owned
+non-profit association. Members have a hand in the running of the organisation as well as 24/7 access to the space.</p>
+
+<p>Membership is paid monthly by standing order. We ask that you pay what you think the space is worth to you. Running an
+organisation like this in London isn't cheap, so please be as generous as you can. The minimum subscription is £5/month.</p>
+
+<h2>Join the London Hackspace</h2>
+<p>To become a member of the London Hackspace, we need a few details from you.</p>
+
+<p>By joining the London Hackspace you're becoming a member of the Hackspace Foundation, and you agree to be bound by 
+<a href="http://hackspace.org.uk/organisation/">our constitution</a>.</p>
+
+<p><a href="http://www.legislation.gov.uk/ukpga/2006/46/part/8/chapter/2/crossheading/general">UK law</a> requires that 
+you provide your real name and address in order to join.</p>
+
 <form method="post">
 <fieldset>
 <table id="signuptable">
@@ -46,6 +61,7 @@ if (isset($_POST['submit'])) {
 <tr><td><label for="password">Password</label></td><td><input type="password" id="password" name="password" /></td></tr>
 <tr><td><label for="passwordconfirm">Confirm Password</label></td><td><input type="password" id="passwordconfirm" name="passwordconfirm" /></td></tr>
 <tr><td><label for="fullname">Full Name</label></td><td><input type="text" id="fullname" name="fullname"/></td></tr>
+<tr><td><label for="address">Address</label></td><td><textarea id="address" name="address" cols="30" rows="5"></textarea></td></tr>
 <tr><td colspan="2"><input type="submit" name="submit" value="Submit" /></td></tr>
 </table>
 </fieldset>

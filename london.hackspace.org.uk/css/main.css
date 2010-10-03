@@ -132,3 +132,6 @@ form table td {
     border:none;
 }
 
+label {
+    font-weight:bold;
+}
