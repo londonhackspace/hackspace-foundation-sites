@@ -14,4 +14,6 @@ fSession::setLength('1 day');
 
 if ($uid = fSession::get('user')) {
     $user = new User($uid);
+} else {
+    $user = null;
 }

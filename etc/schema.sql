@@ -4,6 +4,7 @@ CREATE TABLE users (
     password VARCHAR(255) NOT NULL,
     full_name VARCHAR(255) NOT NULL,
     subscribed BOOLEAN NOT NULL DEFAULT 0,
+    address TEXT,
     bankhash TEXT
 );
 

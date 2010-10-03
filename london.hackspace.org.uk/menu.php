@@ -19,10 +19,17 @@ function menulink($url, $name, $title) {
 
 ?>
 <div class="yui-b">
-    <ul id="menu">
+    <ul id="menu" class="menu">
         <?=menulink('/', 'about', 'About');?>
         <li><a href="http://wiki.hackspace.org.uk">Wiki</a></li>
         <?=menulink('/membership.php', 'membership', 'Join');?>
         <?=menulink('/events', 'events', 'Events');?>
+<?if (isset($user)) {?>
+        <?=menulink('/members/', 'members', 'Members Home')?>
+    <? if($user->isMember()) { ?>
+        <?=menulink('/members/members.php', 'memberslist', 'Members List')?>
+    <? } ?>
+        <?=menulink('/members/edit.php', 'edit', 'Edit Account')?>
+<? } ?>
     </ul>
 </div>
