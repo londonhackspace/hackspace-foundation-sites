@@ -25,7 +25,7 @@ require('./header.php');
 <h3>Directors</h3>
 
 <p>The directors of the Foundation carry out the day-to-day business and are elected by the members yearly.
-   Until the company is fully running, the directors are the founders: Russ Garrett and Jonty Wareing.</p>
+   The current list of directors is available <a href="http://wiki.hackspace.org.uk/wiki/Directors">on the wiki</a>.</p>
 
 <h3>Statutory Information</h3>
 
