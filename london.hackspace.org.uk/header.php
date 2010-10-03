@@ -3,10 +3,10 @@
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <? if ($desc) { ?>
+    <? if (isset($desc)) { ?>
     <meta name="description" content="<?=$desc ?>" />
     <? } ?>
-    <title><? if ($title) echo "$title &mdash; "; ?>London Hackspace</title>
+    <title><? if (isset($title)) echo "$title &mdash; "; ?>London Hackspace</title>
     <link rel="stylesheet" type="text/css" 
         href="http://yui.yahooapis.com/combo?2.7.0/build/reset-fonts-grids/reset-fonts-grids.css&amp;2.7.0/build/base/base-min.css" /> 
     <link rel="stylesheet" type="text/css" href="/css/main.css" />
