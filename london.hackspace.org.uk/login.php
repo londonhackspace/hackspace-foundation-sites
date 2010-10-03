@@ -19,7 +19,8 @@ if (isset($_POST['submit'])) {
             throw new fValidationException('No user found with that email.');
         }
 
-        $user = $users->fetchRecord();
+        $rec = $users->getRecords();
+        $user = $rec[0];
         
         if (!fCryptography::checkPasswordHash($_POST['password'], $user->getPassword())) {
             throw new fValidationException('Invalid Password.');
