@@ -29,8 +29,9 @@ if (!$user) {
 </p>
 
 <h3>Standing Order</h3>
-    <p>Set up a monthly standing order with your bank (most banks let you do this online), 
-       using the following details:</p>
+    <p>Set up a monthly standing order with your bank (most banks let you do this online),
+       using the following details. Please make sure you enter the reference provided in the
+        reference field of your payment, or your subscription will not be recognised.</p>
 
 <table>
     <tr><th>Bank</th><td>Barclays</td></tr>
