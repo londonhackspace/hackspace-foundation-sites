@@ -8,6 +8,8 @@ if ($user) {
 
 if (isset($_POST['submit'])) {
     try {
+        fRequest::validateCSRFToken($_POST['token']);
+
         $validator = new fValidation();
         $validator->addRequiredFields('fullname', 'password', 'email', 'address');
         $validator->addEmailFields('email');
@@ -55,6 +57,7 @@ organisation like this in London isn't cheap, so please be as generous as you ca
 you provide your real name and address in order to join.</p>
 
 <form method="post">
+<input type="hidden" name="token" value="<?=fRequest::generateCSRFToken()?>" />
 <fieldset>
 <table id="signuptable">
 <tr><td><label for="email">Email</label></td><td><input type="text" id="email" name="email"/></td></tr>

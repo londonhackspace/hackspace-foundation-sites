@@ -10,6 +10,8 @@ if (!isset($user)) {
 
 if (isset($_POST['submit'])) {
     try {
+        fRequest::validateCSRFToken($_POST['token']);
+
         $validator = new fValidation();
         $validator->addRequiredFields('fullname', 'email', 'address');
         $validator->addEmailFields('email');
@@ -42,6 +44,7 @@ if (isset($_POST['submit'])) {
 <p><a href="http://www.legislation.gov.uk/ukpga/2006/46/part/8/chapter/2/crossheading/general">UK law</a> requires us to
 store the full name and address of all our members. If you don't provide these details, you won't be able to get membership privileges.</p>
 <form method="post">
+<input type="hidden" name="token" value="<?=fRequest::generateCSRFToken()?>" />
 <fieldset>
 <table id="edittable">
 <tr><td><label for="email">Email</label></td><td><input type="text" id="email" name="email" value="<?=$user->getEmail()?>"/></td></tr>
