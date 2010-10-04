@@ -5,7 +5,7 @@ $desc = '';
 require('../header.php');
 
 if (!isset($user)) {
-    fURL::redirect('/signup.php');
+    fURL::redirect('/login.php');
 }
 
 if (isset($_POST['submit'])) {
