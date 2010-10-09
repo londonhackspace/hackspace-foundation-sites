@@ -8,6 +8,8 @@ if ($user) {
 
 if (isset($_POST['submit'])) {
     try {
+        fRequest::validateCSRFToken($_POST['token']);
+
         $validator = new fValidation();
         $validator->addRequiredFields('password', 'email');
         $validator->addEmailFields('email');
@@ -41,6 +43,7 @@ if (isset($_POST['submit'])) {
 ?>
 <h2>Log In</h2>
 <form method="post">
+    <input type="hidden" name="token" value="<?=fRequest::generateCSRFToken()?>" />
     <fieldset>
         <table>
             <tr>

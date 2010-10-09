@@ -12,6 +12,8 @@ if (!$user) {
 if($user->isMember()) {
 	$email = $user->getEmail();
 
+	fRequest::validateCSRFToken($_POST['token']);
+
 	// Make database connection.
 	require $_SERVER['DOCUMENT_ROOT'] . '/../var/mediawiki.php';
 	$db = new fDatabase($type, $database, $username, $password, $host, $port );
@@ -97,6 +99,7 @@ if($user->isMember()) {
 						<td><?php echo $details['linked'] ? 'Yes' : 'No' ?></td>
 						<td>
 							<form method="POST" style="margin: 0;">
+								<input type="hidden" name="token" value="<?=fRequest::generateCSRFToken()?>" />
 								<input type="hidden" name="wikiuser" value="<?php echo $id ?>">
 								<input type="submit" name="<?php echo $details['linked'] ? 'unlink' : 'link' ?>" value="<?php echo $details['linked'] ? 'Unlink' : 'Link' ?>">
 							</form>
@@ -110,6 +113,7 @@ if($user->isMember()) {
 		<hr>
 		<?php if( isset( $error ) ) echo $error; ?>
 		<form method="POST">
+			<input type="hidden" name="token" value="<?=fRequest::generateCSRFToken()?>" />
 			<table>
 				<tr>
 					<td><label for="username">Wiki username</label></td>
