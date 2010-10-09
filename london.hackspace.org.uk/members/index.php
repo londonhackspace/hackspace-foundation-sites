@@ -3,7 +3,7 @@ $page = 'members';
 require('../header.php'); 
 
 if (!$user) {
-    fURL::redirect('/');
+    fURL::redirect('/login.php?forward=/members');
 }
 ?>
 <h2>Members Area</h2>

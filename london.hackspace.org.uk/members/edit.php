@@ -5,7 +5,7 @@ $desc = '';
 require('../header.php');
 
 if (!isset($user)) {
-    fURL::redirect('/login.php');
+    fURL::redirect('/login.php?forward=/members/edit.php');
 }
 
 if (isset($_POST['submit'])) {

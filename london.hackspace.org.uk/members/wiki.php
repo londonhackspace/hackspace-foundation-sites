@@ -3,7 +3,7 @@ $page = 'membership';
 require( '../header.php' );
 
 if (!$user) {
-    fURL::redirect('/');
+    fURL::redirect('/login.php?forward=/members/wiki.php');
 }
 ?>
 <h2>Wiki Account</h2>
