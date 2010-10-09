@@ -15,3 +15,10 @@ CREATE TABLE transactions (
     user_id INTEGER NOT NULL REFERENCES users(id),
     amount TEXT NOT NULL
 );
+
+CREATE TABLE password_resets (
+    key TEXT PRIMARY KEY,
+    user_id INTEGER NOT NULL REFERENCES users(id),
+    expires DATETIME NOT NULL
+);
+
