@@ -8,7 +8,12 @@ if (!$user) {
 ?>
 <h2>Members Area</h2>
 
-<? if($user->isMember()) { ?>
+<? if ($user->getAddress() == '') {?>
+    <h4>More Details Required</h4>
+    <p>UK Law requires that we store our members' real name and address. Since you haven't provided
+        these details you will be unable to gain membership privileges until you do.</p>
+    <p>Please <a href="/members/edit.php">provide your details</a> to continue.</p>
+<?} else if ($user->isMember()) { ?>
     <p>You're currently a member of the Hackspace Foundation, thanks for your support!</p>
 <h3>Your Recent Payments</h3>
 <table>
@@ -42,13 +47,16 @@ if (!$user) {
 </table>
 
     <p>Once your payment is set up, the site should reflect it once we reconcile 
-        our statements &mdash; this happens regularly.</p>
+        our statements &mdash; this happens approximately daily.</p>
 
 <h3>Can't do Standing Order?</h3>
-<p>If you aren't able to use a standing order to pay, please contact Russ at 
-    <a href="mailto:russ@hackspace.org.uk">russ@hackspace.org.uk</a> and we'll do our best to
-    sort something out for you.
-</p>
+<p>In our experience standing order is an almost universal payment method in the UK.
+    It's the only method which is completely free for both you and us. Consequently, we don't accept
+    payment for membership by any other method.</p>
+
+<p> If you genuinely aren't able to use a standing
+    order to pay, please drop <a href="mailto:russ@hackspace.org.uk">Russ</a> an email to let us
+    know why.</p>
 
 <? } ?>
 
