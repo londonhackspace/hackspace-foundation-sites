@@ -29,7 +29,7 @@ if (isset($_POST['submit'])) {
         $user->setFullName($_POST['fullname']);
         $user->setAddress($_POST['address']);
         $user->store();
-        fURL::redirect($_SERVER['REQUEST_URI']);
+        fURL::redirect($_SERVER['REQUEST_URI'] . '?saved');
         exit;
     } catch (fValidationException $e) {
         echo "<p>" . $e->printMessage() . "</p>";
@@ -39,6 +39,9 @@ if (isset($_POST['submit'])) {
     }
 }
 
+if (isset($_GET['saved'])) {
+    echo "<p>Details saved.</p>";
+}
 ?>
 <h2>Edit Your Membership Details</h2>
 <p><a href="http://www.legislation.gov.uk/ukpga/2006/46/part/8/chapter/2/crossheading/general">UK law</a> requires us to
