@@ -15,7 +15,14 @@
  * @package    Flourish
  * @link       http://flourishlib.com/fActiveRecord
  * 
- * @version    1.0.0b68
+ * @version    1.0.0b75
+ * @changes    1.0.0b75  Fixed a bug where child records of a record with a non-auto-incrementing primary key would not be saved properly for a new record [wb, 2010-12-06]
+ * @changes    1.0.0b74  Updated ::populate() to use the `binary` type for fRequest::get() [wb, 2010-11-30]
+ * @changes    1.0.0b73  Backwards Compatibility Break - changed column set methods to treat strings of all whitespace the same as empty string and convert them to `NULL` [wb, 2010-11-29]
+ * @changes    1.0.0b72  Added the new `comment` element to the reflection signature for `inspect` methods [wb, 2010-11-28]
+ * @changes    1.0.0b71  Updated class to use fORM::getRelatedClass() [wb, 2010-11-24]
+ * @changes    1.0.0b70  Added support for PHP 5.3 namespaced fActiveRecord classes [wb, 2010-11-11]
+ * @changes    1.0.0b69  Backwards Compatibility Break - changed ::validate() to return a nested array of validation messages when there are validation errors on child records [wb-imarc+wb, 2010-10-03]
  * @changes    1.0.0b68  Added hooks to ::replicate() [wb, 2010-09-07]
  * @changes    1.0.0b67  Updated code to work with the new fORM API [wb, 2010-08-06]
  * @changes    1.0.0b66  Fixed a bug with ::store() and non-primary key auto-incrementing columns [wb, 2010-07-05]
@@ -839,8 +846,11 @@ abstract class fActiveRecord
 			list ($action, $subject) = fORM::parseMethod($method_name);
 			if (in_array($action, array('get', 'encode', 'prepare', 'inspect', 'set'))) {
 				$subject = fGrammar::underscorize($subject);
-			} elseif (in_array($action, array('build', 'count', 'inject', 'link', 'list', 'tally'))) {
-				$subject = fGrammar::singularize($subject);
+			} else {
+				if (in_array($action, array('build', 'count', 'inject', 'link', 'list', 'tally'))) {
+					$subject = fGrammar::singularize($subject);
+				}
+				$subject = fORM::getRelatedClass($class, $subject);
 			}
 			self::$method_name_cache[$method_name] = array(
 				'action'  => $action,
@@ -2016,7 +2026,8 @@ abstract class fActiveRecord
 		foreach ($column_info as $column => $info) {
 			if (fRequest::check($column)) {
 				$method = 'set' . fGrammar::camelize($column, TRUE);
-				$this->$method(fRequest::get($column));
+				$cast_to = ($info['type'] == 'blob') ? 'binary' : NULL;
+				$this->$method(fRequest::get($column, $cast_to));
 			}
 		}
 		
@@ -2298,7 +2309,7 @@ abstract class fActiveRecord
 				$signature .= "/**\n";
 				$signature .= " * Returns metadata about " . $column . "\n";
 				$signature .= " * \n";
-				$elements = array('type', 'not_null', 'default');
+				$elements = array('type', 'not_null', 'default', 'comment');
 				if (in_array($column_info['type'], array('varchar', 'char', 'text'))) {
 					$elements[] = 'valid_values';
 					$elements[] = 'max_length';
@@ -2600,8 +2611,8 @@ abstract class fActiveRecord
 			);
 		}
 		
-		// We consider an empty string to be equivalent to NULL
-		if ($value === '') {
+		// We consider an empty string or a string of spaces to be equivalent to NULL
+		if ($value === '' || (is_string($value) && trim($value) === '')) {
 			$value = NULL;
 		}
 		
@@ -2744,6 +2755,9 @@ abstract class fActiveRecord
 				$old_value      = fActiveRecord::retrieveOld($this->old_values, $column);
 				$value          = $this->values[$column];
 				
+				if ($old_value === NULL) {
+					continue;
+				}
 				foreach ($record_set as $record) {
 					if (isset($record->old_values[$related_column])) {
 						foreach (array_keys($record->old_values[$related_column]) as $key) {
@@ -2883,8 +2897,6 @@ abstract class fActiveRecord
 			$this->cache,
 			$validation_messages
 		);
-		
-		$validation_messages = array_unique($validation_messages);
 		
 		$validation_messages = fORMValidation::replaceMessages($class, $validation_messages);
 		$validation_messages = fORMValidation::reorderMessages($class, $validation_messages);

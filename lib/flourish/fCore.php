@@ -2,7 +2,7 @@
 /**
  * Provides low-level debugging, error and exception functionality
  * 
- * @copyright  Copyright (c) 2007-2010 Will Bond, others
+ * @copyright  Copyright (c) 2007-2011 Will Bond, others
  * @author     Will Bond [wb] <will@flourishlib.com>
  * @author     Will Bond, iMarc LLC [wb-imarc] <will@imarc.net>
  * @author     Nick Trew [nt]
@@ -11,7 +11,9 @@
  * @package    Flourish
  * @link       http://flourishlib.com/fCore
  * 
- * @version    1.0.0b17
+ * @version    1.0.0b19
+ * @changes    1.0.0b19  Added detection of AIX to ::checkOS() [wb, 2011-01-19]
+ * @changes    1.0.0b18  Updated ::expose() to be able to accept multiple parameters [wb, 2011-01-10]
  * @changes    1.0.0b17  Fixed a bug with ::backtrace() triggering notices when an argument is not UTF-8 [wb, 2010-08-17]
  * @changes    1.0.0b16  Added the `$types` and `$regex` parameters to ::startErrorCapture() and the `$regex` parameter to ::stopErrorCapture() [wb, 2010-08-09]
  * @changes    1.0.0b15  Added ::startErrorCapture() and ::stopErrorCapture() [wb, 2010-07-05]
@@ -389,7 +391,11 @@ class fCore
 	 * 
 	 * Valid OS strings are:
 	 *  - `'linux'`
+	 *  - `'aix'`
 	 *  - `'bsd'`
+	 *  - `'freebsd'`
+	 *  - `'netbsd'`
+	 *  - `'openbsd'`
 	 *  - `'osx'`
 	 *  - `'solaris'`
 	 *  - `'windows'`
@@ -402,7 +408,7 @@ class fCore
 	{
 		$oses = func_get_args();
 		
-		$valid_oses = array('linux', 'bsd', 'freebsd', 'openbsd', 'netbsd', 'osx', 'solaris', 'windows');
+		$valid_oses = array('linux', 'aix', 'bsd', 'freebsd', 'openbsd', 'netbsd', 'osx', 'solaris', 'windows');
 		
 		if ($invalid_oses = array_diff($oses, $valid_oses)) {
 			throw new fProgrammerException(
@@ -416,6 +422,9 @@ class fCore
 		
 		if (stripos($uname, 'linux') !== FALSE) {
 			return in_array('linux', $oses);
+		
+		} elseif (stripos($uname, 'aix') !== FALSE) {
+			return in_array('aix', $oses);
 		
 		} elseif (stripos($uname, 'netbsd') !== FALSE) {
 			return in_array('netbsd', $oses) || in_array('bsd', $oses);
@@ -511,7 +520,7 @@ class fCore
 			if (self::$debug_callback) {
 				call_user_func(self::$debug_callback, $message);
 			} else {
-				self::expose($message, FALSE);
+				self::expose($message);
 			}
 		}
 	}
@@ -765,11 +774,18 @@ class fCore
 	/**
 	 * Prints the ::dump() of a value in a pre tag with the class `exposed`
 	 * 
+	 * If multiple parameters are passed, they are exposed as an array.
+	 * 
 	 * @param  mixed $data  The value to show
+	 * @param  mixed ...
 	 * @return void
 	 */
 	static public function expose($data)
 	{
+		$args = func_get_args();
+		if (count($args) > 1) {
+			$data = $args;
+		}
 		echo '<pre class="exposed">' . htmlspecialchars((string) self::dump($data), ENT_QUOTES) . '</pre>';
 	}
 	
@@ -1160,7 +1176,7 @@ class fCore
 
 
 /**
- * Copyright (c) 2007-2010 Will Bond <will@flourishlib.com>, others
+ * Copyright (c) 2007-2011 Will Bond <will@flourishlib.com>, others
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal

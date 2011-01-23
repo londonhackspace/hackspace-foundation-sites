@@ -10,7 +10,9 @@
  * @package    Flourish
  * @link       http://flourishlib.com/fORMValidation
  * 
- * @version    1.0.0b27
+ * @version    1.0.0b29
+ * @changes    1.0.0b29  Updated ::addManyToManyRule() and ::addOneToManyRule() to prefix any namespace from `$class` to `$related_class` if not already present [wb, 2010-11-24]
+ * @changes    1.0.0b28  Updated the class to work with the new nested array structure for validation messages [wb, 2010-10-03]
  * @changes    1.0.0b27  Fixed ::hasValue() to properly detect zero-value floats, made ::hasValue() internal public [wb, 2010-07-26]
  * @changes    1.0.0b26  Improved the error message for integers to say `whole number` instead of just `number` [wb, 2010-05-29]
  * @changes    1.0.0b25  Added ::addRegexRule(), changed validation messages array to use column name keys [wb, 2010-05-26]
@@ -189,7 +191,8 @@ class fORMValidation
 	 */
 	static public function addManyToManyRule($class, $related_class, $route=NULL)
 	{
-		$class = fORM::getClass($class);
+		$class         = fORM::getClass($class);
+		$related_class = fORM::getRelatedClass($class, $related_class);
 		
 		if (!isset(self::$related_one_or_more_rules[$class])) {
 			self::$related_one_or_more_rules[$class] = array();
@@ -245,7 +248,8 @@ class fORMValidation
 	 */
 	static public function addOneToManyRule($class, $related_class, $route=NULL)
 	{
-		$class = fORM::getClass($class);
+		$class         = fORM::getClass($class);
+		$related_class = fORM::getRelatedClass($class, $related_class);
 		
 		if (!isset(self::$related_one_or_more_rules[$class])) {
 			self::$related_one_or_more_rules[$class] = array();
@@ -1289,7 +1293,8 @@ class fORMValidation
 		
 		foreach ($messages as $key => $message) {
 			foreach ($matches as $num => $match_string) {
-				if (fUTF8::ipos($message, $match_string) !== FALSE) {
+				$string = is_array($message) ? $message['name'] : $message;
+				if (fUTF8::ipos($string, $match_string) !== FALSE) {
 					$ordered_items[$num][$key] = $message;
 					continue 2;
 				}
@@ -1318,19 +1323,29 @@ class fORMValidation
 	static public function replaceMessages($class, $messages)
 	{
 		if (isset(self::$string_replacements[$class])) {
-			$messages = str_replace(
-				self::$string_replacements[$class]['search'],
-				self::$string_replacements[$class]['replace'],
-				$messages	
-			);
+			foreach ($messages as $key => $message) {
+				if (is_array($message)) {
+					continue;
+				}
+				$messages[$key] = str_replace(
+					self::$string_replacements[$class]['search'],
+					self::$string_replacements[$class]['replace'],
+					$message	
+				);
+			}
 		}
 		
 		if (isset(self::$regex_replacements[$class])) {
-			$messages = preg_replace(
-				self::$regex_replacements[$class]['search'],
-				self::$regex_replacements[$class]['replace'],
-				$messages	
-			);
+			foreach ($messages as $key => $message) {
+				if (is_array($message)) {
+					continue;
+				}
+				$messages[$key] = preg_replace(
+					self::$regex_replacements[$class]['search'],
+					self::$regex_replacements[$class]['replace'],
+					$message	
+				);
+			}
 		}
 		
 		return array_filter($messages, array('fORMValidation', 'isNonBlankString'));

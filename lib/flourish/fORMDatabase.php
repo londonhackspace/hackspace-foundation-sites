@@ -10,7 +10,10 @@
  * @package    Flourish
  * @link       http://flourishlib.com/fORMDatabase
  * 
- * @version    1.0.0b26
+ * @version    1.0.0b29
+ * @changes    1.0.0b29  Added code to handle old PCRE engines that don't support unicode character properties [wb, 2010-12-06]
+ * @changes    1.0.0b28  Fixed a bug in the fProgrammerException that is thrown when an improperly formatted OR condition is provided [wb, 2010-11-24]
+ * @changes    1.0.0b27  Fixed ::addWhereClause() to ignore fuzzy search clauses with no values to match [wb, 2010-10-19]
  * @changes    1.0.0b26  Fixed ::insertFromAndGroupByClauses() to handle SQL where a table is references in more than one capitalization [wb, 2010-07-26]
  * @changes    1.0.0b25  Fixed ::insertFromAndGroupByClauses() to properly handle recursive relationships [wb, 2010-07-22]
  * @changes    1.0.0b24  Fixed ::parseSearchTerms() to work with non-ascii terms [wb, 2010-06-30]
@@ -60,6 +63,13 @@ class fORMDatabase
 	 * @var array
 	 */
 	static private $database_objects = array();
+	
+	/**
+	 * If the PCRE engine supports unicode character properties
+	 * 
+	 * @var boolean
+	 */
+	static private $pcre_supports_unicode_character_properties = NULL;
 	
 	
 	/**
@@ -577,6 +587,12 @@ class fORMDatabase
 							$values = self::parseSearchTerms($values[0], TRUE);	
 						}
 						
+						// Skip fuzzy matches with no values to match
+						if ($values === array()) {
+							$params[0] .= ' 1 = 1 ';
+							continue;
+						}
+						
 						$condition = array();
 						foreach ($values as $value) {
 							$sub_condition = array();
@@ -639,7 +655,7 @@ class fORMDatabase
 				} else {
 					if (sizeof($columns) != sizeof($values)) {
 						throw new fProgrammerException(
-							'When creating an %1$s where clause there must be an equal number of columns and values, however there are not',
+							'When creating an %1$s where clause there must be an equal number of columns and values, however %2$s column(s) and %3$s value(s) were provided',
 							'OR',
 							sizeof($columns),
 							sizeof($values)
@@ -1162,7 +1178,17 @@ class fORMDatabase
 			
 			// Trim any punctuation off of the beginning and end of terms
 			} else {
-				$match = preg_replace('#(^[\pC\pC\pM\pP\pS\pZ]+|[\pC\pC\pM\pP\pS\pZ]+$)#iDu', '', $match);	
+				if (self::$pcre_supports_unicode_character_properties === NULL) {
+					fCore::startErrorCapture();
+					preg_match('#\pC#u', 'test');
+					self::$pcre_supports_unicode_character_properties = !((boolean) fCore::stopErrorCapture());
+				}
+				if (self::$pcre_supports_unicode_character_properties) {
+					$match = preg_replace('#(^[\pC\pC\pM\pP\pS\pZ]+|[\pC\pC\pM\pP\pS\pZ]+$)#iDu', '', $match);
+				} else {
+					// This just removes ascii non-alphanumeric characters, plus the unicode punctuation and supplemental punctuation blocks
+					$match = preg_replace('#(^[\x21-\x2F\x3A-\x40\x5B-\x60\x7B-\x7F\x{2000}-\x{206F}\x{2E00}-\x{2E7F}\x{00A1}-\x{00A9}\x{00AB}-\x{00B1}\x{00B4}\x{00B6}-\x{00B8}\x{00BB}\x{00BF}\x{00D7}\x{00F7}]+|[\x21-\x2F\x3A-\x40\x5B-\x60\x7B-\x7F\x{2000}-\x{206F}\x{2E00}-\x{2E7F}\x{00A1}-\x{00A9}\x{00AB}-\x{00B1}\x{00B4}\x{00B6}-\x{00B8}\x{00BB}\x{00BF}\x{00D7}\x{00F7}]+$)#iDu', '', $match);
+				}
 			}
 			
 			if ($ignore_stop_words && in_array(strtolower($match), $stop_words)) {

@@ -2,7 +2,7 @@
 /**
  * Allows for quick and flexible HTML templating
  * 
- * @copyright  Copyright (c) 2007-2010 Will Bond, others
+ * @copyright  Copyright (c) 2007-2011 Will Bond, others
  * @author     Will Bond [wb] <will@flourishlib.com>
  * @author     Matt Nowack [mn] <mdnowack@gmail.com>
  * @license    http://flourishlib.com/license
@@ -10,7 +10,9 @@
  * @package    Flourish
  * @link       http://flourishlib.com/fTemplating
  * 
- * @version    1.0.0b17
+ * @version    1.0.0b19
+ * @changes    1.0.0b19  Corrected a bug in ::enablePHPShortTags() that would prevent proper translation inside of HTML tag attributes [wb, 2011-01-09]
+ * @changes    1.0.0b18  Fixed a bug with CSS minification and black hex codes [wb, 2010-10-10]
  * @changes    1.0.0b17  Backwards Compatibility Break - ::delete() now returns the values of the element or elements that were deleted instead of returning the fTemplating instance [wb, 2010-09-19]
  * @changes    1.0.0b16  Fixed another bug with minifying JS regex literals [wb, 2010-09-13]
  * @changes    1.0.0b15  Fixed a bug with minifying JS regex literals that occur after a reserved word [wb, 2010-09-12]
@@ -572,7 +574,7 @@ class fTemplating
 			}
 			
 			$real_value = realpath($value);
-			$cache_path = $this->short_tag_directory . sha1($real_value);
+			$cache_path = $this->short_tag_directory . sha1($real_value) . '.php';
 			
 			$fixed_paths[] = $cache_path;
 			if (file_exists($cache_path) && ($this->short_tag_mode == 'production' || filemtime($cache_path) >= filemtime($real_value))) {
@@ -581,9 +583,16 @@ class fTemplating
 			
 			$code = file_get_contents($real_value);
 			$output = '';
-
+			
+			$in_php = FALSE;
+			
 			do {
-				if (!preg_match('#/\*|//|\\#|\'|"|<<<[a-z_]\w*|<<<\'[a-z_]\w*\'#i', $code, $match)) {
+				if (!$in_php) {
+					$token_regex = '<\?';
+				} else {
+					$token_regex .= '/\*|//|\\#|\'|"|<<<[a-z_]\w*|<<<\'[a-z_]\w*\'|\?>';
+				}
+				if (!preg_match('#' . $token_regex . '#i', $code, $match)) {
 					$part  = $code;
 					$code  = '';
 					$token = NULL;
@@ -599,7 +608,14 @@ class fTemplating
 				}
 				
 				$regex = NULL;
-				if ($token == "//") {
+				if ($token == "<?") {
+					$output .= $part;
+					$in_php = TRUE;
+					continue;
+				} elseif ($token == "?>") {
+					$regex = NULL;
+					$in_php = FALSE;
+				} elseif ($token == "//") {
 					$regex = '#^//.*(\n|$)#D';
 				} elseif ($token == "#") {
 					$regex = '@^#.*(\n|$)@D';
@@ -955,7 +971,7 @@ class fTemplating
 					$chunk = str_replace(';}', '}', $chunk);
 					
 					// All zero units are reduces to just 0
-					$chunk = preg_replace('#((?<!\d|\.)0+(\.0+)?|(?<!\d)\.0+)(?=\D|$)((%|in|cm|mm|em|ex|pt|pc|px)(\b|$))?#iD', '0', $chunk);
+					$chunk = preg_replace('#((?<!\d|\.|\#)0+(\.0+)?|(?<!\d)\.0+)(?=\D|$)((%|in|cm|mm|em|ex|pt|pc|px)(\b|$))?#iD', '0', $chunk);
 					
 					// All .0 decimals are removed
 					$chunk = preg_replace('#(\d+)\.0+(?=\D)#iD', '\1', $chunk);
@@ -967,7 +983,7 @@ class fTemplating
 					$chunk = preg_replace('#(?<!\d|\.)([\d\.]+(?:%|in|cm|mm|em|ex|pt|pc|px))(\s*\1){3}#i', '\1', $chunk);
 					
 					// Hex color codes are reduced if possible
-					$chunk = preg_replace('@#([a-f0-9])\1([a-f0-9])\2([a-f0-9])\3@iD', '#\1\2\3', $chunk);
+					$chunk = preg_replace('@#([a-f0-9])\1([a-f0-9])\2([a-f0-9])\3(?!\d)@iD', '#\1\2\3', $chunk);
 					
 					$chunk = str_ireplace('! important', '!important', $chunk);
 					
@@ -1474,7 +1490,7 @@ class fTemplating
 
 
 /**
- * Copyright (c) 2007-2010 Will Bond <will@flourishlib.com>, others
+ * Copyright (c) 2007-2011 Will Bond <will@flourishlib.com>, others
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
