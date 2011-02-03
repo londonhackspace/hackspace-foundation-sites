@@ -29,7 +29,7 @@ many other spaces in the UK. Currently we know of the following spaces:</p>
     <li><a href="http://www.geekchique.org/wiki">E-Space (Exeter)</a></li>
     <li><a href="http://groups.google.com/group/salop-hackspace">Shropshire Hackspace</a></li>
     <li><a href="http://madlab.org.uk">Madlab (Manchester)</a></li>
-    <li><a href="http://www.meetup.com/Nottinghack/">Nottinghack (Nottingham)</a></li>
+    <li><a href="http://www.nottinghack.org.uk">Nottingham Hackspace</a></li>
     <li><a href="http://groups.google.com/group/reading-hackspace/">Reading Hackspace</a></li>
     <li><a href="http://dek.spc.org/">Deckspace (London)</a></li>
     <li><a href="http://www.makespace.org/">Makespace (Cambridge)</a></li>
