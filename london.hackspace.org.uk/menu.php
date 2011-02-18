@@ -30,6 +30,7 @@ function menulink($url, $name, $title) {
         <?=menulink('/members/members.php', 'memberslist', 'Members List')?>
     <? } ?>
         <?=menulink('/members/edit.php', 'edit', 'Edit Account')?>
+        <?=menulink('/members/donate.php', 'donate', 'Donate')?>
 <? } ?>
     </ul>
 </div>
