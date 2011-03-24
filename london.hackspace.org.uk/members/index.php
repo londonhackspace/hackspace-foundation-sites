@@ -22,15 +22,29 @@ if (!$user) {
     <tr><td><?=$transaction->getTimestamp()?></td><td>£<?=$transaction->getAmount()?></td></tr>
 <? } ?>
 </table>
+
+<h3>Standing Order</h3>
+    <p>Thank you for setting up a standing order with your bank. If you ever need to change your standing order in 
+      the future please use the details provided below.</p>
+
+<table>
+    <tr><th>Bank</th><td>Barclays</td></tr>
+    <tr><th>Payee</th><td>Hackspace Foundation</td></tr>
+    <tr><th>Sort Code</th><td>20-32-06</td></tr>
+    <tr><th>Account Number</th><td>53413292</td></tr>
+    <tr><th>Reference</th><td><?=$user->getMemberNumber()?></td></tr>
+</table>
+
 <h3>Tools</h3>
     <ul>
         <li><a href="/webcams.html">Webcams</a> (<a href="http://lhs.tormentedtechnologies.com/">Timelapses</a>)</li>
         <li><a href="wiki.php">Link Wiki Accounts</a></li>
     </ul>
+
 <? } else { ?>
     <p>You're not currently a member of the Hackspace Foundation. To become a member, we ask that you pay what you
        think the space is worth to you. Running an organisation like this in London isn't cheap, so please be as
-         generous as you can. The minimum subscription is £5/month.
+         generous as you can. The minimum subscription is £5/month.</p>
 </p>
 
 <h3>Standing Order</h3>
