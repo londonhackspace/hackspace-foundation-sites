@@ -3,7 +3,7 @@ function get_spies($port) {
 
   $addr = $_SERVER['SERVER_ADDR'];
 
-  $c = exec("netstat -tn|grep -c $addr:$port");
+  $c = exec("netstat -tn|grep -c '127.0.0.1:$port\|$addr:$port'");
 
   if (!is_numeric($c)) return 'U';
   return intval($c);
