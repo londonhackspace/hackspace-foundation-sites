@@ -3,7 +3,12 @@ function get_spies($port) {
 
   $addr = $_SERVER['SERVER_ADDR'];
 
-  $c = exec("netstat -tn|grep -c $addr:$port");
+  // Is netstat less portable than /proc/net/tcp?
+  $c = exec("netstat -tn \
+    | cut -c45- \
+    | grep -v TIME_WAIT \
+    | grep -c '\($addr\|127.0.0.1\|::1\)':$port \
+  ");
 
   if (!is_numeric($c)) return 'U';
   return intval($c);
@@ -19,7 +24,7 @@ $cams = array(
 
 foreach($cams as $port => $cam) {
   $spies = get_spies($port);
-  echo "$cam: $spies ";
+  echo "$cam:$spies ";
 }
 echo "\n";
 
