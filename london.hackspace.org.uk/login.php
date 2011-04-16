@@ -15,7 +15,7 @@ if (isset($_POST['submit'])) {
         $validator->addEmailFields('email');
 
         $validator->validate();
-            
+
         $users = fRecordSet::build('User', array('email=' => $_POST['email']));
         if ($users->count() == 0) {
             throw new fValidationException('No user found with that email.');
@@ -23,14 +23,18 @@ if (isset($_POST['submit'])) {
 
         $rec = $users->getRecords();
         $user = $rec[0];
-        
+
         if (!fCryptography::checkPasswordHash($_POST['password'], $user->getPassword())) {
             throw new fValidationException('Invalid Password.');
         }
 
         fSession::set('user', $user->getId());
 
-        fURL::redirect('/members');
+        if (isset($_POST['forward'])) {
+            fURL::redirect('http://' . $_SERVER['SERVER_NAME'] . $_POST['forward']);
+        } else {
+            fURL::redirect('/members');
+        }
         exit;
     } catch (fValidationException $e) {
         echo "<p>" . $e->printMessage() . "</p>";
@@ -45,6 +49,9 @@ if (isset($_POST['submit'])) {
 <form method="post">
     <input type="hidden" name="token" value="<?=fRequest::generateCSRFToken()?>" />
     <fieldset>
+        <? if (isset($_GET['forward'])) { ?>
+            <input type="hidden" name="forward" value="<?=htmlentities($_GET['forward'])?>" />
+        <? }?>
         <table>
             <tr>
                 <td><label for="email">Email</label></td>
@@ -60,4 +67,5 @@ if (isset($_POST['submit'])) {
         </table>
     </fieldset>
 </form>
+<p>Forgotten your password? <a href="passwordreset.php">Reset it here</a>.</p>
 <? require('footer.php'); ?>

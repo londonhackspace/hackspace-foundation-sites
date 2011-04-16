@@ -41,14 +41,19 @@
  * encoding and stability issues on Windows, and functionality on non-Windows
  * operating systems.
  * 
- * @copyright  Copyright (c) 2007-2010 Will Bond
+ * @copyright  Copyright (c) 2007-2011 Will Bond
  * @author     Will Bond [wb] <will@flourishlib.com>
  * @license    http://flourishlib.com/license
  * 
  * @package    Flourish
  * @link       http://flourishlib.com/fDatabase
  * 
- * @version    1.0.0b30
+ * @version    1.0.0b35
+ * @changes    1.0.0b35  Updated the class to replace `LIMIT` and `OFFSET` value placeholders in the SQL with their values before translating since most databases that translate `LIMIT` statements need to move or add values together [wb, 2011-01-11]
+ * @changes    1.0.0b34  Fixed a bug with creating translated prepared statements [wb, 2011-01-09]
+ * @changes    1.0.0b33  Added code to explicitly set the connection encoding for the mysql and mysqli extensions since some PHP installs don't see to fully respect `SET NAMES` [wb, 2010-12-06]
+ * @changes    1.0.0b32  Fixed handling auto-incrementing values for Oracle when the trigger was on `INSERT OR UPDATE` instead of just `INSERT` [wb, 2010-12-04]
+ * @changes    1.0.0b31  Fixed handling auto-incrementing values for MySQL when the `INTO` keyword is left out of an `INSERT` statement [wb, 2010-11-04]
  * @changes    1.0.0b30  Fixed the pgsql, mssql and mysql extensions to force a new connection instead of reusing an existing one [wb, 2010-08-17]
  * @changes    1.0.0b29  Backwards Compatibility Break - removed ::enableSlowQueryWarnings(), added ability to replicate via ::registerHookCallback() [wb, 2010-08-10]
  * @changes    1.0.0b28  Backwards Compatibility Break - removed ODBC support. Added support for the `pdo_ibm` extension. [wb, 2010-07-31]
@@ -559,6 +564,11 @@ class fDatabase
 			if ($this->connection !== FALSE && mysql_select_db($this->database, $this->connection) === FALSE) {
 				$this->connection = FALSE;
 			}
+			if ($this->connection && function_exists('mysql_set_charset') && !mysql_set_charset('utf8', $this->connection)) {
+                throw new fConnectivityException(
+                	'There was an error setting the database connection to use UTF-8'
+				);
+            }
 		}
 			
 		if ($this->extension == 'mysqli') {
@@ -569,6 +579,11 @@ class fDatabase
 			} else {
 				$this->connection = mysqli_connect($this->host, $this->username, $this->password, $this->database);
 			}
+			if ($this->connection && !mysqli_set_charset($this->connection, 'utf8')) {
+                throw new fConnectivityException(
+                	'There was an error setting the database connection to use UTF-8'
+                );
+            }
 		}
 		
 		if ($this->extension == 'oci8') {
@@ -1574,7 +1589,7 @@ class fDatabase
 	 */
 	private function handleAutoIncrementedValue($result, $resource=NULL)
 	{
-		if (!preg_match('#^\s*INSERT\s+INTO\s+(?:`|"|\[)?(["\w.]+)(?:`|"|\])?#i', $result->getSQL(), $table_match)) {
+		if (!preg_match('#^\s*INSERT\s+(?:INTO\s+)?(?:`|"|\[)?(["\w.]+)(?:`|"|\])?#i', $result->getSQL(), $table_match)) {
 			$result->setAutoIncrementedValue(NULL);
 			return;
 		}
@@ -1592,7 +1607,7 @@ class fDatabase
 							FROM
 								ALL_TRIGGERS
 							WHERE
-								TRIGGERING_EVENT = 'INSERT' AND
+								TRIGGERING_EVENT LIKE 'INSERT%' AND
 								STATUS = 'ENABLED' AND
 								TRIGGER_NAME NOT LIKE 'BIN\$%' AND
 								OWNER NOT IN (
@@ -2376,7 +2391,8 @@ class fDatabase
 		
 		$untranslated_sql = NULL;
 		if ($translate) {
-			list($query) = $t->gethisSQLTranslation()->translate(array($query));
+			$query = $this->getSQLTranslation()->translate(array($query));
+			$query = current($query);
 			$untranslated_sql = $sql;
 		}
 		
@@ -2482,8 +2498,13 @@ class fDatabase
 					
 					$value = $values[$value_number];
 					
+					// Here we put numbers for LIMIT and OFFSET into the SQL so they can be translated properly
+					if ($piece == '%i' && preg_match('#\b(LIMIT|OFFSET)\s+#Di', $new_sql)) {
+						$new_sql .= (int) $value;
+						$value_number++;
+					
 					// Here we put blank strings back into the SQL so they can be translated for Oracle
-					if ($piece == '%s' && $value !== NULL && ((string) $value) == '') {
+					} elseif ($piece == '%s' && $value !== NULL && ((string) $value) == '') {
 						$new_sql .= "''";
 						$value_number++;
 					
@@ -2680,6 +2701,11 @@ class fDatabase
 				} else {
 					$this->performUnbufferedQuery($statement, $result, $params);	
 				}
+				
+				if ($statement instanceof fStatement && $statement->getUntranslatedSQL()) {
+					$result->setUntranslatedSQL($statement->getUntranslatedSQL());
+				}
+				
 			} else {
 				$this->perform($statement, $params);	
 			}
@@ -3188,7 +3214,7 @@ class fDatabase
 
 
 /**
- * Copyright (c) 2007-2010 Will Bond <will@flourishlib.com>
+ * Copyright (c) 2007-2011 Will Bond <will@flourishlib.com>
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal

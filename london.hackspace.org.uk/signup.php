@@ -45,7 +45,8 @@ if (isset($_POST['submit'])) {
 non-profit association. Members have a hand in the running of the organisation as well as 24/7 access to the space.</p>
 
 <p>Membership is paid monthly by standing order. We ask that you pay what you think the space is worth to you. Running an
-organisation like this in London isn't cheap, so please be as generous as you can. The minimum subscription is £5/month.</p>
+organisation like this in London isn't cheap, so please be as generous as you can. The minimum subscription is £5/month. The
+space requires an average subscription of £25/month to survive.</p>
 
 <h2>Join the London Hackspace</h2>
 <p>To become a member of the London Hackspace, we need a few details from you.</p>
