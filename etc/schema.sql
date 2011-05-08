@@ -5,7 +5,9 @@ CREATE TABLE users (
     full_name VARCHAR(255) NOT NULL,
     subscribed BOOLEAN NOT NULL DEFAULT 0,
     address TEXT,
-    bankhash TEXT
+    bankhash TEXT,
+    subscription_period INTEGER NOT NULL DEFAULT 1,
+    hackney BOOLEAN NOT NULL DEFAULT 0
 );
 
 CREATE TABLE transactions (
@@ -22,3 +24,10 @@ CREATE TABLE password_resets (
     expires DATETIME NOT NULL
 );
 
+CREATE TABLE subscriptions (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER NOT NULL REFERENCES users(id),
+    transaction_id INTEGER NOT NULL REFERENCES transactions,
+    start_date DATETIME NOT NULL,
+    end_date DATETIME NOT NULL
+);

@@ -3,7 +3,7 @@ $page = 'donate';
 require( '../header.php' );
 
 if (!$user) {
-   fURL::redirect('/');
+    fURL::redirect('/login.php?forward=/members/donate.php');
 }
 ?>
 <h2>Donate</h2>
