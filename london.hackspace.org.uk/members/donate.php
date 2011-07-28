@@ -7,14 +7,14 @@ if (!$user) {
 }
 ?>
 <h2>Donate</h2>
-<p>There are two ways to donate to the Hackspace Foundation. We prefer bank transfer, as we don't have to pay commission.
+<p>There are two ways to donate to London Hackspace Ltd. We prefer bank transfer, as we don't have to pay commission.
     Since we're not a registered charity, you unfortunately can't claim Gift Aid back on donations to us.</p>
 
 <h3>Bank Transfer</h3>
 <p>Our bank details are as follows:</p>
 <table>
     <tr><th>Bank</th><td>Barclays</td></tr>
-    <tr><th>Payee</th><td>Hackspace Foundation</td></tr>
+    <tr><th>Payee</th><td>London Hackspace Ltd.</td></tr>
     <tr><th>Sort Code</th><td>20-32-06</td></tr>
     <tr><th>Account Number</th><td>53413292</td></tr>
 </table>

@@ -54,7 +54,7 @@ space requires our members to contribute an average subscription of £20/month t
 <h2>Join the London Hackspace</h2>
 <p>To become a member of the London Hackspace, we need a few details from you.</p>
 
-<p>By joining the London Hackspace you're becoming a member of the Hackspace Foundation, and you agree to be bound by 
+<p>By joining the London Hackspace you're becoming a member of London Hackspace Ltd., and you agree to be bound by 
 <a href="http://hackspace.org.uk/organisation/">our constitution</a>.</p>
 
 <p><a href="http://www.legislation.gov.uk/ukpga/2006/46/part/8/chapter/2/crossheading/general">UK law</a> requires that
