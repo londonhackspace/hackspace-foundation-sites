@@ -28,6 +28,7 @@ function menulink($url, $name, $title) {
         <?=menulink('/members/', 'members', 'Members Home')?>
     <? if($user->isMember()) { ?>
         <?=menulink('/members/members.php', 'memberslist', 'Members List')?>
+        <?=menulink('/members/night.php', 'night', 'Night Access')?>
     <? } ?>
         <?=menulink('/members/edit.php', 'edit', 'Edit Account')?>
         <?=menulink('/members/donate.php', 'donate', 'Donate')?>
