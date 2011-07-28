@@ -15,7 +15,7 @@ ofx.bank_account.statement.transactions.each do |transaction|
       next
     end
 
-    match = transaction.payee.match(/HS([0-9]{5,})/)
+    match = transaction.payee.match(/H[S5]([0-9]{5,})/)
     if !match:
       next
     end
