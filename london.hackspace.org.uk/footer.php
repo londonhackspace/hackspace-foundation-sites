@@ -2,7 +2,7 @@
             </div>
         </div>
     <div id="ft">
-        Copyright &copy; <?=date('Y')?> the Hackspace Foundation
+        Copyright &copy; <?=date('Y')?> London Hackspace Ltd.
     </div>
 </div> 
 <script type="text/javascript">
