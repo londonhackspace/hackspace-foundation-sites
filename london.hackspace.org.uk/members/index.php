@@ -14,7 +14,7 @@ if (!$user) {
         these details you will be unable to gain membership privileges until you do.</p>
     <p>Please <a href="/members/edit.php">provide your details</a> to continue.</p>
 <?} else if ($user->isMember()) { ?>
-    <p>You're currently a member of the Hackspace Foundation, thanks for your support!</p>
+    <p>You're currently a member of London Hackspace Ltd., thanks for your support!</p>
 <h3>Your Recent Payments</h3>
 <table>
     <tr><th>Date</th><th>Amount</th></tr>
@@ -24,11 +24,10 @@ if (!$user) {
 </table>
 <h3>Tools</h3>
     <ul>
-        <li><a href="/webcams.html">Webcams</a> (<a href="http://lhs.tormentedtechnologies.com/">Timelapses</a>)</li>
         <li><a href="wiki.php">Link Wiki Accounts</a></li>
     </ul>
 <? } else { ?>
-    <p>You're not currently a member of the Hackspace Foundation. To become a member, we ask that you pay what you
+    <p>You're not currently a member of London Hackspace Ltd. To become a member, we ask that you pay what you
        think the space is worth to you. Running an organisation like this in London isn't cheap, so please be as
          generous as you can. The minimum subscription is £5/month.
 </p>
@@ -40,7 +39,7 @@ if (!$user) {
 
 <table>
     <tr><th>Bank</th><td>Barclays</td></tr>
-    <tr><th>Payee</th><td>Hackspace Foundation</td></tr>
+    <tr><th>Payee</th><td>London Hackspace Ltd.</td></tr>
     <tr><th>Sort Code</th><td>20-32-06</td></tr>
     <tr><th>Account Number</th><td>53413292</td></tr>
     <tr><th>Reference</th><td><?=$user->getMemberNumber()?></td></tr>

@@ -21,6 +21,5 @@ function menulink($url, $name, $title) {
 <div class="yui-b">
     <ul id="menu">
         <?=menulink('/', 'about', 'About');?>
-        <?=menulink('/organisation', 'organisation', 'Organisation');?>
     </ul>
 </div>

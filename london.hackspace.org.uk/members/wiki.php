@@ -82,7 +82,7 @@ if($user->isMember()) {
         );
     }
 ?>
-    <p>As a member of the Hackspace Foundation you are entitled to administrator rights on <a href="http://wiki.hackspace.org.uk">our wiki</a>.</p>
+    <p>As a member of London Hackspace Ltd. you are entitled to administrator rights on <a href="http://wiki.hackspace.org.uk">our wiki</a>.</p>
     <?php if( count( $accounts ) > 0 ): ?>
         <p>These wiki accounts have the same confirmed e-mail address as your membership account:</p>
         <table>
@@ -110,7 +110,7 @@ if($user->isMember()) {
             </tbody>
         </table>
     <?php else: ?>
-        <p>No account currently exists on the wiki with the same confirmed e-mail address as your Hackspace Foundation account.  If you already have an account on the wiki you should set or update your e-mail address there, otherwise use the form below to create a wiki account now.</p>
+        <p>No account currently exists on the wiki with the same confirmed e-mail address as your London Hackspace Ltd. account.  If you already have an account on the wiki you should set or update your e-mail address there, otherwise use the form below to create a wiki account now.</p>
         <hr>
         <?php if( isset( $error ) ) echo $error; ?>
         <form method="POST">

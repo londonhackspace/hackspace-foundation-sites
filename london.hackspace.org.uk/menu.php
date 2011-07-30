@@ -23,7 +23,8 @@ function menulink($url, $name, $title) {
         <?=menulink('/', 'about', 'About');?>
         <li><a href="http://wiki.hackspace.org.uk">Wiki</a></li>
         <?=menulink('/signup.php', 'membership', 'Join');?>
-        <?=menulink('/events', 'events', 'Events');?>
+        <?=menulink('/events/', 'events', 'Events');?>
+        <?=menulink('/organisation/', 'organisation', 'Organisation');?>
 <?if (isset($user)) {?>
         <?=menulink('/members/', 'members', 'Members Home')?>
     <? if($user->isMember()) { ?>
