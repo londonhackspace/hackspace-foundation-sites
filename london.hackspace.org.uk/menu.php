@@ -25,6 +25,7 @@ function menulink($url, $name, $title) {
         <?=menulink('/signup.php', 'membership', 'Join');?>
         <?=menulink('/events/', 'events', 'Events');?>
         <?=menulink('/organisation/', 'organisation', 'Organisation');?>
+        <?=menulink('/donate.php', 'donate', 'Donate')?>
 <?if (isset($user)) {?>
         <?=menulink('/members/', 'members', 'Members Home')?>
     <? if($user->isMember()) { ?>
@@ -33,7 +34,6 @@ function menulink($url, $name, $title) {
         <?=menulink('/members/webcams.php', 'webcams', 'Webcams')?>
     <? } ?>
         <?=menulink('/members/edit.php', 'edit', 'Edit Account')?>
-        <?=menulink('/members/donate.php', 'donate', 'Donate')?>
 <? } ?>
     </ul>
 </div>
