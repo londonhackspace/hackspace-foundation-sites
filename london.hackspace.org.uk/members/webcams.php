@@ -24,8 +24,8 @@ if (!isset($_GET['camera'])) {
 <b>Switch Camera:</b>
 <a href="/members/webcams.php?camera=1">Main</a> |
 <a href="/members/webcams.php?camera=2">Quiet/Social</a> |
-<a href="/members/webcams.php?camera=3">Workshop</a> |
-<a href="/members/webcams.php?camera=4">Door</a>
+<a href="/members/webcams.php?camera=4">Workshop</a> |
+<a href="/members/webcams.php?camera=3">Door</a>
 </div>
 <div>
 <img src="camera.php?id=<?=$camera?>">
