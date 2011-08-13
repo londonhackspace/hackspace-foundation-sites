@@ -27,7 +27,7 @@ if (!isset($_GET['camera'])) {
 <a href="/members/webcams.php?camera=4">Workshop</a> |
 <a href="/members/webcams.php?camera=3">Door</a>
 </div>
-<div>
+<div style="padding-top:10px">
 <img src="camera.php?id=<?=$camera?>">
 </div>
 <? require('../footer.php'); ?>
