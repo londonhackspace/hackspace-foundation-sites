@@ -4,13 +4,10 @@ $title = "Webcams";
 $desc = '';
 require('../header.php');
 
-if (!isset($user)) {
-    fURL::redirect('/login.php?forward=/members/webcams.php');
-}
+$live = False;
 
-if (!$user->isMember) {
-    header("HTTP/1.1 403 Not Authorized");
-    die();
+if (isset($user) && $user->isMember()) {
+    $live = True;
 }
 
 if (!isset($_GET['camera'])) {
@@ -20,6 +17,9 @@ if (!isset($_GET['camera'])) {
 }
 
 ?>
+<? if (!$live) { ?>
+    <p><strong>You're not a member, so you're seeing a delayed snapshot of our webcams.</strong></p>
+<? } ?>
 <div>
 <b>Switch Camera:</b>
 <a href="/members/webcams.php?camera=1">Main</a> |
@@ -28,6 +28,10 @@ if (!isset($_GET['camera'])) {
 <a href="/members/webcams.php?camera=3">Door</a>
 </div>
 <div style="padding-top:10px">
-<img src="camera.php?id=<?=$camera?>">
+<? if ($live) { ?>
+    <img src="camera.php?id=<?=$camera?>">
+<? } else { ?>
+    <img src="/cam_snapshots/<?=$camera?>.jpg">
+<? } ?>
 </div>
 <? require('../footer.php'); ?>
