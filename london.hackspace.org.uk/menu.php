@@ -30,6 +30,7 @@ function menulink($url, $name, $title) {
     <? if($user->isMember()) { ?>
         <?=menulink('/members/members.php', 'memberslist', 'Members List')?>
         <?=menulink('/members/night.php', 'night', 'Night Access')?>
+        <?=menulink('/members/webcams.php', 'webcams', 'Webcams')?>
     <? } ?>
         <?=menulink('/members/edit.php', 'edit', 'Edit Account')?>
         <?=menulink('/members/donate.php', 'donate', 'Donate')?>
