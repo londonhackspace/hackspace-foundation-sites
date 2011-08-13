@@ -13,6 +13,6 @@ if (!isset($_GET['id'])) {
 apache_setenv('PHP_AUTH', '1');
 
 header('Content-Type: multipart/x-mixed-replace; boundary=--BoundaryString');
-virtual('/cameras/' . int($_GET['id']));
+virtual('/cameras/' . intval($_GET['id']));
 
 ?>

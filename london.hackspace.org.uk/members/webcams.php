@@ -16,7 +16,7 @@ if (!$user->isMember) {
 if (!isset($_GET['camera'])) {
     $camera = 1;
 } else {
-    $camera = int($_GET['camera']);
+    $camera = intval($_GET['camera']);
 }
 
 ?>
