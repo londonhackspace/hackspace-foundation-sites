@@ -1,6 +1,7 @@
 <? 
 $page = 'webcams';
 $title = "Webcams";
+$noindex = True;
 $desc = '';
 require('../header.php');
 

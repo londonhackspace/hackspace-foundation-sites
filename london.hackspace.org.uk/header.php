@@ -3,6 +3,9 @@
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <? if (isset($noindex) && $noindex == True) { ?>
+    <meta name="robots" content="noindex" />
+    <? } ?>
     <? if (isset($desc)) { ?>
     <meta name="description" content="<?=$desc ?>" />
     <? } ?>
