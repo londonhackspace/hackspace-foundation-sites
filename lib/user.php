@@ -17,6 +17,14 @@ class User extends fActiveRecord {
         );
     }
 
+    public function buildCards() {
+        return fRecordSet::build(
+            'Card',
+            array('user_id=' => $this->getId()),
+            array('added_date' => 'asc')
+        );
+    }
+
     public function getResetPasswordToken() {
         global $db;
         $db->execute("DELETE FROM password_resets WHERE expires < datetime('now')");

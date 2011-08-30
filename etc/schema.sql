@@ -7,7 +7,9 @@ CREATE TABLE users (
     address TEXT,
     bankhash TEXT,
     subscription_period INTEGER NOT NULL DEFAULT 1,
-    hackney BOOLEAN NOT NULL DEFAULT 0
+    hackney BOOLEAN NOT NULL DEFAULT 0,
+    nickname VARCHAR(255) UNIQUE,
+    irc_nick VARCHAR(255) UNIQUE
 );
 
 CREATE TABLE transactions (
@@ -30,4 +32,22 @@ CREATE TABLE subscriptions (
     transaction_id INTEGER NOT NULL REFERENCES transactions,
     start_date DATETIME NOT NULL,
     end_date DATETIME NOT NULL
+);
+
+CREATE TABLE cards (
+    uid VARCHAR(255) PRIMARY KEY,
+    user_id INTEGER NOT NULL REFERENCES users(id),
+    added_date DATETIME NOT NULL,
+    active BOOLEAN NOT NULL DEFAULT 1
+);
+
+CREATE TABLE perms (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER NOT NULL REFERENCES users(id),
+    perm_name VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE userperms (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER NOT NULL REFERENCES users(id)
 );

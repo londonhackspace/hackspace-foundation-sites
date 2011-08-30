@@ -32,6 +32,7 @@ function menulink($url, $name, $title) {
         <?=menulink('/members/members.php', 'memberslist', 'Members List')?>
         <?=menulink('/members/night.php', 'night', 'Night Access')?>
         <?=menulink('/members/webcams.php', 'webcams', 'Webcams')?>
+        <?=menulink('/members/cards.php', 'cards', 'Cards')?>
     <? } ?>
         <?=menulink('/members/edit.php', 'edit', 'Edit Account')?>
 <? } ?>
