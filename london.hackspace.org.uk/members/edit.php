@@ -35,7 +35,7 @@ if (isset($_POST['submit'])) {
             $user->setHackney(0);
         }
         $user->store();
-        fURL::redirect($_SERVER['REQUEST_URI'] . '?saved');
+        fURL::redirect('?saved');
         exit;
     } catch (fValidationException $e) {
         echo "<p>" . $e->printMessage() . "</p>";

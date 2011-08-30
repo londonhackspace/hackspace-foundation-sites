@@ -2,8 +2,8 @@
 $page = 'memberslist';
 require( '../header.php' );
 
-if (!$user) {
-   fURL::redirect('/');
+if (!isset($user)) {
+    fURL::redirect('/login.php?forward=/members/members.php');
 }
 ?>
 <h2>Members list</h2>
@@ -11,10 +11,8 @@ if (!$user) {
 
 if($user->isMember()) {
 
-$db = new fDatabase('sqlite', dirname(__FILE__) . '/../../var/database.db');
-
 ?>
-   <p>This is a list of all members, up to date as of the last accounts reconcilliation.</p>
+   <p>This is a list of all members, up to date as of the last accounts reconciliation.</p>
    <table>
       <thead>
          <tr>
