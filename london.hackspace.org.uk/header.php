@@ -10,8 +10,7 @@
     <meta name="description" content="<?=$desc ?>" />
     <? } ?>
     <title><? if (isset($title)) echo "$title &mdash; "; ?>London Hackspace</title>
-    <link rel="stylesheet" type="text/css" 
-        href="http://yui.yahooapis.com/combo?2.7.0/build/reset-fonts-grids/reset-fonts-grids.css&amp;2.7.0/build/base/base-min.css" /> 
+    <link rel="stylesheet" type="text/css" href="/css/yui-combo.css" />
     <link rel="stylesheet" type="text/css" href="/css/main.css" />
     <link rel="icon" href="/favicon.ico" />
 </head>
