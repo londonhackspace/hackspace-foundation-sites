@@ -22,10 +22,6 @@ if (!$user) {
     <tr><td><?=$transaction->getTimestamp()?></td><td>£<?=$transaction->getAmount()?></td></tr>
 <? } ?>
 </table>
-<h3>Tools</h3>
-    <ul>
-        <li><a href="wiki.php">Link Wiki Accounts</a></li>
-    </ul>
 <? } else { ?>
     <p>You're not currently a member of London Hackspace Ltd. To become a member, we ask that you pay what you
        think the space is worth to you. Running an organisation like this in London isn't cheap, so please be as
