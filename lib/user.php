@@ -13,7 +13,7 @@ class User extends fActiveRecord {
         return fRecordSet::build(
             'Transaction',
             array('user_id=' => $this->getId()),
-            array('timestamp' => 'asc')
+            array('timestamp' => 'desc')
         );
     }
 
