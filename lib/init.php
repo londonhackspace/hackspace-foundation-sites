@@ -9,7 +9,7 @@ $db = new fDatabase('sqlite', dirname(__FILE__) . '/../var/database.db');
 
 fORMDatabase::attach($db);
 
-fSession::setLength('1 day');
+fSession::setLength('30 minute, 1 week');
 
 if ($uid = fSession::get('user')) {
     $user = new User($uid);
