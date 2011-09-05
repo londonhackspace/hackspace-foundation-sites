@@ -18,14 +18,14 @@ if (isset($_POST['submit'])) {
 
         $users = fRecordSet::build('User', array('email=' => $_POST['email']));
         if ($users->count() == 0) {
-            throw new fValidationException('No user found with that email.');
+            throw new fValidationException('Invalid username or password.');
         }
 
         $rec = $users->getRecords();
         $user = $rec[0];
 
         if (!fCryptography::checkPasswordHash($_POST['password'], $user->getPassword())) {
-            throw new fValidationException('Invalid Password.');
+            throw new fValidationException('Invalid username or password.');
         }
 
         fSession::set('user', $user->getId());
