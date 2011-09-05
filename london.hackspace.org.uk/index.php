@@ -10,8 +10,7 @@ free <a href="/events">hack evenings and workshops</a> which are open to everyon
 
 <p><a href="http://wiki.hackspace.org.uk"><img src="/images/electronics.jpg" /><img src="/images/drawers.jpg" /></a>
 <div style="margin-left:10px">
-<script type="text/javascript" 
-    src="http://www.flickr.com/badge_code_v2.gne?count=7&display=random&size=s&layout=h&context=in%2Fpool-1183951%40N23%2F&source=group&group=1183951%40N23"></script>
+<script type="text/javascript" src="badge.php"></script>
 </div>
 </p>
 <p><strong>Learn more about the London Hackspace on <a href="http://wiki.hackspace.org.uk">our wiki</a>.</strong></p>

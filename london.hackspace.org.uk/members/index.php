@@ -15,6 +15,7 @@ if (!$user) {
     <p>Please <a href="/members/edit.php">provide your details</a> to continue.</p>
 <?} else if ($user->isMember()) { ?>
     <p>You're currently a member of London Hackspace Ltd., thanks for your support!</p>
+
 <h3>Your Recent Payments</h3>
 <table>
     <tr><th>Date</th><th>Amount</th></tr>
@@ -22,10 +23,10 @@ if (!$user) {
     <tr><td><?=$transaction->getTimestamp()?></td><td>£<?=$transaction->getAmount()?></td></tr>
 <? } ?>
 </table>
-<h3>Tools</h3>
-    <ul>
-        <li><a href="wiki.php">Link Wiki Accounts</a></li>
-    </ul>
+
+<h3>Reference Number</h3>
+<p>Your standing order reference number is: <strong><?=$user->getMemberNumber()?></strong></p>
+
 <? } else { ?>
     <p>You're not currently a member of London Hackspace Ltd. To become a member, we ask that you pay what you
        think the space is worth to you. Running an organisation like this in London isn't cheap, so please be as

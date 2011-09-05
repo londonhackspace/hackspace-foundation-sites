@@ -13,7 +13,15 @@ class User extends fActiveRecord {
         return fRecordSet::build(
             'Transaction',
             array('user_id=' => $this->getId()),
-            array('timestamp' => 'asc')
+            array('timestamp' => 'desc')
+        );
+    }
+
+    public function buildCards() {
+        return fRecordSet::build(
+            'Card',
+            array('user_id=' => $this->getId()),
+            array('added_date' => 'asc')
         );
     }
 

@@ -1,5 +1,5 @@
 <? 
-$page = 'membership';
+$page = 'wiki';
 require( '../header.php' );
 
 if (!$user) {
