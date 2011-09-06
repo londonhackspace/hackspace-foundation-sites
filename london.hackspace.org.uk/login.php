@@ -30,6 +30,10 @@ if (isset($_POST['submit'])) {
 
         fSession::set('user', $user->getId());
 
+        if (fRequest::get('persistent_login', 'boolean')) {
+            fSession::enablePersistence();
+        }
+
         if (isset($_POST['forward'])) {
             fURL::redirect('http://' . $_SERVER['SERVER_NAME'] . $_POST['forward']);
         } else {
@@ -60,6 +64,10 @@ if (isset($_POST['submit'])) {
             <tr>
                 <td><label for="password">Password</label></td>
                 <td><input type="password" id="password" name="password" /></td>
+            </tr>
+            <tr>
+                <td>&nbsp;</td>
+                <td><input type="checkbox" value="true" name="persistent_login" /> Remember me.</td>
             </tr>
             <tr>
                 <td colspan="2"><input type="submit" name="submit" value="Log In" /></td>
