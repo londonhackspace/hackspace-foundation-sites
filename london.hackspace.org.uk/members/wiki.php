@@ -82,7 +82,9 @@ if($user->isMember()) {
         );
     }
 ?>
+
     <p>As a member of London Hackspace Ltd. you are entitled to administrator rights on <a href="http://wiki.hackspace.org.uk">our wiki</a>.</p>
+
     <?php if( count( $accounts ) > 0 ): ?>
         <p>These wiki accounts have the same confirmed e-mail address as your membership account:</p>
         <table>
@@ -101,8 +103,8 @@ if($user->isMember()) {
                         <td>
                             <form method="POST" style="margin: 0;">
                                 <input type="hidden" name="token" value="<?=fRequest::generateCSRFToken()?>" />
-                                <input type="hidden" name="wikiuser" value="<?php echo $id ?>">
-                                <input type="submit" name="<?php echo $details['linked'] ? 'unlink' : 'link' ?>" value="<?php echo $details['linked'] ? 'Unlink' : 'Link' ?>">
+                                <input type="hidden" name="wikiuser" value="<?php echo $id ?>" />
+                                <input type="submit" name="<?php echo $details['linked'] ? 'unlink' : 'link' ?>" value="<?php echo $details['linked'] ? 'Unlink' : 'Link' ?>" />
                             </form>
                         </td>
                     </tr>
@@ -111,29 +113,31 @@ if($user->isMember()) {
         </table>
     <?php else: ?>
         <p>No account currently exists on the wiki with the same confirmed e-mail address as your London Hackspace Ltd. account.  If you already have an account on the wiki you should set or update your e-mail address there, otherwise use the form below to create a wiki account now.</p>
-        <hr>
+
+        <hr />
+
         <?php if( isset( $error ) ) echo $error; ?>
         <form method="POST">
             <input type="hidden" name="token" value="<?=fRequest::generateCSRFToken()?>" />
             <table>
                 <tr>
                     <td><label for="username">Wiki username</label></td>
-                    <td><input type="text" name="username" value="<?php if( array_key_exists( 'username', $_POST ) ) echo $_POST['username'] ?>"></td>
+                    <td><input type="text" name="username" value="<?php if( array_key_exists( 'username', $_POST ) ) echo $_POST['username'] ?>" /></td>
                 </tr>
                 <tr>
                     <td><label for="password">Wiki password</label></td>
-                    <td><input type="password" name="password"></td>
+                    <td><input type="password" name="password" /></td>
                 </tr>
                 <tr>
                     <td><label for="passwordconfirm">Confirm wiki password</label></td>
-                    <td><input type="password" name="passwordconfirm"></td>
+                    <td><input type="password" name="passwordconfirm" /></td>
                 </tr>
                 <tr>
-                    <td colspan="2"><input type="submit" name="create" value="Create"></td>
+                    <td colspan="2"><input type="submit" name="create" value="Create" /></td>
                 </tr>
             </table>
         </form>
-        <p></p>
+        <br />
     <?php endif; ?>
     <p><a href="index.php">Return to membership home</a></p>
 <? } else { ?>

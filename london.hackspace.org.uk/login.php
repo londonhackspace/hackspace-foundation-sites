@@ -75,5 +75,6 @@ if (isset($_POST['submit'])) {
         </table>
     </fieldset>
 </form>
+
 <p>Forgotten your password? <a href="passwordreset.php">Reset it here</a>.</p>
 <? require('footer.php'); ?>
