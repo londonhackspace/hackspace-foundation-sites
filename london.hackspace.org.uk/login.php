@@ -67,7 +67,7 @@ if (isset($_POST['submit'])) {
             </tr>
             <tr>
                 <td>&nbsp;</td>
-                <td><input type="checkbox" value="true" name="persistent_login"> Remember me.</td>
+                <td><input type="checkbox" value="true" name="persistent_login" /> Remember me.</td>
             </tr>
             <tr>
                 <td colspan="2"><input type="submit" name="submit" value="Log In" /></td>
