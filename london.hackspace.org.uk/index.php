@@ -7,14 +7,15 @@ require('header.php'); ?>
 
 <p>We have a <a href="http://wiki.hackspace.org.uk/wiki/Laboratory_24">great space</a> in Shoreditch, right next to Hoxton station, which is open to our members 24 hours a day, and we hold regular free <a href="/events">hack evenings and workshops</a> which are open to everyone.</p>
 
-<p>
+<p style="margin-bottom:5px;">
     <a href="http://wiki.hackspace.org.uk">
-        <img src="/images/electronics.jpg" alt="Oscilloscopes and power supply" />
-        <img src="/images/drawers.jpg" alt="Electronic components" />
+        <img src="/images/electronics.jpg" alt="Oscilloscopes and power supply" width="525" height="180" />
+        <img src="/images/drawers.jpg" alt="Electronic components" width="525" height="180" />
     </a>
 </p>
 
-<div style="margin-left:10px">
+<a href="http://www.flickr.com/groups/londonhackspace/"><img src="/images/flickr_stream.jpg" alt="Hackspace Flickr Stream" /></a>
+<div style="margin-left:10px; margin-bottom:1em;">
     <script type="text/javascript" src="badge.php"></script>
 </div>
 
