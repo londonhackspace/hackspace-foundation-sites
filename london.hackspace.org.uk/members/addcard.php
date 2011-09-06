@@ -25,23 +25,26 @@ if (isset($_POST['submit'])) {
         trigger_error($e);
     }
 }
-
 ?>
+
 <h2>Add card</h2>
 <?
 if($user->isMember()) {
 ?>
-
 <form method="POST">
-<input type="hidden" name="token" value="<?=fRequest::generateCSRFToken()?>" />
-<table>
-<tr><td><label for="uid">Card ID: </label></td><td><input type="text" name="uid" value=""/></td></tr>
-<tr><td colspan="2"><input type="submit" name="submit" value="Add" /></td></tr>
-</table>
+    <input type="hidden" name="token" value="<?=fRequest::generateCSRFToken()?>" />
+    <table>
+        <tr>
+            <td><label for="uid">Card ID: </label></td>
+            <td><input type="text" name="uid" value="" /></td>
+        </tr>
+        <tr>
+            <td colspan="2"><input type="submit" name="submit" value="Add" /></td>
+        </tr>
+    </table>
 </form>
-
 <? } else { ?>
-   <p>You must be a member to use this page.</p>
+<p>You must be a member to use this page.</p>
 <?php }
 
 require('../footer.php'); ?>

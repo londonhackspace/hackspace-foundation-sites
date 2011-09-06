@@ -75,29 +75,44 @@ The London Hackspace email monkey
 } elseif (isset($_GET['token'])) {
 ?>
 <p>OK, now enter your new password:</p>
+
 <form method="post">
-<fieldset>
-<input type="hidden" name="resettoken" value="<?=htmlentities($_GET['token'])?>" />
-<input type="hidden" name="token" value="<?=fRequest::generateCSRFToken()?>" />
-<table id="resettable">
-<tr><td><label for="password">Password</label></td><td><input type="password" id="password" name="password" /></td></tr>
-<tr><td><label for="passwordconfirm">Confirm Password</label></td><td><input type="password" id="passwordconfirm" name="passwordconfirm" /></td></tr>
-<tr><td colspan="2"><input type="submit" name="reset" value="Submit" /></td></tr>
-</table>
-</fieldset>
+    <fieldset>
+        <input type="hidden" name="resettoken" value="<?=htmlentities($_GET['token'])?>" />
+        <input type="hidden" name="token" value="<?=fRequest::generateCSRFToken()?>" />
+        <table id="resettable">
+            <tr>
+                <td><label for="password">Password</label></td>
+                <td><input type="password" id="password" name="password" /></td>
+            </tr>
+            <tr>
+                <td><label for="passwordconfirm">Confirm Password</label></td>
+                <td><input type="password" id="passwordconfirm" name="passwordconfirm" /></td>
+            </tr>
+            <tr>
+                <td colspan="2"><input type="submit" name="reset" value="Submit" /></td>
+            </tr>
+        </table>
+    </fieldset>
 </form>
 <?
 } else {
 ?>
 <p>To reset your password, enter your email address:</p>
+
 <form method="post">
-<fieldset>
-<input type="hidden" name="token" value="<?=fRequest::generateCSRFToken()?>" />
-<table id="resettable">
-<tr><td><label for="email">Email</label></td><td><input type="text" id="email" name="email"/></td></tr>
-<tr><td colspan="2"><input type="submit" name="sendtoken" value="Submit" /></td></tr>
-</table>
-</fieldset>
+    <fieldset>
+        <input type="hidden" name="token" value="<?=fRequest::generateCSRFToken()?>" />
+        <table id="resettable">
+            <tr>
+                <td><label for="email">Email</label></td>
+                <td><input type="text" id="email" name="email"/></td>
+            </tr>
+            <tr>
+                <td colspan="2"><input type="submit" name="sendtoken" value="Submit" /></td>
+            </tr>
+        </table>
+    </fieldset>
 </form>
 <? 
 }
