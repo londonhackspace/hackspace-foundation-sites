@@ -62,17 +62,37 @@ you provide your real name and address in order to join. If you live in the Boro
 because it helps us with funding.</p>
 
 <form method="post">
-<input type="hidden" name="token" value="<?=fRequest::generateCSRFToken()?>" />
-<fieldset>
-<table id="signuptable">
-<tr><td><label for="email">Email</label></td><td><input type="text" id="email" name="email"/></td></tr>
-<tr><td><label for="password">Password</label></td><td><input type="password" id="password" name="password" /></td></tr>
-<tr><td><label for="passwordconfirm">Confirm Password</label></td><td><input type="password" id="passwordconfirm" name="passwordconfirm" /></td></tr>
-<tr><td><label for="fullname">Full Name</label></td><td><input type="text" id="fullname" name="fullname"/></td></tr>
-<tr><td><label for="address">Address</label></td><td><textarea id="address" name="address" cols="30" rows="5"></textarea></td></tr>
-<tr><td><label for="hackney">I live in the London Borough of Hackney</label></td><td><input type="checkbox" id="hackney" name="hackney"/></td></tr>
-<tr><td colspan="2"><input type="submit" name="submit" value="Submit" /></td></tr>
-</table>
-</fieldset>
+    <input type="hidden" name="token" value="<?=fRequest::generateCSRFToken()?>" />
+    <fieldset>
+        <table id="signuptable">
+            <tr>
+                <td><label for="email">Email</label></td>
+                <td><input type="text" id="email" name="email" /></td>
+            </tr>
+            <tr>
+                <td><label for="password">Password</label></td>
+                <td><input type="password" id="password" name="password" /></td>
+            </tr>
+            <tr>
+                <td><label for="passwordconfirm">Confirm Password</label></td>
+                <td><input type="password" id="passwordconfirm" name="passwordconfirm" /></td>
+            </tr>
+            <tr>
+                <td><label for="fullname">Full Name</label></td>
+                <td><input type="text" id="fullname" name="fullname" /></td>
+            </tr>
+            <tr>
+                <td><label for="address">Address</label></td>
+                <td><textarea id="address" name="address" cols="30" rows="5"></textarea></td>
+            </tr>
+            <tr>
+                <td><label for="hackney">I live in the London Borough of Hackney</label></td>
+                <td><input type="checkbox" id="hackney" name="hackney" /></td>
+            </tr>
+            <tr>
+                <td colspan="2"><input type="submit" name="submit" value="Submit" /></td>
+            </tr>
+        </table>
+    </fieldset>
 </form>
 <? require('footer.php'); ?>
