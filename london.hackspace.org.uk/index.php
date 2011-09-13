@@ -29,9 +29,6 @@ our <a href="/events">events</a> is free!</p>
     <a href="http://groups.google.com/group/london-hack-space" title="Mailing List">
         <img src="/images/social/email.png" alt="Mailing list icon" />
     </a>
-    <a href="http://wiki.hackspace.org.uk" title="Hackspace Wiki">
-        <img src="/images/social/wiki.png" alt="Wiki icon" />
-    </a>
     <a href="http://www.flickr.com/groups/londonhackspace/" title="Flickr Group">
         <img src="/images/social/flickr.png" alt="Flickr icon" />
     </a>
