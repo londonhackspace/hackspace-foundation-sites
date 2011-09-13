@@ -62,13 +62,13 @@ The London Hackspace email monkey
 ");
         $email->send();
         echo "<p>An email has been sent to you with further instructions.</p>";
-    } catch(fNotFoundException $e) {?>
+    } catch(fNotFoundException $e) {
         # That email wasn't registered but we'll pretend we did something.
         echo "<p>An email has been sent to you with further instructions.</p>";
-<?  } catch (fValidationException $e) {
+    } catch (fValidationException $e) {
         echo "<p>" . $e->printMessage() . "</p>";
     } catch (fSQLException $e) {
-        echo "<p>An unexpected error occurred, please try again later</p>";
+        echo "<p>An unexpected error occurred, please try again later.</p>";
         trigger_error($e);
     }
 
