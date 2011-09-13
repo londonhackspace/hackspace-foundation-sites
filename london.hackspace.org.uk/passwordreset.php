@@ -63,8 +63,7 @@ The London Hackspace email monkey
         $email->send();
         echo "<p>An email has been sent to you with further instructions.</p>";
     } catch(fNotFoundException $e) {?>
-        <p>No user exists with that email address. <a href="signup.php">Sign up</a>? 
-                    Or <a href="passwordreset.php">try again</a>?</p>
+        echo "<p>An email has been sent to you with further instructions.</p>";
 <?  } catch (fValidationException $e) {
         echo "<p>" . $e->printMessage() . "</p>";
     } catch (fSQLException $e) {
