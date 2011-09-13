@@ -34,6 +34,8 @@ if (isset($_POST['reset'])) {
         trigger_error($e);
     }
 } elseif (isset($_POST['sendtoken'])) {
+    $email_sent_msg = "<p>An email has been sent to you with further instructions.</p>";
+
     try {
         fRequest::validateCSRFToken($_POST['token']);
         $validator = new fValidation();
@@ -61,10 +63,10 @@ Cheers,
 The London Hackspace email monkey
 ");
         $email->send();
-        echo "<p>An email has been sent to you with further instructions.</p>";
+        echo $email_sent_msg;
     } catch(fNotFoundException $e) {
         # That email wasn't registered but we'll pretend we did something.
-        echo "<p>An email has been sent to you with further instructions.</p>";
+        echo $email_sent_msg;
     } catch (fValidationException $e) {
         echo "<p>" . $e->printMessage() . "</p>";
     } catch (fSQLException $e) {
