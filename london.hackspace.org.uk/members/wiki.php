@@ -110,15 +110,8 @@ if($user->isMember()) {
             </tbody>
         </table>
     <?php else: ?>
-<<<<<<< HEAD
         <p>No account currently exists on the wiki with the same confirmed e-mail address as your London Hackspace account.  If you already have an account on the wiki you should set or update your e-mail address there, otherwise use the form below to create a wiki account now.</p>
-        <hr>
-=======
-        <p>No account currently exists on the wiki with the same confirmed e-mail address as your London Hackspace Ltd. account.  If you already have an account on the wiki you should set or update your e-mail address there, otherwise use the form below to create a wiki account now.</p>
-
         <hr />
-
->>>>>>> 95aa8bf03964c2e2db42ec1adf225b5d8b1cfee2
         <?php if( isset( $error ) ) echo $error; ?>
         <form method="POST">
             <input type="hidden" name="token" value="<?=fRequest::generateCSRFToken()?>" />
