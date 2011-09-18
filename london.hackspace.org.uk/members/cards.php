@@ -43,47 +43,56 @@ if (isset($_POST['update_nick'])) {
         trigger_error($e);
     }
 }
-
 ?>
+
 <h2>Card access</h2>
 <?
 if($user->isMember()) {
 ?>
 
-
 <h3>Your Authorised Cards</h3>
-<p>As a member, you may authorise your RFID card for 24/7 access to the space and equipment. You can also set a nickname to be announced to the space instead of your full name.
+
+<p>As a member, you may authorise your RFID card for 24/7 access to the space and equipment. You can also set a nickname to be announced to the space instead of your full name.</p>
+
 <p>Any 13.56 MHz device will work, including Oyster cards. The system will only read the unique identifier from it.</p>
 
 <form method="POST">
-<input type="hidden" name="token" value="<?=fRequest::generateCSRFToken()?>" />
-<input type="hidden" name="update_card" value="" />
-<table>
-    <tr><th>Date added</th><th style="text-align: center">Card ID</th><th>Enabled</th></tr>
-<? foreach($user->buildCards() as $card): ?>
-    <tr>
-        <td><?=$card->getAddedDate()?></td>
-        <td><?=$card->getUid()?></td>
-        <td style="text-align: center">
-          <? if ($card->getActive()): ?>
-          <input type="submit" name="disable_<?=$card->getUid()?>" value="Yes"/>
-          <? else: ?>
-          <input type="submit" name="enable_<?=$card->getUid()?>" value="No"/>
-          <? endif; ?>
-        </td>
-    </tr>
-<? endforeach ?>
-</table>
+    <input type="hidden" name="token" value="<?=fRequest::generateCSRFToken()?>" />
+    <input type="hidden" name="update_card" value="" />
+    <table>
+        <tr>
+            <th>Date added</th>
+            <th style="text-align: center">Card ID</th>
+            <th>Enabled</th>
+        </tr>
+        <? foreach($user->buildCards() as $card): ?>
+        <tr>
+            <td><?=$card->getAddedDate()?></td>
+            <td><?=$card->getUid()?></td>
+            <td style="text-align: center">
+                <? if ($card->getActive()): ?>
+                <input type="submit" name="disable_<?=$card->getUid()?>" value="Yes" />
+                <? else: ?>
+                <input type="submit" name="enable_<?=$card->getUid()?>" value="No" />
+                <? endif; ?>
+            </td>
+        </tr>
+        <? endforeach ?>
+    </table>
 </form>
 
-
 <form method="POST">
-<input type="hidden" name="token" value="<?=fRequest::generateCSRFToken()?>" />
-<input type="hidden" name="update_nick" value="" />
-<table>
-<tr><td><label for="nickname">Nickname: </label></td><td><input type="text" id="nickname" name="nickname" value="<?php echo $user->getNickname() ?>"/></td></tr>
-<tr><td colspan="2"><input type="submit" name="submit" value="Save" /></td></tr>
-</table>
+    <input type="hidden" name="token" value="<?=fRequest::generateCSRFToken()?>" />
+    <input type="hidden" name="update_nick" value="" />
+    <table>
+        <tr>
+            <td><label for="nickname">Nickname:</label></td>
+            <td><input type="text" id="nickname" name="nickname" value="<?php echo $user->getNickname() ?>" /></td>
+        </tr>
+        <tr>
+            <td colspan="2"><input type="submit" name="submit" value="Save" /></td>
+        </tr>
+    </table>
 </form>
 
 <? if (isset($_GET['saved'])) {
