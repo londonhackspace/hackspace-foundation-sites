@@ -32,7 +32,7 @@ function menulink($url, $name, $title) {
         <?=menulink('/members/members.php', 'memberslist', 'Members List')?>
         <?=menulink('/members/night.php', 'night', 'Night Access')?>
         <?=menulink('/members/webcams.php', 'webcams', 'Webcams')?>
-        <?=menulink('/members/cards.php', 'cards', 'Cards')?>
+        <? /* menulink('/members/cards.php', 'cards', 'Cards') */?>
         <?=menulink('/members/wiki.php', 'wiki', 'Wiki Access')?>
     <? } ?>
         <?=menulink('/members/edit.php', 'edit', 'Edit Account')?>
