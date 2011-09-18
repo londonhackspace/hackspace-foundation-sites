@@ -28,7 +28,7 @@ require('../header.php');
 
 <h3>Statutory Information</h3>
 
-<p>The London Hackspace Ltd. is a company limited by guarantee, registered in England and Wales with company number 06807563.</p>
+<p>London Hackspace Ltd. is a company limited by guarantee, registered in England and Wales with company number 06807563.</p>
 
 <p>Registered address:<br />
    2 Ockendon Mews<br />

@@ -14,7 +14,7 @@ if (!$user) {
         these details you will be unable to gain membership privileges until you do.</p>
     <p>Please <a href="/members/edit.php">provide your details</a> to continue.</p>
 <?} else if ($user->isMember()) { ?>
-    <p>You're currently a member of London Hackspace Ltd., thanks for your support!</p>
+    <p>You're currently a member of London Hackspace, thanks for your support!</p>
 
 <h3>Your Recent Payments</h3>
 <table>
@@ -28,7 +28,7 @@ if (!$user) {
 <p>Your standing order reference number is: <strong><?=$user->getMemberNumber()?></strong></p>
 
 <? } else { ?>
-    <p>You're not currently a member of London Hackspace Ltd. To become a member, we ask that you pay what you
+    <p>You're not currently a member of London Hackspace. To become a member, we ask that you pay what you
        think the space is worth to you. Running an organisation like this in London isn't cheap, so please be as
          generous as you can. The minimum subscription is £5/month.
 </p>
@@ -46,8 +46,7 @@ if (!$user) {
     <tr><th>Reference</th><td><?=$user->getMemberNumber()?></td></tr>
 </table>
 
-    <p>Once your payment is set up, the site should reflect it once we reconcile 
-        our statements &mdash; this happens approximately daily.</p>
+    <p>Once the payment has left your account, it can take up to four working days to be reflected here.</p>
 
 <h3>Can't do Standing Order?</h3>
 <p>In our experience standing order is an almost universal payment method in the UK.
