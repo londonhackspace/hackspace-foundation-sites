@@ -98,4 +98,4 @@ if (isset($_POST['update_nick'])) {
 <p><a href="index.php">Return to membership home</a></p>
 
 
-require('../footer.php'); ?>
+<?php require('../footer.php'); ?>
