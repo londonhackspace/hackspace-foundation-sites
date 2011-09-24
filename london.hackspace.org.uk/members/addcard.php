@@ -28,9 +28,6 @@ if (isset($_POST['submit'])) {
 ?>
 
 <h2>Add card</h2>
-<?
-if($user->isMember()) {
-?>
 <form method="POST">
     <input type="hidden" name="token" value="<?=fRequest::generateCSRFToken()?>" />
     <table>
@@ -43,8 +40,5 @@ if($user->isMember()) {
         </tr>
     </table>
 </form>
-<? } else { ?>
-<p>You must be a member to use this page.</p>
-<?php }
 
 require('../footer.php'); ?>
