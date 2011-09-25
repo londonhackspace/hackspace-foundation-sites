@@ -25,7 +25,7 @@ if (isset($_POST['submit'])) {
             $user->setPassword(fCryptography::hashPassword($_POST['newpassword']));
         }
 
-        $user->setEmail($_POST['email']);
+        $user->setEmail(strtolower($_POST['email']));
         $user->setFullName($_POST['fullname']);
         $user->setAddress($_POST['address']);
         $user->setSubscriptionPeriod($_POST['length']);
