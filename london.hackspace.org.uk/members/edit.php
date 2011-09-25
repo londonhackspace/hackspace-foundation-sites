@@ -67,7 +67,7 @@ store the full name and address of all our members. If you don't provide these d
             </tr>
             <tr>
                 <td><label for="fullname">Full Name</label></td>
-                <td><input type="text" id="fullname" name="fullname" value="<?=$user->getFullName()?>" /></td>
+                <td><input type="text" id="fullname" name="fullname" value="<?= htmlspecialchars($user->getFullName()) ?>" /></td>
             </tr>
             <tr>
                 <td><label for="address">Address</label></td>

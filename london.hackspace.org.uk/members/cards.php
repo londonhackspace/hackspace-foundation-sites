@@ -46,9 +46,6 @@ if (isset($_POST['update_nick'])) {
 ?>
 
 <h2>Card access</h2>
-<?
-if($user->isMember()) {
-?>
 
 <h3>Your Authorised Cards</h3>
 
@@ -101,8 +98,4 @@ if($user->isMember()) {
 <p><a href="index.php">Return to membership home</a></p>
 
 
-<? } else { ?>
-   <p>You must be a member to use this page.</p>
-<?php }
-
-require('../footer.php'); ?>
+<?php require('../footer.php'); ?>
