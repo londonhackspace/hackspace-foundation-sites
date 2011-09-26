@@ -41,4 +41,4 @@ if (isset($_POST['submit'])) {
     </table>
 </form>
 
-require('../footer.php'); ?>
+<?php require('../footer.php'); ?>
