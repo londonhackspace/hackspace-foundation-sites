@@ -21,7 +21,7 @@ if (isset($_POST['submit'])) {
         }
 
         $user = new User();
-        $user->setEmail($_POST['email']);
+        $user->setEmail(strtolower($_POST['email']));
         $user->setFullName($_POST['fullname']);
         $user->setAddress($_POST['address']);
         $user->setPassword(fCryptography::hashPassword($_POST['password']));

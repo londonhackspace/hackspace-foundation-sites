@@ -16,7 +16,7 @@ if (isset($_POST['submit'])) {
 
         $validator->validate();
 
-        $users = fRecordSet::build('User', array('email=' => $_POST['email']));
+        $users = fRecordSet::build('User', array('email=' => strtolower($_POST['email'])));
         if ($users->count() == 0) {
             throw new fValidationException('Invalid username or password.');
         }
