@@ -5,6 +5,7 @@ $subscribers = $db->translatedQuery( "
   select
     u.id,
     ifnull(u.nickname, u.full_name) nick,
+    u.gladosfile,
     c.uid
   from
     cards c,
@@ -25,6 +26,7 @@ foreach( $subscribers as $row ) {
     $lastid = $row['id'];
     $sub = array(
       'nick' => $row['nick'],
+      'gladosfile' => $row['gladosfile'],
       'perms' => array(),
       'cards' => array()
     );
