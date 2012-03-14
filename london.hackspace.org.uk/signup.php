@@ -55,11 +55,11 @@ space requires our members to contribute an average subscription of £20/month t
 <p>To become a member of the London Hackspace, we need a few details from you.</p>
 
 <p>By joining the London Hackspace you're becoming a member of London Hackspace Ltd., and you agree to be bound by 
-<a href="/organisation/docs/articles.pdf">our constitution</a>.</p>
+<a href="/organisation/docs/articles.pdf">our constitution</a>. You also agree to follow the
+<a href="http://wiki.london.hackspace.org.uk/view/Rules">rules of the space</a>.</p>
 
 <p><a href="http://www.legislation.gov.uk/ukpga/2006/46/part/8/chapter/2/crossheading/general">UK law</a> requires that
-you provide your real name and address in order to join. If you live in the Borough of Hackney, please let us know 
-because it helps us with funding.</p>
+you provide your real name and address in order to join.</p>
 
 <form method="post">
     <input type="hidden" name="token" value="<?=fRequest::generateCSRFToken()?>" />
@@ -84,10 +84,6 @@ because it helps us with funding.</p>
             <tr>
                 <td><label for="address">Address</label></td>
                 <td><textarea id="address" name="address" cols="30" rows="5"></textarea></td>
-            </tr>
-            <tr>
-                <td><label for="hackney">I live in the London Borough of Hackney</label></td>
-                <td><input type="checkbox" id="hackney" name="hackney" /></td>
             </tr>
             <tr>
                 <td colspan="2"><input type="submit" name="submit" value="Submit" /></td>
