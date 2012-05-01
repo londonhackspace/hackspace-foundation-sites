@@ -52,7 +52,7 @@ if (isset($_POST['reset'])) {
 You (or someone pretending to be you) requested a password reset for your
 London Hackspace account. To reset your password, go to this address:
 
-https://{$_SERVER['SERVER_NAME']}/passwordreset.php?token=$token
+http://{$_SERVER['SERVER_NAME']}/passwordreset.php?token=$token
 
 If you don't want to reset your password, just ignore this email.
 
