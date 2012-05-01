@@ -24,7 +24,8 @@ if (!isset($_GET['camera'])) {
 <div>
     <b>Switch Camera:</b>
     <a href="/members/webcams.php?camera=1">Main</a> |
-    <a href="/members/webcams.php?camera=2">Quiet/Social</a> |
+    <a href="/members/webcams.php?camera=5">Lobby</a> |
+    <a href="/members/webcams.php?camera=6">Quiet Room</a> |
     <a href="/members/webcams.php?camera=4">Workshop</a> |
     <a href="/members/webcams.php?camera=3">Door</a>
 </div>
