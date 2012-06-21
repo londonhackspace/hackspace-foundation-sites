@@ -3,7 +3,7 @@
     </div>
 
     <div id="ft">
-        Copyright &copy; <?=date('Y')?> London Hackspace Ltd.
+        Copyright &copy; <?=date('Y')?> London Hackspace Ltd. Site kindly hosted by <a href="http://www.bitfolk.com">Bitfolk</a>.
     </div>
 </div>
 <script type="text/javascript">
