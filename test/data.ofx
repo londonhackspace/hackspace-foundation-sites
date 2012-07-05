@@ -1,0 +1,275 @@
+OFXHEADER:100
+DATA:OFXSGML
+VERSION:102
+SECURITY:NONE
+ENCODING:USASCII
+CHARSET:1252
+COMPRESSION:NONE
+OLDFILEUID:NONE
+NEWFILEUID:NONE
+
+<OFX>
+  <SIGNONMSGSRSV1>
+    <SONRS>
+      <STATUS>
+        <CODE>0
+        <SEVERITY>INFO
+      </STATUS>
+      <DTSERVER>20120704053007[-5:EST]
+      <LANGUAGE>ENG
+    </SONRS>
+  </SIGNONMSGSRSV1>
+  <BANKMSGSRSV1>
+    
+    <STMTTRNRS>
+      <TRNUID>1
+      <STATUS>
+        <CODE>0
+        <SEVERITY>INFO
+      </STATUS>
+      <STMTRS>
+        <CURDEF>GBP
+        <BANKACCTFROM>
+          <BANKID>492900
+          <ACCTID>20000055779911
+          <ACCTTYPE>CHECKING
+        </BANKACCTFROM>
+        <BANKTRANLIST>
+          <DTSTART>20120614053007[-5:EST]
+          <DTEND>20120704053007[-5:EST]
+          
+          <STMTTRN>
+            <TRNTYPE>OTHER
+            <DTPOSTED>20120703000000[-5:EST]
+            <TRNAMT>5.00
+            <FITID>+201207030000016
+            
+            <NAME>JOHN DOE LONDON HACKSPACE STANDI
+          </STMTTRN>
+          
+          <STMTTRN>
+            <TRNTYPE>OTHER
+            <DTPOSTED>20120703000000[-5:EST]
+            <TRNAMT>10.00
+            <FITID>+201207030000012
+            
+            <NAME>STILES J HS00003 STO
+          </STMTTRN>
+          
+          <STMTTRN>
+            <TRNTYPE>OTHER
+            <DTPOSTED>20120703000000[-5:EST]
+            <TRNAMT>10.00
+            <FITID>+201207030000008
+            
+            <NAME>SMITH J H BIOHACKING STO
+          </STMTTRN>
+          
+          <STMTTRN>
+            <TRNTYPE>DIRECTDEP
+            <DTPOSTED>20120703000000[-5:EST]
+            <TRNAMT>5.00
+            <FITID>+201207030000004
+            
+            <NAME>ACME WIDGETS LTD HS00005 BGC
+          </STMTTRN>
+
+          <STMTTRN>
+            <TRNTYPE>DIRECTDEP
+            <DTPOSTED>20120703000000[-5:EST]
+            <TRNAMT>5.00
+            <FITID>+201207030000003
+            
+            <NAME>ACME WIDGETS LTD HS00012 BGC
+          </STMTTRN>
+          
+          <STMTTRN>
+            <TRNTYPE>OTHER
+            <DTPOSTED>20120703000000[-5:EST]
+            <TRNAMT>5.00
+            <FITID>+201207030000002
+            
+            <NAME>BLOGGS JOE LONDON HACKERSPACE
+          </STMTTRN>
+          
+          <STMTTRN>
+            <TRNTYPE>OTHER
+            <DTPOSTED>20120702000000[-5:EST]
+            <TRNAMT>15.00
+            <FITID>+201207020000005
+            
+            <NAME>ROE JH/L0123 HS00009 STO
+          </STMTTRN>
+          
+          <STMTTRN>
+            <TRNTYPE>DIRECTDEBIT
+            <DTPOSTED>20120702000000[-5:EST]
+            <TRNAMT>-297.00
+            <FITID>+201207020000004
+            
+            <NAME>L.B. HACKNEY NNDR 100000002 DDR
+          </STMTTRN>
+          
+          <STMTTRN>
+            <TRNTYPE>DIRECTDEBIT
+            <DTPOSTED>20120702000000[-5:EST]
+            <TRNAMT>-297.00
+            <FITID>+201207020000003
+            
+            <NAME>L.B. HACKNEY NNDR 100000001 DDR
+          </STMTTRN>
+          
+          <STMTTRN>
+            <TRNTYPE>DIRECTDEBIT
+            <DTPOSTED>20120702000000[-5:EST]
+            <TRNAMT>-15.33
+            <FITID>+201207020000002
+            
+            <NAME>ALLIANZ INSURANCE 010203040 DDR
+          </STMTTRN>
+          
+          <STMTTRN>
+            <TRNTYPE>DIRECTDEBIT
+            <DTPOSTED>20120702000000[-5:EST]
+            <TRNAMT>-3740.55
+            <FITID>+201207020000001
+            
+            <NAME>WORKSPACE MANAGEME WS.CM.23/24 D
+          </STMTTRN>
+          
+          <STMTTRN>
+            <TRNTYPE>OTHER
+            <DTPOSTED>20120629000000[-5:EST]
+            <TRNAMT>20.00
+            <FITID>+201206290000006
+            
+            <NAME>TWEEDLEDUM &amp; TWEED HS00018 STO
+          </STMTTRN>
+         
+          <STMTTRN>
+            <TRNTYPE>OTHER
+            <DTPOSTED>20120629000000[-5:EST]
+            <TRNAMT>2.00
+            <FITID>+201206290000003
+            
+            <NAME>COBBLEIGH BIOHACKING STO
+          </STMTTRN>
+          
+          <STMTTRN>
+            <TRNTYPE>DIRECTDEBIT
+            <DTPOSTED>20120629000000[-5:EST]
+            <TRNAMT>-15.50
+            <FITID>+201206290000001
+            
+            <NAME>MLINE TELECOMS 102030 DDR
+          </STMTTRN>
+          
+          <STMTTRN>
+            <TRNTYPE>OTHER
+            <DTPOSTED>20120628000000[-5:EST]
+            <TRNAMT>10.00
+            <FITID>+201206280000005
+            
+            <NAME>F BLOGGS           STO
+          </STMTTRN>
+         
+          <STMTTRN>
+            <TRNTYPE>PAYMENT
+            <DTPOSTED>20120630000000[-5:EST]
+            <TRNAMT>-30.00
+            <FITID>+201206300000002
+            
+            <NAME>JOHN RANDOMER HS2012063001 BBP
+          </STMTTRN>
+          
+          <STMTTRN>
+            <TRNTYPE>OTHER
+            <DTPOSTED>20120629000000[-5:EST]
+            <TRNAMT>-100.00
+            <FITID>+201206290000001
+            
+            <NAME>104080                
+          </STMTTRN>
+          
+          <STMTTRN>
+            <TRNTYPE>OTHER
+            <DTPOSTED>20120628000000[-5:EST]
+            <TRNAMT>2.00
+            <FITID>+201206280000003
+            
+            <NAME>JOE SCHMOE Biohacking STO
+          </STMTTRN>
+          
+          <STMTTRN>
+            <TRNTYPE>DIRECTDEP
+            <DTPOSTED>20120628000000[-5:EST]
+            <TRNAMT>5.00
+            <FITID>+201206280000002
+            
+            <NAME>T Atkins HS00008 BGC
+          </STMTTRN>
+          
+          <STMTTRN>
+            <TRNTYPE>OTHER
+            <DTPOSTED>20120626000000[-5:EST]
+            <TRNAMT>5.00
+            <FITID>+201206260000002
+            
+            <NAME>COBBLEIGH H500010 STO
+          </STMTTRN>
+          
+          <STMTTRN>
+            <TRNTYPE>OTHER
+            <DTPOSTED>20120626000000[-5:EST]
+            <TRNAMT>1.00
+            <FITID>+201206260000005
+            
+            <NAME>HS00013 CHEAPSIDE 70 REM
+          </STMTTRN>
+          
+          <STMTTRN>
+            <TRNTYPE>OTHER
+            <DTPOSTED>20120622000000[-5:EST]
+            <TRNAMT>5.00
+            <FITID>+201206220000008
+            
+            <NAME>801020 44668800 HS00015 STO
+          </STMTTRN>
+          
+          <STMTTRN>
+            <TRNTYPE>OTHER
+            <DTPOSTED>20120622000000[-5:EST]
+            <TRNAMT>20.00
+            <FITID>+201206220000001
+            
+            <NAME>OTHER AN %0 P HS00016 STO
+          </STMTTRN>
+          
+          <STMTTRN>
+            <TRNTYPE>OTHER
+            <DTPOSTED>20120620000000[-5:EST]
+            <TRNAMT>10.00
+            <FITID>+201206200000004
+            
+            <NAME>ALICE&amp;BOB HS00002 STO
+          </STMTTRN>
+          
+          <STMTTRN>
+            <TRNTYPE>OTHER
+            <DTPOSTED>20120620000000[-5:EST]
+            <TRNAMT>10.00
+            <FITID>+201206200000003
+            
+            <NAME>SOAP MR B /STUDENT HS00014 STO
+          </STMTTRN>
+          
+        </BANKTRANLIST>
+        <LEDGERBAL>
+          <BALAMT>7512.34
+          <DTASOF>20120703000000[-5:EST]
+        </LEDGERBAL>
+      </STMTRS>
+    </STMTTRNRS>
+    
+  </BANKMSGSRSV1>
+</OFX>
