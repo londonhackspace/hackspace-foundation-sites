@@ -15,10 +15,12 @@ ofx.bank_account.statement.transactions.each do |transaction|
       next
     end
 
-    match = transaction.payee.match(/H[S5]([0-9]{4,})/)
+    match = transaction.payee.match(/H[S5]([O0-9]{4,})/)
     if !match:
       next
     end
+
+    match.gsub!(/O/, '0')
 
     user = db.get_first_row("SELECT * FROM users WHERE id = ?", match[1].to_i)
     if !user:
