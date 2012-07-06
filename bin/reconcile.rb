@@ -20,11 +20,11 @@ ofx.bank_account.statement.transactions.each do |transaction|
       next
     end
 
-    match.gsub!(/O/, '0')
+    reference = match[1].gsub(/O/, '0')
 
-    user = db.get_first_row("SELECT * FROM users WHERE id = ?", match[1].to_i)
+    user = db.get_first_row("SELECT * FROM users WHERE id = ?", reference.to_i)
     if !user:
-      puts "Payment for invalid user ID #{match[1].to_i}! Bug?"
+      puts "Payment for invalid user ID #{reference.to_i}! Bug?"
       next
     end
 
