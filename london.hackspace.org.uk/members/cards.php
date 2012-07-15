@@ -54,6 +54,8 @@ if (isset($_POST['update_details'])) {
 
 <p>Any 13.56 MHz device will work, including Oyster cards. The system will only read the unique identifier from it.</p>
 
+<p>The Wiki has more information on how to <a href="http://wiki.london.hackspace.org.uk/view/Door_control_system">add your RFID to the door access system</a>.</p>
+
 <form method="POST">
     <input type="hidden" name="token" value="<?=fRequest::generateCSRFToken()?>" />
     <input type="hidden" name="update_card" value="" />
