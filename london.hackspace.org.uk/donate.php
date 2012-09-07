@@ -29,6 +29,9 @@ require( './header.php' );
         <td>53413292</td>
     </tr>
 </table>
+
+<p>Don't worry if the name doesn't fit in full.</p>
+
 <? } else { ?>
 <p>Due to direct debit fraud, we require you to <a href="/login.php">log in</a> before you can see our bank details.</p>
 <? } ?>

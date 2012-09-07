@@ -68,6 +68,8 @@ if (!$user) {
     </tr>
 </table>
 
+<p>Don't worry if the name doesn't fit in full.</p>
+
     <p>Once the payment has left your account, it can take up to four working days to be reflected here.</p>
 
 <h3>Can't do Standing Order?</h3>
