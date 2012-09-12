@@ -71,9 +71,9 @@ if (isset($_POST['update_details'])) {
             <td><?=$card->getUid()?></td>
             <td style="text-align: center">
                 <? if ($card->getActive()): ?>
-                <input type="submit" name="disable_<?=$card->getUid()?>" value="Disable" />
+                <input type="submit" name="disable_<?=$card->getUid()?>" value="Disable" title="This card is currently enabled. Click to disable it." />
                 <? else: ?>
-                <input type="submit" name="enable_<?=$card->getUid()?>" value="Enable" />
+                <input type="submit" name="enable_<?=$card->getUid()?>" value="Enable" title="This card is currently disabled. Click to enable it." />
                 <? endif; ?>
             </td>
         </tr>
