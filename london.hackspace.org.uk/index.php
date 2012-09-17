@@ -14,17 +14,29 @@ require('header.php'); ?>
     </a>
 </p>
 
-<div style="margin-left:10px">
+<div style="margin-left:10px; margin-bottom:1em;">
     <script type="text/javascript" src="badge.php"></script>
 </div>
-
-<p><strong>Learn more about the London Hackspace on <a href="http://wiki.hackspace.org.uk">our wiki</a>.</strong></p>
-
-<p>To get involved, join the <a href="http://webchat.freenode.net/?channels=london-hack-space">IRC channel</a>, <a href="http://groups.google.com/group/london-hack-space">mailing list</a>, or <a href="http://twitter.com/londonhackspace">follow us on twitter</a>.</p><br />
-
 
 <h2>Join us!</h2>
 <p>If you want to use our space regularly you should <a href="/signup.php">become a member</a>, however attending 
 our <a href="/events">events</a> is free!</p>
 
+<div style="float:right;">
+    <a href="http://webchat.freenode.net/?channels=london-hack-space" title="Chat with us on IRC">
+        <img src="/images/social/irc.png" alt="IRC Freenode icon" />
+    </a>
+    <a href="http://groups.google.com/group/london-hack-space" title="Mailing List">
+        <img src="/images/social/email.png" alt="Mailing list icon" />
+    </a>
+    <a href="http://www.flickr.com/groups/londonhackspace/" title="Flickr Group">
+        <img src="/images/social/flickr.png" alt="Flickr icon" />
+    </a>
+    <a href="https://twitter.com/londonhackspace" title="Twitter Feed">
+        <img src="/images/social/twitter.png" alt="Twitter icon" />
+    </a>
+    <a href="https://www.facebook.com/londonhackspace" title="Facebook">
+        <img src="/images/social/facebook.png" alt="Facebook icon" />
+    </a>
+</div>
 <? require('footer.php'); ?>
