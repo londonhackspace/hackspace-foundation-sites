@@ -54,6 +54,13 @@ h3 {
     margin-top:14px;   
 }
 
+a.stealth_linky:link, a.stealth_linky:visited,
+a.stealth_linky:active, a.stealth_linky:hover  { 
+    text-decoration:none;
+    color:#333;
+    font-size:0.7em;
+}
+
 td, th {
     border: 1px solid #AAA;
 }
