@@ -4,7 +4,7 @@ require( './header.php' );
 ?>
 
 <h2>Donate</h2>
-<p>Here's how to donate to London Hackspace. We prefer bank transfer, as we don't have to pay commission. Since we're not a registered charity yet, you unfortunately can't claim Gift Aid back on donations to us.</p>
+<p>Here's how to donate to London Hackspace. We prefer bank transfer, as we don't have to pay commission.</p>
 
 
 <h3>Bank Transfer</h3>
@@ -29,6 +29,9 @@ require( './header.php' );
         <td>53413292</td>
     </tr>
 </table>
+
+<p>Don't worry if the name doesn't fit in full.</p>
+
 <? } else { ?>
 <p>Due to direct debit fraud, we require you to <a href="/login.php">log in</a> before you can see our bank details.</p>
 <? } ?>

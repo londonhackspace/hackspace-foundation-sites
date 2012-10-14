@@ -54,6 +54,8 @@ if (isset($_POST['update_details'])) {
 
 <p>Any 13.56 MHz device will work, including Oyster cards. The system will only read the unique identifier from it.</p>
 
+<p>The Wiki has more information on how to <a href="http://wiki.london.hackspace.org.uk/view/Door_control_system">add your RFID to the door access system</a>.</p>
+
 <form method="POST">
     <input type="hidden" name="token" value="<?=fRequest::generateCSRFToken()?>" />
     <input type="hidden" name="update_card" value="" />
@@ -61,7 +63,7 @@ if (isset($_POST['update_details'])) {
         <tr>
             <th>Date added</th>
             <th style="text-align: center">Card ID</th>
-            <th>Enabled</th>
+            <th>Active</th>
         </tr>
         <? foreach($user->buildCards() as $card): ?>
         <tr>
@@ -69,9 +71,9 @@ if (isset($_POST['update_details'])) {
             <td><?=$card->getUid()?></td>
             <td style="text-align: center">
                 <? if ($card->getActive()): ?>
-                <input type="submit" name="disable_<?=$card->getUid()?>" value="Yes" />
+                <input type="submit" name="disable_<?=$card->getUid()?>" value="Disable" title="This card is currently enabled. Click to disable it." />
                 <? else: ?>
-                <input type="submit" name="enable_<?=$card->getUid()?>" value="No" />
+                <input type="submit" name="enable_<?=$card->getUid()?>" value="Enable" title="This card is currently disabled. Click to enable it." />
                 <? endif; ?>
             </td>
         </tr>
