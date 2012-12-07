@@ -29,6 +29,7 @@ ofx.bank_account.statement.transactions.each do |transaction|
     end
 
     if user['terminated']:
+      puts "User #{user['full_name']} is paying but their membership is terminated."
       next
     end
 
