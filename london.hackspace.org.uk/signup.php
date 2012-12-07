@@ -59,7 +59,7 @@ space requires our members to contribute an average subscription of £20/month t
 <a href="http://wiki.london.hackspace.org.uk/view/Rules">rules of the space</a>.</p>
 
 <p><a href="http://www.legislation.gov.uk/ukpga/2006/46/part/8/chapter/2/crossheading/general">UK law</a> requires that
-you provide your real name and address in order to join.</p>
+you provide your real name and address in order to join. Your name will be visible to all members.</p>
 
 <form method="post">
     <input type="hidden" name="token" value="<?=fRequest::generateCSRFToken()?>" />
