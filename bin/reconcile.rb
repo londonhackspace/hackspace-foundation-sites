@@ -33,6 +33,10 @@ ofx.bank_account.statement.transactions.each do |transaction|
       next
     end
 
+    if transaction.amount.to_i < 5:
+      puts "User #{user['full_name']} is paying less than £5 (£#{transaction.amount}), not subscribing."
+    end
+
     db.transaction do |db|
       db.execute("INSERT INTO transactions (fit_id, timestamp, user_id, amount) VALUES (?, ?, ?, ?)",
                       transaction.fit_id, transaction.date, user['id'], transaction.amount)
