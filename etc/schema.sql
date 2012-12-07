@@ -10,7 +10,8 @@ CREATE TABLE users (
     hackney BOOLEAN NOT NULL DEFAULT 0,
     nickname VARCHAR(255) UNIQUE,
     irc_nick VARCHAR(255) UNIQUE,
-    gladosfile VARCHAR(255)
+    gladosfile VARCHAR(255),
+    terminated BOOLEAN NOT NULL DEFAULT 0
 );
 
 CREATE TABLE transactions (

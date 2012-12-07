@@ -28,6 +28,10 @@ ofx.bank_account.statement.transactions.each do |transaction|
       next
     end
 
+    if user['terminated']:
+      next
+    end
+
     if user['address'] == '':
       puts "User #{user['full_name']} has no address, not subscribing."
       next
