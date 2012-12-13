@@ -28,7 +28,7 @@ ofx.bank_account.statement.transactions.each do |transaction|
       next
     end
 
-    if user['terminated']:
+    if user['terminated'] == 1:
       puts "User #{user['full_name']} is paying but their membership is terminated."
       next
     end
@@ -40,6 +40,7 @@ ofx.bank_account.statement.transactions.each do |transaction|
 
     if transaction.amount.to_i < 5:
       puts "User #{user['full_name']} is paying less than £5 (£#{transaction.amount}), not subscribing."
+      next
     end
 
     db.transaction do |db|
