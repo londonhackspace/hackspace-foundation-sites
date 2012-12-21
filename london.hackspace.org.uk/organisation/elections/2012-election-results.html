@@ -1,0 +1,580 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<title>Trustee</title>
+<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+<script type="text/javascript">
+    google.load("visualization", "1.0", {"packages":["corechart"]});
+</script>
+</head>
+<body>
+<h1>Trustee</h1>
+<p> Counting votes using Meek STV. There are 15 candidates competing for 4 seats. 
+The number of voters is 231 and there were 231 valid votes.</p>
+<ul>
+<li><a href="#anchor-1">Round 1</a>
+<li><a href="#anchor-2">Round 2</a>
+<li><a href="#anchor-3">Round 3</a>
+<li><a href="#anchor-4">Round 4</a>
+<li><a href="#anchor-5">Round 5</a>
+<li><a href="#anchor-6">Round 6</a>
+<li><a href="#anchor-7">Round 7</a>
+<li><a href="#anchor-8">Round 8</a>
+<li><a href="#anchor-9">Round 9</a>
+<li><a href="#anchor-10">Round 10</a>
+<li><a href="#anchor-11">Round 11</a>
+<li><a href="#anchor-12">Round 12</a>
+<li><a href="#anchor-13">Round 13</a>
+<li><a href="#anchor-14">Round 14</a>
+<li><a href="#anchor-15">Round 15</a>
+<li><a href="#anchor-16">Round 16</a>
+<li><a href="#anchor-17">Round 17</a>
+</ul>
+<p> The bar charts below show the vote counts for each candidate in each round.
+Place the mouse over a bar to see the number of votes.</p>
+<ul>
+<li> Yellow &mdash; Votes carried over from the previous round.
+<li> Green &mdash; Votes received in this round.
+<li> Red &mdash; Votes transferred away in this round.
+</ul>
+<p> A candidate's votes in a round is the sum of the yellow and green bars.
+Since the green and red bars represent votes being transferred, the sum of the 
+green and red bars is the same. </p>
+<p> The exhausted bar represents votes where the voter did not indicate a next 
+preference and thus there were no candidates to transfer the vote to.  The 
+threshold bar (where shown) indicates the number of votes that ensures that a 
+candidate will win a seat. </p>
+<hr>
+<h3 style="margin-bottom:0"><a id="anchor-1">Round 1</a></h3>
+<p style="margin-top:0;font-size:small;">(<a href="#anchor-2">next</a>)</p><div id="round-1"></div>
+<script type="text/javascript">
+var data = new google.visualization.DataTable();
+data.addColumn("string", "Candidate");
+data.addColumn("number", "Votes");
+data.addColumn({type:"string", role:"tooltip"});
+data.addColumn({type: "boolean", role:"certainty"});
+data.addColumn("number", "Received");
+data.addColumn({type:"string", role:"tooltip"});
+data.addColumn("number", "Transferred");
+data.addColumn({type:"string", role:"tooltip"});
+data.addRows([["Charles Yarnold", 81.000000, "Votes: 81.000000", true, 0.000000, "Votes: 81.000000", 0.000000, "Votes: 81.000000"],["Tim Reynolds", 11.000000, "Votes: 11.000000", true, 0.000000, "Votes: 11.000000", 0.000000, "Votes: 11.000000"],["Aden Bos", 4.000000, "Votes: 4.000000", true, 0.000000, "Votes: 4.000000", 0.000000, "Votes: 4.000000"],["Samuel Keating-Fry", 5.000000, "Votes: 5.000000", true, 0.000000, "Votes: 5.000000", 0.000000, "Votes: 5.000000"],["Dave Ingram", 1.000000, "Votes: 1.000000", true, 0.000000, "Votes: 1.000000", 0.000000, "Votes: 1.000000"],["Jasper Wallace", 15.000000, "Votes: 15.000000", true, 0.000000, "Votes: 15.000000", 0.000000, "Votes: 15.000000"],["Matt Peperell", 13.000000, "Votes: 13.000000", true, 0.000000, "Votes: 13.000000", 0.000000, "Votes: 13.000000"],["Marc Barto", 28.000000, "Votes: 28.000000", true, 0.000000, "Votes: 28.000000", 0.000000, "Votes: 28.000000"],["Thomas Greer", 4.000000, "Votes: 4.000000", true, 0.000000, "Votes: 4.000000", 0.000000, "Votes: 4.000000"],["Kitty Wong", 9.000000, "Votes: 9.000000", true, 0.000000, "Votes: 9.000000", 0.000000, "Votes: 9.000000"],["Morag Hickman", 18.000000, "Votes: 18.000000", true, 0.000000, "Votes: 18.000000", 0.000000, "Votes: 18.000000"],["Paddy Duncan", 19.000000, "Votes: 19.000000", true, 0.000000, "Votes: 19.000000", 0.000000, "Votes: 19.000000"],["Clare Greenhalgh", 18.000000, "Votes: 18.000000", true, 0.000000, "Votes: 18.000000", 0.000000, "Votes: 18.000000"],["Nick Large", 3.000000, "Votes: 3.000000", true, 0.000000, "Votes: 3.000000", 0.000000, "Votes: 3.000000"],["NO FURTHER PLACES", 2.000000, "Votes: 2.000000", true, 0.000000, "Votes: 2.000000", 0.000000, "Votes: 2.000000"],["Exhausted", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Threshold", 46.200001, "Threshold: 46.200001", false, 0, null, 0, null]]);
+var formatter = new google.visualization.NumberFormat({fractionDigits:6});
+formatter.format(data, 1);
+formatter.format(data, 3);
+formatter.format(data, 5);
+var options = {
+width:760,
+height:475,
+legend:{position:"none"},
+chartArea:{left:100,top:0,width:660,height:450},
+hAxis:{maxValue:81},
+isStacked:true,
+colors:["#fcd050", "#87cf32", "#ef3638"],
+};
+var chart = new google.visualization.BarChart(document.getElementById("round-1"));
+chart.draw(data, options);
+</script>
+<p>Count of first choices. Candidate Charles Yarnold has reached the threshold and is elected. </p>
+<hr>
+<h3 style="margin-bottom:0"><a id="anchor-2">Round 2</a></h3>
+<p style="margin-top:0;font-size:small;">(<a href="#anchor-1">prev</a>) (<a href="#anchor-3">next</a>)</p><div id="round-2"></div>
+<script type="text/javascript">
+var data = new google.visualization.DataTable();
+data.addColumn("string", "Candidate");
+data.addColumn("number", "Votes");
+data.addColumn({type:"string", role:"tooltip"});
+data.addColumn({type: "boolean", role:"certainty"});
+data.addColumn("number", "Received");
+data.addColumn({type:"string", role:"tooltip"});
+data.addColumn("number", "Transferred");
+data.addColumn({type:"string", role:"tooltip"});
+data.addRows([["Charles Yarnold", 46.200051, "Votes: 46.200051\nTransferred: 34.799949", true, 0.000000, "Votes: 46.200051\nTransferred: 34.799949", 34.799949, "Votes: 46.200051\nTransferred: 34.799949"],["Tim Reynolds", 11.000000, "Votes: 11.859258\nReceived: 0.859258", true, 0.859258, "Votes: 11.859258\nReceived: 0.859258", 0.000000, "Votes: 11.859258\nReceived: 0.859258"],["Aden Bos", 4.000000, "Votes: 4.429629\nReceived: 0.429629", true, 0.429629, "Votes: 4.429629\nReceived: 0.429629", 0.000000, "Votes: 4.429629\nReceived: 0.429629"],["Samuel Keating-Fry", 5.000000, "Votes: 6.288887\nReceived: 1.288887", true, 1.288887, "Votes: 6.288887\nReceived: 1.288887", 0.000000, "Votes: 6.288887\nReceived: 1.288887"],["Dave Ingram", 1.000000, "Votes: 1.859258\nReceived: 0.859258", true, 0.859258, "Votes: 1.859258\nReceived: 0.859258", 0.000000, "Votes: 1.859258\nReceived: 0.859258"],["Jasper Wallace", 15.000000, "Votes: 20.155548\nReceived: 5.155548", true, 5.155548, "Votes: 20.155548\nReceived: 5.155548", 0.000000, "Votes: 20.155548\nReceived: 5.155548"],["Matt Peperell", 13.000000, "Votes: 17.296290\nReceived: 4.296290", true, 4.296290, "Votes: 17.296290\nReceived: 4.296290", 0.000000, "Votes: 17.296290\nReceived: 4.296290"],["Marc Barto", 28.000000, "Votes: 30.577774\nReceived: 2.577774", true, 2.577774, "Votes: 30.577774\nReceived: 2.577774", 0.000000, "Votes: 30.577774\nReceived: 2.577774"],["Thomas Greer", 4.000000, "Votes: 5.718516\nReceived: 1.718516", true, 1.718516, "Votes: 5.718516\nReceived: 1.718516", 0.000000, "Votes: 5.718516\nReceived: 1.718516"],["Kitty Wong", 9.000000, "Votes: 11.148145\nReceived: 2.148145", true, 2.148145, "Votes: 11.148145\nReceived: 2.148145", 0.000000, "Votes: 11.148145\nReceived: 2.148145"],["Morag Hickman", 18.000000, "Votes: 21.007403\nReceived: 3.007403", true, 3.007403, "Votes: 21.007403\nReceived: 3.007403", 0.000000, "Votes: 21.007403\nReceived: 3.007403"],["Paddy Duncan", 19.000000, "Votes: 24.155548\nReceived: 5.155548", true, 5.155548, "Votes: 24.155548\nReceived: 5.155548", 0.000000, "Votes: 24.155548\nReceived: 5.155548"],["Clare Greenhalgh", 18.000000, "Votes: 24.014806\nReceived: 6.014806", true, 6.014806, "Votes: 24.014806\nReceived: 6.014806", 0.000000, "Votes: 24.014806\nReceived: 6.014806"],["Nick Large", 3.000000, "Votes: 4.288887\nReceived: 1.288887", true, 1.288887, "Votes: 4.288887\nReceived: 1.288887", 0.000000, "Votes: 4.288887\nReceived: 1.288887"],["NO FURTHER PLACES", 2.000000, "Votes: 2.000000", true, 0.000000, "Votes: 2.000000", 0.000000, "Votes: 2.000000"],["Exhausted", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Threshold", 46.200001, "Threshold: 46.200001", false, 0, null, 0, null]]);
+var formatter = new google.visualization.NumberFormat({fractionDigits:6});
+formatter.format(data, 1);
+formatter.format(data, 3);
+formatter.format(data, 5);
+var options = {
+width:760,
+height:475,
+legend:{position:"none"},
+chartArea:{left:100,top:0,width:660,height:450},
+hAxis:{maxValue:81},
+isStacked:true,
+colors:["#fcd050", "#87cf32", "#ef3638"],
+};
+var chart = new google.visualization.BarChart(document.getElementById("round-2"));
+chart.draw(data, options);
+</script>
+<p>Count after transferring surplus votes. Keep factors of candidates who have exceeded the threshold: Charles Yarnold, 0.570371. </p>
+<hr>
+<h3 style="margin-bottom:0"><a id="anchor-3">Round 3</a></h3>
+<p style="margin-top:0;font-size:small;">(<a href="#anchor-2">prev</a>) (<a href="#anchor-4">next</a>)</p><div id="round-3"></div>
+<script type="text/javascript">
+var data = new google.visualization.DataTable();
+data.addColumn("string", "Candidate");
+data.addColumn("number", "Votes");
+data.addColumn({type:"string", role:"tooltip"});
+data.addColumn({type: "boolean", role:"certainty"});
+data.addColumn("number", "Received");
+data.addColumn({type:"string", role:"tooltip"});
+data.addColumn("number", "Transferred");
+data.addColumn({type:"string", role:"tooltip"});
+data.addRows([["Charles Yarnold", 46.200051, "Votes: 47.340793\nReceived: 1.140742", true, 1.140742, "Votes: 47.340793\nReceived: 1.140742", 0.000000, "Votes: 47.340793\nReceived: 1.140742"],["Tim Reynolds", 11.859258, "Votes: 11.859258", true, 0.000000, "Votes: 11.859258", 0.000000, "Votes: 11.859258"],["Aden Bos", 4.429629, "Votes: 4.429629", true, 0.000000, "Votes: 4.429629", 0.000000, "Votes: 4.429629"],["Samuel Keating-Fry", 6.288887, "Votes: 6.288887", true, 0.000000, "Votes: 6.288887", 0.000000, "Votes: 6.288887"],["Dave Ingram", 0.000000, "Votes: 0.000000\nTransferred: 1.859258", true, 0.000000, "Votes: 0.000000\nTransferred: 1.859258", 1.859258, "Votes: 0.000000\nTransferred: 1.859258"],["Jasper Wallace", 20.155548, "Votes: 20.585177\nReceived: 0.429629", true, 0.429629, "Votes: 20.585177\nReceived: 0.429629", 0.000000, "Votes: 20.585177\nReceived: 0.429629"],["Matt Peperell", 17.296290, "Votes: 17.296290", true, 0.000000, "Votes: 17.296290", 0.000000, "Votes: 17.296290"],["Marc Barto", 30.577774, "Votes: 31.007403\nReceived: 0.429629", true, 0.429629, "Votes: 31.007403\nReceived: 0.429629", 0.000000, "Votes: 31.007403\nReceived: 0.429629"],["Thomas Greer", 5.718516, "Votes: 5.718516", true, 0.000000, "Votes: 5.718516", 0.000000, "Votes: 5.718516"],["Kitty Wong", 11.148145, "Votes: 11.577774\nReceived: 0.429629", true, 0.429629, "Votes: 11.577774\nReceived: 0.429629", 0.000000, "Votes: 11.577774\nReceived: 0.429629"],["Morag Hickman", 21.007403, "Votes: 21.007403", true, 0.000000, "Votes: 21.007403", 0.000000, "Votes: 21.007403"],["Paddy Duncan", 24.155548, "Votes: 25.585177\nReceived: 1.429629", true, 1.429629, "Votes: 25.585177\nReceived: 1.429629", 0.000000, "Votes: 25.585177\nReceived: 1.429629"],["Clare Greenhalgh", 24.014806, "Votes: 24.014806", true, 0.000000, "Votes: 24.014806", 0.000000, "Votes: 24.014806"],["Nick Large", 4.288887, "Votes: 4.288887", true, 0.000000, "Votes: 4.288887", 0.000000, "Votes: 4.288887"],["NO FURTHER PLACES", 0.000000, "Votes: 0.000000\nTransferred: 2.000000", true, 0.000000, "Votes: 0.000000\nTransferred: 2.000000", 2.000000, "Votes: 0.000000\nTransferred: 2.000000"],["Exhausted", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Threshold", 46.200001, "Threshold: 46.200001", false, 0, null, 0, null]]);
+var formatter = new google.visualization.NumberFormat({fractionDigits:6});
+formatter.format(data, 1);
+formatter.format(data, 3);
+formatter.format(data, 5);
+var options = {
+width:760,
+height:475,
+legend:{position:"none"},
+chartArea:{left:100,top:0,width:660,height:450},
+hAxis:{maxValue:81},
+isStacked:true,
+colors:["#fcd050", "#87cf32", "#ef3638"],
+};
+var chart = new google.visualization.BarChart(document.getElementById("round-3"));
+chart.draw(data, options);
+</script>
+<p>Count after eliminating Dave Ingram and NO FURTHER PLACES and transferring votes. All losing candidates are eliminated. </p>
+<hr>
+<h3 style="margin-bottom:0"><a id="anchor-4">Round 4</a></h3>
+<p style="margin-top:0;font-size:small;">(<a href="#anchor-3">prev</a>) (<a href="#anchor-5">next</a>)</p><div id="round-4"></div>
+<script type="text/javascript">
+var data = new google.visualization.DataTable();
+data.addColumn("string", "Candidate");
+data.addColumn("number", "Votes");
+data.addColumn({type:"string", role:"tooltip"});
+data.addColumn({type: "boolean", role:"certainty"});
+data.addColumn("number", "Received");
+data.addColumn({type:"string", role:"tooltip"});
+data.addColumn("number", "Transferred");
+data.addColumn({type:"string", role:"tooltip"});
+data.addRows([["Charles Yarnold", 46.200041, "Votes: 46.200041\nTransferred: 1.140752", true, 0.000000, "Votes: 46.200041\nTransferred: 1.140752", 1.140752, "Votes: 46.200041\nTransferred: 1.140752"],["Tim Reynolds", 11.859258, "Votes: 11.886746\nReceived: 0.027488", true, 0.027488, "Votes: 11.886746\nReceived: 0.027488", 0.000000, "Votes: 11.886746\nReceived: 0.027488"],["Aden Bos", 4.429629, "Votes: 4.443373\nReceived: 0.013744", true, 0.013744, "Votes: 4.443373\nReceived: 0.013744", 0.000000, "Votes: 4.443373\nReceived: 0.013744"],["Samuel Keating-Fry", 6.288887, "Votes: 6.330119\nReceived: 0.041232", true, 0.041232, "Votes: 6.330119\nReceived: 0.041232", 0.000000, "Votes: 6.330119\nReceived: 0.041232"],["Dave Ingram", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Jasper Wallace", 20.585177, "Votes: 20.763849\nReceived: 0.178672", true, 0.178672, "Votes: 20.763849\nReceived: 0.178672", 0.000000, "Votes: 20.763849\nReceived: 0.178672"],["Matt Peperell", 17.296290, "Votes: 17.433730\nReceived: 0.137440", true, 0.137440, "Votes: 17.433730\nReceived: 0.137440", 0.000000, "Votes: 17.433730\nReceived: 0.137440"],["Marc Barto", 31.007403, "Votes: 31.103611\nReceived: 0.096208", true, 0.096208, "Votes: 31.103611\nReceived: 0.096208", 0.000000, "Votes: 31.103611\nReceived: 0.096208"],["Thomas Greer", 5.718516, "Votes: 5.773492\nReceived: 0.054976", true, 0.054976, "Votes: 5.773492\nReceived: 0.054976", 0.000000, "Votes: 5.773492\nReceived: 0.054976"],["Kitty Wong", 11.577774, "Votes: 11.660238\nReceived: 0.082464", true, 0.082464, "Votes: 11.660238\nReceived: 0.082464", 0.000000, "Votes: 11.660238\nReceived: 0.082464"],["Morag Hickman", 21.007403, "Votes: 21.103611\nReceived: 0.096208", true, 0.096208, "Votes: 21.103611\nReceived: 0.096208", 0.000000, "Votes: 21.103611\nReceived: 0.096208"],["Paddy Duncan", 25.585177, "Votes: 25.763849\nReceived: 0.178672", true, 0.178672, "Votes: 25.763849\nReceived: 0.178672", 0.000000, "Votes: 25.763849\nReceived: 0.178672"],["Clare Greenhalgh", 24.014806, "Votes: 24.207222\nReceived: 0.192416", true, 0.192416, "Votes: 24.207222\nReceived: 0.192416", 0.000000, "Votes: 24.207222\nReceived: 0.192416"],["Nick Large", 4.288887, "Votes: 4.330119\nReceived: 0.041232", true, 0.041232, "Votes: 4.330119\nReceived: 0.041232", 0.000000, "Votes: 4.330119\nReceived: 0.041232"],["NO FURTHER PLACES", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Exhausted", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Threshold", 46.200001, "Threshold: 46.200001", false, 0, null, 0, null]]);
+var formatter = new google.visualization.NumberFormat({fractionDigits:6});
+formatter.format(data, 1);
+formatter.format(data, 3);
+formatter.format(data, 5);
+var options = {
+width:760,
+height:475,
+legend:{position:"none"},
+chartArea:{left:100,top:0,width:660,height:450},
+hAxis:{maxValue:81},
+isStacked:true,
+colors:["#fcd050", "#87cf32", "#ef3638"],
+};
+var chart = new google.visualization.BarChart(document.getElementById("round-4"));
+chart.draw(data, options);
+</script>
+<p>Count after transferring surplus votes. Keep factors of candidates who have exceeded the threshold: Charles Yarnold, 0.556627. </p>
+<hr>
+<h3 style="margin-bottom:0"><a id="anchor-5">Round 5</a></h3>
+<p style="margin-top:0;font-size:small;">(<a href="#anchor-4">prev</a>) (<a href="#anchor-6">next</a>)</p><div id="round-5"></div>
+<script type="text/javascript">
+var data = new google.visualization.DataTable();
+data.addColumn("string", "Candidate");
+data.addColumn("number", "Votes");
+data.addColumn({type:"string", role:"tooltip"});
+data.addColumn({type: "boolean", role:"certainty"});
+data.addColumn("number", "Received");
+data.addColumn({type:"string", role:"tooltip"});
+data.addColumn("number", "Transferred");
+data.addColumn({type:"string", role:"tooltip"});
+data.addRows([["Charles Yarnold", 46.200041, "Votes: 46.756668\nReceived: 0.556627", true, 0.556627, "Votes: 46.756668\nReceived: 0.556627", 0.000000, "Votes: 46.756668\nReceived: 0.556627"],["Tim Reynolds", 11.886746, "Votes: 11.886746", true, 0.000000, "Votes: 11.886746", 0.000000, "Votes: 11.886746"],["Aden Bos", 4.443373, "Votes: 4.886746\nReceived: 0.443373", true, 0.443373, "Votes: 4.886746\nReceived: 0.443373", 0.000000, "Votes: 4.886746\nReceived: 0.443373"],["Samuel Keating-Fry", 6.330119, "Votes: 6.330119", true, 0.000000, "Votes: 6.330119", 0.000000, "Votes: 6.330119"],["Dave Ingram", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Jasper Wallace", 20.763849, "Votes: 21.207222\nReceived: 0.443373", true, 0.443373, "Votes: 21.207222\nReceived: 0.443373", 0.000000, "Votes: 21.207222\nReceived: 0.443373"],["Matt Peperell", 17.433730, "Votes: 17.877103\nReceived: 0.443373", true, 0.443373, "Votes: 17.877103\nReceived: 0.443373", 0.000000, "Votes: 17.877103\nReceived: 0.443373"],["Marc Barto", 31.103611, "Votes: 31.546984\nReceived: 0.443373", true, 0.443373, "Votes: 31.546984\nReceived: 0.443373", 0.000000, "Votes: 31.546984\nReceived: 0.443373"],["Thomas Greer", 5.773492, "Votes: 5.773492", true, 0.000000, "Votes: 5.773492", 0.000000, "Votes: 5.773492"],["Kitty Wong", 11.660238, "Votes: 11.660238", true, 0.000000, "Votes: 11.660238", 0.000000, "Votes: 11.660238"],["Morag Hickman", 21.103611, "Votes: 22.103611\nReceived: 1.000000", true, 1.000000, "Votes: 22.103611\nReceived: 1.000000", 0.000000, "Votes: 22.103611\nReceived: 1.000000"],["Paddy Duncan", 25.763849, "Votes: 25.763849", true, 0.000000, "Votes: 25.763849", 0.000000, "Votes: 25.763849"],["Clare Greenhalgh", 24.207222, "Votes: 25.207222\nReceived: 1.000000", true, 1.000000, "Votes: 25.207222\nReceived: 1.000000", 0.000000, "Votes: 25.207222\nReceived: 1.000000"],["Nick Large", 0.000000, "Votes: 0.000000\nTransferred: 4.330119", true, 0.000000, "Votes: 0.000000\nTransferred: 4.330119", 4.330119, "Votes: 0.000000\nTransferred: 4.330119"],["NO FURTHER PLACES", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Exhausted", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Threshold", 46.200001, "Threshold: 46.200001", false, 0, null, 0, null]]);
+var formatter = new google.visualization.NumberFormat({fractionDigits:6});
+formatter.format(data, 1);
+formatter.format(data, 3);
+formatter.format(data, 5);
+var options = {
+width:760,
+height:475,
+legend:{position:"none"},
+chartArea:{left:100,top:0,width:660,height:450},
+hAxis:{maxValue:81},
+isStacked:true,
+colors:["#fcd050", "#87cf32", "#ef3638"],
+};
+var chart = new google.visualization.BarChart(document.getElementById("round-5"));
+chart.draw(data, options);
+</script>
+<p>Count after eliminating Nick Large and transferring votes. All losing candidates are eliminated. </p>
+<hr>
+<h3 style="margin-bottom:0"><a id="anchor-6">Round 6</a></h3>
+<p style="margin-top:0;font-size:small;">(<a href="#anchor-5">prev</a>) (<a href="#anchor-7">next</a>)</p><div id="round-6"></div>
+<script type="text/javascript">
+var data = new google.visualization.DataTable();
+data.addColumn("string", "Candidate");
+data.addColumn("number", "Votes");
+data.addColumn({type:"string", role:"tooltip"});
+data.addColumn({type: "boolean", role:"certainty"});
+data.addColumn("number", "Received");
+data.addColumn({type:"string", role:"tooltip"});
+data.addColumn("number", "Transferred");
+data.addColumn({type:"string", role:"tooltip"});
+data.addRows([["Charles Yarnold", 46.756668, "Votes: 46.756668", true, 0.000000, "Votes: 46.756668", 0.000000, "Votes: 46.756668"],["Tim Reynolds", 11.886746, "Votes: 11.886746", true, 0.000000, "Votes: 11.886746", 0.000000, "Votes: 11.886746"],["Aden Bos", 0.000000, "Votes: 0.000000\nTransferred: 4.886746", true, 0.000000, "Votes: 0.000000\nTransferred: 4.886746", 4.886746, "Votes: 0.000000\nTransferred: 4.886746"],["Samuel Keating-Fry", 6.330119, "Votes: 6.330119", true, 0.000000, "Votes: 6.330119", 0.000000, "Votes: 6.330119"],["Dave Ingram", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Jasper Wallace", 21.207222, "Votes: 23.650595\nReceived: 2.443373", true, 2.443373, "Votes: 23.650595\nReceived: 2.443373", 0.000000, "Votes: 23.650595\nReceived: 2.443373"],["Matt Peperell", 17.877103, "Votes: 17.877103", true, 0.000000, "Votes: 17.877103", 0.000000, "Votes: 17.877103"],["Marc Barto", 31.546984, "Votes: 31.546984", true, 0.000000, "Votes: 31.546984", 0.000000, "Votes: 31.546984"],["Thomas Greer", 5.773492, "Votes: 6.773492\nReceived: 1.000000", true, 1.000000, "Votes: 6.773492\nReceived: 1.000000", 0.000000, "Votes: 6.773492\nReceived: 1.000000"],["Kitty Wong", 11.660238, "Votes: 12.103611\nReceived: 0.443373", true, 0.443373, "Votes: 12.103611\nReceived: 0.443373", 0.000000, "Votes: 12.103611\nReceived: 0.443373"],["Morag Hickman", 22.103611, "Votes: 23.103611\nReceived: 1.000000", true, 1.000000, "Votes: 23.103611\nReceived: 1.000000", 0.000000, "Votes: 23.103611\nReceived: 1.000000"],["Paddy Duncan", 25.763849, "Votes: 25.763849", true, 0.000000, "Votes: 25.763849", 0.000000, "Votes: 25.763849"],["Clare Greenhalgh", 25.207222, "Votes: 25.207222", true, 0.000000, "Votes: 25.207222", 0.000000, "Votes: 25.207222"],["Nick Large", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["NO FURTHER PLACES", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Exhausted", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Threshold", 46.200001, "Threshold: 46.200001", false, 0, null, 0, null]]);
+var formatter = new google.visualization.NumberFormat({fractionDigits:6});
+formatter.format(data, 1);
+formatter.format(data, 3);
+formatter.format(data, 5);
+var options = {
+width:760,
+height:475,
+legend:{position:"none"},
+chartArea:{left:100,top:0,width:660,height:450},
+hAxis:{maxValue:81},
+isStacked:true,
+colors:["#fcd050", "#87cf32", "#ef3638"],
+};
+var chart = new google.visualization.BarChart(document.getElementById("round-6"));
+chart.draw(data, options);
+</script>
+<p>Count after eliminating Aden Bos and transferring votes. All losing candidates are eliminated. </p>
+<hr>
+<h3 style="margin-bottom:0"><a id="anchor-7">Round 7</a></h3>
+<p style="margin-top:0;font-size:small;">(<a href="#anchor-6">prev</a>) (<a href="#anchor-8">next</a>)</p><div id="round-7"></div>
+<script type="text/javascript">
+var data = new google.visualization.DataTable();
+data.addColumn("string", "Candidate");
+data.addColumn("number", "Votes");
+data.addColumn({type:"string", role:"tooltip"});
+data.addColumn({type: "boolean", role:"certainty"});
+data.addColumn("number", "Received");
+data.addColumn({type:"string", role:"tooltip"});
+data.addColumn("number", "Transferred");
+data.addColumn({type:"string", role:"tooltip"});
+data.addRows([["Charles Yarnold", 46.200084, "Votes: 46.200084\nTransferred: 0.556584", true, 0.000000, "Votes: 46.200084\nTransferred: 0.556584", 0.556584, "Votes: 46.200084\nTransferred: 0.556584"],["Tim Reynolds", 11.886746, "Votes: 11.899998\nReceived: 0.013252", true, 0.013252, "Votes: 11.899998\nReceived: 0.013252", 0.000000, "Votes: 11.899998\nReceived: 0.013252"],["Aden Bos", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Samuel Keating-Fry", 6.330119, "Votes: 6.349997\nReceived: 0.019878", true, 0.019878, "Votes: 6.349997\nReceived: 0.019878", 0.000000, "Votes: 6.349997\nReceived: 0.019878"],["Dave Ingram", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Jasper Wallace", 23.650595, "Votes: 23.749985\nReceived: 0.099390", true, 0.099390, "Votes: 23.749985\nReceived: 0.099390", 0.000000, "Votes: 23.749985\nReceived: 0.099390"],["Matt Peperell", 17.877103, "Votes: 17.949989\nReceived: 0.072886", true, 0.072886, "Votes: 17.949989\nReceived: 0.072886", 0.000000, "Votes: 17.949989\nReceived: 0.072886"],["Marc Barto", 31.546984, "Votes: 31.599992\nReceived: 0.053008", true, 0.053008, "Votes: 31.599992\nReceived: 0.053008", 0.000000, "Votes: 31.599992\nReceived: 0.053008"],["Thomas Greer", 6.773492, "Votes: 6.799996\nReceived: 0.026504", true, 0.026504, "Votes: 6.799996\nReceived: 0.026504", 0.000000, "Votes: 6.799996\nReceived: 0.026504"],["Kitty Wong", 12.103611, "Votes: 12.149993\nReceived: 0.046382", true, 0.046382, "Votes: 12.149993\nReceived: 0.046382", 0.000000, "Votes: 12.149993\nReceived: 0.046382"],["Morag Hickman", 23.103611, "Votes: 23.149993\nReceived: 0.046382", true, 0.046382, "Votes: 23.149993\nReceived: 0.046382", 0.000000, "Votes: 23.149993\nReceived: 0.046382"],["Paddy Duncan", 25.763849, "Votes: 25.849987\nReceived: 0.086138", true, 0.086138, "Votes: 25.849987\nReceived: 0.086138", 0.000000, "Votes: 25.849987\nReceived: 0.086138"],["Clare Greenhalgh", 25.207222, "Votes: 25.299986\nReceived: 0.092764", true, 0.092764, "Votes: 25.299986\nReceived: 0.092764", 0.000000, "Votes: 25.299986\nReceived: 0.092764"],["Nick Large", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["NO FURTHER PLACES", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Exhausted", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Threshold", 46.200001, "Threshold: 46.200001", false, 0, null, 0, null]]);
+var formatter = new google.visualization.NumberFormat({fractionDigits:6});
+formatter.format(data, 1);
+formatter.format(data, 3);
+formatter.format(data, 5);
+var options = {
+width:760,
+height:475,
+legend:{position:"none"},
+chartArea:{left:100,top:0,width:660,height:450},
+hAxis:{maxValue:81},
+isStacked:true,
+colors:["#fcd050", "#87cf32", "#ef3638"],
+};
+var chart = new google.visualization.BarChart(document.getElementById("round-7"));
+chart.draw(data, options);
+</script>
+<p>Count after transferring surplus votes. Keep factors of candidates who have exceeded the threshold: Charles Yarnold, 0.550001. </p>
+<hr>
+<h3 style="margin-bottom:0"><a id="anchor-8">Round 8</a></h3>
+<p style="margin-top:0;font-size:small;">(<a href="#anchor-7">prev</a>) (<a href="#anchor-9">next</a>)</p><div id="round-8"></div>
+<script type="text/javascript">
+var data = new google.visualization.DataTable();
+data.addColumn("string", "Candidate");
+data.addColumn("number", "Votes");
+data.addColumn({type:"string", role:"tooltip"});
+data.addColumn({type: "boolean", role:"certainty"});
+data.addColumn("number", "Received");
+data.addColumn({type:"string", role:"tooltip"});
+data.addColumn("number", "Transferred");
+data.addColumn({type:"string", role:"tooltip"});
+data.addRows([["Charles Yarnold", 46.200084, "Votes: 46.750085\nReceived: 0.550001", true, 0.550001, "Votes: 46.750085\nReceived: 0.550001", 0.000000, "Votes: 46.750085\nReceived: 0.550001"],["Tim Reynolds", 11.899998, "Votes: 12.349997\nReceived: 0.449999", true, 0.449999, "Votes: 12.349997\nReceived: 0.449999", 0.000000, "Votes: 12.349997\nReceived: 0.449999"],["Aden Bos", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Samuel Keating-Fry", 0.000000, "Votes: 0.000000\nTransferred: 6.349997", true, 0.000000, "Votes: 0.000000\nTransferred: 6.349997", 6.349997, "Votes: 0.000000\nTransferred: 6.349997"],["Dave Ingram", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Jasper Wallace", 23.749985, "Votes: 25.199984\nReceived: 1.449999", true, 1.449999, "Votes: 25.199984\nReceived: 1.449999", 0.000000, "Votes: 25.199984\nReceived: 1.449999"],["Matt Peperell", 17.949989, "Votes: 18.949989\nReceived: 1.000000", true, 1.000000, "Votes: 18.949989\nReceived: 1.000000", 0.000000, "Votes: 18.949989\nReceived: 1.000000"],["Marc Barto", 31.599992, "Votes: 31.599992", true, 0.000000, "Votes: 31.599992", 0.000000, "Votes: 31.599992"],["Thomas Greer", 6.799996, "Votes: 6.799996", true, 0.000000, "Votes: 6.799996", 0.000000, "Votes: 6.799996"],["Kitty Wong", 12.149993, "Votes: 12.149993", true, 0.000000, "Votes: 12.149993", 0.000000, "Votes: 12.149993"],["Morag Hickman", 23.149993, "Votes: 24.149993\nReceived: 1.000000", true, 1.000000, "Votes: 24.149993\nReceived: 1.000000", 0.000000, "Votes: 24.149993\nReceived: 1.000000"],["Paddy Duncan", 25.849987, "Votes: 27.749985\nReceived: 1.899998", true, 1.899998, "Votes: 27.749985\nReceived: 1.899998", 0.000000, "Votes: 27.749985\nReceived: 1.899998"],["Clare Greenhalgh", 25.299986, "Votes: 25.299986", true, 0.000000, "Votes: 25.299986", 0.000000, "Votes: 25.299986"],["Nick Large", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["NO FURTHER PLACES", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Exhausted", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Threshold", 46.200001, "Threshold: 46.200001", false, 0, null, 0, null]]);
+var formatter = new google.visualization.NumberFormat({fractionDigits:6});
+formatter.format(data, 1);
+formatter.format(data, 3);
+formatter.format(data, 5);
+var options = {
+width:760,
+height:475,
+legend:{position:"none"},
+chartArea:{left:100,top:0,width:660,height:450},
+hAxis:{maxValue:81},
+isStacked:true,
+colors:["#fcd050", "#87cf32", "#ef3638"],
+};
+var chart = new google.visualization.BarChart(document.getElementById("round-8"));
+chart.draw(data, options);
+</script>
+<p>Count after eliminating Samuel Keating-Fry and transferring votes. All losing candidates are eliminated. </p>
+<hr>
+<h3 style="margin-bottom:0"><a id="anchor-9">Round 9</a></h3>
+<p style="margin-top:0;font-size:small;">(<a href="#anchor-8">prev</a>) (<a href="#anchor-10">next</a>)</p><div id="round-9"></div>
+<script type="text/javascript">
+var data = new google.visualization.DataTable();
+data.addColumn("string", "Candidate");
+data.addColumn("number", "Votes");
+data.addColumn({type:"string", role:"tooltip"});
+data.addColumn({type: "boolean", role:"certainty"});
+data.addColumn("number", "Received");
+data.addColumn({type:"string", role:"tooltip"});
+data.addColumn("number", "Transferred");
+data.addColumn({type:"string", role:"tooltip"});
+data.addRows([["Charles Yarnold", 46.750085, "Votes: 46.750085", true, 0.000000, "Votes: 46.750085", 0.000000, "Votes: 46.750085"],["Tim Reynolds", 12.349997, "Votes: 13.349997\nReceived: 1.000000", true, 1.000000, "Votes: 13.349997\nReceived: 1.000000", 0.000000, "Votes: 13.349997\nReceived: 1.000000"],["Aden Bos", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Samuel Keating-Fry", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Dave Ingram", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Jasper Wallace", 25.199984, "Votes: 27.649983\nReceived: 2.449999", true, 2.449999, "Votes: 27.649983\nReceived: 2.449999", 0.000000, "Votes: 27.649983\nReceived: 2.449999"],["Matt Peperell", 18.949989, "Votes: 19.399988\nReceived: 0.449999", true, 0.449999, "Votes: 19.399988\nReceived: 0.449999", 0.000000, "Votes: 19.399988\nReceived: 0.449999"],["Marc Barto", 31.599992, "Votes: 32.599992\nReceived: 1.000000", true, 1.000000, "Votes: 32.599992\nReceived: 1.000000", 0.000000, "Votes: 32.599992\nReceived: 1.000000"],["Thomas Greer", 0.000000, "Votes: 0.000000\nTransferred: 6.799996", true, 0.000000, "Votes: 0.000000\nTransferred: 6.799996", 6.799996, "Votes: 0.000000\nTransferred: 6.799996"],["Kitty Wong", 12.149993, "Votes: 13.149993\nReceived: 1.000000", true, 1.000000, "Votes: 13.149993\nReceived: 1.000000", 0.000000, "Votes: 13.149993\nReceived: 1.000000"],["Morag Hickman", 24.149993, "Votes: 24.149993", true, 0.000000, "Votes: 24.149993", 0.000000, "Votes: 24.149993"],["Paddy Duncan", 27.749985, "Votes: 27.749985", true, 0.000000, "Votes: 27.749985", 0.000000, "Votes: 27.749985"],["Clare Greenhalgh", 25.299986, "Votes: 26.199984\nReceived: 0.899998", true, 0.899998, "Votes: 26.199984\nReceived: 0.899998", 0.000000, "Votes: 26.199984\nReceived: 0.899998"],["Nick Large", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["NO FURTHER PLACES", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Exhausted", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Threshold", 46.200001, "Threshold: 46.200001", false, 0, null, 0, null]]);
+var formatter = new google.visualization.NumberFormat({fractionDigits:6});
+formatter.format(data, 1);
+formatter.format(data, 3);
+formatter.format(data, 5);
+var options = {
+width:760,
+height:475,
+legend:{position:"none"},
+chartArea:{left:100,top:0,width:660,height:450},
+hAxis:{maxValue:81},
+isStacked:true,
+colors:["#fcd050", "#87cf32", "#ef3638"],
+};
+var chart = new google.visualization.BarChart(document.getElementById("round-9"));
+chart.draw(data, options);
+</script>
+<p>Count after eliminating Thomas Greer and transferring votes. All losing candidates are eliminated. </p>
+<hr>
+<h3 style="margin-bottom:0"><a id="anchor-10">Round 10</a></h3>
+<p style="margin-top:0;font-size:small;">(<a href="#anchor-9">prev</a>) (<a href="#anchor-11">next</a>)</p><div id="round-10"></div>
+<script type="text/javascript">
+var data = new google.visualization.DataTable();
+data.addColumn("string", "Candidate");
+data.addColumn("number", "Votes");
+data.addColumn({type:"string", role:"tooltip"});
+data.addColumn({type: "boolean", role:"certainty"});
+data.addColumn("number", "Received");
+data.addColumn({type:"string", role:"tooltip"});
+data.addColumn("number", "Transferred");
+data.addColumn({type:"string", role:"tooltip"});
+data.addRows([["Charles Yarnold", 46.200050, "Votes: 46.200050\nTransferred: 0.550035", true, 0.000000, "Votes: 46.200050\nTransferred: 0.550035", 0.550035, "Votes: 46.200050\nTransferred: 0.550035"],["Tim Reynolds", 13.349997, "Votes: 13.369410\nReceived: 0.019413", true, 0.019413, "Votes: 13.369410\nReceived: 0.019413", 0.000000, "Votes: 13.369410\nReceived: 0.019413"],["Aden Bos", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Samuel Keating-Fry", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Dave Ingram", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Jasper Wallace", 27.649983, "Votes: 27.759990\nReceived: 0.110007", true, 0.110007, "Votes: 27.759990\nReceived: 0.110007", 0.000000, "Votes: 27.759990\nReceived: 0.110007"],["Matt Peperell", 19.399988, "Votes: 19.477640\nReceived: 0.077652", true, 0.077652, "Votes: 19.477640\nReceived: 0.077652", 0.000000, "Votes: 19.477640\nReceived: 0.077652"],["Marc Barto", 32.599992, "Votes: 32.651760\nReceived: 0.051768", true, 0.051768, "Votes: 32.651760\nReceived: 0.051768", 0.000000, "Votes: 32.651760\nReceived: 0.051768"],["Thomas Greer", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Kitty Wong", 13.149993, "Votes: 13.195290\nReceived: 0.045297", true, 0.045297, "Votes: 13.195290\nReceived: 0.045297", 0.000000, "Votes: 13.195290\nReceived: 0.045297"],["Morag Hickman", 24.149993, "Votes: 24.195290\nReceived: 0.045297", true, 0.045297, "Votes: 24.195290\nReceived: 0.045297", 0.000000, "Votes: 24.195290\nReceived: 0.045297"],["Paddy Duncan", 27.749985, "Votes: 27.847050\nReceived: 0.097065", true, 0.097065, "Votes: 27.847050\nReceived: 0.097065", 0.000000, "Votes: 27.847050\nReceived: 0.097065"],["Clare Greenhalgh", 26.199984, "Votes: 26.303520\nReceived: 0.103536", true, 0.103536, "Votes: 26.303520\nReceived: 0.103536", 0.000000, "Votes: 26.303520\nReceived: 0.103536"],["Nick Large", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["NO FURTHER PLACES", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Exhausted", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Threshold", 46.200001, "Threshold: 46.200001", false, 0, null, 0, null]]);
+var formatter = new google.visualization.NumberFormat({fractionDigits:6});
+formatter.format(data, 1);
+formatter.format(data, 3);
+formatter.format(data, 5);
+var options = {
+width:760,
+height:475,
+legend:{position:"none"},
+chartArea:{left:100,top:0,width:660,height:450},
+hAxis:{maxValue:81},
+isStacked:true,
+colors:["#fcd050", "#87cf32", "#ef3638"],
+};
+var chart = new google.visualization.BarChart(document.getElementById("round-10"));
+chart.draw(data, options);
+</script>
+<p>Count after transferring surplus votes. Keep factors of candidates who have exceeded the threshold: Charles Yarnold, 0.543530. </p>
+<hr>
+<h3 style="margin-bottom:0"><a id="anchor-11">Round 11</a></h3>
+<p style="margin-top:0;font-size:small;">(<a href="#anchor-10">prev</a>) (<a href="#anchor-12">next</a>)</p><div id="round-11"></div>
+<script type="text/javascript">
+var data = new google.visualization.DataTable();
+data.addColumn("string", "Candidate");
+data.addColumn("number", "Votes");
+data.addColumn({type:"string", role:"tooltip"});
+data.addColumn({type: "boolean", role:"certainty"});
+data.addColumn("number", "Received");
+data.addColumn({type:"string", role:"tooltip"});
+data.addColumn("number", "Transferred");
+data.addColumn({type:"string", role:"tooltip"});
+data.addRows([["Charles Yarnold", 46.200050, "Votes: 47.830640\nReceived: 1.630590", true, 1.630590, "Votes: 47.830640\nReceived: 1.630590", 0.000000, "Votes: 47.830640\nReceived: 1.630590"],["Tim Reynolds", 13.369410, "Votes: 14.369410\nReceived: 1.000000", true, 1.000000, "Votes: 14.369410\nReceived: 1.000000", 0.000000, "Votes: 14.369410\nReceived: 1.000000"],["Aden Bos", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Samuel Keating-Fry", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Dave Ingram", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Jasper Wallace", 27.759990, "Votes: 28.216460\nReceived: 0.456470", true, 0.456470, "Votes: 28.216460\nReceived: 0.456470", 0.000000, "Votes: 28.216460\nReceived: 0.456470"],["Matt Peperell", 19.477640, "Votes: 19.934110\nReceived: 0.456470", true, 0.456470, "Votes: 19.934110\nReceived: 0.456470", 0.000000, "Votes: 19.934110\nReceived: 0.456470"],["Marc Barto", 32.651760, "Votes: 34.651760\nReceived: 2.000000", true, 2.000000, "Votes: 34.651760\nReceived: 2.000000", 0.000000, "Votes: 34.651760\nReceived: 2.000000"],["Thomas Greer", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Kitty Wong", 0.000000, "Votes: 0.000000\nTransferred: 13.195290", true, 0.000000, "Votes: 0.000000\nTransferred: 13.195290", 13.195290, "Votes: 0.000000\nTransferred: 13.195290"],["Morag Hickman", 24.195290, "Votes: 25.195290\nReceived: 1.000000", true, 1.000000, "Votes: 25.195290\nReceived: 1.000000", 0.000000, "Votes: 25.195290\nReceived: 1.000000"],["Paddy Duncan", 27.847050, "Votes: 30.129400\nReceived: 2.282350", true, 2.282350, "Votes: 30.129400\nReceived: 2.282350", 0.000000, "Votes: 30.129400\nReceived: 2.282350"],["Clare Greenhalgh", 26.303520, "Votes: 30.672930\nReceived: 4.369410", true, 4.369410, "Votes: 30.672930\nReceived: 4.369410", 0.000000, "Votes: 30.672930\nReceived: 4.369410"],["Nick Large", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["NO FURTHER PLACES", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Exhausted", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Threshold", 46.200001, "Threshold: 46.200001", false, 0, null, 0, null]]);
+var formatter = new google.visualization.NumberFormat({fractionDigits:6});
+formatter.format(data, 1);
+formatter.format(data, 3);
+formatter.format(data, 5);
+var options = {
+width:760,
+height:475,
+legend:{position:"none"},
+chartArea:{left:100,top:0,width:660,height:450},
+hAxis:{maxValue:81},
+isStacked:true,
+colors:["#fcd050", "#87cf32", "#ef3638"],
+};
+var chart = new google.visualization.BarChart(document.getElementById("round-11"));
+chart.draw(data, options);
+</script>
+<p>Count after eliminating Kitty Wong and transferring votes. All losing candidates are eliminated. </p>
+<hr>
+<h3 style="margin-bottom:0"><a id="anchor-12">Round 12</a></h3>
+<p style="margin-top:0;font-size:small;">(<a href="#anchor-11">prev</a>) (<a href="#anchor-13">next</a>)</p><div id="round-12"></div>
+<script type="text/javascript">
+var data = new google.visualization.DataTable();
+data.addColumn("string", "Candidate");
+data.addColumn("number", "Votes");
+data.addColumn({type:"string", role:"tooltip"});
+data.addColumn({type: "boolean", role:"certainty"});
+data.addColumn("number", "Received");
+data.addColumn({type:"string", role:"tooltip"});
+data.addColumn("number", "Transferred");
+data.addColumn({type:"string", role:"tooltip"});
+data.addRows([["Charles Yarnold", 47.830640, "Votes: 50.004760\nReceived: 2.174120", true, 2.174120, "Votes: 50.004760\nReceived: 2.174120", 0.000000, "Votes: 50.004760\nReceived: 2.174120"],["Tim Reynolds", 0.000000, "Votes: 0.000000\nTransferred: 14.369410", true, 0.000000, "Votes: 0.000000\nTransferred: 14.369410", 14.369410, "Votes: 0.000000\nTransferred: 14.369410"],["Aden Bos", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Samuel Keating-Fry", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Dave Ingram", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Jasper Wallace", 28.216460, "Votes: 33.672930\nReceived: 5.456470", true, 5.456470, "Votes: 33.672930\nReceived: 5.456470", 0.000000, "Votes: 33.672930\nReceived: 5.456470"],["Matt Peperell", 19.934110, "Votes: 21.847050\nReceived: 1.912940", true, 1.912940, "Votes: 21.847050\nReceived: 1.912940", 0.000000, "Votes: 21.847050\nReceived: 1.912940"],["Marc Barto", 34.651760, "Votes: 36.564700\nReceived: 1.912940", true, 1.912940, "Votes: 36.564700\nReceived: 1.912940", 0.000000, "Votes: 36.564700\nReceived: 1.912940"],["Thomas Greer", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Kitty Wong", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Morag Hickman", 25.195290, "Votes: 25.651760\nReceived: 0.456470", true, 0.456470, "Votes: 25.651760\nReceived: 0.456470", 0.000000, "Votes: 25.651760\nReceived: 0.456470"],["Paddy Duncan", 30.129400, "Votes: 31.585870\nReceived: 1.456470", true, 1.456470, "Votes: 31.585870\nReceived: 1.456470", 0.000000, "Votes: 31.585870\nReceived: 1.456470"],["Clare Greenhalgh", 30.672930, "Votes: 31.672930\nReceived: 1.000000", true, 1.000000, "Votes: 31.672930\nReceived: 1.000000", 0.000000, "Votes: 31.672930\nReceived: 1.000000"],["Nick Large", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["NO FURTHER PLACES", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Exhausted", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Threshold", 46.200001, "Threshold: 46.200001", false, 0, null, 0, null]]);
+var formatter = new google.visualization.NumberFormat({fractionDigits:6});
+formatter.format(data, 1);
+formatter.format(data, 3);
+formatter.format(data, 5);
+var options = {
+width:760,
+height:475,
+legend:{position:"none"},
+chartArea:{left:100,top:0,width:660,height:450},
+hAxis:{maxValue:81},
+isStacked:true,
+colors:["#fcd050", "#87cf32", "#ef3638"],
+};
+var chart = new google.visualization.BarChart(document.getElementById("round-12"));
+chart.draw(data, options);
+</script>
+<p>Count after eliminating Tim Reynolds and transferring votes. All losing candidates are eliminated. </p>
+<hr>
+<h3 style="margin-bottom:0"><a id="anchor-13">Round 13</a></h3>
+<p style="margin-top:0;font-size:small;">(<a href="#anchor-12">prev</a>) (<a href="#anchor-14">next</a>)</p><div id="round-13"></div>
+<script type="text/javascript">
+var data = new google.visualization.DataTable();
+data.addColumn("string", "Candidate");
+data.addColumn("number", "Votes");
+data.addColumn({type:"string", role:"tooltip"});
+data.addColumn({type: "boolean", role:"certainty"});
+data.addColumn("number", "Received");
+data.addColumn({type:"string", role:"tooltip"});
+data.addColumn("number", "Transferred");
+data.addColumn({type:"string", role:"tooltip"});
+data.addRows([["Charles Yarnold", 46.200008, "Votes: 46.200008\nTransferred: 3.804752", true, 0.000000, "Votes: 46.200008\nTransferred: 3.804752", 3.804752, "Votes: 46.200008\nTransferred: 3.804752"],["Tim Reynolds", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Aden Bos", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Samuel Keating-Fry", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Dave Ingram", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Jasper Wallace", 33.672930, "Votes: 34.458694\nReceived: 0.785764", true, 0.785764, "Votes: 34.458694\nReceived: 0.785764", 0.000000, "Votes: 34.458694\nReceived: 0.785764"],["Matt Peperell", 21.847050, "Votes: 22.467390\nReceived: 0.620340", true, 0.620340, "Votes: 22.467390\nReceived: 0.620340", 0.000000, "Votes: 22.467390\nReceived: 0.620340"],["Marc Barto", 36.564700, "Votes: 36.978260\nReceived: 0.413560", true, 0.413560, "Votes: 36.978260\nReceived: 0.413560", 0.000000, "Votes: 36.978260\nReceived: 0.413560"],["Thomas Greer", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Kitty Wong", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Morag Hickman", 25.651760, "Votes: 25.982608\nReceived: 0.330848", true, 0.330848, "Votes: 25.982608\nReceived: 0.330848", 0.000000, "Votes: 25.982608\nReceived: 0.330848"],["Paddy Duncan", 31.585870, "Votes: 32.454346\nReceived: 0.868476", true, 0.868476, "Votes: 32.454346\nReceived: 0.868476", 0.000000, "Votes: 32.454346\nReceived: 0.868476"],["Clare Greenhalgh", 31.672930, "Votes: 32.458694\nReceived: 0.785764", true, 0.785764, "Votes: 32.458694\nReceived: 0.785764", 0.000000, "Votes: 32.458694\nReceived: 0.785764"],["Nick Large", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["NO FURTHER PLACES", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Exhausted", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Threshold", 46.200001, "Threshold: 46.200001", false, 0, null, 0, null]]);
+var formatter = new google.visualization.NumberFormat({fractionDigits:6});
+formatter.format(data, 1);
+formatter.format(data, 3);
+formatter.format(data, 5);
+var options = {
+width:760,
+height:475,
+legend:{position:"none"},
+chartArea:{left:100,top:0,width:660,height:450},
+hAxis:{maxValue:81},
+isStacked:true,
+colors:["#fcd050", "#87cf32", "#ef3638"],
+};
+var chart = new google.visualization.BarChart(document.getElementById("round-13"));
+chart.draw(data, options);
+</script>
+<p>Count after transferring surplus votes. Keep factors of candidates who have exceeded the threshold: Charles Yarnold, 0.502174. </p>
+<hr>
+<h3 style="margin-bottom:0"><a id="anchor-14">Round 14</a></h3>
+<p style="margin-top:0;font-size:small;">(<a href="#anchor-13">prev</a>) (<a href="#anchor-15">next</a>)</p><div id="round-14"></div>
+<script type="text/javascript">
+var data = new google.visualization.DataTable();
+data.addColumn("string", "Candidate");
+data.addColumn("number", "Votes");
+data.addColumn({type:"string", role:"tooltip"});
+data.addColumn({type: "boolean", role:"certainty"});
+data.addColumn("number", "Received");
+data.addColumn({type:"string", role:"tooltip"});
+data.addColumn("number", "Transferred");
+data.addColumn({type:"string", role:"tooltip"});
+data.addRows([["Charles Yarnold", 46.200008, "Votes: 50.217400\nReceived: 4.017392", true, 4.017392, "Votes: 50.217400\nReceived: 4.017392", 0.000000, "Votes: 50.217400\nReceived: 4.017392"],["Tim Reynolds", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Aden Bos", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Samuel Keating-Fry", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Dave Ingram", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Jasper Wallace", 34.458694, "Votes: 38.449998\nReceived: 3.991304", true, 3.991304, "Votes: 38.449998\nReceived: 3.991304", 0.000000, "Votes: 38.449998\nReceived: 3.991304"],["Matt Peperell", 0.000000, "Votes: 0.000000\nTransferred: 22.467390", true, 0.000000, "Votes: 0.000000\nTransferred: 22.467390", 22.467390, "Votes: 0.000000\nTransferred: 22.467390"],["Marc Barto", 36.978260, "Votes: 40.969564\nReceived: 3.991304", true, 3.991304, "Votes: 40.969564\nReceived: 3.991304", 0.000000, "Votes: 40.969564\nReceived: 3.991304"],["Thomas Greer", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Kitty Wong", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Morag Hickman", 25.982608, "Votes: 26.978260\nReceived: 0.995652", true, 0.995652, "Votes: 26.978260\nReceived: 0.995652", 0.000000, "Votes: 26.978260\nReceived: 0.995652"],["Paddy Duncan", 32.454346, "Votes: 36.943476\nReceived: 4.489130", true, 4.489130, "Votes: 36.943476\nReceived: 4.489130", 0.000000, "Votes: 36.943476\nReceived: 4.489130"],["Clare Greenhalgh", 32.458694, "Votes: 37.441302\nReceived: 4.982608", true, 4.982608, "Votes: 37.441302\nReceived: 4.982608", 0.000000, "Votes: 37.441302\nReceived: 4.982608"],["Nick Large", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["NO FURTHER PLACES", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Exhausted", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Threshold", 46.200001, "Threshold: 46.200001", false, 0, null, 0, null]]);
+var formatter = new google.visualization.NumberFormat({fractionDigits:6});
+formatter.format(data, 1);
+formatter.format(data, 3);
+formatter.format(data, 5);
+var options = {
+width:760,
+height:475,
+legend:{position:"none"},
+chartArea:{left:100,top:0,width:660,height:450},
+hAxis:{maxValue:81},
+isStacked:true,
+colors:["#fcd050", "#87cf32", "#ef3638"],
+};
+var chart = new google.visualization.BarChart(document.getElementById("round-14"));
+chart.draw(data, options);
+</script>
+<p>Count after eliminating Matt Peperell and transferring votes. All losing candidates are eliminated. </p>
+<hr>
+<h3 style="margin-bottom:0"><a id="anchor-15">Round 15</a></h3>
+<p style="margin-top:0;font-size:small;">(<a href="#anchor-14">prev</a>) (<a href="#anchor-16">next</a>)</p><div id="round-15"></div>
+<script type="text/javascript">
+var data = new google.visualization.DataTable();
+data.addColumn("string", "Candidate");
+data.addColumn("number", "Votes");
+data.addColumn({type:"string", role:"tooltip"});
+data.addColumn({type: "boolean", role:"certainty"});
+data.addColumn("number", "Received");
+data.addColumn({type:"string", role:"tooltip"});
+data.addColumn("number", "Transferred");
+data.addColumn({type:"string", role:"tooltip"});
+data.addRows([["Charles Yarnold", 50.217400, "Votes: 54.234792\nReceived: 4.017392", true, 4.017392, "Votes: 54.234792\nReceived: 4.017392", 0.000000, "Votes: 54.234792\nReceived: 4.017392"],["Tim Reynolds", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Aden Bos", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Samuel Keating-Fry", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Dave Ingram", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Jasper Wallace", 38.449998, "Votes: 45.428258\nReceived: 6.978260", true, 6.978260, "Votes: 45.428258\nReceived: 6.978260", 0.000000, "Votes: 45.428258\nReceived: 6.978260"],["Matt Peperell", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Marc Barto", 40.969564, "Votes: 42.467390\nReceived: 1.497826", true, 1.497826, "Votes: 42.467390\nReceived: 1.497826", 0.000000, "Votes: 42.467390\nReceived: 1.497826"],["Thomas Greer", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Kitty Wong", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Morag Hickman", 0.000000, "Votes: 0.000000\nTransferred: 26.978260", true, 0.000000, "Votes: 0.000000\nTransferred: 26.978260", 26.978260, "Votes: 0.000000\nTransferred: 26.978260"],["Paddy Duncan", 36.943476, "Votes: 43.432606\nReceived: 6.489130", true, 6.489130, "Votes: 43.432606\nReceived: 6.489130", 0.000000, "Votes: 43.432606\nReceived: 6.489130"],["Clare Greenhalgh", 37.441302, "Votes: 45.436954\nReceived: 7.995652", true, 7.995652, "Votes: 45.436954\nReceived: 7.995652", 0.000000, "Votes: 45.436954\nReceived: 7.995652"],["Nick Large", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["NO FURTHER PLACES", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Exhausted", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Threshold", 46.200001, "Threshold: 46.200001", false, 0, null, 0, null]]);
+var formatter = new google.visualization.NumberFormat({fractionDigits:6});
+formatter.format(data, 1);
+formatter.format(data, 3);
+formatter.format(data, 5);
+var options = {
+width:760,
+height:475,
+legend:{position:"none"},
+chartArea:{left:100,top:0,width:660,height:450},
+hAxis:{maxValue:81},
+isStacked:true,
+colors:["#fcd050", "#87cf32", "#ef3638"],
+};
+var chart = new google.visualization.BarChart(document.getElementById("round-15"));
+chart.draw(data, options);
+</script>
+<p>Count after eliminating Morag Hickman and transferring votes. All losing candidates are eliminated. </p>
+<hr>
+<h3 style="margin-bottom:0"><a id="anchor-16">Round 16</a></h3>
+<p style="margin-top:0;font-size:small;">(<a href="#anchor-15">prev</a>) (<a href="#anchor-17">next</a>)</p><div id="round-16"></div>
+<script type="text/javascript">
+var data = new google.visualization.DataTable();
+data.addColumn("string", "Candidate");
+data.addColumn("number", "Votes");
+data.addColumn({type:"string", role:"tooltip"});
+data.addColumn({type: "boolean", role:"certainty"});
+data.addColumn("number", "Received");
+data.addColumn({type:"string", role:"tooltip"});
+data.addColumn("number", "Transferred");
+data.addColumn({type:"string", role:"tooltip"});
+data.addRows([["Charles Yarnold", 46.200024, "Votes: 46.200024\nTransferred: 8.034768", true, 0.000000, "Votes: 46.200024\nTransferred: 8.034768", 8.034768, "Votes: 46.200024\nTransferred: 8.034768"],["Tim Reynolds", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Aden Bos", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Samuel Keating-Fry", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Dave Ingram", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Jasper Wallace", 45.428258, "Votes: 47.883326\nReceived: 2.455068", true, 2.455068, "Votes: 47.883326\nReceived: 2.455068", 0.000000, "Votes: 47.883326\nReceived: 2.455068"],["Matt Peperell", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Marc Barto", 42.467390, "Votes: 43.583330\nReceived: 1.115940", true, 1.115940, "Votes: 43.583330\nReceived: 1.115940", 0.000000, "Votes: 43.583330\nReceived: 1.115940"],["Thomas Greer", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Kitty Wong", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Morag Hickman", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Paddy Duncan", 43.432606, "Votes: 45.738882\nReceived: 2.306276", true, 2.306276, "Votes: 45.738882\nReceived: 2.306276", 0.000000, "Votes: 45.738882\nReceived: 2.306276"],["Clare Greenhalgh", 45.436954, "Votes: 47.594438\nReceived: 2.157484", true, 2.157484, "Votes: 47.594438\nReceived: 2.157484", 0.000000, "Votes: 47.594438\nReceived: 2.157484"],["Nick Large", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["NO FURTHER PLACES", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Exhausted", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Threshold", 46.200001, "Threshold: 46.200001", false, 0, null, 0, null]]);
+var formatter = new google.visualization.NumberFormat({fractionDigits:6});
+formatter.format(data, 1);
+formatter.format(data, 3);
+formatter.format(data, 5);
+var options = {
+width:760,
+height:475,
+legend:{position:"none"},
+chartArea:{left:100,top:0,width:660,height:450},
+hAxis:{maxValue:81},
+isStacked:true,
+colors:["#fcd050", "#87cf32", "#ef3638"],
+};
+var chart = new google.visualization.BarChart(document.getElementById("round-16"));
+chart.draw(data, options);
+</script>
+<p>Count after transferring surplus votes. Keep factors of candidates who have exceeded the threshold: Charles Yarnold, 0.427778. Candidates Jasper Wallace and Clare Greenhalgh have reached the threshold and are elected. </p>
+<hr>
+<h3 style="margin-bottom:0"><a id="anchor-17">Round 17</a></h3>
+<p style="margin-top:0;font-size:small;">(<a href="#anchor-16">prev</a>) </p><div id="round-17"></div>
+<script type="text/javascript">
+var data = new google.visualization.DataTable();
+data.addColumn("string", "Candidate");
+data.addColumn("number", "Votes");
+data.addColumn({type:"string", role:"tooltip"});
+data.addColumn({type: "boolean", role:"certainty"});
+data.addColumn("number", "Received");
+data.addColumn({type:"string", role:"tooltip"});
+data.addColumn("number", "Transferred");
+data.addColumn({type:"string", role:"tooltip"});
+data.addRows([["Charles Yarnold", 46.200024, "Votes: 46.685530\nReceived: 0.485506", true, 0.485506, "Votes: 46.685530\nReceived: 0.485506", 0.000000, "Votes: 46.685530\nReceived: 0.485506"],["Tim Reynolds", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Aden Bos", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Samuel Keating-Fry", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Dave Ingram", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Jasper Wallace", 46.806359, "Votes: 46.806359\nTransferred: 1.076967", true, 0.000000, "Votes: 46.806359\nTransferred: 1.076967", 1.076967, "Votes: 46.806359\nTransferred: 1.076967"],["Matt Peperell", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Marc Barto", 43.583330, "Votes: 44.158855\nReceived: 0.575525", true, 0.575525, "Votes: 44.158855\nReceived: 0.575525", 0.000000, "Votes: 44.158855\nReceived: 0.575525"],["Thomas Greer", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Kitty Wong", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Morag Hickman", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Paddy Duncan", 45.738882, "Votes: 46.719557\nReceived: 0.980675", true, 0.980675, "Votes: 46.719557\nReceived: 0.980675", 0.000000, "Votes: 46.719557\nReceived: 0.980675"],["Clare Greenhalgh", 46.629580, "Votes: 46.629580\nTransferred: 0.964858", true, 0.000000, "Votes: 46.629580\nTransferred: 0.964858", 0.964858, "Votes: 46.629580\nTransferred: 0.964858"],["Nick Large", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["NO FURTHER PLACES", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Exhausted", 0.000000, "Votes: 0.000119\nReceived: 0.000119", true, 0.000119, "Votes: 0.000119\nReceived: 0.000119", 0.000000, "Votes: 0.000119\nReceived: 0.000119"],["Threshold", 46.199977, "Threshold: 46.199977", false, 0, null, 0, null]]);
+var formatter = new google.visualization.NumberFormat({fractionDigits:6});
+formatter.format(data, 1);
+formatter.format(data, 3);
+formatter.format(data, 5);
+var options = {
+width:760,
+height:475,
+legend:{position:"none"},
+chartArea:{left:100,top:0,width:660,height:450},
+hAxis:{maxValue:81},
+isStacked:true,
+colors:["#fcd050", "#87cf32", "#ef3638"],
+};
+var chart = new google.visualization.BarChart(document.getElementById("round-17"));
+chart.draw(data, options);
+</script>
+<p>Count after transferring surplus votes. Keep factors of candidates who have exceeded the threshold: Charles Yarnold, 0.427778; Jasper Wallace, 0.964846; and Clare Greenhalgh, 0.970702. Candidate Paddy Duncan has reached the threshold and is elected. </p>
+<hr>
+<h3>Winners</h3>
+<p>Winners are Charles Yarnold, Jasper Wallace, Paddy Duncan, and Clare Greenhalgh.</p>
+</body>
+</html>
