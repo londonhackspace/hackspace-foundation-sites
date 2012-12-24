@@ -4,6 +4,7 @@ require_once( $_SERVER['DOCUMENT_ROOT'] . '/../lib/init.php');
 $subscribers = $db->translatedQuery( "
   select
     u.id,
+    u.subscribed,
     ifnull(u.nickname, u.full_name) nick,
     u.gladosfile,
     c.uid
@@ -12,7 +13,6 @@ $subscribers = $db->translatedQuery( "
     users u
   where
     c.user_id = u.id
-    and u.subscribed = 1
     and c.active = 1
   order by
     u.id
@@ -26,6 +26,7 @@ foreach( $subscribers as $row ) {
     $lastid = $row['id'];
     $sub = array(
       'nick' => $row['nick'],
+      'subscribed' => $row['subscribed'] == 1,
       'gladosfile' => $row['gladosfile'],
       'perms' => array(),
       'cards' => array()
