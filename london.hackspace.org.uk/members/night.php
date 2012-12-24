@@ -8,6 +8,8 @@ if (!isset($user)) {
     fURL::redirect('/login.php?forward=/members/night.php');
 }
 
+if($user->isMember()) {
+
 ?>
 <h2>Night access</h2>
 
@@ -20,4 +22,9 @@ if (!isset($user)) {
 <p id="access-code" style="display:none;font-weight:bold;font-size:x-large;">
 <?php echo file_get_contents( '../../var/code.txt' ); ?>
 </p>
-<? require('../footer.php'); ?>
+
+<? } else { ?>
+   <p>You must be a member to use this page.</p>
+<? }
+
+require('../footer.php'); ?>
