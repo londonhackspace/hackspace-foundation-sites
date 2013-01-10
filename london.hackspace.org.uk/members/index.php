@@ -18,6 +18,9 @@ if (!$user) {
 <?} else if ($user->isMember()) { ?>
     <p>You're currently a member of London Hackspace, thanks for your support!</p>
 
+    <h3>Reference Number</h3>
+    <p>Your standing order reference number is: <strong><?=$user->getMemberNumber()?></strong></p>
+    
 <h3>Your Recent Payments</h3>
 <table>
     <tr>
@@ -32,8 +35,6 @@ if (!$user) {
     <? } ?>
 </table>
 
-<h3>Reference Number</h3>
-<p>Your standing order reference number is: <strong><?=$user->getMemberNumber()?></strong></p>
 
 <? } else { ?>
     <p>You're not currently a member of London Hackspace. To become a member, we ask that you pay what you
