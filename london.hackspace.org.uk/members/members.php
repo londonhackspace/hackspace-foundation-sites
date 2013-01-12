@@ -12,17 +12,24 @@ if (!isset($user)) {
 if($user->isMember()) {
 ?>
     <p>This is a list of all members, up to date as of the last accounts reconciliation.</p>
+    <p>Please keep this list among members only.</p>
 
     <table>
         <thead>
-            <tr><th>Full name</th></tr>
+            <tr>
+                <th class="member-id"><a class="sortable" href="?order=id">ID</a></th>
+                <th><a class="sortable" href="?order=name">Full name</th>
+            </tr>
         </thead>
         <tbody>
         <?php
-        $users = $db->translatedQuery( 'SELECT full_name FROM users WHERE subscribed=1 ORDER BY lower(full_name)' );
+        $order = 'lower(full_name)';
+        if ($_GET['order'] == 'id') $order = 'id';
+        $users = $db->translatedQuery( 'SELECT id, full_name FROM users WHERE subscribed=1 ORDER BY ' . $order );
         foreach( $users as $row ):
         ?>
             <tr>
+                <th class="member-id"><?php echo $row['id'] ?></th>
                 <td><?php echo htmlspecialchars( $row['full_name'] ) ?></td>
             </tr>
         <?php endforeach; ?>
