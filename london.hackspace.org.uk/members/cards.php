@@ -60,11 +60,14 @@ if (isset($_POST['update_details'])) {
     <input type="hidden" name="token" value="<?=fRequest::generateCSRFToken()?>" />
     <input type="hidden" name="update_card" value="" />
     <table>
+        <thead>
         <tr>
             <th>Date added</th>
             <th style="text-align: center">Card ID</th>
             <th>Active</th>
         </tr>
+        </thead>
+        <tbody>
         <? foreach($user->buildCards() as $card): ?>
         <tr>
             <td><?=$card->getAddedDate()?></td>
@@ -78,6 +81,7 @@ if (isset($_POST['update_details'])) {
             </td>
         </tr>
         <? endforeach ?>
+        </tbody>
     </table>
 </form>
 

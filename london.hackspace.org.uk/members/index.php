@@ -23,16 +23,20 @@ if (!$user) {
     
 <h3>Your Recent Payments</h3>
 <table>
+    <thead>
     <tr>
         <th>Date</th>
         <th>Amount</th>
     </tr>
+    </thead>
+    <tbody>
     <? foreach($user->buildTransactions() as $transaction) {?>
     <tr>
         <td><?=$transaction->getTimestamp()?></td>
         <td>£<?=$transaction->getAmount()?></td>
     </tr>
     <? } ?>
+    </tbody>
 </table>
 
 

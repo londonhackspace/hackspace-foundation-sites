@@ -62,6 +62,10 @@ th {
     text-align:right;
 }
 
+thead th {
+    text-align: center;
+}
+
 #yui-main {
     min-height: 500px;
 }
