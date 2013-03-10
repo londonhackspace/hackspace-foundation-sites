@@ -33,6 +33,9 @@ if (isset($_POST['update_details'])) {
             } else if (isset($_POST['disable_' . $card->getUid()])) {
                 $card->setActive(0);
                 $card->store();
+            } else if (isset($_POST['delete_' . $card->getUid()]) && !$card->getActive()) {
+                $card->delete();
+                $card->store();
             }
         }
         fURL::redirect();
@@ -65,6 +68,7 @@ if (isset($_POST['update_details'])) {
             <th>Date added</th>
             <th style="text-align: center">Card ID</th>
             <th>Active</th>
+            <th>Delete</th>
         </tr>
         </thead>
         <tbody>
@@ -78,6 +82,9 @@ if (isset($_POST['update_details'])) {
                 <? else: ?>
                 <input type="submit" name="enable_<?=$card->getUid()?>" value="Enable" title="This card is currently disabled. Click to enable it." />
                 <? endif; ?>
+            </td>
+            <td style="text-align: center">
+                <input type="submit" name="delete_<?=$card->getUid()?>" value="Delete" title="Click to delete this card." <? if ($card->getActive()) { ?>disabled<? } ?> />
             </td>
         </tr>
         <? endforeach ?>
