@@ -19,7 +19,9 @@ $cams = array(
   8001 => 'main',
   8002 => 'robot',
   8003 => 'doorcam',
-  8004 => 'workshop'
+  8004 => 'workshop',
+  8005 => 'lobby',
+  8006 => 'quiet'
 );
 
 foreach($cams as $port => $cam) {
