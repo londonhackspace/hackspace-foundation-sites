@@ -30,7 +30,7 @@ function menulink($url, $name, $title) {
         <?=menulink('/members/', 'members', 'Members Home')?>
     <? if($user->isMember()) { ?>
         <?=menulink('/members/members.php', 'memberslist', 'Members List')?>
-        <?=menulink('/members/night.php', 'night', 'Night Access')?>
+        <?=menulink('/members/code.php', 'code', 'Code Access')?>
         <?=menulink('/members/webcams.php', 'webcams', 'Webcams')?>
         <?=menulink('/members/wiki.php', 'wiki', 'Wiki Access')?>
     <? } ?>
