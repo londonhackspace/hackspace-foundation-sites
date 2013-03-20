@@ -26,6 +26,8 @@ require('../header.php');
 <p>The directors of the company carry out the day-to-day business and are elected by the members yearly.
    The current list of directors is available <a href="http://wiki.hackspace.org.uk/wiki/Directors">on the wiki</a>.</p>
 
+<p>You can contact the directors by emailing <i>contact (at) london.hackspace.org.uk</i>.</p>
+
 <h3>Statutory Information</h3>
 
 <p>London Hackspace Ltd. is a company limited by guarantee, registered in England and Wales with company number 06807563.</p>

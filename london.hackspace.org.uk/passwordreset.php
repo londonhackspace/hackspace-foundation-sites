@@ -115,6 +115,9 @@ The London Hackspace email monkey
         </table>
     </fieldset>
 </form>
+
+<p>If you are having difficulty please email <i>contact (at) london.hackspace.org.uk</i>.</p>
+
 <? 
 }
 require('footer.php'); ?>
