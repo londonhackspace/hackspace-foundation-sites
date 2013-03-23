@@ -25,6 +25,7 @@ foreach( $subscribers as $row ) {
   if ($row['id'] != $lastid) {
     $lastid = $row['id'];
     $sub = array(
+      'id' => $row['id'],
       'nick' => $row['nick'],
       'subscribed' => $row['subscribed'] == 1,
       'gladosfile' => $row['gladosfile'],
