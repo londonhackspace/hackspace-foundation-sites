@@ -40,7 +40,7 @@ if (isset($_POST['reset'])) {
         $validator->addRequiredFields('email');
         $validator->validate();
 
-        $user = new User(array('email' => $_POST['email']));
+        $user = new User(array('email' => strtolower($_POST['email'])));
         $token = $user->getResetPasswordToken();
         $email = new fEmail();
         $email->addRecipient($user->getEmail());
