@@ -25,7 +25,7 @@ if($user->isMember()) {
 
 <h2>Gate padlock</h2>
 
-<p>The new space's gate has a padlock with a code on. The gate should be locked behind you.</p>
+<p>The new space's gate has a padlock with a code on. After dialing in the code you need to press the button on the bottom of the padlock. The gate should be locked behind you.</p>
 
 <p>Please treat this as confidential and do not pass it on to non-members or visitors, if in doubt please direct them to this page.</p>
 
