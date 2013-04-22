@@ -29,7 +29,7 @@ function menulink($url, $name, $title) {
             <?=menulink('/organisation/', 'organisation', 'Organisation');?>
             <?=menulink('/donate.php', 'donate', 'Donate')?>
         </ul>
-<?if (isset($user)) {?>
+    <?if (isset($user)) {?>
         <h4>Member Options</h4>
         <ul id="member-menu" class="menu">
             <?=menulink('/members/', 'members', 'Members Home')?>
@@ -41,7 +41,7 @@ function menulink($url, $name, $title) {
         <? } ?>
             <?=menulink('/members/cards.php', 'cards', 'Cards')?>
             <?=menulink('/members/edit.php', 'edit', 'Edit Account')?>
-        <? } ?>
         </ul>
+    <? } ?>
     </nav>
 </div><!-- end of menu-container -->

@@ -26,7 +26,7 @@
                 </p>
         <? } else { ?>
                 <p>
-                    <a href="/login.php">Login</a></li>
+                    <a href="/login.php">Login</a>
                 </p>
         <? } ?>
     </div>
