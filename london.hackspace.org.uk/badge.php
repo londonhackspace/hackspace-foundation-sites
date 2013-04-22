@@ -1,6 +1,6 @@
 <?
 
-$badge_url = 'http://www.flickr.com/badge_code_v2.gne?count=7&display=random' .
+$badge_url = 'http://www.flickr.com/badge_code_v2.gne?count=9&display=random' .
              '&size=s&layout=h&context=in%2Fpool-1183951%40N23%2F' .
              '&source=group&group=1183951%40N23';
 

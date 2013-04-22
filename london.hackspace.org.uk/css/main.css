@@ -1,40 +1,56 @@
 body {
     font-family: Helvetica, Arial, Verdana, sans-serif;
-    margin: 0; padding:0;
+    font-size: 12pt;
+    color: #232323;   /* off-black */
 }
 
-a {
-    color: #3528A8;
-    font-weight:bold;
-}
 
-#doc {
-    background: #fff;
-    padding-top: 4px;
-}
+/* Header */
 
 #hd {
-    border-bottom: 1px solid #AAA;
-    margin-bottom:5px;
+    font-weight: lighter;
 }
 
-#hd img {
+#hd.small-page-heading {
+    margin-bottom: 14px;
+}
+#hd.small-page-heading div {
+    margin-bottom: 14px;
+}
+
+#hd a, #hd h1 {
     float:left;
-    padding-bottom:5px;
-}
-
-h1 {
+    padding: 7px 10px;
     margin: 0;
+    font-weight: 100;
 }
 
+#hd.small-page-heading img {
+  width: 60px;
+  height: 60px;
+}
+#hd.large_page_heading img {
+    width: 95px;
+    height: 95px;
+}
 
 #hd h1 {
-    padding:12px 0px 0px 10px;
-    float:left;
-    line-height: 1em;
-    font-weight: 750;
+    font-size: 2em;
 }
 
+#hd.large-page-heading div.blurb {
+    margin-top:3px;
+    font-size: 1.33em;
+}
+#hd hr {
+    width: 90%;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 0;
+}
+
+
+/* Body */
 #bd {
     padding-top: 6px;
 }
@@ -42,6 +58,12 @@ h1 {
 #bd p, #bd table, #bd form {
     margin-left:11px;
 }
+#bd td, #bd th {
+  padding: 0.5em;
+}
+
+
+/* General Typography and spacing */
 
 h2 {
     margin-top:0px;
@@ -66,72 +88,127 @@ thead th {
     text-align: center;
 }
 
-#yui-main {
-    min-height: 500px;
+
+/* Home Page */
+#doc {
+    background-color: white;
+    padding-top: 4px;
 }
 
+/* On the homepage, and in the section headers only, change h3 to white */
+#home-page-container {
+    font-size: 0.9em;
+}
+#home-page-container h3 {
+    color: white;
+}
+
+div.home-page-section {
+    padding-bottom: 1.4em;
+}
+
+#home-page-container h3 {
+    background-color: #3f3b97;
+    padding: 6px 4px 4px 8px;
+    font-size: 1.4em;
+    font-weight: bold;
+    letter-spacing: normal;
+    border-bottom: 1px #5a5784;
+}
+.flickr-badge-container a {
+    width: 78px;
+    height: 78px;
+    padding: 2px;
+    margin: 0;
+}
+#flicker-link-container {
+    float: right;
+}
+
+#google-maps-content {
+    /*
+        We're in a 'p' tag container so as to align the left hand side of the
+        image with the surrounding text, but the 300 pixel width then
+        overflows the box on the right
+    */
+    width: 289px;         /* 300 pixel width pushed in by 11 pixels */
+
+}
+
+
+
+
+/* Footer */
 #ft {
     text-align: right;
-    color: #AAA;
-    font-size: 90%
+    font-size: 0.9em
 }
 
-#headerlogo {
-    float:left;
+
+
+
+
+/* Menus */
+
+/* The login menu on the top right of the page */
+#login-logout-container p {
+    float: right;
+    padding: 0;
+    margin: 1em 0 0 0;
+    font-size: 0.8em;
 }
 
-#membermenu {
-    padding-top:10px;
-    float:right;
-}
-
-#membermenu li{
-    display:inline;
-    list-style-type:none;
-    padding-right:5px;
-}
-
-#loggedin {
-    float:right;
-    padding-top:23px;
-    font-size: 80%;
-}
-
-#menu {
+nav#menu {
     margin: 0px 0 0 10px;
-    font-size:110%;
+    font-size: 0.8em;
 }
 
-#menu li {
-    font-weight:bold;
+#menu h4 {
+    margin: 0;
+    font-size: 1.1em;
+}
+
+nav#menu ul {
+    width: 100%;
+    padding-top: 0;
+    float: right;
+}
+
+nav#menu li {
     list-style-type: none;
-    padding:8px 8px 6px; margin:0;
+    font-weight: bold;
+    list-style-type: none;
+    padding: 4px 12px 3px;
+    margin:0;
 }
 
-#menu li.active {
+nav#menu li.active {
     background-color: #3528A8;
     color: #fff;
 }
 
-#submenu {
-    margin: 2px 0 24px 10px;
+/* Signup page */
+
+#signuptable input.submit {
+    float: right;
 }
 
-#submenu li {
-    display:inline;
-    list-style-type: none;
-    margin-right: 10px;
-}
-
-.blurb {
-    margin-top:3px;
-    font-size: 110%
+/* Other */
+div.validation_exception p {
+    color: red;
+    font-size: 1.1em;
+    font-weight: bold;
+    padding: 0.5em;
+    border: 1px solid black;
 }
 
 #bd form table {
     margin-left:0px;
 }
 
+form th, form td {
+    padding: 0.5em;
+}
 form table td {
     border:none;
 }
@@ -146,9 +223,13 @@ th.member-id {
 }
 
 @media print {
+    body {
+      background-image: none;
+    }
     th.member-id {
         color: inherit;
     }
+    
 }
 
 th a.sortable {
