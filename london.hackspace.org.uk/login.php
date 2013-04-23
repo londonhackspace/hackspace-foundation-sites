@@ -59,7 +59,7 @@ if (isset($_POST['submit'])) {
         <table>
             <tr>
                 <td><label for="email">Email</label></td>
-                <td><input type="text" id="email" name="email"/></td>
+                <td><input type="email" id="email" name="email"/></td>
             </tr>
             <tr>
                 <td><label for="password">Password</label></td>

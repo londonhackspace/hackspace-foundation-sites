@@ -18,7 +18,7 @@ if($user->isMember()) {
         <thead>
             <tr>
                 <th class="member-id"><a class="sortable" href="?order=id">ID</a></th>
-                <th><a class="sortable" href="?order=name">Full name</th>
+                <th><a class="sortable" href="?order=name">Full name</a></th>
             </tr>
         </thead>
         <tbody>

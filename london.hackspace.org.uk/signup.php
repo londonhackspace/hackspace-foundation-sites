@@ -67,26 +67,26 @@ you provide your real name and address in order to join. Your name will be visib
         <table id="signuptable">
             <tr>
                 <td><label for="email">Email</label></td>
-                <td><input type="text" id="email" name="email" /></td>
+                <td><input type="email" required autofocus id="email" name="email" /></td>
             </tr>
             <tr>
                 <td><label for="password">Password</label></td>
-                <td><input type="password" id="password" name="password" /></td>
+                <td><input type="password" required id="password" name="password" /></td>
             </tr>
             <tr>
                 <td><label for="passwordconfirm">Confirm Password</label></td>
-                <td><input type="password" id="passwordconfirm" name="passwordconfirm" /></td>
+                <td><input type="password" required id="passwordconfirm" name="passwordconfirm" /></td>
             </tr>
             <tr>
                 <td><label for="fullname">Full Name</label></td>
-                <td><input type="text" id="fullname" name="fullname" /></td>
+                <td><input type="text" required id="fullname" name="fullname" /></td>
             </tr>
             <tr>
                 <td><label for="address">Address</label></td>
-                <td><textarea id="address" name="address" cols="30" rows="5"></textarea></td>
+                <td><textarea id="address" required name="address" cols="30" rows="5"></textarea></td>
             </tr>
             <tr>
-                <td colspan="2"><input type="submit" name="submit" value="Submit" /></td>
+                <td colspan="2"><input type="submit" class="submit" name="submit" value="Submit" /></td>
             </tr>
         </table>
     </fieldset>
