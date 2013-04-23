@@ -158,23 +158,23 @@ div.home-page-section {
     font-size: 0.8em;
 }
 
-nav#menu {
+#menu-container {
     margin: 0px 0 0 10px;
     font-size: 0.8em;
 }
 
-#menu h4 {
+#menu-container h4 {
     margin: 0;
     font-size: 1.1em;
 }
 
-nav#menu ul {
+#menu-container ul {
     width: 100%;
     padding-top: 0;
     float: right;
 }
 
-nav#menu li {
+#menu-container li {
     list-style-type: none;
     font-weight: bold;
     list-style-type: none;
@@ -182,7 +182,7 @@ nav#menu li {
     margin:0;
 }
 
-nav#menu li.active {
+#menu-container li.active {
     background-color: #3528A8;
     color: #fff;
 }
