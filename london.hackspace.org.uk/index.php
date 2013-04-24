@@ -69,7 +69,7 @@ require('header.php'); ?>
             </p>
             <div class="google-maps-container">
                 <p>
-                    <iframe id="google-maps-content" src="http://maps.google.co.uk/maps?f=q&amp;source=embed&amp;hl=en&amp;q=London+Hackspace&amp;sll=51.530746,-0.076218&amp;ie=UTF8&amp;hq=London+Hackspace&amp;hnear=&amp;t=m&amp;z=14&amp;iwloc=near&amp;cid=11666902510411106101&amp;ll=51.532083,-0.060795&amp;output=embed"></iframe><br />
+                    <iframe id="google-maps-content" src="https://maps.google.co.uk/maps?f=q&amp;source=embed&amp;hl=en&amp;q=London+Hackspace&amp;sll=51.530746,-0.076218&amp;ie=UTF8&amp;hq=London+Hackspace&amp;hnear=&amp;t=m&amp;z=14&amp;iwloc=near&amp;cid=11666902510411106101&amp;ll=51.532083,-0.060795&amp;output=embed"></iframe><br />
                     <a id='google-maps-link' href='http://goo.gl/maps/7BVpY'>View larger map</a>                </p>
                 <p id='hackspace-physical-address'>
                     London Hackspace<br/>
