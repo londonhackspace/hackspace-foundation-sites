@@ -35,7 +35,8 @@
     <? if (isset($large_page_heading)) { ?>
         <div id="hd" class="container_12 large-page-heading">
             <div class="grid_4">
-                <a href="/"><img alt="logo" src="/images/london.png"/></a><h1>London<br/>Hackspace</h1>
+                  <a id="logo" href="/"><img alt="logo" src="/images/london.png"/></a>
+                  <h1>London<br/>Hackspace</h1>
             </div>
             <? if (isset($blurb)) { ?>
             <div class="blurb grid_8">
@@ -49,7 +50,8 @@
     <? } else { ?>
         <div id="hd" class="container_12 small-page-heading">
             <div class="grid_11">
-                <a href="/"><img alt="logo" src="/images/london.png"/></a><h1>London Hackspace</h1>
+                  <a href="/"><img alt="logo" src="/images/london.png"/></a>
+                <h1>London Hackspace</h1>
             </div>
         <hr/>
         </div><!-- end of hd -->

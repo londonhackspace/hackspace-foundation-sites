@@ -1,5 +1,7 @@
+@import url(http://fonts.googleapis.com/css?family=Open+Sans:400,700);
+
 body {
-    font-family: Helvetica, Arial, Verdana, sans-serif;
+    font-family: 'Open Sans', sans-serif;
     font-size: 12pt;
     color: #232323;   /* off-black */
 }
@@ -22,7 +24,6 @@ body {
     float:left;
     padding: 7px 10px;
     margin: 0;
-    font-weight: 100;
 }
 
 #hd.small-page-heading img {
@@ -35,11 +36,14 @@ body {
 }
 
 #hd h1 {
+    font-weight:700;
     font-size: 2em;
+    line-height: 1em;
 }
 
 #hd.large-page-heading div.blurb {
-    margin-top:3px;
+    margin-top:0.5em;
+    line-height: 1.3em;
     font-size: 1.33em;
 }
 #hd hr {
@@ -52,11 +56,12 @@ body {
 
 /* Body */
 #bd {
-    padding-top: 6px;
+    padding-top: 3px;
 }
 
 #bd p, #bd table, #bd form {
     margin-left:11px;
+    margin-right:11px;
 }
 #bd td, #bd th {
   padding: 0.5em;
@@ -73,7 +78,7 @@ h2 {
 
 h3 {
     margin-bottom:7px;
-    margin-top:14px;   
+    margin-top:14px;
 }
 
 td, th {
@@ -99,9 +104,6 @@ thead th {
 #home-page-container {
     font-size: 0.9em;
 }
-#home-page-container h3 {
-    color: white;
-}
 
 div.home-page-section {
     padding-bottom: 1.4em;
@@ -109,9 +111,10 @@ div.home-page-section {
 
 #home-page-container h3 {
     background-color: #3f3b97;
-    padding: 6px 4px 4px 8px;
-    font-size: 1.4em;
-    font-weight: bold;
+    color: white;
+    padding: 6px 11px 6px 11px;
+    font-size: 1.3em;
+    font-weight: 700;
     letter-spacing: normal;
     border-bottom: 1px #5a5784;
 }
@@ -141,7 +144,7 @@ div.home-page-section {
 /* Footer */
 #ft {
     text-align: right;
-    font-size: 0.9em
+    font-size: 0.7em
 }
 
 
