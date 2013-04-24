@@ -132,8 +132,10 @@ div.home-page-section {
         image with the surrounding text, but the 300 pixel width then
         overflows the box on the right
     */
-    width: 289px;         /* 300 pixel width pushed in by 11 pixels */
-
+    width: 278px;
+    height: 200px;
+    padding: 1px;
+    border: 1px solid #5a5784;
 }
 
 
