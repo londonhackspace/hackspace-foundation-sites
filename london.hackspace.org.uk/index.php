@@ -1,6 +1,6 @@
 <? 
 $page = 'about';
-$desc = 'The London Hackspace is a non-profit, community-run hacker space in central London. We provide infrastructure for our members to make and learn things.';
+$desc = 'The London Hackspace is a non-profit hackerspace in central London. We\'re a community-run workshop for people to come to share tools and knowledge.';
 $blurb = 'A non-profit hackerspace in London: a community-run workshop where people come to share tools and knowledge.';
 $hide_menu = 1;
 $show_twitter_feed = 1;
