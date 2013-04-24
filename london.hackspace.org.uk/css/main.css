@@ -91,6 +91,10 @@ thead th {
     text-align: center;
 }
 
+p {
+    margin-bottom: 1em;
+}
+
 
 /* Home Page */
 #doc {
@@ -104,7 +108,6 @@ thead th {
 }
 
 div.home-page-section {
-    padding-bottom: 1.4em;
 }
 
 #home-page-container h3 {
@@ -116,14 +119,16 @@ div.home-page-section {
     letter-spacing: normal;
     border-bottom: 1px #5a5784;
 }
+
+.flickr-badge-container {
+   padding-left: 20px; 
+}
+
 .flickr-badge-container a {
     width: 78px;
     height: 78px;
     padding: 2px;
     margin: 0;
-}
-#flicker-link-container {
-    float: right;
 }
 
 #google-maps-content {

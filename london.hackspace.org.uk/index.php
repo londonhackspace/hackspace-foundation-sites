@@ -23,7 +23,7 @@ require('header.php'); ?>
             </div>
             <div class="twitter-container">
               <p>
-                <a class="twitter-timeline" data-dnt="true" href="https://twitter.com/londonhackspace" data-widget-id="316326238916591616">Tweets by @londonhackspace</a>
+                <a class="twitter-timeline" data-dnt="true" href="https://twitter.com/londonhackspace" data-widget-id="316326238916591616" height="300">Tweets by @londonhackspace</a>
               </p>
             </div>
         </div>
