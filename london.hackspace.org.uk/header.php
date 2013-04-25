@@ -13,7 +13,7 @@
     <link rel="stylesheet" type="text/css" href="/css/lib/960gs/reset.css" />
     <link rel="stylesheet" type="text/css" href="/css/lib/960gs/text.css" />
     <link rel="stylesheet" type="text/css" href="/css/lib/960gs/960.css" />
-    <link rel="stylesheet" type="text/css" href="/css/main.css" />
+    <link rel="stylesheet" type="text/css" href="/css/main.css?1" />
     <link rel="icon" href="/favicon.ico" />
     <script type="text/javascript">
       WebFontConfig = {
