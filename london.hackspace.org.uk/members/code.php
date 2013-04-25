@@ -11,21 +11,9 @@ if (!isset($user)) {
 if($user->isMember()) {
 
 ?>
-<h2>Night access</h2>
-
-<p>Access to Cremer Business Centre between 19:00 and 07:00 is restricted by keycode access, the key you need is listed below.</p>
-
-<p>Please treat this as confidential and do not pass it on to non-members or visitors, if in doubt please direct them to this page.</p>
-
-<p><a onclick="document.getElementById('night-code').style.display = 'block';" href='#night-code'>Show access code</a></p>
-
-<p id="night-code" style="display:none;font-weight:bold;font-size:x-large;">
-<?php echo file_get_contents( '../../var/night-code.txt' ); ?>
-</p>
-
 <h2>Gate padlock</h2>
 
-<p>The new space's gate has a padlock with a code on. After dialing in the code you need to press the button on the bottom of the padlock. The gate should be locked behind you.</p>
+<p>The gate to the yard at the rear of the hackspace has a padlock with a code on. Please make sure you lock the gate behind you, and scramble the code on the padlock!.</p>
 
 <p>Please treat this as confidential and do not pass it on to non-members or visitors, if in doubt please direct them to this page.</p>
 
