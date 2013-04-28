@@ -21,8 +21,9 @@ $ctx = stream_context_create(array(
   'http' => array(
     'method' => 'GET',
     'user_agent' => $_SERVER['HTTP_USER_AGENT'], // Yahoo always use it
-// maybe 'header' => 'Connection: close'
-    'timeout' => 5
+    'timeout' => 5,
+    'header' => "Cookie: localization=en-us%3Buk%3Bus\r\n"
+// maybe 'Connection: close'?
   )
 ));
 
