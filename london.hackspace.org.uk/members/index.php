@@ -47,8 +47,11 @@ if (!$user) {
 
 <h3>Standing Order</h3>
     <p>Set up a monthly standing order with your bank (most banks let you do this online),
-       using the following details. Please make sure you enter the reference provided in the
-       reference field of your payment, or your subscription will not be recognised.</p>
+       using the following details.</p>
+
+    <p><strong>Please carefully check that you have entered the reference provided in the
+       reference field of your payment</strong>. Your subscription is processed automatically,
+        and that can't happen without the correct reference.</p>
 
 <table>
     <tr>
