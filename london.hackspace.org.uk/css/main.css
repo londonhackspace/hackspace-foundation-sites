@@ -131,6 +131,11 @@ div.home-page-section {
     margin: 0;
 }
 
+.flickr-badge-container a img {
+    padding-top: 2px;
+    padding-bottom: 2px;
+}
+
 #google-maps-content {
     /*
         We're in a 'p' tag container so as to align the left hand side of the
