@@ -29,11 +29,6 @@ if (isset($_POST['submit'])) {
         $user->setFullName($_POST['fullname']);
         $user->setAddress($_POST['address']);
         $user->setSubscriptionPeriod($_POST['length']);
-        if (isset($_POST['hackney'])) {
-            $user->setHackney(1);
-        } else {
-            $user->setHackney(0);
-        }
         $user->store();
         fURL::redirect('?saved');
         exit;
@@ -53,8 +48,6 @@ if (isset($_GET['saved'])) {
 <p><a href="http://www.legislation.gov.uk/ukpga/2006/46/part/8/chapter/2/crossheading/general">UK law</a> requires us to
 store the full name and address of all our members. If you don't provide these details, you won't receive membership privileges.</p>
 
-<p>We also ask if you live in Hackney for grant/funding purposes.</p>
-
 <p>If you prefer to pay for a longer period of time, you can change your membership period here. You must pay at least £5/month.</p>
 
 <form method="post">
@@ -72,10 +65,6 @@ store the full name and address of all our members. If you don't provide these d
             <tr>
                 <td><label for="address">Address</label></td>
                 <td><textarea id="address" name="address" cols="30" rows="5"><?=$user->getAddress()?></textarea></td>
-            </tr>
-            <tr>
-                <td><label for="hackney">I live in the London Borough of Hackney</label></td>
-                <td><input type="checkbox" id="hackney" name="hackney" <? if ($user->getHackney() == 1) { ?>checked="checked"<? } ?> /></td>
             </tr>
             <tr>
                 <td><label for="length">Subscription Length (months)</label></td>

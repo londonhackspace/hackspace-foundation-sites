@@ -25,9 +25,6 @@ if (isset($_POST['submit'])) {
         $user->setFullName($_POST['fullname']);
         $user->setAddress($_POST['address']);
         $user->setPassword(fCryptography::hashPassword($_POST['password']));
-        if (isset($_POST['hackney'])) {
-            $user->setHackney(true);
-        }
         $user->store();
 
         fSession::set('user', $user->getId());
