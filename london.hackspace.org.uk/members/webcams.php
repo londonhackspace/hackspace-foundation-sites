@@ -7,7 +7,7 @@ require('../header.php');
 
 $live = False;
 
-if (isset($user) && $user->isMember()) {
+if (isset($user) && $user->isMember() && !isset($_GET['nostream'])) {
     $live = True;
 }
 
@@ -18,7 +18,7 @@ if (!isset($_GET['camera'])) {
 }
 
 ?>
-<? if (!$live) { ?>
+<? if (!$live && !isset($_GET['nostream'])) { ?>
     <p><strong>You're not a member, so you're seeing a delayed snapshot of our webcams.</strong></p>
 <? } ?>
 <div>
