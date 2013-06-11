@@ -14,7 +14,7 @@ if (isset($_POST['submit'])) {
         $validator = new fValidation();
         $validator->addRequiredFields('password', 'email', 'uid');
         $validator->addEmailFields('email');
-        $validator->addRegexRule('uid', '#^[0-9a-zA-Z]+$#', 'Has invalid characters');
+        $validator->addRegexRule('uid', '#^[0-9a-fA-F]+$#', 'Not in hex format');
 
         $validator->validate();
 

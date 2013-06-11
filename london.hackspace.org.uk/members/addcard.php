@@ -11,6 +11,13 @@ if (!isset($user)) {
 if (isset($_POST['submit'])) {
     try {
         fRequest::validateCSRFToken($_POST['token']);
+
+        $validator = new fValidation();
+        $validator->addRequiredFields('uid');
+        $validator->addRegexRule('uid', '#^[0-9a-fA-F]+$#', 'Not in hex format');
+
+        $validator->validate();
+
         $card = new Card();
         $card->setUserId($user->getId());
         $card->setAddedDate(time());
