@@ -1,7 +1,14 @@
 <?
 /*
- * For a card-adding station, return a page that can be filled in
- * with the scanned UID, to keep it out of the browser history.
+ * For a card-adding station return a page that can be filled in with the scanned UID
+ * 
+ * There are two ways to use this page (the second is preferable on a shared machine)
+ * 
+ * - start a browser with the UID in the querystring (with --incognito or equivalent)
+ * - download temporarily, replace {0} with the UID, and point a browser at that file
+ * 
+ * This page will only be served over SSL and will redirect the user to a login page.
+ * 
  */
 
 require_once( $_SERVER['DOCUMENT_ROOT'] . '/../lib/init.php');
