@@ -98,7 +98,7 @@
 		</div>
 		<footer id="credits" role="contentinfo" class="text">
 			<hr />
-			<p>Updated in real time. Source: London Hackspace "<a href="http://wiki.london.hackspace.org.uk/view/Budget">Budget</a>" wiki page.</p>
+			<p>Updated in real time. Source: London Hackspace "<a href="http://wiki.london.hackspace.org.uk/view/Budget">Budget</a>" wiki page and the membership DB.</p>
 		</footer>
 	</div>
 </body>
