@@ -1,0 +1,84 @@
+/*
+	Basic DOM
+*/
+html {
+	font: 100%/1.3 'Open Sans', sans-serif;
+	color: #000;
+	background: #fff;
+}
+
+body {
+	font: 105%/1.3;
+	margin: 1em 2em 2em 2em;
+/*	margin-bottom: 30px;*/
+}
+
+a {
+	color: #000;
+}
+a:hover {
+	text-decoration: underline;
+}
+
+h1 {
+	font-size: 4em;
+	font-weight: bold;
+	margin-top: 0;
+	margin-bottom: 0.4em;
+}
+h2 {
+	font-size: 2em;
+	font-weight: bold;
+	margin-top: 1em;
+}
+
+img {
+	border: none;
+	vertical-align: middle;
+}
+
+hr {
+	height: 1px;
+	width: 100%; 
+	margin-right: auto; 
+	color: #cccccc; 
+	background-color: #cccccc; 
+	border: none;
+}
+
+.text .large {
+	font-size: 1.1em;
+}
+
+header,
+article,
+footer {
+	display: block;
+}
+
+.graph {
+	margin: 0px auto;
+	width: 100%;
+}
+
+/*
+	Layout
+*/
+#container {
+	width: 880px;
+}
+
+.text {
+	max-width: 800px;
+}
+
+#credits {
+	color: #666;
+	margin-top: 2em;
+}
+#credits a {
+	color: #333;
+}
+#credits h2 {
+	font-size: 1.1em;
+}
