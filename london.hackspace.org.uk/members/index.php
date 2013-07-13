@@ -42,15 +42,16 @@ if (!$user) {
 
 <? } else { ?>
     <p>You're not currently a member of London Hackspace. To become a member, we ask that you pay what you
-       think the space is worth to you. Running an organisation like this in London isn't cheap, so please be as
-       generous as you can. The minimum subscription is £5/month.</p>
+       think the space is worth to you. Running a place like this isn't cheap, so please be as
+       generous as you can. The Hackspace costs around £20/month per member to run, and the minimum subscription
+       is £5/month.</p>
 
 <h3>Standing Order</h3>
     <p>Set up a monthly standing order with your bank (most banks let you do this online),
        using the following details.</p>
 
     <p><strong>Please carefully check that you have entered the reference provided in the
-       reference field of your payment</strong>. Your subscription is processed automatically,
+       reference field of your payment</strong>. Your payment is processed automatically,
         and that can't happen without the correct reference.</p>
 
 <table>
@@ -72,7 +73,7 @@ if (!$user) {
     </tr>
     <tr>
         <th>Reference</th>
-        <td><?=$user->getMemberNumber()?></td>
+        <td style="font-family:monospace"><?=$user->getMemberNumber()?></td>
     </tr>
 </table>
 
@@ -81,13 +82,15 @@ if (!$user) {
     <p>Once the payment has left your account, it can take up to four working days to be reflected here.</p>
 
 <h3>Can't do Standing Order?</h3>
-<p>In our experience standing order is an almost universal payment method in the UK.
-   It's the only method which is completely free for both you and us. Consequently, we don't accept
-   payment for membership by any other method.</p>
 
-<p> If you genuinely aren't able to use a standing
-    order to pay, please drop <a href="mailto:russ@hackspace.org.uk">Russ</a> an email to let us
-    know why.</p>
+  <p>Currently, the only way to be recognised as a member is for your membership payment to appear in our bank account
+      with the correct payment reference. If you can't do this by standing order, you can send a one-off
+      bank transfer with the same details, or bring these details to any Barclays branch and pay in cash.
+      Please make sure that the reference is correct; bank cashiers frequently get it wrong.</p>
+
+<h3>Any problems?</h3>
+   <p>If you have any problems paying, please contact 
+      <a href="mailto:membership@london.hackspace.org.uk">membership@london.hackspace.org.uk</a>.</p>
 
 <? } ?>
 
