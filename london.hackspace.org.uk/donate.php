@@ -49,6 +49,6 @@ require( './header.php' );
 
 
 <h3>Bitcoin</h3>
-<p>Our Bitcoin address is <strong>1aiBPLdHEW8wu9WpufdBT7kpJRCkGR9P1</strong>.</p>
+<p>Our Bitcoin address is <a href="https://blockchain.info/address/1aiBPLdHEW8wu9WpufdBT7kpJRCkGR9P1"><strong>1aiBPLdHEW8wu9WpufdBT7kpJRCkGR9P1</strong></a>.</p>
 
 <?php require('./footer.php'); ?>
