@@ -44,8 +44,8 @@ if (isset($_POST['submit'])) {
 <p>The London Hackspace is a members-owned non-profit association. Members have a hand in the running of the
 organisation as well as 24/7 access to the space.</p>
 
-<p>Membership is paid monthly by standing order. We ask that you pay what you think the space is worth to you. Running an
-organisation like this in London isn't cheap, so please be as generous as you can. The minimum subscription is £5/month. The
+<p>Membership is paid monthly by standing order. We ask that you pay what you think the space is worth to you. <a href="/cost-of-hacking/">Running an
+organisation like this in London isn't cheap</a>, so please be as generous as you can. The minimum subscription is £5/month. The
 space requires our members to contribute an average subscription of £20/month to survive.</p>
 
 <h2>Join the London Hackspace</h2>
