@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
   <title>The Cost of Hacking – London Hackspace</title>
-  <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+  <link href='//fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
   <link rel="stylesheet" href="css/base.css" type="text/css">
 	<script type="text/javascript" src="https://www.google.com/jsapi"></script>
 
@@ -63,7 +63,7 @@
 <body>
 	<div id="container">
 		<header role="banner" class="text">
-			<h1><img src="http://london.hackspace.org.uk/images/london.png" width="60" height="60" alt="London Hackspace" /> The Cost of Hacking</h1>
+			<h1><img src="//london.hackspace.org.uk/images/london.png" width="60" height="60" alt="London Hackspace" /> The Cost of Hacking</h1>
       <p><strong>The London Hackspace is entirely funded by your membership subscriptions &amp; donations.</strong></p>
       <p>We've taken a massive leap in moving to and fitting out our new space on Hackney Road, and we're currently
       making a monthly loss and burning through our cash reserves.
@@ -98,7 +98,7 @@
 		</div>
 		<footer id="credits" role="contentinfo" class="text">
 			<hr />
-			<p>Updated in real time. Source: London Hackspace "<a href="http://wiki.london.hackspace.org.uk/view/Budget">Budget</a>" wiki page and the membership DB.</p>
+			<p>Updated in real time. Source: London Hackspace "<a href="https://wiki.london.hackspace.org.uk/view/Budget">Budget</a>" wiki page and the membership DB.</p>
 		</footer>
 	</div>
 </body>
