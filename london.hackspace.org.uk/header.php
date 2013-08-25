@@ -49,7 +49,7 @@
     <? if (isset($large_page_heading)) { ?>
         <div id="hd" class="container_12 large-page-heading">
             <div class="grid_4">
-                  <a id="logo" href="/"><img alt="logo" src="/images/london.png"/></a>
+                  <a id="logo" href="/"><img alt="logo" src="/images/london.png" width=60 height=60/></a>
                   <h1>London<br/>Hackspace</h1>
             </div>
             <? if (isset($blurb)) { ?>
