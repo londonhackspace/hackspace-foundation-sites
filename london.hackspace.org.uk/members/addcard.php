@@ -18,6 +18,11 @@ if (isset($_POST['submit'])) {
 
         $validator->validate();
 
+        if ($_POST['uid'] == '21222324') {
+            /* New Visa cards return this, presumably for privacy */
+            throw new fValidationException('Non-unique UID.');
+        }
+ 
         $card = new Card();
         $card->setUserId($user->getId());
         $card->setAddedDate(time());
