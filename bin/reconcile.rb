@@ -15,7 +15,7 @@ ofx.bank_account.statement.transactions.each do |transaction|
       next
     end
 
-    match = transaction.payee.upcase.match(/H[S5]([O0-9]{4,})/)
+    match = transaction.payee.upcase.match(/H[S5] ?([O0-9]{4,})/)
     if !match:
       next
     end
