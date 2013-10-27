@@ -5,13 +5,16 @@ require( '../header.php' );
 if (!isset($user)) {
     fURL::redirect('/login.php?forward=/members/members.php');
 }
+
+$last = array_pop($db->query('select max(date(timestamp)) from transactions')->fetchRow());
+
 ?>
 
 <h2>Members list</h2>
 <?
 if($user->isMember()) {
 ?>
-    <p>This is a list of all members, up to date as of the last accounts reconciliation.</p>
+  <p>This is a list of all members, up to date as of the last accounts reconciliation (<?=$last?>).</p>
     <p>Please keep this list among members only.</p>
 
     <table>
