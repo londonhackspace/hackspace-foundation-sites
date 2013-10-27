@@ -10,7 +10,10 @@
  * @package    Flourish
  * @link       http://flourishlib.com/fFile
  * 
- * @version    1.0.0b36
+ * @version    1.0.0b39
+ * @changes    1.0.0b39  Backwards Compatibility Break - ::output() now automatically ends any open output buffering and discards the contents [wb, 2011-08-24]
+ * @changes    1.0.0b38  Added the Countable interface to the class [wb, 2011-06-03]
+ * @changes    1.0.0b37  Fixed mime type detection of BMP images [wb, 2011-03-07]
  * @changes    1.0.0b36  Added the `$remove_extension` parameter to ::getName() [wb, 2011-01-10]
  * @changes    1.0.0b35  Added calls to clearstatcache() in ::append() and ::write() to prevent incorrect data from being returned by ::getMTime() and ::getSize() [wb, 2010-11-27]
  * @changes    1.0.0b34  Added ::getExtension() [wb, 2010-05-10]
@@ -48,7 +51,7 @@
  * @changes    1.0.0b2   Made ::rename() and ::write() return the object for method chaining [wb, 2008-11-22] 
  * @changes    1.0.0b    The initial implementation [wb, 2007-06-14]
  */
-class fFile implements Iterator
+class fFile implements Iterator, Countable
 {
 	// The following constants allow for nice looking callbacks to static methods
 	const create = 'fFile::create';
@@ -171,7 +174,7 @@ class fFile implements Iterator
 			return 'image/gif';	
 		}
 		
-		if ($_0_2 == 'BM' && strlen($content) > 14 && array($content[14], array("\x0C", "\x28", "\x40", "\x80"))) {
+		if ($_0_2 == 'BM' && $length > 14 && in_array($content[14], array("\x0C", "\x28", "\x40", "\x80"))) {
 			return 'image/x-ms-bmp';	
 		}
 		
@@ -647,6 +650,40 @@ class fFile implements Iterator
 		
 		return $this;
 	}
+
+
+	/**
+	 * Returns the number of lines in the file
+	 *
+	 * @return integer  The number of lines in the file
+	 */
+	public function count()
+	{
+		$this->tossIfDeleted();
+
+		$file_handle = fopen($this->file, 'r');
+
+		$lines        = 0;
+		$has_contents = FALSE;
+
+		// Read 512KB at a time to make this more efficient without using too much ram
+		while (!feof($file_handle)) {
+			$text   = fread($file_handle, 524288);
+			$text   = str_replace("\r\n", "\n", $text);
+			$text   = str_replace("\r", "\n", $text);
+			$lines += substr_count($text, "\n");
+			if ($text !== "") {
+				$has_contents = TRUE;
+			}
+		}
+		fclose($file_handle);
+
+		if ($has_contents) {
+			$lines++;
+		}
+
+		return $lines;
+	}
 	
 	
 	/**
@@ -1056,8 +1093,8 @@ class fFile implements Iterator
 	 * This method is primarily intended for when PHP is used to control access
 	 * to files.
 	 * 
-	 * Be sure to turn off output buffering and close the session, if open, to
-	 * prevent performance issues. 
+	 * Be sure to close the session, if open, to prevent performance issues.
+	 * Any open output buffers are automatically closed and discarded.
 	 * 
 	 * @param  boolean $headers   If HTTP headers for the file should be included
 	 * @param  mixed   $filename  Present the file as an attachment instead of just outputting type headers - if a string is passed, that will be used for the filename, if `TRUE` is passed, the current filename will be used
@@ -1067,15 +1104,8 @@ class fFile implements Iterator
 	{
 		$this->tossIfDeleted();
 		
-		if (ob_get_level() > 0) {
-			throw new fProgrammerException(
-				'The method requested, %1$s, can not be used when output buffering is turned on, due to potential memory issues. Please call %2$s, %3$s and %4$s, or %5$s as appropriate to turn off output buffering.',
-				'output()',
-				'ob_end_clean()',
-				'fBuffer::erase()',
-				'fBuffer::stop()',
-				'fTemplating::destroy()'
-			);
+		while (ob_get_level() > 0) {
+			ob_end_clean();
 		}
 		
 		if ($headers) {

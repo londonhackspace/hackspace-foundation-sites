@@ -2,14 +2,20 @@
 /**
  * Gets schema information for the selected database
  * 
- * @copyright  Copyright (c) 2007-2010 Will Bond
+ * @copyright  Copyright (c) 2007-2012 Will Bond
  * @author     Will Bond [wb] <will@flourishlib.com>
  * @license    http://flourishlib.com/license
  * 
  * @package    Flourish
  * @link       http://flourishlib.com/fSchema
  * 
- * @version    1.0.0b45
+ * @version    1.0.0b51
+ * @changes    1.0.0b51  Fixed handling of getting tables in table creation order when a table references itself, fixed default value detection for the last column in a MySQL table [wb, 2012-01-12]
+ * @changes    1.0.0b50  Fixed detection of explicitly named SQLite foreign key constraints [wb, 2011-08-23]
+ * @changes    1.0.0b49  Added support for spatial/geometric data types in MySQL and PostgreSQL [wb, 2011-05-26]
+ * @changes    1.0.0b48  Fixed a bug with ::getTables() not working on MySQL 4.x, fixed ::getKeys() to always return a reset array [wb, 2011-05-24]
+ * @changes    1.0.0b47  Backwards Compatibility Break - ::getTables(), ::getColumnInfo(), ::getDatabases(), ::getKeys() and ::getRelationships() now return database, schema, table and column names in lowercase, added the `$creation_order` parameter to ::getTables(), fixed bugs with getting column and key information from MSSQL, Oracle and SQLite [wb, 2011-05-09]
+ * @changes    1.0.0b46  Enhanced SQLite schema detection to cover situations where `UNIQUE` constraints are defined separately from the table and when comments are used in `CREATE TABLE` statements [wb, 2011-02-06]
  * @changes    1.0.0b45  Fixed Oracle auto incrementing detection to work with `INSERT OR UPDATE` triggers, fixed detection of dynamic default date/time/timestamp values for DB2 and Oracle [wb, 2010-12-04]
  * @changes    1.0.0b44  Fixed the list of valid elements for ::getColumnInfo() [wb, 2010-11-28]
  * @changes    1.0.0b43  Added the `comment` element to the information returned by ::getColumnInfo() [wb, 2010-11-28]
@@ -142,15 +148,6 @@ class fSchema
 	 */
 	private $tables = NULL;
 	
-	/**
-	 * The version of the database being queried
-	 * 
-	 * This is currently only used for MSSQL and MySQL
-	 * 
-	 * @var integer
-	 */
-	private $version = NULL;
-	
 	
 	/**
 	 * Sets the database
@@ -229,6 +226,70 @@ class fSchema
 	
 	
 	/**
+	 * Returns an ordered array of table names, in a valid table creation order
+	 * 
+	 * @param string  $filter_table  The only return this table and tables that rely on it
+	 * @return array  An array of table names
+	 */
+	private function determineTableCreationOrder($filter_table=NULL)
+	{
+		$found          = array();
+		$ignored_found  = array();
+		
+		$current_tables = $this->getTables();
+		// Prevent an infinite loop
+		$last_tables    = array();
+		while ($current_tables && $current_tables != $last_tables) {
+			$remaining_tables = array();
+			foreach ($current_tables as $table) {
+				$foreign_keys = $this->getKeys($table, 'foreign');
+				if (!$foreign_keys) {
+					if ($filter_table !== NULL) {
+						if ($table == $filter_table) {
+							$found[] = $table;
+						} else {
+							$ignored_found[] = $table;
+						}
+					} else {
+						$found[] = $table;
+					}
+					
+				} else {
+					$all_dependencies_met = TRUE;
+					$found_dependencies   = 0;
+					foreach ($foreign_keys as $foreign_key) {
+						if ($table != $foreign_key['foreign_table'] && !in_array($foreign_key['foreign_table'], $found) && !in_array($foreign_key['foreign_table'], $ignored_found)) {
+							$all_dependencies_met = FALSE;
+							break;
+						} elseif (in_array($foreign_key['foreign_table'], $found)) {
+							$found_dependencies++;
+						}
+					}
+					if ($all_dependencies_met) {
+						if ($filter_table !== NULL) {
+							if ($found_dependencies || $table == $filter_table) {
+								$found[] = $table;
+							} else {
+								$ignored_found[] = $table;
+							}
+						} else {
+							$found[] = $table;
+						}
+						
+					} else {
+						$remaining_tables[] = $table;
+					}
+				}
+			}
+			$last_tables    = $current_tables;
+			$current_tables = $remaining_tables;
+		}
+		
+		return $found;
+	}
+	
+	
+	/**
 	 * Sets the schema to be cached to the fCache object specified
 	 * 
 	 * @param  fCache $cache      The cache to cache to
@@ -247,7 +308,6 @@ class fSchema
 		$this->column_info        = $this->cache->get($prefix . 'column_info',          array());
 		$this->databases          = $this->cache->get($prefix . 'databases',            NULL);
 		$this->keys               = $this->cache->get($prefix . 'keys',                 array());
-		$this->version            = $this->cache->get($prefix . 'version',              NULL);
 		
 		if (!$this->column_info_override && !$this->keys_override) {
 			$this->merged_column_info = $this->cache->get($prefix . 'merged_column_info',   array());
@@ -363,15 +423,23 @@ class fSchema
 					C.REMARKS AS \"COMMENT\"
 				FROM
 					SYSCAT.COLUMNS AS C LEFT JOIN
-					SYSCAT.COLCHECKS AS CC ON C.TABSCHEMA = CC.TABSCHEMA AND C.TABNAME = CC.TABNAME AND C.COLNAME = CC.COLNAME AND CC.USAGE = 'R' LEFT JOIN
-					SYSCAT.CHECKS AS CH ON C.TABSCHEMA = CH.TABSCHEMA AND C.TABNAME = CH.TABNAME AND CH.TYPE = 'C' AND CH.CONSTNAME = CC.CONSTNAME
+					SYSCAT.COLCHECKS AS CC ON
+						C.TABSCHEMA = CC.TABSCHEMA AND
+						C.TABNAME = CC.TABNAME AND
+						C.COLNAME = CC.COLNAME AND
+						CC.USAGE = 'R' LEFT JOIN
+					SYSCAT.CHECKS AS CH ON
+						C.TABSCHEMA = CH.TABSCHEMA AND
+						C.TABNAME = CH.TABNAME AND
+						CH.TYPE = 'C' AND
+						CH.CONSTNAME = CC.CONSTNAME
 				WHERE
-					C.TABSCHEMA = %s AND
-					C.TABNAME = %s
+					LOWER(C.TABSCHEMA) = %s AND
+					LOWER(C.TABNAME) = %s
 				ORDER BY
 					C.COLNO ASC";
 		
-		$result = $this->database->query($sql, strtoupper($schema), strtoupper($table));
+		$result = $this->database->query($sql, strtolower($schema), strtolower($table));
 		
 		foreach ($result as $row) {
 			
@@ -412,7 +480,7 @@ class fSchema
 				if (is_resource($row['constraint'])) {
 					$row['constraint'] = stream_get_contents($row['constraint']);
 				}
-				if (preg_match('/^\s*' . preg_quote($row['column'], '/') . '\s+in\s+\(\s*(\'0\',\s*\'1\'|\'1\',\s*\'0\')\s*\)\s*$/i', $row['constraint'])) {
+				if (preg_match('/^\s*"?' . preg_quote($row['column'], '/') . '"?\s+in\s+\(\s*(\'0\',\s*\'1\'|\'1\',\s*\'0\')\s*\)\s*$/i', $row['constraint'])) {
 					$info['type'] = 'boolean';
 					$info['max_length'] = NULL;
 				}
@@ -420,7 +488,7 @@ class fSchema
 			
 			// If the column has a constraint, look for valid values
 			if (in_array($info['type'], array('char', 'varchar')) && !empty($row['constraint'])) {
-				if (preg_match('/^\s*' . preg_quote($row['column'], '/') . '\s+in\s+\((.*?)\)\s*$/i', $row['constraint'], $match)) {
+				if (preg_match('/^\s*"?' . preg_quote($row['column'], '/') . '"?\s+in\s+\((.*?)\)\s*$/i', $row['constraint'], $match)) {
 					if (preg_match_all("/(?<!')'((''|[^']+)*)'/", $match[1], $matches, PREG_PATTERN_ORDER)) {
 						$info['valid_values'] = str_replace("''", "'", $matches[1]);
 					}			
@@ -481,63 +549,69 @@ class fSchema
 		$params  = array();
 		
 		$sql  = "(SELECT
-					 LOWER(RTRIM(R.TABSCHEMA)) AS \"SCHEMA\",
-					 LOWER(R.TABNAME) AS \"TABLE\",
-					 R.CONSTNAME AS CONSTRAINT_NAME,
-					 'foreign' AS \"TYPE\",
-					 LOWER(K.COLNAME) AS \"COLUMN\",
-					 LOWER(RTRIM(R.REFTABSCHEMA)) AS FOREIGN_SCHEMA,
-					 LOWER(R.REFTABNAME) AS FOREIGN_TABLE,
-					 LOWER(FK.COLNAME) AS FOREIGN_COLUMN,
-					 CASE R.DELETERULE WHEN 'C' THEN 'cascade' WHEN 'A' THEN 'no_action' WHEN 'R' THEN 'restrict' ELSE 'set_null' END AS ON_DELETE,
-					 CASE R.UPDATERULE WHEN 'A' THEN 'no_action' WHEN 'R' THEN 'restrict' END AS ON_UPDATE,
-					 K.COLSEQ
-				 FROM
-					 SYSCAT.REFERENCES AS R INNER JOIN 
-					 SYSCAT.KEYCOLUSE AS K ON R.CONSTNAME = K.CONSTNAME AND R.TABSCHEMA = K.TABSCHEMA AND R.TABNAME = K.TABNAME INNER JOIN
-					 SYSCAT.KEYCOLUSE AS FK ON R.REFKEYNAME = FK.CONSTNAME AND R.REFTABSCHEMA = FK.TABSCHEMA AND R.REFTABNAME = FK.TABNAME
-				 WHERE ";
+					LOWER(RTRIM(R.TABSCHEMA)) AS \"SCHEMA\",
+					LOWER(R.TABNAME) AS \"TABLE\",
+					R.CONSTNAME AS CONSTRAINT_NAME,
+					'foreign' AS \"TYPE\",
+					LOWER(K.COLNAME) AS \"COLUMN\",
+					LOWER(RTRIM(R.REFTABSCHEMA)) AS FOREIGN_SCHEMA,
+					LOWER(R.REFTABNAME) AS FOREIGN_TABLE,
+					LOWER(FK.COLNAME) AS FOREIGN_COLUMN,
+					CASE R.DELETERULE WHEN 'C' THEN 'cascade' WHEN 'A' THEN 'no_action' WHEN 'R' THEN 'restrict' ELSE 'set_null' END AS ON_DELETE,
+					CASE R.UPDATERULE WHEN 'A' THEN 'no_action' WHEN 'R' THEN 'restrict' END AS ON_UPDATE,
+					K.COLSEQ
+				FROM
+					SYSCAT.REFERENCES AS R INNER JOIN 
+					SYSCAT.KEYCOLUSE AS K ON
+						R.CONSTNAME = K.CONSTNAME AND
+						R.TABSCHEMA = K.TABSCHEMA AND
+						R.TABNAME = K.TABNAME INNER JOIN
+					SYSCAT.KEYCOLUSE AS FK ON
+						R.REFKEYNAME = FK.CONSTNAME AND
+						R.REFTABSCHEMA = FK.TABSCHEMA AND
+						R.REFTABNAME = FK.TABNAME
+				WHERE ";
 		
 		$conditions = array();
 		foreach ($tables as $table) {
 			if (strpos($table, '.') === FALSE) {
 				$table = $default_schema . '.' . $table;
 			}	
-			list ($schema, $table) = explode('.', strtoupper($table));
-			$conditions[] = "R.TABSCHEMA = %s AND R.TABNAME = %s";
+			list ($schema, $table) = explode('.', strtolower($table));
+			$conditions[] = "LOWER(R.TABSCHEMA) = %s AND LOWER(R.TABNAME) = %s";
 			$params[] = $schema;
 			$params[] = $table;
 		}
 		$sql .= '((' . join(') OR( ', $conditions) . '))';
 		 
 		$sql .= "
-				 ) UNION (
-				 SELECT
-					 LOWER(RTRIM(I.TABSCHEMA)) AS \"SCHEMA\",
-					 LOWER(I.TABNAME) AS \"TABLE\",
-					 LOWER(I.INDNAME) AS CONSTRAINT_NAME,
-					 CASE I.UNIQUERULE WHEN 'U' THEN 'unique' ELSE 'primary' END AS \"TYPE\",
-					 LOWER(C.COLNAME) AS \"COLUMN\",
-					 NULL AS FOREIGN_SCHEMA,
-					 NULL AS FOREIGN_TABLE,
-					 NULL AS FOREIGN_COLUMN,
-					 NULL AS ON_DELETE,
-					 NULL AS ON_UPDATE,
-					 C.COLSEQ
-				 FROM
-					 SYSCAT.INDEXES AS I INNER JOIN
-					 SYSCAT.INDEXCOLUSE AS C ON I.INDSCHEMA = C.INDSCHEMA AND I.INDNAME = C.INDNAME
-				 WHERE
-					 I.UNIQUERULE IN ('U', 'P') AND
-					 ";
+				) UNION (
+				SELECT
+					LOWER(RTRIM(I.TABSCHEMA)) AS \"SCHEMA\",
+					LOWER(I.TABNAME) AS \"TABLE\",
+					LOWER(I.INDNAME) AS CONSTRAINT_NAME,
+					CASE I.UNIQUERULE WHEN 'U' THEN 'unique' ELSE 'primary' END AS \"TYPE\",
+					LOWER(C.COLNAME) AS \"COLUMN\",
+					NULL AS FOREIGN_SCHEMA,
+					NULL AS FOREIGN_TABLE,
+					NULL AS FOREIGN_COLUMN,
+					NULL AS ON_DELETE,
+					NULL AS ON_UPDATE,
+					C.COLSEQ
+				FROM
+					SYSCAT.INDEXES AS I INNER JOIN
+					SYSCAT.INDEXCOLUSE AS C ON I.INDSCHEMA = C.INDSCHEMA AND I.INDNAME = C.INDNAME
+				WHERE
+					I.UNIQUERULE IN ('U', 'P') AND
+					";
 		
 		$conditions = array();
 		foreach ($tables as $table) {
 			if (strpos($table, '.') === FALSE) {
 				$table = $default_schema . '.' . $table;
 			}	
-			list ($schema, $table) = explode('.', strtoupper($table));
-			$conditions[] = "I.TABSCHEMA = %s AND I.TABNAME = %s";
+			list ($schema, $table) = explode('.', strtolower($table));
+			$conditions[] = "LOWER(I.TABSCHEMA) = %s AND LOWER(I.TABNAME) = %s";
 			$params[] = $schema;
 			$params[] = $table;
 		}
@@ -710,49 +784,47 @@ class fSchema
 			'money'      => array('min' => new fNumber('-922337203685477.5808'), 'max' => new fNumber('922337203685477.5807'))
 		);
 		
-		if (!$this->version) {
-			$this->version = (int) $this->database->query("SELECT CAST(SERVERPROPERTY('productversion') AS VARCHAR(20))")->fetchScalar();
-			if ($this->cache) {
-				$this->cache->set($this->makeCachePrefix() . 'version', $this->version);
-			}
-		}
-		
 		// Get the column info
 		$sql = "SELECT
-						c.column_name              AS 'column',
-						c.data_type                AS 'type',
-						c.is_nullable              AS nullable,
-						c.column_default           AS 'default',
-						c.character_maximum_length AS max_length,
-						c.numeric_precision        AS precision,
-						c.numeric_scale            AS decimal_places,
-						CASE
-							WHEN
-							  COLUMNPROPERTY(OBJECT_ID(QUOTENAME(c.table_schema) + '.' + QUOTENAME(c.table_name)), c.column_name, 'IsIdentity') = 1 AND
-							  OBJECTPROPERTY(OBJECT_ID(QUOTENAME(c.table_schema) + '.' + QUOTENAME(c.table_name)), 'IsMSShipped') = 0
-							THEN '1'
-							ELSE '0'
-						  END AS auto_increment,
-						cc.check_clause AS 'constraint',
-						CAST(ex.value AS VARCHAR(7500)) AS 'comment'
-					FROM
-						INFORMATION_SCHEMA.COLUMNS AS c LEFT JOIN
-						INFORMATION_SCHEMA.CONSTRAINT_COLUMN_USAGE AS ccu ON c.column_name = ccu.column_name AND c.table_name = ccu.table_name AND c.table_catalog = ccu.table_catalog LEFT JOIN
-						INFORMATION_SCHEMA.CHECK_CONSTRAINTS AS cc ON ccu.constraint_name = cc.constraint_name AND ccu.constraint_catalog = cc.constraint_catalog";
+					LOWER(c.column_name)       AS 'column',
+					c.data_type                AS 'type',
+					c.is_nullable              AS nullable,
+					c.column_default           AS 'default',
+					c.character_maximum_length AS max_length,
+					c.numeric_precision        AS precision,
+					c.numeric_scale            AS decimal_places,
+					CASE
+						WHEN
+							COLUMNPROPERTY(OBJECT_ID(QUOTENAME(c.table_schema) + '.' + QUOTENAME(c.table_name)), c.column_name, 'IsIdentity') = 1 AND
+							OBJECTPROPERTY(OBJECT_ID(QUOTENAME(c.table_schema) + '.' + QUOTENAME(c.table_name)), 'IsMSShipped') = 0
+						THEN '1'
+						ELSE '0'
+					END AS auto_increment,
+					cc.check_clause AS 'constraint',
+					CAST(ex.value AS VARCHAR(7500)) AS 'comment'
+				FROM
+					INFORMATION_SCHEMA.COLUMNS AS c LEFT JOIN
+					INFORMATION_SCHEMA.CONSTRAINT_COLUMN_USAGE AS ccu ON
+						c.column_name = ccu.column_name AND
+						c.table_name = ccu.table_name AND
+						c.table_catalog = ccu.table_catalog LEFT JOIN
+					INFORMATION_SCHEMA.CHECK_CONSTRAINTS AS cc ON
+						ccu.constraint_name = cc.constraint_name AND
+						ccu.constraint_catalog = cc.constraint_catalog";
 		
-		if ($this->version < 9) {
-			$sql .= " LEFT JOIN sysproperties AS ex ON ex.id = OBJECT_ID(QUOTENAME(c.table_schema) + '.' + QUOTENAME(c.table_name)) AND ex.smallid = c.ordinal_position AND ex.name = 'MS_Description' AND OBJECTPROPERTY(OBJECT_ID(QUOTENAME(c.table_schema) + '.' + QUOTENAME(c.table_name)), 'IsMsShipped') = 0 ";
+		if (version_compare($this->database->getVersion(), 9, '<')) {
+			$sql .= " LEFT JOIN sysproperties AS ex ON ex.id = OBJECT_ID(QUOTENAME(c.table_schema) + '.' + QUOTENAME(c.table_name)) AND ex.smallid = COLUMNPROPERTY(OBJECT_ID(QUOTENAME(c.table_schema) + '.' + QUOTENAME(c.table_name)), c.column_name, 'ColumnId') AND ex.name = 'MS_Description' AND OBJECTPROPERTY(OBJECT_ID(QUOTENAME(c.table_schema) + '.' + QUOTENAME(c.table_name)), 'IsMsShipped') = 0 ";
 		} else {
-			$sql .= " LEFT JOIN SYS.EXTENDED_PROPERTIES AS ex ON ex.major_id = OBJECT_ID(QUOTENAME(c.table_schema) + '.' + QUOTENAME(c.table_name)) AND ex.minor_id = c.ordinal_position AND ex.name = 'MS_Description' AND OBJECTPROPERTY(OBJECT_ID(QUOTENAME(c.table_schema) + '.' + QUOTENAME(c.table_name)), 'IsMsShipped') = 0 ";
+			$sql .= " LEFT JOIN SYS.EXTENDED_PROPERTIES AS ex ON ex.major_id = OBJECT_ID(QUOTENAME(c.table_schema) + '.' + QUOTENAME(c.table_name)) AND ex.minor_id = COLUMNPROPERTY(OBJECT_ID(QUOTENAME(c.table_schema) + '.' + QUOTENAME(c.table_name)), c.column_name, 'ColumnId') AND ex.name = 'MS_Description' AND OBJECTPROPERTY(OBJECT_ID(QUOTENAME(c.table_schema) + '.' + QUOTENAME(c.table_name)), 'IsMsShipped') = 0 ";
 		}
 		
 		$sql .= "
 					WHERE
-						c.table_name = %s AND
-						c.table_schema = %s AND
+						LOWER(c.table_name) = %s AND
+						LOWER(c.table_schema) = %s AND
 						c.table_catalog = DB_NAME()";
 		
-		$result = $this->database->query($sql, $table, $schema);
+		$result = $this->database->query($sql, strtolower($table), strtolower($schema));
 		
 		foreach ($result as $row) {
 			
@@ -800,7 +872,7 @@ class fSchema
 			
 			// If the column has a constraint, look for valid values
 			if (in_array($info['type'], array('char', 'varchar')) && !empty($row['constraint'])) {
-				if (preg_match('#^\(((?:(?: OR )?\[[^\]]+\]\s*=\s*\'(?:\'\'|[^\']+)+\')+)\)$#D', $row['constraint'], $matches)) {
+				if (preg_match('#^\(((?:(?: OR )?\[[^\]]+\]\s*=\s*\'(?:\'\'|[^\']+)*\')+)\)$#D', $row['constraint'], $matches)) {
 					$valid_values = explode(' OR ', $matches[1]);
 					foreach ($valid_values as $key => $value) {
 						$value = preg_replace('#^\s*\[' . preg_quote($row['column'], '#') . '\]\s*=\s*\'(.*)\'\s*$#', '\1', $value);
@@ -861,35 +933,39 @@ class fSchema
 		}
 		
 		$sql  = "SELECT
-						c.table_schema AS \"schema\",
-						c.table_name AS \"table\",
-						kcu.constraint_name AS constraint_name,
-						CASE c.constraint_type
-							WHEN 'PRIMARY KEY' THEN 'primary'
-							WHEN 'FOREIGN KEY' THEN 'foreign'
-							WHEN 'UNIQUE' THEN 'unique'
-						END AS 'type',
-						kcu.column_name AS 'column',
-						ccu.table_schema AS foreign_schema,
-						ccu.table_name AS foreign_table,
-						ccu.column_name AS foreign_column,
-						REPLACE(LOWER(rc.delete_rule), ' ', '_') AS on_delete,
-						REPLACE(LOWER(rc.update_rule), ' ', '_') AS on_update
-					FROM
-						INFORMATION_SCHEMA.TABLE_CONSTRAINTS AS c INNER JOIN
-						INFORMATION_SCHEMA.KEY_COLUMN_USAGE AS kcu ON c.table_name = kcu.table_name AND c.constraint_name = kcu.constraint_name LEFT JOIN
-						INFORMATION_SCHEMA.REFERENTIAL_CONSTRAINTS AS rc ON c.constraint_name = rc.constraint_name LEFT JOIN
-						INFORMATION_SCHEMA.CONSTRAINT_COLUMN_USAGE AS ccu ON ccu.constraint_name = rc.unique_constraint_name
-					WHERE
-						c.constraint_catalog = DB_NAME() AND
-						c.table_name != 'sysdiagrams'
-					ORDER BY
-						LOWER(c.table_schema),
-						LOWER(c.table_name),
-						c.constraint_type,
-						LOWER(kcu.constraint_name),
-						kcu.ordinal_position,
-						LOWER(kcu.column_name)";
+					LOWER(c.table_schema) AS \"schema\",
+					LOWER(c.table_name) AS \"table\",
+					kcu.constraint_name AS constraint_name,
+					CASE c.constraint_type
+						WHEN 'PRIMARY KEY' THEN 'primary'
+						WHEN 'FOREIGN KEY' THEN 'foreign'
+						WHEN 'UNIQUE' THEN 'unique'
+					END AS 'type',
+					LOWER(kcu.column_name) AS 'column',
+					LOWER(ccu.table_schema) AS foreign_schema,
+					LOWER(ccu.table_name) AS foreign_table,
+					LOWER(ccu.column_name) AS foreign_column,
+					REPLACE(LOWER(rc.delete_rule), ' ', '_') AS on_delete,
+					REPLACE(LOWER(rc.update_rule), ' ', '_') AS on_update
+				FROM
+					INFORMATION_SCHEMA.TABLE_CONSTRAINTS AS c INNER JOIN
+					INFORMATION_SCHEMA.KEY_COLUMN_USAGE AS kcu ON
+						c.table_name = kcu.table_name AND
+						c.constraint_name = kcu.constraint_name LEFT JOIN
+					INFORMATION_SCHEMA.REFERENTIAL_CONSTRAINTS AS rc ON
+						c.constraint_name = rc.constraint_name LEFT JOIN
+					INFORMATION_SCHEMA.CONSTRAINT_COLUMN_USAGE AS ccu ON
+						ccu.constraint_name = rc.unique_constraint_name
+				WHERE
+					c.constraint_catalog = DB_NAME() AND
+					c.table_name != 'sysdiagrams'
+				ORDER BY
+					LOWER(c.table_schema),
+					LOWER(c.table_name),
+					c.constraint_type,
+					LOWER(kcu.constraint_name),
+					kcu.ordinal_position,
+					LOWER(kcu.column_name)";
 		
 		$result = $this->database->query($sql);
 		
@@ -994,7 +1070,11 @@ class fSchema
 			'tinytext'			=> 'text',
 			'text'				=> 'text',
 			'mediumtext'		=> 'text',
-			'longtext'			=> 'text'
+			'longtext'			=> 'text',
+			'geometry'          => 'blob',
+			'point'             => 'blob',
+			'linestring'        => 'blob',
+			'polygon'           => 'blob'
 		);
 		
 		$max_min_values = array(
@@ -1021,7 +1101,7 @@ class fSchema
 			return array();
 		}
 		
-		preg_match_all('#(?<=,|\()\s+(?:"|\`)(\w+)(?:"|\`)\s+(?:([a-z]+)(?:\(([^)]+)\))?( unsigned)?(?: zerofill)?)(?: character set [^ ]+)?(?: collate [^ ]+)?(?: NULL)?( NOT NULL)?(?: DEFAULT ((?:[^, \']*|\'(?:\'\'|[^\']+)*\')))?( auto_increment)?( COMMENT \'(?:\'\'|[^\']+)*\')?( ON UPDATE CURRENT_TIMESTAMP)?\s*(?:,|\s*(?=\)))#mi', $create_sql, $matches, PREG_SET_ORDER);
+		preg_match_all('#(?<=,|\()\s+(?:"|\`)(\w+)(?:"|\`)\s+(?:([a-z]+)(?:\(([^)]+)\))?( unsigned)?(?: zerofill)?)(?: character set [^ ]+)?(?: collate [^ ]+)?(?: NULL)?( NOT NULL)?(?: DEFAULT ((?:[^, \'\n]*|\'(?:\'\'|[^\']+)*\')))?( auto_increment)?( COMMENT \'(?:\'\'|[^\']+)*\')?( ON UPDATE CURRENT_TIMESTAMP)?\s*(?:,|\s*(?=\)))#mi', $create_sql, $matches, PREG_SET_ORDER);
 		
 		foreach ($matches as $match) {
 			
@@ -1125,7 +1205,7 @@ class fSchema
 				$info['comment'] = str_replace("''", "'", substr($match[8], 10, -1));
 			}
 		
-			$column_info[$match[1]] = $info;
+			$column_info[strtolower($match[1])] = $info;
 		}
 		
 		return $column_info;
@@ -1155,23 +1235,25 @@ class fSchema
 			// Primary keys
 			preg_match_all('/PRIMARY KEY\s+\("(.*?)"\),?\n/U', $row['Create Table'], $matches, PREG_SET_ORDER);
 			if (!empty($matches)) {
-				$keys[$table]['primary'] = explode('","', $matches[0][1]);
+				$keys[$table]['primary'] = explode('","', strtolower($matches[0][1]));
 			}
 			
 			// Unique keys
 			preg_match_all('/UNIQUE KEY\s+"([^"]+)"\s+\("(.*?)"\),?\n/U', $row['Create Table'], $matches, PREG_SET_ORDER);
 			foreach ($matches as $match) {
-				$keys[$table]['unique'][] = explode('","', $match[2]);
+				$keys[$table]['unique'][] = explode('","', strtolower($match[2]));
 			}
 			
 			// Foreign keys
 			preg_match_all('#FOREIGN KEY \("([^"]+)"\) REFERENCES "([^"]+)" \("([^"]+)"\)(?:\sON\sDELETE\s(SET\sNULL|SET\sDEFAULT|CASCADE|NO\sACTION|RESTRICT))?(?:\sON\sUPDATE\s(SET\sNULL|SET\sDEFAULT|CASCADE|NO\sACTION|RESTRICT))?#', $row['Create Table'], $matches, PREG_SET_ORDER);
 			foreach ($matches as $match) {
-				$temp = array('column'         => $match[1],
-							  'foreign_table'  => $match[2],
-							  'foreign_column' => $match[3],
-							  'on_delete'      => 'no_action',
-							  'on_update'      => 'no_action');
+				$temp = array(
+					'column'         => strtolower($match[1]),
+					'foreign_table'  => strtolower($match[2]),
+					'foreign_column' => strtolower($match[3]),
+					'on_delete'      => 'no_action',
+					'on_update'      => 'no_action'
+				);
 				if (!empty($match[4])) {
 					$temp['on_delete'] = strtolower(str_replace(' ', '_', $match[4]));
 				}
@@ -1194,9 +1276,9 @@ class fSchema
 	 */
 	private function fetchOracleColumnInfo($table)
 	{
-		$table = strtoupper($table);
+		$table = strtolower($table);
 		
-		$schema = strtoupper($this->database->getUsername());
+		$schema = strtolower($this->database->getUsername());
 		if (strpos($table, '.') !== FALSE) {
 			list ($schema, $table) = explode('.', $table);
 		}
@@ -1223,72 +1305,72 @@ class fSchema
 		);
 		
 		$sql = "SELECT
-						LOWER(ATC.COLUMN_NAME) COLUMN_NAME,
-						CASE
-							WHEN
-								ATC.DATA_TYPE = 'NUMBER' AND
-								ATC.DATA_PRECISION IS NULL AND
-								ATC.DATA_SCALE = 0
-							THEN
-								'integer'
-							WHEN
-								ATC.DATA_TYPE = 'NUMBER' AND
-								ATC.DATA_PRECISION = 1 AND
-								ATC.DATA_SCALE = 0
-							THEN
-								'boolean'
-							WHEN
-								ATC.DATA_TYPE = 'NUMBER' AND
-								ATC.DATA_PRECISION IS NOT NULL AND
-								ATC.DATA_SCALE != 0 AND
-								ATC.DATA_SCALE IS NOT NULL
-							THEN
-								'float'
-							ELSE
-								LOWER(ATC.DATA_TYPE)
-							END DATA_TYPE,
-						CASE
-							WHEN
-								ATC.CHAR_LENGTH <> 0
-							THEN
-								ATC.CHAR_LENGTH
-							WHEN
-								ATC.DATA_TYPE = 'NUMBER' AND
-								ATC.DATA_PRECISION != 1 AND
-								ATC.DATA_SCALE != 0	AND
-								ATC.DATA_PRECISION IS NOT NULL
-							THEN
-								ATC.DATA_SCALE
-							ELSE
-								NULL
-							END LENGTH,
-						ATC.DATA_PRECISION PRECISION,
-						ATC.NULLABLE,
-						ATC.DATA_DEFAULT,
-						AC.SEARCH_CONDITION CHECK_CONSTRAINT,
-						ACCM.COMMENTS
-					FROM
-						ALL_TAB_COLUMNS ATC LEFT JOIN
-						ALL_CONS_COLUMNS ACC ON
-							ATC.OWNER = ACC.OWNER AND
-							ATC.COLUMN_NAME = ACC.COLUMN_NAME AND
-							ATC.TABLE_NAME = ACC.TABLE_NAME AND
-							ACC.POSITION IS NULL LEFT JOIN
-						ALL_CONSTRAINTS AC ON
-							AC.OWNER = ACC.OWNER AND
-							AC.CONSTRAINT_NAME = ACC.CONSTRAINT_NAME AND
-							AC.CONSTRAINT_TYPE = 'C' AND
-							AC.STATUS = 'ENABLED' LEFT JOIN
-						ALL_COL_COMMENTS ACCM ON
-							ATC.OWNER = ACCM.OWNER AND
-							ATC.COLUMN_NAME = ACCM.COLUMN_NAME AND
-							ATC.TABLE_NAME = ACCM.TABLE_NAME
-					WHERE
-						ATC.TABLE_NAME = %s AND
-						ATC.OWNER = %s
-					ORDER BY
-						ATC.TABLE_NAME ASC,
-						ATC.COLUMN_ID ASC";
+					LOWER(ATC.COLUMN_NAME) COLUMN_NAME,
+					CASE
+						WHEN
+							ATC.DATA_TYPE = 'NUMBER' AND
+							ATC.DATA_PRECISION IS NULL AND
+							ATC.DATA_SCALE = 0
+						THEN
+							'integer'
+						WHEN
+							ATC.DATA_TYPE = 'NUMBER' AND
+							ATC.DATA_PRECISION = 1 AND
+							ATC.DATA_SCALE = 0
+						THEN
+							'boolean'
+						WHEN
+							ATC.DATA_TYPE = 'NUMBER' AND
+							ATC.DATA_PRECISION IS NOT NULL AND
+							ATC.DATA_SCALE != 0 AND
+							ATC.DATA_SCALE IS NOT NULL
+						THEN
+							'float'
+						ELSE
+							LOWER(ATC.DATA_TYPE)
+						END DATA_TYPE,
+					CASE
+						WHEN
+							ATC.CHAR_LENGTH <> 0
+						THEN
+							ATC.CHAR_LENGTH
+						WHEN
+							ATC.DATA_TYPE = 'NUMBER' AND
+							ATC.DATA_PRECISION != 1 AND
+							ATC.DATA_SCALE != 0	AND
+							ATC.DATA_PRECISION IS NOT NULL
+						THEN
+							ATC.DATA_SCALE
+						ELSE
+							NULL
+						END LENGTH,
+					ATC.DATA_PRECISION PRECISION,
+					ATC.NULLABLE,
+					ATC.DATA_DEFAULT,
+					AC.SEARCH_CONDITION CHECK_CONSTRAINT,
+					ACCM.COMMENTS
+				FROM
+					ALL_TAB_COLUMNS ATC LEFT JOIN
+					ALL_CONS_COLUMNS ACC ON
+						ATC.OWNER = ACC.OWNER AND
+						ATC.COLUMN_NAME = ACC.COLUMN_NAME AND
+						ATC.TABLE_NAME = ACC.TABLE_NAME AND
+						ACC.POSITION IS NULL LEFT JOIN
+					ALL_CONSTRAINTS AC ON
+						AC.OWNER = ACC.OWNER AND
+						AC.CONSTRAINT_NAME = ACC.CONSTRAINT_NAME AND
+						AC.CONSTRAINT_TYPE = 'C' AND
+						AC.STATUS = 'ENABLED' LEFT JOIN
+					ALL_COL_COMMENTS ACCM ON
+						ATC.OWNER = ACCM.OWNER AND
+						ATC.COLUMN_NAME = ACCM.COLUMN_NAME AND
+						ATC.TABLE_NAME = ACCM.TABLE_NAME
+				WHERE
+					LOWER(ATC.TABLE_NAME) = %s AND
+					LOWER(ATC.OWNER) = %s
+				ORDER BY
+					ATC.TABLE_NAME ASC,
+					ATC.COLUMN_ID ASC";
 		
 		$result = $this->database->query($sql, $table, $schema);
 		
@@ -1348,8 +1430,12 @@ class fSchema
 			
 			// Handle check constraints that are just simple lists
 			if (in_array($info['type'], array('varchar', 'char')) && $row['check_constraint']) {
-				if (preg_match('/^\s*' . preg_quote($column, '/') . '\s+in\s+\((.*?)\)\s*$/i', $row['check_constraint'], $match)) {
+				if (preg_match('/^\s*"?' . preg_quote($column, '/') . '"?\s+in\s+\((.*?)\)\s*$/i', $row['check_constraint'], $match)) {
 					if (preg_match_all("/(?<!')'((''|[^']+)*)'/", $match[1], $matches, PREG_PATTERN_ORDER)) {
+						$info['valid_values'] = str_replace("''", "'", $matches[1]);
+					}			
+				} elseif (preg_match('/^\s*"?' . preg_quote($column, '/') . '"?\s*=\s*\'((\'\'|[^\']+)*)\'(\s+OR\s+"?' . preg_quote($column, '/') . '"?\s*=\s*\'((\'\'|[^\']+)*)\')*\s*$/i', $row['check_constraint'], $match)) {
+					if (preg_match_all("/(?<!')'((''|[^']+)*)'/", $row['check_constraint'], $matches, PREG_PATTERN_ORDER)) {
 						$info['valid_values'] = str_replace("''", "'", $matches[1]);
 					}			
 				}
@@ -1357,7 +1443,7 @@ class fSchema
 			
 			if (!$duplicate) {
 				// Handle default values
-				if ($row['data_default'] !== NULL) {
+				if ($row['data_default'] !== NULL && trim($row['data_default']) != 'NULL') {
 					if (in_array($info['type'], array('date', 'time', 'timestamp')) && $row['data_default'][0] != "'") {
 						$info['default'] = trim(preg_replace('#^SYS#', 'CURRENT_', $row['data_default']));
 						
@@ -1385,15 +1471,15 @@ class fSchema
 		}
 		
 		$sql = "SELECT
-						TRIGGER_BODY
-					FROM
-						ALL_TRIGGERS
-					WHERE
-						TRIGGERING_EVENT LIKE 'INSERT%' AND
-						STATUS = 'ENABLED' AND
-						TRIGGER_NAME NOT LIKE 'BIN\$%' AND
-						TABLE_NAME = %s AND
-						OWNER = %s";
+					TRIGGER_BODY
+				FROM
+					ALL_TRIGGERS
+				WHERE
+					TRIGGERING_EVENT LIKE 'INSERT%' AND
+					STATUS = 'ENABLED' AND
+					TRIGGER_NAME NOT LIKE 'BIN\$%' AND
+					LOWER(TABLE_NAME) = %s AND
+					LOWER(OWNER) = %s";
 						
 		foreach ($this->database->query($sql, $table, $schema) as $row) {
 			if (preg_match('#SELECT\s+(["\w.]+).nextval\s+INTO\s+:new\.(\w+)\s+FROM\s+dual#i', $row['trigger_body'], $matches)) {
@@ -1428,34 +1514,34 @@ class fSchema
 		$params = array();
 		
 		$sql  = "SELECT
-						 LOWER(AC.OWNER) \"SCHEMA\",
-						 LOWER(AC.TABLE_NAME) \"TABLE\",
-						 AC.CONSTRAINT_NAME CONSTRAINT_NAME,
-						 CASE AC.CONSTRAINT_TYPE
-							 WHEN 'P' THEN 'primary'
-							 WHEN 'R' THEN 'foreign'
-							 WHEN 'U' THEN 'unique'
-							 END TYPE,
-						 LOWER(ACC.COLUMN_NAME) \"COLUMN\",
-						 LOWER(FKC.OWNER) FOREIGN_SCHEMA,
-						 LOWER(FKC.TABLE_NAME) FOREIGN_TABLE,
-						 LOWER(FKC.COLUMN_NAME) FOREIGN_COLUMN,
-						 CASE WHEN FKC.TABLE_NAME IS NOT NULL THEN REPLACE(LOWER(AC.DELETE_RULE), ' ', '_') ELSE NULL END ON_DELETE
-					 FROM
-						 ALL_CONSTRAINTS AC INNER JOIN
-						 ALL_CONS_COLUMNS ACC ON AC.CONSTRAINT_NAME = ACC.CONSTRAINT_NAME AND AC.OWNER = ACC.OWNER LEFT JOIN
-						 ALL_CONSTRAINTS FK ON AC.R_CONSTRAINT_NAME = FK.CONSTRAINT_NAME AND AC.OWNER = FK.OWNER LEFT JOIN
-						 ALL_CONS_COLUMNS FKC ON FK.CONSTRAINT_NAME = FKC.CONSTRAINT_NAME AND FK.OWNER = FKC.OWNER
-					 WHERE
-						 AC.CONSTRAINT_TYPE IN ('U', 'P', 'R') AND ";
+					LOWER(AC.OWNER) \"SCHEMA\",
+					LOWER(AC.TABLE_NAME) \"TABLE\",
+					AC.CONSTRAINT_NAME CONSTRAINT_NAME,
+					CASE AC.CONSTRAINT_TYPE
+						WHEN 'P' THEN 'primary'
+						WHEN 'R' THEN 'foreign'
+						WHEN 'U' THEN 'unique'
+						END TYPE,
+					LOWER(ACC.COLUMN_NAME) \"COLUMN\",
+					LOWER(FKC.OWNER) FOREIGN_SCHEMA,
+					LOWER(FKC.TABLE_NAME) FOREIGN_TABLE,
+					LOWER(FKC.COLUMN_NAME) FOREIGN_COLUMN,
+					CASE WHEN FKC.TABLE_NAME IS NOT NULL THEN REPLACE(LOWER(AC.DELETE_RULE), ' ', '_') ELSE NULL END ON_DELETE
+				FROM
+					ALL_CONSTRAINTS AC INNER JOIN
+					ALL_CONS_COLUMNS ACC ON AC.CONSTRAINT_NAME = ACC.CONSTRAINT_NAME AND AC.OWNER = ACC.OWNER LEFT JOIN
+					ALL_CONSTRAINTS FK ON AC.R_CONSTRAINT_NAME = FK.CONSTRAINT_NAME AND AC.OWNER = FK.OWNER LEFT JOIN
+					ALL_CONS_COLUMNS FKC ON FK.CONSTRAINT_NAME = FKC.CONSTRAINT_NAME AND FK.OWNER = FKC.OWNER
+				WHERE
+					AC.CONSTRAINT_TYPE IN ('U', 'P', 'R') AND ";
 		
 		$conditions = array();
 		foreach ($tables as $table) {
 			if (strpos($table, '.') === FALSE) {
 				$table = $default_schema . '.' . $table;
 			}	
-			list ($schema, $table) = explode('.', strtoupper($table));
-			$conditions[] = "AC.OWNER = %s AND AC.TABLE_NAME = %s";
+			list ($schema, $table) = explode('.', strtolower($table));
+			$conditions[] = "LOWER(AC.OWNER) = %s AND LOWER(AC.TABLE_NAME) = %s";
 			$params[] = $schema;
 			$params[] = $table;
 		}
@@ -1563,7 +1649,14 @@ class fSchema
 			'bytea'				=> 'blob',
 			'text'				=> 'text',
 			'mediumtext'		=> 'text',
-			'longtext'			=> 'text'
+			'longtext'			=> 'text',
+			'point'             => 'varchar',
+			'line'              => 'varchar',
+			'lseg'              => 'varchar',
+			'box'               => 'varchar',
+			'path'              => 'varchar',
+			'polygon'           => 'varchar',
+			'circle'            => 'varchar'
 		);
 		
 		$max_min_values = array(
@@ -1576,7 +1669,7 @@ class fSchema
 		
 		// PgSQL required this complicated SQL to get the column info
 		$sql = "SELECT
-						pg_attribute.attname                                        AS column,
+						LOWER(pg_attribute.attname)                                 AS column,
 						format_type(pg_attribute.atttypid, pg_attribute.atttypmod)  AS data_type,
 						pg_attribute.attnotnull                                     AS not_null,
 						pg_attrdef.adsrc                                            AS default,
@@ -1594,13 +1687,13 @@ class fSchema
 									  pg_attribute.attnum = pg_attrdef.adnum
 					WHERE
 						NOT pg_attribute.attisdropped AND
-						pg_class.relname = %s AND
-						pg_namespace.nspname = %s AND
+						LOWER(pg_class.relname) = %s AND
+						LOWER(pg_namespace.nspname) = %s AND
 						pg_type.typname NOT IN ('oid', 'cid', 'xid', 'cid', 'xid', 'tid')
 					ORDER BY
 						pg_attribute.attnum,
 						pg_constraint.contype";
-		$result = $this->database->query($sql, $table, $schema);
+		$result = $this->database->query($sql, strtolower($table), strtolower($schema));
 		
 		foreach ($result as $row) {
 			
@@ -1712,76 +1805,90 @@ class fSchema
 		}
 		
 		$sql  = "(
-				 SELECT
-						 s.nspname AS \"schema\",
-						 t.relname AS \"table\",
-						 con.conname AS constraint_name,
-						 CASE con.contype
-							 WHEN 'f' THEN 'foreign'
-							 WHEN 'p' THEN 'primary'
-							 WHEN 'u' THEN 'unique'
-						 END AS type,
-						 col.attname AS column,
-						 fs.nspname AS foreign_schema,
-						 ft.relname AS foreign_table,
-						 fc.attname AS foreign_column,
-						 CASE con.confdeltype
-							 WHEN 'c' THEN 'cascade'
-							 WHEN 'a' THEN 'no_action'
-							 WHEN 'r' THEN 'restrict'
-							 WHEN 'n' THEN 'set_null'
-							 WHEN 'd' THEN 'set_default'
-						 END AS on_delete,
-						 CASE con.confupdtype
-							 WHEN 'c' THEN 'cascade'
-							 WHEN 'a' THEN 'no_action'
-							 WHEN 'r' THEN 'restrict'
-							 WHEN 'n' THEN 'set_null'
-							 WHEN 'd' THEN 'set_default'
-						 END AS on_update,
-						CASE WHEN con.conkey IS NOT NULL THEN position('-'||col.attnum||'-' in '-'||array_to_string(con.conkey, '-')||'-') ELSE 0 END AS column_order
-					 FROM
-						 pg_attribute AS col INNER JOIN
-						 pg_class AS t ON col.attrelid = t.oid INNER JOIN
-						 pg_namespace AS s ON t.relnamespace = s.oid INNER JOIN
-						 pg_constraint AS con ON (col.attnum = ANY (con.conkey) AND
-												  con.conrelid = t.oid) LEFT JOIN
-						 pg_class AS ft ON con.confrelid = ft.oid LEFT JOIN
-						 pg_namespace AS fs ON ft.relnamespace = fs.oid LEFT JOIN
-						 pg_attribute AS fc ON (fc.attnum = ANY (con.confkey) AND
-												ft.oid = fc.attrelid)
-					 WHERE
-						 NOT col.attisdropped AND
-						 (con.contype = 'p' OR
-						  con.contype = 'f' OR
-						  con.contype = 'u')
+				SELECT
+					LOWER(s.nspname) AS \"schema\",
+					LOWER(t.relname) AS \"table\",
+					con.conname AS constraint_name,
+					CASE con.contype
+						WHEN 'f' THEN 'foreign'
+						WHEN 'p' THEN 'primary'
+						WHEN 'u' THEN 'unique'
+					END AS type,
+					LOWER(col.attname) AS column,
+					LOWER(fs.nspname) AS foreign_schema,
+					LOWER(ft.relname) AS foreign_table,
+					LOWER(fc.attname) AS foreign_column,
+					CASE con.confdeltype
+						WHEN 'c' THEN 'cascade'
+						WHEN 'a' THEN 'no_action'
+						WHEN 'r' THEN 'restrict'
+						WHEN 'n' THEN 'set_null'
+						WHEN 'd' THEN 'set_default'
+					END AS on_delete,
+					CASE con.confupdtype
+						WHEN 'c' THEN 'cascade'
+						WHEN 'a' THEN 'no_action'
+						WHEN 'r' THEN 'restrict'
+						WHEN 'n' THEN 'set_null'
+						WHEN 'd' THEN 'set_default'
+					END AS on_update,
+					CASE WHEN con.conkey IS NOT NULL THEN position('-'||col.attnum||'-' in '-'||array_to_string(con.conkey, '-')||'-') ELSE 0 END AS column_order
+				FROM
+					pg_attribute AS col INNER JOIN
+					pg_class AS t ON
+						col.attrelid = t.oid INNER JOIN
+					pg_namespace AS s ON
+						t.relnamespace = s.oid INNER JOIN
+					pg_constraint AS con ON
+						col.attnum = ANY (con.conkey) AND
+						con.conrelid = t.oid LEFT JOIN
+					pg_class AS ft ON
+						con.confrelid = ft.oid LEFT JOIN
+					pg_namespace AS fs ON
+						ft.relnamespace = fs.oid LEFT JOIN
+					pg_attribute AS fc ON
+						fc.attnum = ANY (con.confkey) AND
+						ft.oid = fc.attrelid
+				WHERE
+					NOT col.attisdropped AND
+					(con.contype = 'p' OR
+					con.contype = 'f' OR
+					con.contype = 'u')
 				) UNION (
 				SELECT
-						n.nspname AS \"schema\",
-						t.relname AS \"table\",
-						ic.relname AS constraint_name,
-						'unique' AS type,
-						col.attname AS column,
-						NULL AS foreign_schema,
-						NULL AS foreign_table,
-						NULL AS foreign_column,
-						NULL AS on_delete,
-						NULL AS on_update,
-						CASE WHEN ind.indkey IS NOT NULL THEN position('-'||col.attnum||'-' in '-'||array_to_string(ind.indkey, '-')||'-') ELSE 0 END AS column_order
-					FROM
-						pg_class AS t INNER JOIN
-						pg_index AS ind ON ind.indrelid = t.oid INNER JOIN
-						pg_namespace AS n ON t.relnamespace = n.oid INNER JOIN
-						pg_class AS ic ON ind.indexrelid = ic.oid LEFT JOIN
-						pg_constraint AS con ON con.conrelid = t.oid AND con.contype = 'u' AND con.conname = ic.relname INNER JOIN
-						pg_attribute AS col ON col.attrelid = t.oid AND col.attnum = ANY (ind.indkey)  
-					WHERE
-						n.nspname NOT IN ('pg_catalog', 'pg_toast') AND
-						indisunique = TRUE AND
-						indisprimary = FALSE AND
-						con.oid IS NULL AND
-						0 != ALL ((ind.indkey)::int[])
-				) ORDER BY 1, 2, 4, 3, 11";
+					LOWER(n.nspname) AS \"schema\",
+					LOWER(t.relname) AS \"table\",
+					ic.relname AS constraint_name,
+					'unique' AS type,
+					LOWER(col.attname) AS column,
+					NULL AS foreign_schema,
+					NULL AS foreign_table,
+					NULL AS foreign_column,
+					NULL AS on_delete,
+					NULL AS on_update,
+					CASE WHEN ind.indkey IS NOT NULL THEN position('-'||col.attnum||'-' in '-'||array_to_string(ind.indkey, '-')||'-') ELSE 0 END AS column_order
+				FROM
+					pg_class AS t INNER JOIN
+					pg_index AS ind ON
+						ind.indrelid = t.oid INNER JOIN
+					pg_namespace AS n ON
+						t.relnamespace = n.oid INNER JOIN
+					pg_class AS ic ON
+						ind.indexrelid = ic.oid LEFT JOIN
+					pg_constraint AS con ON
+						con.conrelid = t.oid AND
+						con.contype = 'u' AND
+						con.conname = ic.relname INNER JOIN
+					pg_attribute AS col ON
+						col.attrelid = t.oid AND
+						col.attnum = ANY (ind.indkey)  
+				WHERE
+					n.nspname NOT IN ('pg_catalog', 'pg_toast') AND
+					indisunique = TRUE AND
+					indisprimary = FALSE AND
+					con.oid IS NULL AND
+					0 != ALL ((ind.indkey)::int[])
+			) ORDER BY 1, 2, 4, 3, 11";
 		
 		$result = $this->database->query($sql);
 		
@@ -1879,7 +1986,7 @@ class fSchema
 			'text'				=> 'text'
 		);
 		
-		$result = $this->database->query("SELECT sql FROM sqlite_master WHERE type = 'table' AND name = %s", $table);
+		$result = $this->database->query("SELECT sql FROM sqlite_master WHERE type = 'table' AND LOWER(name) = %s", strtolower($table));
 		
 		try {
 			$row        = $result->fetchRow();
@@ -1888,7 +1995,7 @@ class fSchema
 			return array();			
 		}
 		
-		preg_match_all('#(?<=,|\()\s*(?:`|"|\[)?(\w+)(?:`|"|\])?\s+([a-z]+)(?:\(\s*(\d+)(?:\s*,\s*(\d+))?\s*\))?(?:(\s+NOT\s+NULL)|(?:\s+NULL)|(?:\s+DEFAULT\s+([^, \']*|\'(?:\'\'|[^\']+)*\'))|(\s+UNIQUE)|(\s+PRIMARY\s+KEY(?:\s+AUTOINCREMENT)?)|(\s+CHECK\s*\(\w+\s+IN\s+\(\s*(?:(?:[^, \']+|\'(?:\'\'|[^\']+)*\')\s*,\s*)*\s*(?:[^, \']+|\'(?:\'\'|[^\']+)*\')\)\)))*(\s+REFERENCES\s+["`\[]?\w+["`\]]?\s*\(\s*["`\[]?\w+["`\]]?\s*\)\s*(?:\s+(?:ON\s+DELETE|ON\s+UPDATE)\s+(?:CASCADE|NO\s+ACTION|RESTRICT|SET\s+NULL|SET\s+DEFAULT))*(?:\s+(?:DEFERRABLE|NOT\s+DEFERRABLE))?)?([ \t]*--[^\n]+)?\s*(?:,([ \t]*--[^\n]+)?|\s*(?=\)))#mi', $create_sql, $matches, PREG_SET_ORDER);
+		preg_match_all('#(?<=,|\(|\*/|\n)\s*(?:`|"|\[)?(\w+)(?:`|"|\])?\s+([a-z]+)(?:\(\s*(\d+)(?:\s*,\s*(\d+))?\s*\))?(?:(\s+NOT\s+NULL)|(?:\s+NULL)|(?:\s+DEFAULT\s+([^, \'\n]*|\'(?:\'\'|[^\']+)*\'))|(\s+UNIQUE)|(\s+PRIMARY\s+KEY(?:\s+AUTOINCREMENT)?)|(\s+CHECK\s*\("?\w+"?\s+IN\s+\(\s*(?:(?:[^, \'\n]+|\'(?:\'\'|[^\']+)*\')\s*,\s*)*\s*(?:[^, \'\n]+|\'(?:\'\'|[^\']+)*\')\)\)))*(\s+REFERENCES\s+["`\[]?\w+["`\]]?\s*\(\s*["`\[]?\w+["`\]]?\s*\)\s*(?:\s+(?:ON\s+DELETE|ON\s+UPDATE)\s+(?:CASCADE|NO\s+ACTION|RESTRICT|SET\s+NULL|SET\s+DEFAULT))*(?:\s+(?:DEFERRABLE|NOT\s+DEFERRABLE))?)?([ \t]*(?:/\*(?:(?!\*/).)*\*/))?\s*(?:,([ \t]*--[^\n]*\n)?|(--[^\n]*\n)?\s*(?:/\*(?:(?!\*/).)*\*/)?\s*(?=\)))#msi', $create_sql, $matches, PREG_SET_ORDER);
 		
 		foreach ($matches as $match) {
 			$info = array();
@@ -1935,7 +2042,7 @@ class fSchema
 			}
 		
 			// Check constraints
-			if (isset($match[9]) && preg_match('/CHECK\s*\(\s*' . $match[1] . '\s+IN\s+\(\s*((?:(?:[^, \']*|\'(?:\'\'|[^\']+)*\')\s*,\s*)*(?:[^, \']*|\'(?:\'\'|[^\']+)*\'))\s*\)/i', $match[9], $check_match)) {
+			if (isset($match[9]) && preg_match('/CHECK\s*\(\s*"?' . $match[1] . '"?\s+IN\s+\(\s*((?:(?:[^, \']*|\'(?:\'\'|[^\']+)*\')\s*,\s*)*(?:[^, \']*|\'(?:\'\'|[^\']+)*\'))\s*\)/i', $match[9], $check_match)) {
 				$info['valid_values'] = str_replace("''", "'", preg_replace("/^'|'\$/D", '', preg_split("#\s*,\s*#", $check_match[1])));
 			}
 		
@@ -1945,12 +2052,20 @@ class fSchema
 			}
 			
 			// Column comments
-			if (!empty($match[11]) || !empty($match[12])) {
-				$comment = empty($match[12]) ? $match[11] : $match[12];
-				$info['comment'] = ltrim(substr(trim($comment), 2));
+			if (!empty($match[11]) || !empty($match[12]) || !empty($match[13])) {
+				if (!empty($match[11])) {
+					$comment = $match[11];
+				} elseif (!empty($match[12])) {
+					$comment = $match[12];
+				} else {
+					$comment = $match[13];
+				}
+				$comment = trim($comment);
+				$comment = substr($comment, 0, 2) == '--' ? substr($comment, 2) : substr($comment, 2, -2);
+				$info['comment'] = trim($comment);
 			}
 		
-			$column_info[$match[1]] = $info;
+			$column_info[strtolower($match[1])] = $info;
 		}
 		
 		return $column_info;
@@ -1973,28 +2088,39 @@ class fSchema
 			$keys[$table]['foreign'] = array();
 			$keys[$table]['unique']  = array();
 			
-			$result     = $this->database->query("SELECT sql FROM sqlite_master WHERE type = 'table' AND name = %s", $table);
+			$result     = $this->database->query("SELECT sql FROM sqlite_master WHERE type = 'table' AND LOWER(name) = %s", strtolower($table));
 			$row        = $result->fetchRow();
 			$create_sql = $row['sql'];
+
+			// Collapse strings into empty string to make the matching simpler
+			$create_sql = preg_replace('#\'(?:\'\'|[^\']+)*\'#', "''", $create_sql);
+			
+			// Remove single-line comments
+			$create_sql = preg_replace('#--[^\n]*\n#', "\n", $create_sql);
+			
+			// Remove multi-line comments
+			$create_sql = preg_replace('#/\*((?!\*/).)*\*/#', '', $create_sql);
 			
 			// Get column level key definitions
-			preg_match_all('#(?<=,|\()\s*["`\[]?(\w+)["`\]]?\s+(?:[a-z]+)(?:\((?:\d+)\))?(?:(?:\s+NOT\s+NULL)|(?:\s+DEFAULT\s+(?:[^, \']*|\'(?:\'\'|[^\']+)*\'))|(\s+UNIQUE)|(\s+PRIMARY\s+KEY(?:\s+AUTOINCREMENT)?)|(?:\s+CHECK\s*\(\w+\s+IN\s+\(\s*(?:(?:[^, \']+|\'(?:\'\'|[^\']+)*\')\s*,\s*)*\s*(?:[^, \']+|\'(?:\'\'|[^\']+)*\')\)\)))*(\s+REFERENCES\s+["`\[]?(\w+)["`\]]?\s*\(\s*["`\[]?(\w+)["`\]]?\s*\)\s*(?:(?:\s+(?:ON\s+DELETE\s+(CASCADE|NO\s+ACTION|RESTRICT|SET\s+NULL|SET\s+DEFAULT)))|(?:\s+(?:ON\s+UPDATE\s+(CASCADE|NO\s+ACTION|RESTRICT|SET\s+NULL|SET\s+DEFAULT))))*(?:\s+(?:DEFERRABLE|NOT\s+DEFERRABLE))?)?\s*(?:,|\s*(?=\)))#mi', $create_sql, $matches, PREG_SET_ORDER);
+			preg_match_all('#(?<=,|\()\s*["`\[]?(\w+)["`\]]?\s+(?:[a-z]+)(?:\((?:\d+)\))?(?:(?:\s+NOT\s+NULL)|(?:\s+DEFAULT\s+(?:[^, \']*|\'(?:\'\'|[^\']+)*\'))|(\s+UNIQUE)|(\s+PRIMARY\s+KEY(?:\s+AUTOINCREMENT)?)|(?:\s+CHECK\s*\("?\w+"?\s+IN\s+\(\s*(?:(?:[^, \']+|\'(?:\'\'|[^\']+)*\')\s*,\s*)*\s*(?:[^, \']+|\'(?:\'\'|[^\']+)*\')\)\)))*(\s+REFERENCES\s+["`\[]?(\w+)["`\]]?\s*\(\s*["`\[]?(\w+)["`\]]?\s*\)\s*(?:(?:\s+(?:ON\s+DELETE\s+(CASCADE|NO\s+ACTION|RESTRICT|SET\s+NULL|SET\s+DEFAULT)))|(?:\s+(?:ON\s+UPDATE\s+(CASCADE|NO\s+ACTION|RESTRICT|SET\s+NULL|SET\s+DEFAULT))))*(?:\s+(?:DEFERRABLE|NOT\s+DEFERRABLE))?)?\s*(?:,|\s*(?=\)))#mi', $create_sql, $matches, PREG_SET_ORDER);
 			
 			foreach ($matches as $match) {
 				if (!empty($match[2])) {
-					$keys[$table]['unique'][] = array($match[1]);
+					$keys[$table]['unique'][] = array(strtolower($match[1]));
 				}
 				
 				if (!empty($match[3])) {
-					$keys[$table]['primary'] = array($match[1]);
+					$keys[$table]['primary'] = array(strtolower($match[1]));
 				}
 				
 				if (!empty($match[4])) {
-					$temp = array('column'         => $match[1],
-								  'foreign_table'  => $match[5],
-								  'foreign_column' => $match[6],
-								  'on_delete'      => 'no_action',
-								  'on_update'      => 'no_action');
+					$temp = array(
+						'column'         => strtolower($match[1]),
+						'foreign_table'  => strtolower($match[5]),
+						'foreign_column' => strtolower($match[6]),
+						'on_delete'      => 'no_action',
+						'on_update'      => 'no_action'
+					);
 					if (isset($match[7])) {
 						$temp['on_delete'] = strtolower(str_replace(' ', '_', $match[7]));
 					}
@@ -2006,25 +2132,27 @@ class fSchema
 			}
 			
 			// Get table level primary key definitions
-			preg_match_all('#(?<=,|\()\s*PRIMARY\s+KEY\s*\(\s*((?:\s*["`\[]?\w+["`\]]?\s*,\s*)*["`\[]?\w+["`\]]?)\s*\)\s*(?:,|\s*(?=\)))#mi', $create_sql, $matches, PREG_SET_ORDER);
+			preg_match_all('#(?<=,|\()\s*(?:CONSTRAINT\s+["`\[]?\w+["`\]]?\s+)?PRIMARY\s+KEY\s*\(\s*((?:\s*["`\[]?\w+["`\]]?\s*,\s*)*["`\[]?\w+["`\]]?)\s*\)\s*(?:,|\s*(?=\)))#mi', $create_sql, $matches, PREG_SET_ORDER);
 			
 			foreach ($matches as $match) {
-				$columns = preg_split('#\s*,\s*#', $match[1]);
+				$columns = preg_split('#\s*,\s*#', strtolower($match[1]));
 				foreach ($columns as $column) {
 					$keys[$table]['primary'][] = str_replace(array('[', '"', '`', ']'), '', $column);	
 				}
 			}
 			
 			// Get table level foreign key definitions
-			preg_match_all('#(?<=,|\()\s*FOREIGN\s+KEY\s*(?:["`\[]?(\w+)["`\]]?|\(\s*["`\[]?(\w+)["`\]]?\s*\))\s+REFERENCES\s+["`\[]?(\w+)["`\]]?\s*\(\s*["`\[]?(\w+)["`\]]?\s*\)\s*(?:\s+(?:ON\s+DELETE\s+(CASCADE|NO\s+ACTION|RESTRICT|SET\s+NULL|SET\s+DEFAULT)))?(?:\s+(?:ON\s+UPDATE\s+(CASCADE|NO\s+ACTION|RESTRICT|SET\s+NULL|SET\s+DEFAULT)))?(?:\s+(?:DEFERRABLE|NOT\s+DEFERRABLE))?\s*(?:,|\s*(?=\)))#mi', $create_sql, $matches, PREG_SET_ORDER);
+			preg_match_all('#(?<=,|\()\s*(?:CONSTRAINT\s+["`\[]?\w+["`\]]?\s+)?FOREIGN\s+KEY\s*(?:["`\[]?(\w+)["`\]]?|\(\s*["`\[]?(\w+)["`\]]?\s*\))\s+REFERENCES\s+["`\[]?(\w+)["`\]]?\s*\(\s*["`\[]?(\w+)["`\]]?\s*\)\s*(?:\s+(?:ON\s+DELETE\s+(CASCADE|NO\s+ACTION|RESTRICT|SET\s+NULL|SET\s+DEFAULT))|\s+(?:ON\s+UPDATE\s+(CASCADE|NO\s+ACTION|RESTRICT|SET\s+NULL|SET\s+DEFAULT)))*(?:\s+(?:DEFERRABLE|NOT\s+DEFERRABLE))?\s*(?:,|\s*(?=\)))#mis', $create_sql, $matches, PREG_SET_ORDER);
 			
 			foreach ($matches as $match) {
 				if (empty($match[1])) { $match[1] = $match[2]; }
-				$temp = array('column'         => $match[1],
-							  'foreign_table'  => $match[3],
-							  'foreign_column' => $match[4],
-							  'on_delete'      => 'no_action',
-							  'on_update'      => 'no_action');
+				$temp = array(
+					'column'         => strtolower($match[1]),
+					'foreign_table'  => strtolower($match[3]),
+					'foreign_column' => strtolower($match[4]),
+					'on_delete'      => 'no_action',
+					'on_update'      => 'no_action'
+				);
 				if (isset($match[5])) {
 					$temp['on_delete'] = strtolower(str_replace(' ', '_', $match[5]));
 				}
@@ -2035,10 +2163,25 @@ class fSchema
 			}
 			
 			// Get table level unique key definitions
-			preg_match_all('#(?<=,|\()\s*UNIQUE\s*\(\s*((?:\s*["`\[]?\w+["`\]]?\s*,\s*)*["`\[]?\w+["`\]]?)\s*\)\s*(?:,|\s*(?=\)))#mi', $create_sql, $matches, PREG_SET_ORDER);
+			preg_match_all('#(?<=,|\()\s*(?:CONSTRAINT\s+["`\[]?\w+["`\]]?\s+)?UNIQUE\s*\(\s*((?:\s*["`\[]?\w+["`\]]?\s*,\s*)*["`\[]?\w+["`\]]?)\s*\)\s*(?:,|\s*(?=\)))#mi', $create_sql, $matches, PREG_SET_ORDER);
 			
 			foreach ($matches as $match) {
-				$columns = preg_split('#\s*,\s*#', $match[1]);
+				$columns = preg_split('#\s*,\s*#', strtolower($match[1]));
+				$key = array();
+				foreach ($columns as $column) {
+					$key[] = str_replace(array('[', '"', '`', ']'), '', $column);
+				}
+				$keys[$table]['unique'][] = $key;
+			}
+			
+			// Get all CREATE UNIQUE INDEX statements
+			$result = $this->database->query("SELECT sql FROM sqlite_master WHERE type = 'index' AND sql <> '' AND LOWER(tbl_name) = %s", strtolower($table));
+			foreach ($result as $row) {
+				$create_sql = $row['sql'];
+				if (!preg_match('#^\s*CREATE\s+UNIQUE\s+INDEX\s+(?:["`\[]?\w+["`\]]?\.)?["`\[]?\w+["`\]]?\s+ON\s+[\'"`\[]?\w+[\'"`\]]?\s*\(\s*((?:\s*["`\[]?\w+["`\]]?\s*,\s*)*["`\[]?\w+["`\]]?)\s*\)\s*$#Di', $create_sql, $match)) {
+					continue;
+				}
+				$columns = preg_split('#\s*,\s*#', strtolower($match[1]));
 				$key = array();
 				foreach ($columns as $column) {
 					$key[] = str_replace(array('[', '"', '`', ']'), '', $column);
@@ -2206,7 +2349,7 @@ class fSchema
 	 *     'max_length'     => (integer) {the maximum length in a char/varchar field},
 	 *     'min_value'      => (fNumber) {the minimum value for an integer/float field},
 	 *     'max_value'      => (fNumber) {the maximum value for an integer/float field},
-	  *    'decimal_places' => (integer) {the number of decimal places for a decimal/numeric/money/smallmoney field},
+	 *     'decimal_places' => (integer) {the number of decimal places for a decimal/numeric/money/smallmoney field},
 	 *     'auto_increment' => (boolean) {if the integer primary key column is a serial/autoincrement/auto_increment/indentity column},
 	 *     'comment'        => (string)  {the SQL comment/description for the column}
 	 * )
@@ -2274,6 +2417,11 @@ class fSchema
 	 */
 	public function getColumnInfo($table, $column=NULL, $element=NULL)
 	{
+		$table = strtolower($table);
+		if ($column !== NULL) {
+			$column = strtolower($column);
+		}
+
 		// Return the saved column info if possible
 		if (!$column && isset($this->merged_column_info[$table])) {
 			return $this->merged_column_info[$table];
@@ -2349,14 +2497,17 @@ class fSchema
 			
 			case 'postgresql':
 				$sql = "SELECT
-								datname
-							FROM
-								pg_database
-							ORDER BY
-								LOWER(datname)";
+							datname
+						FROM
+							pg_database
+						ORDER BY
+							LOWER(datname)";
 				break;
 								
 			case 'db2':
+				$this->databases[] = strtolower($this->database->getDatabase());
+				return $this->databases;
+
 			case 'sqlite':
 				$this->databases[] = $this->database->getDatabase();
 				return $this->databases;
@@ -2366,7 +2517,7 @@ class fSchema
 		
 		foreach ($result as $row) {
 			$keys = array_keys($row);
-			$this->databases[] = $row[$keys[0]];
+			$this->databases[] = strtolower($row[$keys[0]]);
 		}
 		
 		if ($this->cache) {
@@ -2410,6 +2561,7 @@ class fSchema
 	 */
 	public function getKeys($table, $key_type=NULL)
 	{
+		$table           = strtolower($table);
 		$valid_key_types = array('primary', 'foreign', 'unique');
 		if ($key_type !== NULL && !in_array($key_type, $valid_key_types)) {
 			throw new fProgrammerException(
@@ -2421,10 +2573,12 @@ class fSchema
 		
 		// Return the saved column info if possible
 		if (!$key_type && isset($this->merged_keys[$table])) {
+			reset($this->merged_keys[$table]);
 			return $this->merged_keys[$table];
 		}
 		
 		if ($key_type && isset($this->merged_keys[$table][$key_type])) {
+			reset($this->merged_keys[$table][$key_type]);
 			return $this->merged_keys[$table][$key_type];
 		}
 		
@@ -2439,9 +2593,11 @@ class fSchema
 		$this->mergeKeys();
 		
 		if ($key_type) {
+			reset($this->merged_keys[$table][$key_type]);
 			return $this->merged_keys[$table][$key_type];
 		}
 		
+		reset($this->merged_keys[$table]);
 		return $this->merged_keys[$table];
 	}
 	
@@ -2503,6 +2659,8 @@ class fSchema
 	 */
 	public function getRelationships($table, $relationship_type=NULL)
 	{
+		$table = strtolower($table);
+
 		$valid_relationship_types = array('one-to-one', 'many-to-one', 'one-to-many', 'many-to-many');
 		if ($relationship_type !== NULL && !in_array($relationship_type, $valid_relationship_types)) {
 			throw new fProgrammerException(
@@ -2542,10 +2700,15 @@ class fSchema
 	/**
 	 * Returns the tables in the current database
 	 * 
-	 * @return array  The tables in the current database
+	 * @param  boolean|string  $creation_order  `TRUE` to return in a valid table creation order, or a table name to return that table and any tables that depend on it, in table creation order
+	 * @return array  The tables in the current database, all converted to lowercase
 	 */
-	public function getTables()
+	public function getTables($creation_order=NULL)
 	{
+		if ($creation_order) {
+			return $this->determineTableCreationOrder(is_bool($creation_order) ? NULL : $creation_order);
+		}
+		
 		if ($this->tables !== NULL) {
 			return $this->tables;
 		}
@@ -2553,41 +2716,34 @@ class fSchema
 		switch ($this->database->getType()) {
 			case 'db2':
 				$sql = "SELECT
-								LOWER(RTRIM(TABSCHEMA)) AS \"schema\",
-								LOWER(TABNAME) AS \"table\"
-							FROM
-								SYSCAT.TABLES
-							WHERE
-								TYPE = 'T' AND
-								TABSCHEMA != 'SYSIBM' AND
-								DEFINER != 'SYSIBM' AND
-								TABSCHEMA != 'SYSTOOLS' AND
-								DEFINER != 'SYSTOOLS'
-							ORDER BY
-								LOWER(TABNAME)";
+							LOWER(RTRIM(TABSCHEMA)) AS \"schema\",
+							LOWER(TABNAME) AS \"table\"
+						FROM
+							SYSCAT.TABLES
+						WHERE
+							TYPE = 'T' AND
+							TABSCHEMA != 'SYSIBM' AND
+							DEFINER != 'SYSIBM' AND
+							TABSCHEMA != 'SYSTOOLS' AND
+							DEFINER != 'SYSTOOLS'
+						ORDER BY
+							LOWER(TABNAME)";
 				break;
 				
 			case 'mssql':
 				$sql = "SELECT
-								TABLE_SCHEMA AS \"schema\",
-								TABLE_NAME AS \"table\"
-							FROM
-								INFORMATION_SCHEMA.TABLES
-							WHERE
-								TABLE_NAME != 'sysdiagrams'
-							ORDER BY
-								LOWER(TABLE_NAME)";
+							TABLE_SCHEMA AS \"schema\",
+							TABLE_NAME AS \"table\"
+						FROM
+							INFORMATION_SCHEMA.TABLES
+						WHERE
+							TABLE_NAME != 'sysdiagrams'
+						ORDER BY
+							LOWER(TABLE_NAME)";
 				break;
 			
 			case 'mysql':
-				if (!$this->version) {
-					$this->version = $this->database->query("SELECT version()")->fetchScalar();
-					$this->version = substr($this->version, 0, strpos($this->version, '.'));
-					if ($this->cache) {
-						$this->cache->set($this->makeCachePrefix() . 'version', $this->version);
-					}
-				}
-				if ($this->version <= 4) {
+				if (version_compare($this->database->getVersion(), 5, '<')) {
 					$sql = 'SHOW TABLES';
 				} else {
 					$sql = "SHOW FULL TABLES WHERE table_type = 'BASE TABLE'";	
@@ -2596,64 +2752,64 @@ class fSchema
 			
 			case 'oracle':
 				$sql = "SELECT
-								LOWER(OWNER) AS \"SCHEMA\",
-								LOWER(TABLE_NAME) AS \"TABLE\"
-							FROM
-								ALL_TABLES
-							WHERE
-								OWNER NOT IN (
-									'SYS',
-									'SYSTEM',
-									'OUTLN',
-									'ANONYMOUS',
-									'AURORA\$ORB\$UNAUTHENTICATED',
-									'AWR_STAGE',
-									'CSMIG',
-									'CTXSYS',
-									'DBSNMP',
-									'DIP',
-									'DMSYS',
-									'DSSYS',
-									'EXFSYS',
-									'FLOWS_020100',
-									'FLOWS_FILES',
-									'LBACSYS',
-									'MDSYS',
-									'ORACLE_OCM',
-									'ORDPLUGINS',
-									'ORDSYS',
-									'PERFSTAT',
-									'TRACESVR',
-									'TSMSYS',
-									'XDB'
-								) AND
-								DROPPED = 'NO' 
-							ORDER BY
-								TABLE_NAME ASC";
+							LOWER(OWNER) AS \"SCHEMA\",
+							LOWER(TABLE_NAME) AS \"TABLE\"
+						FROM
+							ALL_TABLES
+						WHERE
+							OWNER NOT IN (
+								'SYS',
+								'SYSTEM',
+								'OUTLN',
+								'ANONYMOUS',
+								'AURORA\$ORB\$UNAUTHENTICATED',
+								'AWR_STAGE',
+								'CSMIG',
+								'CTXSYS',
+								'DBSNMP',
+								'DIP',
+								'DMSYS',
+								'DSSYS',
+								'EXFSYS',
+								'FLOWS_020100',
+								'FLOWS_FILES',
+								'LBACSYS',
+								'MDSYS',
+								'ORACLE_OCM',
+								'ORDPLUGINS',
+								'ORDSYS',
+								'PERFSTAT',
+								'TRACESVR',
+								'TSMSYS',
+								'XDB'
+							) AND
+							DROPPED = 'NO' 
+						ORDER BY
+							TABLE_NAME ASC";
 				break;
 			
 			case 'postgresql':
 				$sql = "SELECT
-								 schemaname AS \"schema\",
-								 tablename as \"table\"
-							FROM
-								 pg_tables
-							WHERE
-								 tablename !~ '^(pg|sql)_'
-							ORDER BY
-								LOWER(tablename)";
+							 schemaname AS \"schema\",
+							 tablename as \"table\"
+						FROM
+							 pg_tables
+						WHERE
+							 tablename !~ '^(pg|sql)_'
+						ORDER BY
+							LOWER(tablename)";
 				break;
 								
 			case 'sqlite':
 				$sql = "SELECT
-								name
-							FROM
-								sqlite_master
-							WHERE
-								type = 'table' AND
-								name NOT LIKE 'sqlite_%'
-							ORDER BY
-								name ASC";
+							name
+						FROM
+							sqlite_master
+						WHERE
+							type = 'table' AND
+							name NOT LIKE 'sqlite_%'
+						ORDER BY
+							name ASC";
 				break;
 		}
 		
@@ -2676,9 +2832,9 @@ class fSchema
 			
 			foreach ($result as $row) {
 				if ($row['schema'] == $default_schema) {
-					$this->tables[] = $row['table'];	
+					$this->tables[] = strtolower($row['table']);	
 				} else {
-					$this->tables[] = $row['schema'] . '.' . $row['table'];	
+					$this->tables[] = strtolower($row['schema'] . '.' . $row['table']);	
 				}
 			}
 				
@@ -2686,7 +2842,7 @@ class fSchema
 		} else {
 			foreach ($result as $row) {
 				$keys = array_keys($row);
-				$this->tables[] = $row[$keys[0]];
+				$this->tables[] = strtolower($row[$keys[0]]);
 			}
 		}
 		
@@ -2920,6 +3076,11 @@ class fSchema
 	 */
 	public function setColumnInfoOverride($column_info, $table, $column=NULL)
 	{
+		$table = strotlower($table);
+		if ($column !== NULL) {
+			$column = strtolower($column);
+		}
+
 		if (!isset($this->column_info_override[$table])) {
 			$this->column_info_override[$table] = array();
 		}
@@ -2945,6 +3106,8 @@ class fSchema
 	 */
 	public function setKeysOverride($keys, $table, $key_type=NULL)
 	{
+		$table = strtolower($table);
+
 		$valid_key_types = array('primary', 'foreign', 'unique');
 		if (!in_array($key_type, $valid_key_types)) {
 			throw new fProgrammerException(
@@ -2972,7 +3135,7 @@ class fSchema
 
 
 /**
- * Copyright (c) 2007-2010 Will Bond <will@flourishlib.com>
+ * Copyright (c) 2007-2012 Will Bond <will@flourishlib.com>
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal

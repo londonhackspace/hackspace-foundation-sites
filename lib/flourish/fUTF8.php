@@ -6,14 +6,18 @@
  * PHP string function. For more information about UTF-8, please visit
  * http://flourishlib.com/docs/UTF-8.
  * 
- * @copyright  Copyright (c) 2008-2010 Will Bond
+ * @copyright  Copyright (c) 2008-2011 Will Bond
  * @author     Will Bond [wb] <will@flourishlib.com>
  * @license    http://flourishlib.com/license
  * 
  * @package    Flourish
  * @link       http://flourishlib.com/fUTF8
  * 
- * @version    1.0.0b11
+ * @version    1.0.0b15
+ * @changes    1.0.0b15  Fixed a bug with using IBM's iconv implementation on AIX [wb, 2011-07-29]
+ * @changes    1.0.0b14  Added a workaround for iconv having issues in MAMP 1.9.4+ [wb, 2011-07-26]
+ * @changes    1.0.0b13  Fixed notices from being thrown when invalid data is sent to ::clean() [wb, 2011-06-10]
+ * @changes    1.0.0b12  Fixed a variable name typo in ::sub() [wb, 2011-05-09]
  * @changes    1.0.0b11  Updated the class to not using phpinfo() to determine the iconv implementation [wb, 2010-11-04]
  * @changes    1.0.0b10  Fixed a bug with capitalizing a lowercase i resulting in a dotted upper-case I [wb, 2010-11-01]
  * @changes    1.0.0b9   Updated class to use fCore::startErrorCapture() instead of `error_reporting()` [wb, 2010-08-09]
@@ -654,15 +658,12 @@ class fUTF8
 	{
 		if (!is_array($value)) {
 			if (self::$can_ignore_invalid === NULL) {
-				self::$can_ignore_invalid = strtolower(ICONV_IMPL) != 'unknown';	
+				self::$can_ignore_invalid = !in_array(strtolower(ICONV_IMPL), array('unknown', 'ibm iconv'));	
 			}
-			if (!self::$can_ignore_invalid) {
-				fCore::startErrorCapture(E_NOTICE);
-			}
-			return iconv('UTF-8', 'UTF-8' . (self::$can_ignore_invalid ? '//IGNORE' : ''), (string) $value);
-			if (!self::$can_ignore_invalid) {
-				fCore::stopErrorCapture();
-			}
+			fCore::startErrorCapture(E_NOTICE);
+			$value = self::iconv('UTF-8', 'UTF-8' . (self::$can_ignore_invalid ? '//IGNORE' : ''), (string) $value);
+			fCore::stopErrorCapture();
+			return $value;
 		}
 		
 		$keys = array_keys($value);
@@ -782,6 +783,22 @@ class fUTF8
 		// If no delimiter was passed, we explode the characters into an array
 		preg_match_all('#.|^\z#us', $string, $matches);
 		return $matches[0];
+	}
+
+
+	/**
+	 * This works around a bug in MAMP 1.9.4+ and PHP 5.3 where iconv()
+	 * does not seem to properly assign the return value to a variable, but
+	 * does work when returning the value.
+	 *
+	 * @param string $in_charset   The incoming character encoding
+	 * @param string $out_charset  The outgoing character encoding
+	 * @param string $string       The string to convert
+	 * @return string  The converted string
+	 */
+	static private function iconv($in_charset, $out_charset, $string)
+	{
+		return iconv($in_charset, $out_charset, $string);
 	}
 	
 	
@@ -1418,7 +1435,7 @@ class fUTF8
 		
 		// We get better performance falling back for ASCII strings
 		if (!self::detect($string)) {
-			if ($lenth === NULL) {
+			if ($length === NULL) {
 				if ($start >= 0) {
 					$length = strlen($string)-$start;
 				} else {
@@ -1601,7 +1618,7 @@ class fUTF8
 
 
 /**
- * Copyright (c) 2008-2010 Will Bond <will@flourishlib.com>
+ * Copyright (c) 2008-2011 Will Bond <will@flourishlib.com>
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal

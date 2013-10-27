@@ -2,14 +2,16 @@
 /**
  * Provides english word inflection, notation conversion, grammar helpers and internationlization support
  * 
- * @copyright  Copyright (c) 2007-2010 Will Bond
+ * @copyright  Copyright (c) 2007-2011 Will Bond
  * @author     Will Bond [wb] <will@flourishlib.com>
  * @license    http://flourishlib.com/license
  * 
  * @package    Flourish
  * @link       http://flourishlib.com/fGrammar
  * 
- * @version    1.0.0b13
+ * @version    1.0.0b15
+ * @changes    1.0.0b15  Added length checking to ensure blank strings are not being passed to various methods [wb, 2011-06-20]
+ * @changes    1.0.0b14  Fixed a bug in singularization that would affect words containing the substring `mice` or `lice` [wb, 2011-02-24]
  * @changes    1.0.0b13  Fixed the pluralization of video [wb, 2010-08-10]
  * @changes    1.0.0b12  Updated ::singularize() and ::pluralize() to be able to handle underscore_CamelCase [wb, 2010-08-06]
  * @changes    1.0.0b11  Fixed custom camelCase to underscore_notation rules [wb, 2010-06-23]
@@ -82,7 +84,7 @@ class fGrammar
 	 * @var array
 	 */
 	static private $plural_to_singular_rules = array(
-		'([ml])ice'                    => '\1ouse',
+		'([ml])ice$'                   => '\1ouse',
 		'(media|info(rmation)?|news)$' => '\1',
 		'(q)uizzes$'                   => '\1uiz',
 		'(c)hildren$'                  => '\1hild',
@@ -208,7 +210,14 @@ class fGrammar
 	 */
 	static public function camelize($string, $upper)
 	{
-		$upper = (int) $upper;
+		if (!strlen($string)) {
+			throw new fProgrammerException(
+				"An empty string was passed to %s",
+				__CLASS__ . '::camelize()'
+			);
+		}
+
+		$upper = (int)(bool) $upper;
 		if (isset(self::$cache['camelize'][$upper][$string])) {
 			return self::$cache['camelize'][$upper][$string];
 		}
@@ -292,6 +301,13 @@ class fGrammar
 	 */
 	static public function humanize($string)
 	{
+		if (!strlen($string)) {
+			throw new fProgrammerException(
+				"An empty string was passed to %s",
+				__CLASS__ . '::humanize()'
+			);
+		}
+
 		if (isset(self::$cache['humanize'][$string])) {
 			return self::$cache['humanize'][$string];
 		}
@@ -432,6 +448,13 @@ class fGrammar
 	 */
 	static public function pluralize($singular_noun, $return_error=FALSE)
 	{
+		if (!strlen($singular_noun)) {
+			throw new fProgrammerException(
+				"An empty string was passed to %s",
+				__CLASS__ . '::pluralize()'
+			);
+		}
+
 		if (isset(self::$cache['pluralize'][$singular_noun])) {
 			return self::$cache['pluralize'][$singular_noun];		
 		}
@@ -499,7 +522,7 @@ class fGrammar
 		self::$humanize_rules           = array();
 		self::$join_array_callback      = NULL;
 		self::$plural_to_singular_rules = array(
-			'([ml])ice'                    => '\1ouse',
+			'([ml])ice$'                   => '\1ouse',
 			'(media|info(rmation)?|news)$' => '\1',
 			'(q)uizzes$'                   => '\1uiz',
 			'(c)hildren$'                  => '\1hild',
@@ -551,6 +574,13 @@ class fGrammar
 	 */
 	static public function singularize($plural_noun, $return_error=FALSE)
 	{
+		if (!strlen($plural_noun)) {
+			throw new fProgrammerException(
+				"An empty string was passed to %s",
+				__CLASS__ . '::singularize()'
+			);
+		}
+
 		if (isset(self::$cache['singularize'][$plural_noun])) {
 			return self::$cache['singularize'][$plural_noun];		
 		}
@@ -734,6 +764,13 @@ class fGrammar
 	 */
 	static public function underscorize($string)
 	{
+		if (!strlen($string)) {
+			throw new fProgrammerException(
+				"An empty string was passed to %s",
+				__CLASS__ . '::underscorize()'
+			);
+		}
+
 		if (isset(self::$cache['underscorize'][$string])) {
 			return self::$cache['underscorize'][$string];		
 		}
@@ -779,7 +816,7 @@ class fGrammar
 
 
 /**
- * Copyright (c) 2007-2010 Will Bond <will@flourishlib.com>
+ * Copyright (c) 2007-2011 Will Bond <will@flourishlib.com>
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal

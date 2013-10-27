@@ -12,12 +12,18 @@
  * @copyright  Copyright (c) 2008-2011 Will Bond, others
  * @author     Will Bond [wb] <will@flourishlib.com>
  * @author     Bill Bushee, iMarc LLC [bb-imarc] <bill@imarc.net>
+ * @author     netcarver [n] <fContrib@netcarving.com>
  * @license    http://flourishlib.com/license
  * 
  * @package    Flourish
  * @link       http://flourishlib.com/fEmail
  * 
- * @version    1.0.0b25
+ * @version    1.0.0b30
+ * @changes    1.0.0b30  Changed methods to return instance for method chaining [n, 2011-09-12]
+ * @changes    1.0.0b29  Changed ::combineNameEmail() to be a static method and to be exposed publicly for use by other classes [wb, 2011-07-26]
+ * @changes    1.0.0b28  Fixed ::addAttachment() and ::addRelatedFile() to properly handle duplicate filenames [wb, 2011-05-17]
+ * @changes    1.0.0b27  Fixed a bug with generating FQDNs on some Windows machines [wb, 2011-02-24]
+ * @changes    1.0.0b26  Added ::addCustomerHeader() [wb, 2011-02-02]
  * @changes    1.0.0b25  Fixed a bug with finding the FQDN on non-Windows machines [wb, 2011-01-19]
  * @changes    1.0.0b24  Backwards Compatibility Break - the `$contents` parameter of ::addAttachment() is now first instead of third, ::addAttachment() will now accept fFile objects for the `$contents` parameter, added ::addRelatedFile() [wb, 2010-12-01]
  * @changes    1.0.0b23  Fixed a bug on Windows where emails starting with a `.` would have the `.` removed [wb, 2010-09-11]
@@ -47,10 +53,11 @@
 class fEmail
 {
 	// The following constants allow for nice looking callbacks to static methods
-	const fixQmail       = 'fEmail::fixQmail';
-	const getFQDN        = 'fEmail::getFQDN';
-	const reset          = 'fEmail::reset';
-	const unindentExpand = 'fEmail::unindentExpand';
+	const combineNameEmail = 'fEmail::combineNameEmail';
+	const fixQmail         = 'fEmail::fixQmail';
+	const getFQDN          = 'fEmail::getFQDN';
+	const reset            = 'fEmail::reset';
+	const unindentExpand   = 'fEmail::unindentExpand';
 	
 	
 	/**
@@ -115,6 +122,43 @@ class fEmail
 	 * @var boolean
 	 */
 	static private $popen_sendmail = FALSE;
+
+
+	/**
+	 * Turns a name and email into a `"name" <email>` string, or just `email` if no name is provided
+	 * 
+	 * This method will remove newline characters from the name and email, and
+	 * will remove any backslash (`\`) and double quote (`"`) characters from
+	 * the name.
+	 * 
+	 * @internal
+	 *
+	 * @param  string $name   The name associated with the email address
+	 * @param  string $email  The email address
+	 * @return string  The '"name" <email>' or 'email' string
+	 */
+	static public function combineNameEmail($name, $email)
+	{
+		// Strip lower ascii character since they aren't useful in email addresses
+		$email = preg_replace('#[\x0-\x19]+#', '', $email);
+		$name  = preg_replace('#[\x0-\x19]+#', '', $name);
+		
+		if (!$name) {
+			return $email;
+		}
+		
+		// If the name contains any non-ascii bytes or stuff not allowed
+		// in quoted strings we just make an encoded word out of it
+		if (preg_replace('#[\x80-\xff\x5C\x22]#', '', $name) != $name) {
+			// The longest header name that will contain email addresses is
+			// "Bcc: ", which is 5 characters long
+			$name = self::makeEncodedWord($name, 5);
+		} else {
+			$name = '"' . $name . '"';	
+		}
+		
+		return $name . ' <' . $email . '>';
+	}
 	
 	
 	/**
@@ -277,7 +321,7 @@ class fEmail
 					}
 				}
 				if (!empty($domain)) {
-					self::$fqdn = '.' . $domain;
+					self::$fqdn .= '.' . $domain;
 				} 
 				
 			} elseif (!fCore::checkOS('windows') && !ini_get('open_basedir') && file_exists('/etc/resolv.conf')) {
@@ -289,6 +333,90 @@ class fEmail
 		}
 		
 		return self::$fqdn;
+	}
+
+
+	/**
+	 * Encodes a string to UTF-8 encoded-word
+	 * 
+	 * @param  string  $content                   The content to encode
+	 * @param  integer $first_line_prefix_length  The length of any prefix applied to the first line of the encoded word - this allows properly accounting for a header name
+	 * @return string  The encoded string
+	 */
+	static private function makeEncodedWord($content, $first_line_prefix_length)
+	{
+		// Homogenize the line-endings to CRLF
+		$content = str_replace("\r\n", "\n", $content);
+		$content = str_replace("\r", "\n", $content);
+		$content = str_replace("\n", "\r\n", $content);
+		
+		// Encoded word is not required if all characters are ascii
+		if (!preg_match('#[\x80-\xFF]#', $content)) {
+			return $content;
+		}
+		
+		// A quick a dirty hex encoding
+		$content = rawurlencode($content);
+		$content = str_replace('=', '%3D', $content);
+		$content = str_replace('%', '=', $content);
+		
+		// Decode characters that don't have to be coded
+		$decodings = array(
+			'=20' => '_', '=21' => '!', '=22' => '"',  '=23' => '#',
+			'=24' => '$', '=25' => '%', '=26' => '&',  '=27' => "'",
+			'=28' => '(', '=29' => ')', '=2A' => '*',  '=2B' => '+',
+			'=2C' => ',', '=2D' => '-', '=2E' => '.',  '=2F' => '/',
+			'=3A' => ':', '=3B' => ';', '=3C' => '<',  '=3E' => '>',
+			'=40' => '@', '=5B' => '[', '=5C' => '\\', '=5D' => ']',
+			'=5E' => '^', '=60' => '`', '=7B' => '{',  '=7C' => '|',
+			'=7D' => '}', '=7E' => '~', ' '   => '_'
+		);
+		
+		$content = strtr($content, $decodings);
+		
+		$length = strlen($content);
+		
+		$prefix = '=?utf-8?Q?';
+		$suffix = '?=';
+		
+		$prefix_length = 10;
+		$suffix_length = 2;
+		
+		// This loop goes through and ensures we are wrapping by 75 chars
+		// including the encoded word delimiters
+		$output = $prefix;
+		$line_length = $prefix_length + $first_line_prefix_length;
+		
+		for ($i=0; $i<$length; $i++) {
+			
+			// Get info about the next character
+			$char_length = ($content[$i] == '=') ? 3 : 1;
+			$char        = $content[$i];
+			if ($char_length == 3) {
+				$char .= $content[$i+1] . $content[$i+2];
+			}
+			
+			// If we have too long a line, wrap it
+			if ($line_length + $suffix_length + $char_length > 75) {
+				$output .= $suffix . "\r\n " . $prefix;
+				$line_length = $prefix_length + 2;
+			}
+			
+			// Add the character
+			$output .= $char;
+			
+			// Figure out how much longer the line is
+			$line_length += $char_length;
+			
+			// Skip characters if we have an encoded character
+			$i += $char_length-1;
+		}
+		
+		if (substr($output, -2) != $suffix) {
+			$output .= $suffix;
+		}
+		
+		return $output;
 	}
 	
 	
@@ -374,6 +502,13 @@ class fEmail
 	 * @var array
 	 */
 	private $cc_emails = array();
+	
+	/**
+	 * Custom headers
+	 * 
+	 * @var array
+	 */
+	private $custom_headers = array();
 	
 	/**
 	 * The email address being sent from
@@ -514,20 +649,22 @@ class fEmail
 	 * @param  string|fFile $contents   The contents of the file
 	 * @param  string       $filename   The name to give the attachement - optional if `$contents` is an fFile object
 	 * @param  string       $mime_type  The mime type of the file - this allows overriding the mime type of the file if incorrectly detected
-	 * @return void
+	 * @return fEmail  The email object, to allow for method chaining
 	 */
 	public function addAttachment($contents, $filename=NULL, $mime_type=NULL)
 	{
 		$this->extrapolateFileInfo($contents, $filename, $mime_type);
 		
 		while (isset($this->attachments[$filename])) {
-			$this->generateNewFilename($filename);
+			$filename = $this->generateNewFilename($filename);
 		}
 		
 		$this->attachments[$filename] = array(
 			'mime-type' => $mime_type,
 			'contents'  => $contents
 		);
+
+		return $this;
 	}
 	
 	
@@ -550,7 +687,7 @@ class fEmail
 		$this->extrapolateFileInfo($contents, $filename, $mime_type);
 		
 		while (isset($this->related_files[$filename])) {
-			$this->generateNewFilename($filename);
+			$filename = $this->generateNewFilename($filename);
 		}
 		
 		$cid = count($this->related_files) . '.' . substr($this->message_id, 1, -1);
@@ -570,7 +707,7 @@ class fEmail
 	 * 
 	 * @param  string $email  The email address to BCC
 	 * @param  string $name   The recipient's name
-	 * @return void
+	 * @return fEmail  The email object, to allow for method chaining
 	 */
 	public function addBCCRecipient($email, $name=NULL)
 	{
@@ -578,7 +715,9 @@ class fEmail
 			return;
 		}
 		
-		$this->bcc_emails[] = $this->combineNameEmail($name, $email);
+		$this->bcc_emails[] = self::combineNameEmail($name, $email);
+
+		return $this;
 	}
 	
 	
@@ -587,7 +726,7 @@ class fEmail
 	 * 
 	 * @param  string $email  The email address to BCC
 	 * @param  string $name   The recipient's name
-	 * @return void
+	 * @return fEmail  The email object, to allow for method chaining
 	 */
 	public function addCCRecipient($email, $name=NULL)
 	{
@@ -595,7 +734,40 @@ class fEmail
 			return;
 		}
 		
-		$this->cc_emails[] = $this->combineNameEmail($name, $email);
+		$this->cc_emails[] = self::combineNameEmail($name, $email);
+
+		return $this;
+	}
+	
+	
+	/**
+	 * Allows adding a custom header to the email
+	 * 
+	 * If the method is called multiple times with the same name, the last
+	 * value will be used.
+	 * 
+	 * Please note that this class will properly format the header, including
+	 * adding the `:` between the name and value and wrapping values that are
+	 * too long for a single line.
+	 * 
+	 * @param  string $name      The name of the header
+	 * @param  string $value     The value of the header
+	 * @param  array  :$headers  An associative array of `{name} => {value}`
+	 * @return fEmail  The email object, to allow for method chaining
+	 */
+	public function addCustomHeader($name, $value=NULL)
+	{
+		if ($value === NULL && is_array($name)) {
+			foreach ($name as $key => $value) {
+				$this->addCustomHeader($key, $value);
+			}
+			return;	
+		}
+		
+		$lower_name = fUTF8::lower($name);
+		$this->custom_headers[$lower_name] = array($name, $value);
+
+		return $this;
 	}
 	
 	
@@ -604,7 +776,7 @@ class fEmail
 	 * 
 	 * @param  string $email  The email address to send to
 	 * @param  string $name   The recipient's name
-	 * @return void
+	 * @return fEmail  The email object, to allow for method chaining
 	 */
 	public function addRecipient($email, $name=NULL)
 	{
@@ -612,7 +784,9 @@ class fEmail
 			return;
 		}
 		
-		$this->to_emails[] = $this->combineNameEmail($name, $email);
+		$this->to_emails[] = self::combineNameEmail($name, $email);
+
+		return $this;
 	}
 	
 	
@@ -625,17 +799,16 @@ class fEmail
 	 */
 	private function buildMultiAddressHeader($header, $emails)
 	{
-		if ($header) {
-			$header .= ': ';
-		}
+		$header .= ': ';
 		
 		$first = TRUE;
 		$line  = 1;
 		foreach ($emails as $email) {
 			if ($first) { $first = FALSE; } else { $header .= ', '; }
 			
-			// Make sure we don't go past the 978 char limit for email headers
-			if (strlen($header . $email) / 950 > $line) {
+			// Try to stay within the recommended 78 character line limit
+			$last_crlf_pos = (integer) strrpos($header, "\r\n");
+			if (strlen($header . $email) - $last_crlf_pos > 78) {
 				$header .= "\r\n ";
 				$line++;
 			}
@@ -650,13 +823,15 @@ class fEmail
 	/**
 	 * Removes all To, CC and BCC recipients from the email
 	 * 
-	 * @return void
+	 * @return fEmail  The email object, to allow for method chaining
 	 */
 	public function clearRecipients()
 	{
 		$this->to_emails  = array();
 		$this->cc_emails  = array();
 		$this->bcc_emails = array();
+
+		return $this;
 	}
 	
 	
@@ -675,39 +850,6 @@ class fEmail
 			$output .= $chars[rand(0, $last_index)];
 		}
 		return $output;
-	}
-	
-	
-	/**
-	 * Turns a name and email into a `"name" <email>` string, or just `email` if no name is provided
-	 * 
-	 * This method will remove newline characters from the name and email, and
-	 * will remove any backslash (`\`) and double quote (`"`) characters from
-	 * the name.
-	 * 
-	 * @param  string $name   The name associated with the email address
-	 * @param  string $email  The email address
-	 * @return string  The '"name" <email>' or 'email' string
-	 */
-	private function combineNameEmail($name, $email)
-	{
-		// Strip lower ascii character since they aren't useful in email addresses
-		$email = preg_replace('#[\x0-\x19]+#', '', $email);
-		$name  = preg_replace('#[\x0-\x19]+#', '', $name);
-		
-		if (!$name) {
-			return $email;
-		}
-		
-		// If the name contains any non-ascii bytes or stuff not allowed
-		// in quoted strings we just make an encoded word out of it
-		if (preg_replace('#[\x80-\xff\x5C\x22]#', '', $name) != $name) {
-			$name = $this->makeEncodedWord($name);
-		} else {
-			$name = '"' . $name . '"';	
-		}
-		
-		return $name . ' <' . $email . '>';
 	}
 	
 	
@@ -823,6 +965,11 @@ class fEmail
 		
 		if ($this->sender_email) {
 			$headers .= "Sender: " . trim($this->sender_email) . "\r\n";
+		}
+		
+		foreach ($this->custom_headers as $header_info) {
+			$header_prefix = $header_info[0] . ': ';
+			$headers .= $header_prefix . self::makeEncodedWord($header_info[1], strlen($header_prefix)) . "\r\n";  
 		}
 		
 		$headers .= "Message-ID: " . $message_id . "\r\n";
@@ -952,7 +1099,7 @@ class fEmail
 	 * Sets the email to be encrypted with S/MIME
 	 * 
 	 * @param  string $recipients_smime_cert_file  The file path to the PEM-encoded S/MIME certificate for the recipient
-	 * @return void
+	 * @return fEmail  The email object, to allow for method chaining
 	 */
 	public function encrypt($recipients_smime_cert_file)
 	{
@@ -972,6 +1119,8 @@ class fEmail
 		
 		$this->smime_encrypt              = TRUE;
 		$this->recipients_smime_cert_file = $recipients_smime_cert_file;
+
+		return $this;
 	}
 	
 	
@@ -1062,7 +1211,7 @@ class fEmail
 	 * 
 	 * @param  string|fFile $file          The plaintext version of the email body
 	 * @param  array        $replacements  The method will search the contents of the file for each key and replace it with the corresponding value
-	 * @return void
+	 * @return fEmail  The email object, to allow for method chaining
 	 */
 	public function loadBody($file, $replacements=array())
 	{
@@ -1076,6 +1225,8 @@ class fEmail
 		}
 		
 		$this->plaintext_body = $plaintext;
+
+		return $this;
 	}
 	
 	
@@ -1089,7 +1240,7 @@ class fEmail
 	 * 
 	 * @param  string|fFile $file          The plaintext version of the email body
 	 * @param  array        $replacements  The method will search the contents of the file for each key and replace it with the corresponding value
-	 * @return void
+	 * @return fEmail  The email object, to allow for method chaining
 	 */
 	public function loadHTMLBody($file, $replacements=array())
 	{
@@ -1103,6 +1254,8 @@ class fEmail
 		}
 		
 		$this->html_body = $html;
+
+		return $this;
 	}
 	
 	
@@ -1115,89 +1268,6 @@ class fEmail
 	private function makeBase64($content)
 	{
 		return chunk_split(base64_encode($content));
-	}
-	
-	
-	/**
-	 * Encodes a string to UTF-8 encoded-word
-	 * 
-	 * @param  string  $content  The content to encode
-	 * @return string  The encoded string
-	 */
-	private function makeEncodedWord($content)
-	{
-		// Homogenize the line-endings to CRLF
-		$content = str_replace("\r\n", "\n", $content);
-		$content = str_replace("\r", "\n", $content);
-		$content = str_replace("\n", "\r\n", $content);
-		
-		// Encoded word is not required if all characters are ascii
-		if (!preg_match('#[\x80-\xFF]#', $content)) {
-			return $content;
-		}
-		
-		// A quick a dirty hex encoding
-		$content = rawurlencode($content);
-		$content = str_replace('=', '%3D', $content);
-		$content = str_replace('%', '=', $content);
-		
-		// Decode characters that don't have to be coded
-		$decodings = array(
-			'=20' => '_', '=21' => '!', '=22' => '"',  '=23' => '#',
-			'=24' => '$', '=25' => '%', '=26' => '&',  '=27' => "'",
-			'=28' => '(', '=29' => ')', '=2A' => '*',  '=2B' => '+',
-			'=2C' => ',', '=2D' => '-', '=2E' => '.',  '=2F' => '/',
-			'=3A' => ':', '=3B' => ';', '=3C' => '<',  '=3E' => '>',
-			'=40' => '@', '=5B' => '[', '=5C' => '\\', '=5D' => ']',
-			'=5E' => '^', '=60' => '`', '=7B' => '{',  '=7C' => '|',
-			'=7D' => '}', '=7E' => '~', ' '   => '_'
-		);
-		
-		$content = strtr($content, $decodings);
-		
-		$length = strlen($content);
-		
-		$prefix = '=?utf-8?Q?';
-		$suffix = '?=';
-		
-		$prefix_length = 10;
-		$suffix_length = 2;
-		
-		// This loop goes through and ensures we are wrapping by 75 chars
-		// including the encoded word delimiters
-		$output = $prefix;
-		$line_length = $prefix_length;
-		
-		for ($i=0; $i<$length; $i++) {
-			
-			// Get info about the next character
-			$char_length = ($content[$i] == '=') ? 3 : 1;
-			$char        = $content[$i];
-			if ($char_length == 3) {
-				$char .= $content[$i+1] . $content[$i+2];
-			}
-			
-			// If we have too long a line, wrap it
-			if ($line_length + $suffix_length + $char_length > 75) {
-				$output .= $suffix . "\r\n " . $prefix;
-				$line_length = $prefix_length + 2;
-			}
-			
-			// Add the character
-			$output .= $char;
-			
-			// Figure out how much longer the line is
-			$line_length += $char_length;
-			
-			// Skip characters if we have an encoded character
-			$i += $char_length-1;
-		}
-		
-		if (substr($output, -2) != $suffix) {
-			$output .= $suffix;
-		}
-		
-		return $output;
 	}
 	
 	
@@ -1321,13 +1391,13 @@ class fEmail
 			}
 		}
 		
-		$to = trim($this->buildMultiAddressHeader("", $this->to_emails));
+		$to = substr(trim($this->buildMultiAddressHeader("To", $this->to_emails)), 4);
 		
 		$top_level_boundary = $this->createBoundary();
 		$headers            = $this->createHeaders($top_level_boundary, $this->message_id);
 		
 		$subject = str_replace(array("\r", "\n"), '', $this->subject);
-		$subject = $this->makeEncodedWord($subject);
+		$subject = self::makeEncodedWord($subject, 9);
 		
 		$body = $this->createBody($top_level_boundary);
 		
@@ -1423,7 +1493,7 @@ class fEmail
 	 * 
 	 * @param  string  $plaintext                  The plaintext version of the email body
 	 * @param  boolean $unindent_expand_constants  If this is `TRUE`, the body will be unindented as much as possible and {CONSTANT_NAME} will be replaced with the value of the constant
-	 * @return void
+	 * @return fEmail  The email object, to allow for method chaining
 	 */
 	public function setBody($plaintext, $unindent_expand_constants=FALSE)
 	{
@@ -1432,6 +1502,8 @@ class fEmail
 		}
 		
 		$this->plaintext_body = $plaintext;
+
+		return $this;
 	}
 	
 	
@@ -1441,7 +1513,7 @@ class fEmail
 	 * This email address will be set to the `Return-Path` header.
 	 * 
 	 * @param  string $email  The email address to bounce to
-	 * @return void
+	 * @return fEmail  The email object, to allow for method chaining
 	 */
 	public function setBounceToEmail($email)
 	{
@@ -1452,7 +1524,9 @@ class fEmail
 			return;
 		}
 		
-		$this->bounce_to_email = $this->combineNameEmail('', $email);
+		$this->bounce_to_email = self::combineNameEmail('', $email);
+
+		return $this;
 	}
 	
 	
@@ -1461,7 +1535,7 @@ class fEmail
 	 * 
 	 * @param  string $email  The email address being sent from
 	 * @param  string $name   The from email user's name - unfortunately on windows this is ignored
-	 * @return void
+	 * @return fEmail  The email object, to allow for method chaining
 	 */
 	public function setFromEmail($email, $name=NULL)
 	{
@@ -1469,7 +1543,9 @@ class fEmail
 			return;
 		}
 		
-		$this->from_email = $this->combineNameEmail($name, $email);
+		$this->from_email = self::combineNameEmail($name, $email);
+
+		return $this;
 	}
 	
 	
@@ -1480,11 +1556,13 @@ class fEmail
 	 * http://flourishlib.com/docs/UTF-8 for more information.
 	 * 
 	 * @param  string $html  The HTML version of the email body
-	 * @return void
+	 * @return fEmail  The email object, to allow for method chaining
 	 */
 	public function setHTMLBody($html)
 	{
 		$this->html_body = $html;
+
+		return $this;
 	}
 	
 	
@@ -1493,7 +1571,7 @@ class fEmail
 	 * 
 	 * @param  string $email  The email address to reply to
 	 * @param  string $name   The reply-to email user's name
-	 * @return void
+	 * @return fEmail  The email object, to allow for method chaining
 	 */
 	public function setReplyToEmail($email, $name=NULL)
 	{
@@ -1501,7 +1579,9 @@ class fEmail
 			return;
 		}
 		
-		$this->reply_to_email = $this->combineNameEmail($name, $email);
+		$this->reply_to_email = self::combineNameEmail($name, $email);
+
+		return $this;
 	}
 	
 	
@@ -1513,7 +1593,7 @@ class fEmail
 	 * 
 	 * @param  string $email  The email address the message is actually being sent from
 	 * @param  string $name   The sender email user's name
-	 * @return void
+	 * @return fEmail  The email object, to allow for method chaining
 	 */
 	public function setSenderEmail($email, $name=NULL)
 	{
@@ -1521,7 +1601,9 @@ class fEmail
 			return;
 		}
 		
-		$this->sender_email = $this->combineNameEmail($name, $email);
+		$this->sender_email = self::combineNameEmail($name, $email);
+
+		return $this;
 	}
 	
 	
@@ -1532,11 +1614,13 @@ class fEmail
 	 * http://flourishlib.com/docs/UTF-8 for more information.
 	 * 
 	 * @param  string $subject  The subject of the email
-	 * @return void
+	 * @return fEmail  The email object, to allow for method chaining
 	 */
 	public function setSubject($subject)
 	{
 		$this->subject = $subject;
+
+		return $this;
 	}
 	
 	
@@ -1546,7 +1630,7 @@ class fEmail
 	 * @param  string $senders_smime_cert_file    The file path to the sender's PEM-encoded S/MIME certificate
 	 * @param  string $senders_smime_pk_file      The file path to the sender's S/MIME private key
 	 * @param  string $senders_smime_pk_password  The password for the sender's S/MIME private key
-	 * @return void
+	 * @return fEmail  The email object, to allow for method chaining
 	 */
 	public function sign($senders_smime_cert_file, $senders_smime_pk_file, $senders_smime_pk_password)
 	{
@@ -1587,6 +1671,8 @@ class fEmail
 		$this->senders_smime_cert_file   = $senders_smime_cert_file;
 		$this->senders_smime_pk_file     = $senders_smime_pk_file;
 		$this->senders_smime_pk_password = $senders_smime_pk_password;
+
+		return $this;
 	}
 	
 	

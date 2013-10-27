@@ -12,7 +12,10 @@
  * @package    Flourish
  * @link       http://flourishlib.com/fMailbox
  * 
- * @version    1.0.0b11
+ * @version    1.0.0b14
+ * @changes    1.0.0b14  Added a workaround for iconv having issues in MAMP 1.9.4+ [wb, 2011-07-26]
+ * @changes    1.0.0b13  Fixed handling of headers in relation to encoded-words being embedded inside of quoted strings [wb, 2011-07-26]
+ * @changes    1.0.0b12  Enhanced the error checking in ::write() [wb, 2011-06-03]
  * @changes    1.0.0b11  Added code to work around PHP bug #42682 (http://bugs.php.net/bug.php?id=42682) where `stream_select()` doesn't work on 64bit machines from PHP 5.2.0 to 5.2.5, improved connectivity error handling and timeouts while reading data [wb, 2011-01-10]
  * @changes    1.0.0b10  Fixed ::parseMessage() to properly handle a header format edge case and properly set the `text` and `html` keys even when the email has an explicit `Content-disposition: inline` header [wb, 2010-11-25]
  * @changes    1.0.0b9   Fixed a bug in ::parseMessage() that could cause HTML alternate content to be included in the `inline` content array instead of the `html` element [wb, 2010-09-20]
@@ -89,7 +92,7 @@ class fMailbox
 	 */
 	static private function decodeHeader($text)
 	{
-		$parts = preg_split('#("[^"]+"|=\?[^\?]+\?[QB]\?[^\?]+\?=)#i', $text, -1, PREG_SPLIT_DELIM_CAPTURE);
+		$parts = preg_split('#(=\?[^\?]+\?[QB]\?[^\?]+\?=)#i', $text, -1, PREG_SPLIT_DELIM_CAPTURE);
 		
 		$part_with_encoding = array();
 		$output = '';
@@ -131,7 +134,7 @@ class fMailbox
 		}
 		
 		foreach ($part_with_encoding as $part) {
-			$output .= iconv($part['encoding'], 'UTF-8', $part['string']);
+			$output .= self::iconv($part['encoding'], 'UTF-8', $part['string']);
 		}
 		
 		return $output;
@@ -205,7 +208,7 @@ class fMailbox
 					break;
 				}
 			}
-			$content = iconv($charset, 'UTF-8', $content);
+			$content = self::iconv($charset, 'UTF-8', $content);
 			if ($structure['subtype'] == 'html') {
 				$content = preg_replace('#(content=(["\'])text/html\s*;\s*charset=(["\']?))' . preg_quote($charset, '#') . '(\3\2)#i', '\1utf-8\4', $content);
 			}
@@ -373,6 +376,22 @@ class fMailbox
 		
 		return TRUE;
 	}
+
+
+	/**
+	 * This works around a bug in MAMP 1.9.4+ and PHP 5.3 where iconv()
+	 * does not seem to properly assign the return value to a variable, but
+	 * does work when returning the value.
+	 *
+	 * @param string $in_charset   The incoming character encoding
+	 * @param string $out_charset  The outgoing character encoding
+	 * @param string $string       The string to convert
+	 * @return string  The converted string
+	 */
+	static private function iconv($in_charset, $out_charset, $string)
+	{
+		return iconv($in_charset, $out_charset, $string);
+	}
 	
 	
 	/**
@@ -388,21 +407,16 @@ class fMailbox
 			if ($output) { $output .= ', '; }
 			
 			if (!isset($email[0])) {
-				$email[0] = !empty($email['personal']) ? $email['personal'] : 'NIL';
+				$email[0] = !empty($email['personal']) ? $email['personal'] : '';
 				$email[2] = $email['mailbox'];
-				$email[3] = !empty($email['host']) ? $email['host'] : 'NIL';
+				$email[3] = !empty($email['host']) ? $email['host'] : '';
 			}
-			
-			if ($email[0] != 'NIL') {
-				$output .= '"' . self::decodeHeader($email[0]) . '" <';
+
+			$address = $email[2];
+			if (!empty($email[3])) {
+				$address .= '@' . $email[3];
 			}
-			$output .= $email[2];
-			if ($email[3] != 'NIL') {
-				$output .= '@' . $email[3];
-			}
-			if ($email[0] != 'NIL') {
-				$output .= '>';
-			}
+			$output .= fEmail::combineNameEmail($email[0], $address);
 		}
 		return $output;
 	}
@@ -424,10 +438,17 @@ class fMailbox
 			if ($match[1][0] == '"' && substr($match[1], -1) == '"') {
 				$match[1] = substr($match[1], 1, -1);
 			}
-			return array('personal' => $match[1], 'mailbox' => $match[2], 'host' => $match[3]);
+			return array(
+				'personal' => self::decodeHeader($match[1]),
+				'mailbox' => self::decodeHeader($match[2]),
+				'host' => self::decodeHeader($match[3])
+			);
 		
 		} elseif (preg_match('~^[ \t]*(?:<[ \t]*)?' . $email_regex . '(?:[ \t]*>)?[ \t]*$~ixD', $string, $match)) {
-			return array('mailbox' => $match[1], 'host' => $match[2]);
+			return array(
+				'mailbox' => self::decodeHeader($match[1]),
+				'host' => self::decodeHeader($match[2])
+			);
 		
 		// This handles the outdated practice of including the personal
 		// part of the email in a comment after the email address
@@ -437,15 +458,25 @@ class fMailbox
 				$match[3] = substr($match[3], 1, -1);
 			}
 			
-			return array('personal' => $match[3], 'mailbox' => $match[1], 'host' => $match[2]);
+			return array(
+				'personal' => self::decodeHeader($match[3]),
+				'mailbox' => self::decodeHeader($match[1]),
+				'host' => self::decodeHeader($match[2])
+			);
 		}
 		
 		if (strpos($string, '@') !== FALSE) {
 			list ($mailbox, $host) = explode('@', $string, 2);
-			return array('mailbox' => $mailbox, 'host' => $host);
+			return array(
+				'mailbox' => self::decodeHeader($mailbox),
+				'host' => self::decodeHeader($host)
+			);
 		}
 		
-		return array('mailbox' => $string, 'host' => '');
+		return array(
+			'mailbox' => self::decodeHeader($string),
+			'host' => ''
+		);
 	}
 	
 	
@@ -467,7 +498,6 @@ class fMailbox
 		$headers = array();
 		foreach ($header_lines as $header_line) {
 			$header_line = preg_replace("#\r\n\s+#", '', $header_line);
-			$header_line = self::decodeHeader($header_line);
 			
 			list ($header, $value) = preg_split('#:\s*#', $header_line, 2);
 			$header = strtolower($header);
@@ -484,13 +514,13 @@ class fMailbox
 				$pieces = preg_split('#;\s*#', $value, 2);
 				$value = $pieces[0];
 				
-				$headers[$header] = array('value' => $value);
+				$headers[$header] = array('value' => self::decodeHeader($value));
 				
 				$fields = array();
 				if (!empty($pieces[1])) {
 					preg_match_all('#(\w+)=("([^"]+)"|([^\s;]+))(?=;|$)#', $pieces[1], $matches, PREG_SET_ORDER);
 					foreach ($matches as $match) {
-						$fields[$match[1]] = !empty($match[4]) ? $match[4] : $match[3];
+						$fields[$match[1]] = self::decodeHeader(!empty($match[4]) ? $match[4] : $match[3]);
 					}
 				}
 				$headers[$header]['fields'] = $fields;
@@ -529,16 +559,16 @@ class fMailbox
 				}
 			
 			} elseif ($header == 'references') {
-				$headers[$header] = preg_split('#(?<=>)\s+(?=<)#', $value);
+				$headers[$header] = array_map(array('fMailbox', 'decodeHeader'), preg_split('#(?<=>)\s+(?=<)#', $value));
 				
 			} elseif ($header == 'received') {
 				if (!isset($headers[$header])) {
 					$headers[$header] = array();
 				}
-				$headers[$header][] = preg_replace('#\s+#', ' ', $value);
+				$headers[$header][] = preg_replace('#\s+#', ' ', self::decodeHeader($value));
 				
 			} else {
-				$headers[$header] = $value;
+				$headers[$header] = self::decodeHeader($value);
 			}
 		}
 		
@@ -1426,7 +1456,8 @@ class fMailbox
 		}
 		
 		$res = fwrite($this->connection, $command);
-		if ($res === FALSE) {
+
+		if ($res === FALSE || $res === 0) {
 			throw new fConnectivityException(
 				'Unable to write data to %1$s server %2$s on port %3$s',
 				strtoupper($this->type),

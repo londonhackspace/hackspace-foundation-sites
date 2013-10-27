@@ -6,20 +6,24 @@
  * the original URL entered by the user will be used, or that any rewrites
  * will **not** be reflected by this class.
  * 
- * @copyright  Copyright (c) 2007-2010 Will Bond
+ * @copyright  Copyright (c) 2007-2011 Will Bond
  * @author     Will Bond [wb] <will@flourishlib.com>
  * @license    http://flourishlib.com/license
  * 
  * @package    Flourish
  * @link       http://flourishlib.com/fURL
  * 
- * @version    1.0.0b6
- * @changes    1.0.0b6  Added the `$max_length` parameter to ::makeFriendly() [wb, 2010-09-19]
- * @changes    1.0.0b5  Updated ::redirect() to not require a URL, using the current URL as the default [wb, 2009-07-29]
- * @changes    1.0.0b4  ::getDomain() now includes the port number if non-standard [wb, 2009-05-02]
- * @changes    1.0.0b3  ::makeFriendly() now changes _-_ to - and multiple _ to a single _ [wb, 2009-03-24]
- * @changes    1.0.0b2  Fixed ::makeFriendly() so that _ doesn't appear at the beginning of URLs [wb, 2009-03-22]
- * @changes    1.0.0b   The initial implementation [wb, 2007-06-14]
+ * @version    1.0.0b10
+ * @changes    1.0.0b10  Fixed some method signatures [wb, 2011-08-24]
+ * @changes    1.0.0b9   Fixed ::redirect() to handle no parameters properly [wb, 2011-06-13]
+ * @changes    1.0.0b8   Added the `$delimiter` parameter to ::makeFriendly() [wb, 2011-06-03]
+ * @changes    1.0.0b7   Fixed ::redirect() to be able to handle unqualified and relative paths [wb, 2011-03-02]
+ * @changes    1.0.0b6   Added the `$max_length` parameter to ::makeFriendly() [wb, 2010-09-19]
+ * @changes    1.0.0b5   Updated ::redirect() to not require a URL, using the current URL as the default [wb, 2009-07-29]
+ * @changes    1.0.0b4   ::getDomain() now includes the port number if non-standard [wb, 2009-05-02]
+ * @changes    1.0.0b3   ::makeFriendly() now changes _-_ to - and multiple _ to a single _ [wb, 2009-03-24]
+ * @changes    1.0.0b2   Fixed ::makeFriendly() so that _ doesn't appear at the beginning of URLs [wb, 2009-03-22]
+ * @changes    1.0.0b    The initial implementation [wb, 2007-06-14]
  */
 class fURL
 {
@@ -90,22 +94,39 @@ class fURL
 	 * Changes a string into a URL-friendly string
 	 * 
 	 * @param  string   $string      The string to convert
-	 * @param  interger $max_length  The maximum length of the friendly URL
+	 * @param  integer  $max_length  The maximum length of the friendly URL
+	 * @param  string   $delimiter   The delimiter to use between words, defaults to `_`
+	 * @param  string   |$string
+	 * @param  string   |$delimiter
 	 * @return string  The URL-friendly version of the string
 	 */
-	static public function makeFriendly($string, $max_length=NULL)
+	static public function makeFriendly($string, $max_length=NULL, $delimiter=NULL)
 	{
+		// This allows omitting the max length, but including a delimiter
+		if ($max_length && !is_numeric($max_length)) {
+			$delimiter  = $max_length;
+			$max_length = NULL;
+		}
+
 		$string = fHTML::decode(fUTF8::ascii($string));
 		$string = strtolower(trim($string));
 		$string = str_replace("'", '', $string);
-		$string = preg_replace('#[^a-z0-9\-]+#', '_', $string);
-		$string = preg_replace('#_{2,}#', '_', $string);
+
+		if (!strlen($delimiter)) {
+			$delimiter = '_';
+		}
+
+		$delimiter_replacement = strtr($delimiter, array('\\' => '\\\\', '$' => '\\$'));
+		$delimiter_regex       = preg_quote($delimiter, '#');
+
+		$string = preg_replace('#[^a-z0-9\-_]+#', $delimiter_replacement, $string);
+		$string = preg_replace('#' . $delimiter_regex . '{2,}#', $delimiter_replacement, $string);
 		$string = preg_replace('#_-_#', '-', $string);
-		$string = preg_replace('#(^_+|_+$)#D', '', $string);
+		$string = preg_replace('#(^' . $delimiter_regex . '+|' . $delimiter_regex . '+$)#D', '', $string);
 		
 		$length = strlen($string);
 		if ($max_length && $length > $max_length) {
-			$last_pos = strrpos($string, '_', ($length - $max_length - 1) * -1);
+			$last_pos = strrpos($string, $delimiter, ($length - $max_length - 1) * -1);
 			if ($last_pos < ceil($max_length / 2)) {
 				$last_pos = $max_length;
 			}
@@ -131,8 +152,32 @@ class fURL
 	{
 		if (strpos($url, '/') === 0) {
 			$url = self::getDomain() . $url;
+
 		} elseif (!preg_match('#^https?://#i', $url)) {
-			$url = self::getDomain() . self::get() . $url;
+			
+			$prefix = self::getDomain() . self::get();
+			
+			if (strlen($url)) {
+				// All URLs that have more than the query string need to
+				// be appended to the current directory name
+				if ($url[0] != '?') {
+					$prefix = preg_replace('#(?<=/)[^/]+$#D', '', $prefix);
+				}
+
+				// Clean up ./ relative URLS
+				if (substr($url, 0, 2) == './') {
+					$url = substr($url, 2);
+				}
+
+				// Resolve ../ relative paths as far as possible
+				while (substr($url, 0, 3) == '../') {
+					if ($prefix == self::getDomain() . '/') { break; }
+					$prefix = preg_replace('#(?<=/)[^/]+/?$#D', '', $prefix);
+					$url    = substr($url, 3);
+				}
+			}
+
+			$url = $prefix . $url;
 		}
 		
 		// Strip the ? if there are no query string parameters
@@ -155,7 +200,7 @@ class fURL
 	 * @param  string ...
 	 * @return string  The query string with the parameter(s) specified removed, first character is `?`
 	 */
-	static public function removeFromQueryString()
+	static public function removeFromQueryString($parameter)
 	{
 		$parameters = func_get_args();
 		
@@ -219,7 +264,7 @@ class fURL
 
 
 /**
- * Copyright (c) 2007-2010 Will Bond <will@flourishlib.com>
+ * Copyright (c) 2007-2011 Will Bond <will@flourishlib.com>
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal

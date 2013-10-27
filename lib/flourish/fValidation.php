@@ -2,14 +2,16 @@
 /**
  * Provides validation routines for standalone forms, such as contact forms
  * 
- * @copyright  Copyright (c) 2007-2010 Will Bond
+ * @copyright  Copyright (c) 2007-2011 Will Bond
  * @author     Will Bond [wb] <will@flourishlib.com>
  * @license    http://flourishlib.com/license
  * 
  * @package    Flourish
  * @link       http://flourishlib.com/fValidation
  * 
- * @version    1.0.0b10
+ * @version    1.0.0b12
+ * @changes    1.0.0b12  Fixed some method signatures [wb, 2011-08-24]
+ * @changes    1.0.0b11  Fixed ::addCallbackRule() to be able to handle multiple rules per field [wb, 2011-06-02]
  * @changes    1.0.0b10  Fixed ::addRegexRule() to be able to handle multiple rules per field [wb, 2010-08-30]
  * @changes    1.0.0b9   Enhanced all of the add fields methods to accept one field per parameter, or an array of fields [wb, 2010-06-24]
  * @changes    1.0.0b8   Added/fixed support for array-syntax fields names [wb, 2010-06-09]
@@ -215,7 +217,7 @@ class fValidation
 	 * 
 	 * @param  string $field    A field that should contain a boolean value
 	 * @param  string ...
-	 * @param  array  :$fields  Any number of fields that should contain a boolean value
+	 * @param  array  |$fields  Any number of fields that should contain a boolean value
 	 * @return fValidation  The validation object, to allow for method chaining
 	 */
 	public function addBooleanFields($field)
@@ -243,7 +245,10 @@ class fValidation
 	 */
 	public function addCallbackRule($field, $callback, $message)
 	{
-		$this->callback_rules[$field] = array(
+		if (!isset($this->callback_rules[$field])) {
+			$this->callback_rules[$field] = array();
+		}
+		$this->callback_rules[$field][] = array(
 			'callback' => $callback,
 			'message'  => $message
 		);
@@ -285,7 +290,7 @@ class fValidation
 	 * 
 	 * @param  string $field    A field that should contain a valid date
 	 * @param  string ...
-	 * @param  array  :$fields  Any number of fields that should contain a valid date
+	 * @param  array  |$fields  Any number of fields that should contain a valid date
 	 * @return fValidation  The validation object, to allow for method chaining
 	 */
 	public function addDateFields($field)
@@ -308,7 +313,7 @@ class fValidation
 	 * 
 	 * @param  string $field    A field that should contain a valid email address
 	 * @param  string ...
-	 * @param  array  :$fields  Any number of fields that should contain a valid email address
+	 * @param  array  |$fields  Any number of fields that should contain a valid email address
 	 * @return fValidation  The validation object, to allow for method chaining
 	 */
 	public function addEmailFields($field)
@@ -334,7 +339,7 @@ class fValidation
 	 * 
 	 * @param  string $field    A field to be checked for email injection
 	 * @param  string ...
-	 * @param  array  :$fields  Any number of fields to be checked for email injection
+	 * @param  array  |$fields  Any number of fields to be checked for email injection
 	 * @return fValidation  The validation object, to allow for method chaining
 	 */
 	public function addEmailHeaderFields($field)
@@ -384,7 +389,7 @@ class fValidation
 	 * 
 	 * @param  string $field    A field that should contain a float value
 	 * @param  string ...
-	 * @param  array  :$fields  Any number of fields that should contain a float value
+	 * @param  array  |$fields  Any number of fields that should contain a float value
 	 * @return fValidation  The validation object, to allow for method chaining
 	 */
 	public function addFloatFields($field)
@@ -407,7 +412,7 @@ class fValidation
 	 * 
 	 * @param  string $field    A field that should contain an integer value
 	 * @param  string ...
-	 * @param  array  :$fields  Any number of fields that should contain an integer value
+	 * @param  array  |$fields  Any number of fields that should contain an integer value
 	 * @return fValidation  The validation object, to allow for method chaining
 	 */
 	public function addIntegerFields($field)
@@ -511,7 +516,7 @@ class fValidation
 	 * 
 	 * @param  string $field    A field to require a value for
 	 * @param  string ...
-	 * @param  array  :$fields  Any number of fields to require a value for
+	 * @param  array  |$fields  Any number of fields to require a value for
 	 * @return fValidation  The validation object, to allow for method chaining
 	 */
 	public function addRequiredFields($field)
@@ -555,7 +560,7 @@ class fValidation
 	 * 
 	 * @param  string $field    A field that should contain a valid URL
 	 * @param  string ...
-	 * @param  array  :$fields  Any number of fields that should contain a valid URL
+	 * @param  array  |$fields  Any number of fields that should contain a valid URL
 	 * @return fValidation  The validation object, to allow for method chaining
 	 */
 	public function addURLFields($field)
@@ -632,13 +637,15 @@ class fValidation
 	 */
 	private function checkCallbackRules(&$messages)
 	{
-		foreach ($this->callback_rules as $field => $rule) {
+		foreach ($this->callback_rules as $field => $rules) {
 			$value = fRequest::get($field);
-			if (self::stringlike($value) && !call_user_func($rule['callback'], $value)) {
-				$messages[$field] = self::compose(
-					'%s' . $rule['message'],
-					fValidationException::formatField($this->makeFieldName($field))
-				);
+			foreach ($rules as $rule) {
+				if (self::stringlike($value) && !call_user_func($rule['callback'], $value)) {
+					$messages[$field] = self::compose(
+						'%s' . $rule['message'],
+						fValidationException::formatField($this->makeFieldName($field))
+					);
+				}
 			}
 		}
 	}
@@ -1055,7 +1062,7 @@ class fValidation
 
 
 /**
- * Copyright (c) 2007-2010 Will Bond <will@flourishlib.com>
+ * Copyright (c) 2007-2011 Will Bond <will@flourishlib.com>
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
