@@ -24,9 +24,14 @@ end
 def send_unsubscribe_email(email, full_name, last_payment)
   vars = {'name' => firstname(full_name),
           'date' => last_payment.strftime('%Y-%m-%d')}
-  template_text = File.read('../emails/lapse.erb')
-  template = Erubis::Eruby.new(template_text)
+  template = Erubis::Eruby.new(File.read('../emails/lapse.erb'))
   send_email(email, "Your London Hackspace membership has lapsed", template.result(vars))
+end
+
+def send_subscribe_email(email, full_name)
+  vars = {'name' => firstname(full_name)}
+  template = Erubis::Eruby.new(File.read('../emails/subscribe.erb'))
+  send_email(email, "Your London Hackspace membership is now active", template.result(vars))
 end
 
 ofx = OfxParser::OfxParser.parse(open(ARGV[0]))
@@ -73,7 +78,12 @@ ofx.bank_account.statement.transactions.each do |transaction|
                       transaction.fit_id, transaction.date.iso8601(), user['id'], transaction.amount)
       db.execute("UPDATE users SET subscribed = 1 WHERE id = ?", user['id'])
     end
-    puts "User #{user['full_name']} now subscribed."
+
+    if user['subscribed'] == 0
+      # User is a new subscriber
+      puts "User #{user['full_name']} now subscribed."
+      send_subscribe_email(user['email'], user['full_name'])
+    end
 end
 
 db.execute("SELECT users.*, (SELECT max(timestamp) FROM transactions WHERE user_id = users.id) AS lastsubscription 
