@@ -1,6 +1,8 @@
-This is the source code for the Hackspace Foundation web sites:
+This is the source code for the London Hackspace web site:
 
-http://www.hackspace.org.uk
+http://london.hackspace.org.uk
+
+(It used to also support http://hackspace.org.uk, but this is now just MediaWiki)
 
 Configuring MediaWiki users panel:
  - Create a file in ./var/mediawiki.php with the $type, $server, $username,
