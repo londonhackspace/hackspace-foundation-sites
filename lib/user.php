@@ -6,7 +6,11 @@ class User extends fActiveRecord {
     }
 
     public function isMember() {
-        return $this->getSubscribed();
+        return $this->getSubscribed() == '1';
+    }
+
+    public function isAdmin() {
+        return $this->getAdmin() == '1';
     }
 
     public function buildTransactions() {
