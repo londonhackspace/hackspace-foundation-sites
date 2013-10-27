@@ -3,6 +3,16 @@
 require 'rubygems'
 require '../ruby-lib/ofx-parser.rb'
 require 'sqlite3'
+require 'erubis'
+
+def send_unsubscribe_email(email, name)
+  template = File.read('../emails/lapse.erb')
+  p template
+end
+
+send_unsubscribe_email('russ@garrett.co.uk', 'Russ Garrett')
+
+exit
 
 ofx = OfxParser::OfxParser.parse(open(ARGV[0]))
 
@@ -11,34 +21,34 @@ db.results_as_hash = true
 
 ofx.bank_account.statement.transactions.each do |transaction|
     c = db.get_first_value("SELECT count(*) FROM transactions WHERE fit_id = ?", transaction.fit_id)
-    if c.to_i > 0:
+    if c.to_i > 0
       next
     end
 
     match = transaction.payee.upcase.match(/H[S5] ?([O0-9]{4,})/)
-    if !match:
+    if !match
       next
     end
 
     reference = match[1].gsub(/O/, '0')
 
     user = db.get_first_row("SELECT * FROM users WHERE id = ?", reference.to_i)
-    if !user:
+    if !user
       puts "Payment for invalid user ID #{reference.to_i}! Bug?"
       next
     end
 
-    if user['terminated'] == 1:
+    if user['terminated'] == 1
       puts "User #{user['full_name']} is paying but their membership is terminated."
       next
     end
 
-    if user['address'] == '':
+    if user['address'] == ''
       puts "User #{user['full_name']} has no address, not subscribing."
       next
     end
 
-    if transaction.amount.to_i < 5:
+    if transaction.amount.to_i < 5
       puts "User #{user['full_name']} is paying less than £5 (£#{transaction.amount}), not subscribing."
       next
     end
