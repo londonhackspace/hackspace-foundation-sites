@@ -32,8 +32,8 @@ if($user->isMember()) {
         foreach( $users as $row ):
         ?>
             <tr>
-                <th class="member-id"><?php echo $row['id'] ?></th>
-                <td><?php echo htmlspecialchars( $row['full_name'] ) ?></td>
+                <th class="member-id"><?= $row['id'] ?></th>
+                <td><a href="/members/member.php?id=<?=$row['id']?>"><?= htmlspecialchars( $row['full_name'] ) ?></a></td>
             </tr>
         <?php endforeach; ?>
         </tbody>
