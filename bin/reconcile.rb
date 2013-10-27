@@ -1,18 +1,33 @@
 #!/usr/bin/env ruby
+# encoding: UTF-8
 
 require 'rubygems'
 require '../ruby-lib/ofx-parser.rb'
 require 'sqlite3'
 require 'erubis'
+require 'mail'
 
-def send_unsubscribe_email(email, name)
-  template = File.read('../emails/lapse.erb')
-  p template
+def firstname(full_name)
+  full_name.gsub(/^(Mr|Mrs|Miss|Ms)\.?\s+/, '').split(' ')[0]
 end
 
-send_unsubscribe_email('russ@garrett.co.uk', 'Russ Garrett')
+def send_email(address, subject, text)
+  mail = Mail.new do
+    from "London Hackspace <trustees@london.hackspace.org.uk>"
+    to address
+    subject subject
+    body text
+  end
+  mail.deliver
+end
 
-exit
+def send_unsubscribe_email(email, full_name, last_payment)
+  vars = {'name' => firstname(full_name),
+          'date' => last_payment.strftime('%Y-%m-%d')}
+  template_text = File.read('../emails/lapse.erb')
+  template = Erubis::Eruby.new(template_text)
+  send_email(email, "Your London Hackspace membership has lapsed", template.result(vars))
+end
 
 ofx = OfxParser::OfxParser.parse(open(ARGV[0]))
 
@@ -55,7 +70,7 @@ ofx.bank_account.statement.transactions.each do |transaction|
 
     db.transaction do |db|
       db.execute("INSERT INTO transactions (fit_id, timestamp, user_id, amount) VALUES (?, ?, ?, ?)",
-                      transaction.fit_id, transaction.date, user['id'], transaction.amount)
+                      transaction.fit_id, transaction.date.iso8601(), user['id'], transaction.amount)
       db.execute("UPDATE users SET subscribed = 1 WHERE id = ?", user['id'])
     end
     puts "User #{user['full_name']} now subscribed."
@@ -65,4 +80,5 @@ db.execute("SELECT users.*, (SELECT max(timestamp) FROM transactions WHERE user_
         FROM users WHERE users.subscribed = 1 AND lastsubscription < date('now', '-1 month', '-14 days')") do |user|
     puts "Unsubscribing #{user['full_name']}."
     db.execute("UPDATE users SET subscribed = 0 WHERE id = ?", user['id'])
+    send_unsubscribe_email(user['email'], user['full_name'], DateTime.iso8601(user['lastsubscription']))
 end
