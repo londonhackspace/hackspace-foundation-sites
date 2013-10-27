@@ -85,6 +85,7 @@ td, th {
 
 th {
     text-align:right;
+    font-weight: bold;
 }
 
 thead th {
@@ -228,7 +229,7 @@ label {
     font-weight:bold;
 }
 
-th.member-id {
+tbody th.member-id {
     font-weight: normal;
     color: #ccc;
 }
