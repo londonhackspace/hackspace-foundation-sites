@@ -18,6 +18,7 @@ def send_email(address, subject, text)
     subject subject
     body text
   end
+  mail.delivery_method :sendmail
   mail.deliver
 end
 
@@ -77,18 +78,19 @@ ofx.bank_account.statement.transactions.each do |transaction|
       db.execute("INSERT INTO transactions (fit_id, timestamp, user_id, amount) VALUES (?, ?, ?, ?)",
                       transaction.fit_id, transaction.date.iso8601(), user['id'], transaction.amount)
       db.execute("UPDATE users SET subscribed = 1 WHERE id = ?", user['id'])
-    end
 
-    if user['subscribed'] == 0
-      # User is a new subscriber
-      puts "User #{user['full_name']} now subscribed."
-      send_subscribe_email(user['email'], user['full_name'])
+      if user['subscribed'] == 0
+        # User is a new subscriber
+        puts "User #{user['full_name']} now subscribed."
+        send_subscribe_email(user['email'], user['full_name'])
+      end
     end
 end
 
-db.execute("SELECT users.*, (SELECT max(timestamp) FROM transactions WHERE user_id = users.id) AS lastsubscription 
+db.execute("SELECT users.*, (SELECT max(timestamp) FROM transactions WHERE user_id = users.id) AS lastsubscription
         FROM users WHERE users.subscribed = 1 AND lastsubscription < date('now', '-1 month', '-14 days')") do |user|
+
     puts "Unsubscribing #{user['full_name']}."
     db.execute("UPDATE users SET subscribed = 0 WHERE id = ?", user['id'])
-    send_unsubscribe_email(user['email'], user['full_name'], DateTime.iso8601(user['lastsubscription']))
+    send_unsubscribe_email(user['email'], user['full_name'], Time.iso8601(user['lastsubscription']))
 end
