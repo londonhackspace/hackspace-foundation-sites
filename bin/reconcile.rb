@@ -55,7 +55,7 @@ ofx.bank_account.statement.transactions.each do |transaction|
 
     user = db.get_first_row("SELECT * FROM users WHERE id = ?", reference.to_i)
     if !user
-      puts "Payment for invalid user ID #{reference.to_i}! Bug?"
+      puts "Payment for invalid user ID #{reference.to_i}!"
       next
     end
 
@@ -70,7 +70,7 @@ ofx.bank_account.statement.transactions.each do |transaction|
     end
 
     if transaction.amount.to_i < 5
-      puts "User #{user['full_name']} is paying less than £5 (£#{transaction.amount}), not subscribing."
+      #puts "User #{user['full_name']} is paying less than £5 (£#{transaction.amount}), not subscribing."
       next
     end
 
