@@ -15,6 +15,7 @@
     <link rel="stylesheet" type="text/css" href="/css/lib/960gs/960.css" />
     <link rel="stylesheet" type="text/css" href="/css/main.css?1" />
     <link rel="icon" href="/favicon.ico" />
+    <link rel="canonical" href="https://london.hackspace.org.uk<?=$_SERVER['REQUEST_URI']?>" />
     <script type="text/javascript">
       WebFontConfig = {
             google: { families: [ 'Open+Sans:400,700:latin' ] }
