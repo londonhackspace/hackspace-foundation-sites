@@ -4,8 +4,7 @@ require( './header.php' );
 ?>
 
 <h2>Donate</h2>
-<p>Here's how to donate to London Hackspace. We prefer bank transfer, as we don't have to pay commission.</p>
-
+<p>Here's how to donate to London Hackspace.</p>
 
 <h3>Bank Transfer</h3>
 <? if ($user) { ?>
@@ -49,6 +48,6 @@ require( './header.php' );
 
 
 <h3>Bitcoin</h3>
-<p>Our Bitcoin address is <a href="https://blockchain.info/address/1AppadotwZwLMUm5GonQrrrXkwmNEbmpP7"><strong>1AppadotwZwLMUm5GonQrrrXkwmNEbmpP7</strong></a>.</p>
+<p><a class="coinbase-button" data-code="02f847c530bf2538491bb3c3da5dd851" data-button-style="custom_large" href="https://coinbase.com/checkouts/02f847c530bf2538491bb3c3da5dd851">Donate Bitcoins</a><script src="https://coinbase.com/assets/button.js" type="text/javascript"></script></p>
 
 <?php require('./footer.php'); ?>
