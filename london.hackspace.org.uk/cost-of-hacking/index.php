@@ -1,6 +1,6 @@
 <?php
 require_once( $_SERVER['DOCUMENT_ROOT'] . '/../lib/init.php');
-$income = $db->translatedQuery("SELECT sum(amount) FROM transactions WHERE timestamp > date('now', '-1 month')")->fetchScalar();
+$income = $db->translatedQuery("SELECT sum(amount) FROM transactions WHERE timestamp > date('now', '-1 month', 'start of month') AND timestamp < date('now', 'start of month')")->fetchScalar();
 
 function get_budget() {
   $started = false;
