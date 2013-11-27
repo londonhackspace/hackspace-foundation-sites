@@ -19,9 +19,9 @@
 		var data = new google.visualization.DataTable();
 		data.addColumn('string', 'Month');
     data.addColumn('number', 'Subscriptions £<?=number_format($income)?>');
-		data.addColumn('number', 'Expenses £11,040');
+    data.addColumn('number', 'Expenses £<?=number_format($expenses)?>');
 		data.addRows([
-      ['Current', <?=$income?>, 11040.00],
+      ['Current', <?=$income?>, <?=$expenses?>],
 		]);
 
 		var options = {

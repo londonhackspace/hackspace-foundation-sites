@@ -18,4 +18,10 @@ function get_budget() {
 
 $budget = get_budget();
 
+$expenses = 0;
+foreach($budget as $line) {
+  $expenses += $line;
+}
+$expenses = round($expenses);
+
 require_once('template.php');
