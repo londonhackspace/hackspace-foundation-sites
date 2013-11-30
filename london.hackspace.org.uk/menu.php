@@ -23,7 +23,7 @@ function menulink($url, $name, $title) {
         <h4>Options</h4>
         <ul id="main-menu" class="menu">
             <?=menulink('/', 'about', 'Home');?>
-            <li><a href="http://wiki.hackspace.org.uk">Wiki</a></li>
+            <li><a href="http://wiki.london.hackspace.org.uk">Wiki</a></li>
             <? if (!isset($user)) { ?>
                 <?=menulink('/signup.php', 'membership', 'Join');?>
             <? } ?>
