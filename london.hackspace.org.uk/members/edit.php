@@ -48,7 +48,7 @@ if (isset($_GET['saved'])) {
 <p><a href="http://www.legislation.gov.uk/ukpga/2006/46/part/8/chapter/2/crossheading/general">UK law</a> requires us to
 store the full name and address of all our members. If you don't provide these details, you won't receive membership privileges.</p>
 
-<p>If you prefer to pay for a longer period of time, you can change your membership period here. You must pay at least £5/month.</p>
+<? /* <p>If you prefer to pay for a longer period of time, you can change your membership period here. You must pay at least £5/month.</p> */ ?>
 
 <form method="post">
     <input type="hidden" name="token" value="<?=fRequest::generateCSRFToken()?>" />
@@ -66,10 +66,11 @@ store the full name and address of all our members. If you don't provide these d
                 <td><label for="address">Address</label></td>
                 <td><textarea id="address" name="address" cols="30" rows="5"><?=$user->getAddress()?></textarea></td>
             </tr>
-            <tr>
+<? /*            <tr>
                 <td><label for="length">Subscription Length (months)</label></td>
                 <td><input id="length" name="length" value="<?=$user->getSubscriptionPeriod()?>" /></td>
-            </tr>
+                </tr>
+*/ ?>
             <tr>
                 <td><label for="newpassword">New Password (optional)</label></td>
                 <td><input type="password" id="newpassword" name="newpassword" /></td>
