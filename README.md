@@ -5,7 +5,7 @@ site](http://london.hackspace.org.uk)
 
 ## Creating the DB
 
-  sqlite3 ./var/database.db < ./etc/schema.sql
+    sqlite3 ./var/database.db < ./etc/schema.sql
 
 ## Configuring MediaWiki users panel
 Create a file in ./var/mediawiki.php with the $type, $server, $username,
