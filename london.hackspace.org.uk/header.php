@@ -68,9 +68,9 @@ function menulink($url, $name, $title) {
         <?if ($user) { ?>
 
         <div class="btn-group">
-          <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+          <a class="btn btn-default dropdown-toggle" data-toggle="dropdown" href="/members/">
             <?= htmlspecialchars($user->getFullName()) ?> <span class="caret"></span>
-          </button>
+          </a>
           <ul class="dropdown-menu pull-right" role="menu">
             <?=menulink('/members/', 'members', 'Status &amp; Payments')?>
             <li class="divider"></li>
