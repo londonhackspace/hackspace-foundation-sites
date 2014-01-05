@@ -1,4 +1,23 @@
 <?php require_once( $_SERVER['DOCUMENT_ROOT'] . '/../lib/init.php'); ?>
+<?php
+function menulink($url, $name, $title) {
+    global $page;
+    $ret = '<li';
+    if ($page == $name) {
+        $ret .= ' class="active"';
+    }   
+    $ret .= '>';
+    if ($page != $name) {
+        $ret .= '<a href="' . $url . '">';
+    }
+    $ret .= $title;
+    if ($page != $name) {
+        $ret .= '</a>';
+    }
+    $ret .= '</li>';
+    return $ret;
+}
+?>
 <!DOCTYPE html>
 <html>
 <head>
@@ -45,10 +64,24 @@
 <div class="page-container container">
     <div id="login-logout-container">
         <?if ($user) { ?>
-                    Welcome, <a href="/members"><?= htmlspecialchars($user->getFullName()) ?></a>
-                    <a class="btn btn-default" href="/logout.php">Logout</a>
+
+        <div class="btn-group">
+          <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+            <?= htmlspecialchars($user->getFullName()) ?> <span class="caret"></span>
+          </button>
+          <ul class="dropdown-menu pull-right" role="menu">
+            <?=menulink('/members/', 'members', 'Status &amp; Payments')?>
+            <li class="divider"></li>
+            <?=menulink('/members/code.php', 'code', 'Back Gate Access')?>
+            <?=menulink('/members/cards.php', 'cards', 'Cards Access')?>
+            <?=menulink('/members/wiki.php', 'wiki', 'Wiki Access')?>
+            <?=menulink('/members/edit.php', 'edit', 'Edit Account')?>
+            <li class="divider"></li>
+            <li><a href="/logout.php">Logout</a></li>
+          </ul>
+        </div>
         <? } else { ?>
-                    <a class="btn btn-default" href="/login.php">Login</a>
+        <a class="btn btn-default" href="/login.php">Login</a>
         <? } ?>
     </div>
     

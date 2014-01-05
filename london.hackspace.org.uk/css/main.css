@@ -9,7 +9,7 @@ a {
     text-decoration: underline;
 }
 
-nav a, a.btn {
+nav a, a.btn, .dropdown-menu a {
 	text-decoration: none;
 }
 
@@ -211,6 +211,16 @@ footer {
 .nav li.active {
     padding: 14px;
     background-color: #ddd;
+}
+.dropdown-menu>li.active {
+    display: block;
+    padding: 3px 20px;
+    clear: both;
+    font-weight: normal;
+    line-height: 1.428571429;
+    color: #333333;
+    white-space: nowrap;
+    background-color: #f8f8f8;
 }
 
 /* Signup page */
