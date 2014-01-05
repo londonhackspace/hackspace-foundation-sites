@@ -5,13 +5,9 @@
     <!-- End of Main Body section -->
     
     
-    <div id="ft" class="container_12">
-        <div class="grid_12">
-            <p>
-                Copyright &copy; <?=date('Y')?> London Hackspace Ltd. Site kindly hosted by <a href="http://www.bitfolk.com">Bitfolk</a>.<br/>
-            </p>
-        </div>
-    </div>
+    <footer id="ft">
+        <p>Copyright &copy; <?=date('Y')?> London Hackspace Ltd. Site kindly hosted by <a href="http://www.bitfolk.com">Bitfolk</a>.<br/></p>
+    </footer>
 </div><!-- doc -->
 
 <? if (isset($show_twitter_feed)) { ?>
@@ -42,6 +38,35 @@
   })();
 
 </script>
-
+<script type="text/javascript" src="/javascript/jquery-1.10.2.min.js"></script>
+<script type="text/javascript">
+// homepage cleanup events for touch devices and prevent collapseable sections for wide screens
+if($('#home-page-container').length > 0) {
+	var moved = false;
+    $('#home-page-container h3').bind('touchmove', function(e) {
+    	moved = true;
+	});
+    $('#home-page-container h3').bind('touchend', function(e) {
+    	e.preventDefault();
+    	e.stopPropagation();
+        if($(window).width() <= 480 && !moved) {
+        	$(this).trigger('click');
+        }
+        moved = false;
+       	return false;
+	});
+    $('#home-page-container h3').bind('click', function(e) {
+        //alert($(window).width());
+        if($(window).width() > 480) {
+	        e.preventDefault();
+            e.stopPropagation();
+        }
+    });
+}
+$(window).bind('resize', function() {
+    $('.collapse, .navbar-collapse').removeAttr('style');
+})
+</script>
+<script type="text/javascript" src="/javascript/bootstrap.min.js"></script>
 </body>
 </html>

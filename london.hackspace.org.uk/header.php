@@ -10,12 +10,16 @@
     <meta name="description" content="<?=$desc ?>" />
     <? } ?>
     <title><? if (isset($title)) echo "$title &mdash; "; ?>London Hackspace</title>
-    <link rel="stylesheet" type="text/css" href="/css/lib/960gs/reset.css" />
-    <link rel="stylesheet" type="text/css" href="/css/lib/960gs/text.css" />
-    <link rel="stylesheet" type="text/css" href="/css/lib/960gs/960.css" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <meta name="apple-mobile-web-app-capable" content="yes"/> 
+    <meta name="apple-mobile-web-app-status-bar-style" content="black"/>
+
+    <link rel="stylesheet" type="text/css" href="/css/lib/bootstrap/bootstrap.min.css" />
     <link rel="stylesheet" type="text/css" href="/css/main.css?1" />
     <link rel="icon" href="/favicon.ico" />
     <link rel="canonical" href="https://london.hackspace.org.uk<?=$_SERVER['REQUEST_URI']?>" />
+
     <script type="text/javascript">
       WebFontConfig = {
             google: { families: [ 'Open+Sans:400,700:latin' ] }
@@ -30,51 +34,51 @@
                     s.parentNode.insertBefore(wf, s);
                       })();
     </script>
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="/javascript/html5shiv.js"></script>
+      <script src="/javascript/respond.min.js"></script>
+    <![endif]-->
 </head>
 <body>
-<div id="doc" class="container_12">
-    <div id="login-logout-container" class="container_12">
+<div class="page-container container">
+    <div id="login-logout-container">
         <?if ($user) { ?>
-                <p id="loggedin">
-                    Logged in as <a href="/members"><?= htmlspecialchars($user->getFullName()) ?></a>.
-                    <a href="/logout.php">Logout</a>
-                </p>
+                    Welcome, <a href="/members"><?= htmlspecialchars($user->getFullName()) ?></a>
+                    <a class="btn btn-default" href="/logout.php">Logout</a>
         <? } else { ?>
-                <p>
-                    <a href="/login.php">Login</a>
-                </p>
+                    <a class="btn btn-default" href="/login.php">Login</a>
         <? } ?>
     </div>
     
     <!-- Header section -->
     <? if (isset($large_page_heading)) { ?>
-        <div id="hd" class="container_12 large-page-heading">
-            <div class="grid_4">
-                  <a id="logo" href="/"><img alt="logo" src="/images/london.png" width=60 height=60/></a>
+        <div id="hd" class="row large-page-heading">
+            <div class="container col-md-4">
+                  <a id="logo" href="/"><img alt="logo" src="/images/london.png"/></a>
                   <h1>London<br/>Hackspace</h1>
             </div>
             <? if (isset($blurb)) { ?>
-            <div class="blurb grid_8">
+            <div class="blurb col-md-8">
                 <p>
                     <?= $blurb ?>
                 </p>
             </div>
             <? } ?>
-        <hr/>
         </div><!-- end of hd -->
     <? } else { ?>
-        <div id="hd" class="container_12 small-page-heading">
-            <div class="grid_11">
-                  <a href="/"><img alt="logo" src="/images/london.png"/></a>
-                <h1>London Hackspace</h1>
+        <div id="hd" class="row small-page-heading">
+            <div class="col-md-12">
+                  <a id="logo" href="/"><img alt="logo" src="/images/london.png"/></a>
+                  <h1>London<br/>Hackspace</h1>
             </div>
-        <hr/>
         </div><!-- end of hd -->
     <? } ?>
     <!-- end of Header section -->
     
     <!-- Start of Main Body section -->
-    <div id="bd" class="container_12">
+    <div id="bd">
         <? if (!isset($hide_menu)) { ?>
             <? require('menu.php'); ?>
             <div id="non-menu-content" class="grid_10">

@@ -356,7 +356,7 @@ abstract class fException extends Exception
 	 */
 	public function printMessage()
 	{
-		echo '<div class="exception ' . $this->getCSSClass() . '">';
+		echo '<div class="alert alert-danger ' . $this->getCSSClass() . '">';
 		echo $this->prepare($this->message);
 		echo '</div>';
 	}

@@ -2,8 +2,20 @@ body {
     font-family: 'Open Sans', sans-serif;
     font-size: 12pt;
     color: #232323;   /* off-black */
+   background: transparent url('/images/bg.png') center top no-repeat;
 }
 
+a {
+    text-decoration: underline;
+}
+
+nav a, a.btn {
+	text-decoration: none;
+}
+
+.page-container {
+	position: relative;
+}
 
 /* Header */
 
@@ -11,22 +23,48 @@ body {
     font-weight: lighter;
 }
 
-#hd.small-page-heading {
-    margin-bottom: 14px;
-}
 #hd.small-page-heading div {
     margin-bottom: 14px;
 }
 
 #hd a, #hd h1 {
     float:left;
-    padding: 7px 10px;
+    padding: 0px 14px 7px 0px;
     margin: 0;
 }
+h2 {
+	font-size: 28px;
+	font-weight: 700;
+}
+h3 {
+	font-size: 22px;
+	font-weight: 700;
+}
+#hd a {
+	padding-top: 3px;
+}
+#hd a img {
+	width: 60px;
+	height: 60px;
+}
 
+#hd.small-page-heading .col-md-12 {
+    height: 80px;
+    padding-top: 15px;
+}
 #hd.small-page-heading img {
-  width: 60px;
-  height: 60px;
+    width: 60px;
+    height: 60px;
+}
+@media (max-width: 480px) {
+    #hd.small-page-heading .col-md-12 {
+        padding-top: 50px;
+    }
+}
+
+#hd.large-page-heading {
+    border-bottom: 1px solid #eeeeee;
+    padding-top: 50px;
 }
 #hd.large_page_heading img {
     width: 95px;
@@ -40,10 +78,22 @@ body {
 }
 
 #hd.large-page-heading div.blurb {
-    margin-top:0.5em;
+    margin-top: 6px;
+    margin-bottom: 6px;
     line-height: 1.3em;
     font-size: 1.33em;
 }
+@media (max-width: 768px) {
+    #hd.large-page-heading div.blurb {
+    	width: 100%;
+    	float: none;
+    	clear: both;
+    }
+    .navbar-nav {
+    	margin: 0px;
+    }
+}
+
 #hd hr {
     width: 90%;
     margin-left: auto;
@@ -57,29 +107,19 @@ body {
     padding-top: 3px;
 }
 
-#bd p, #bd table, #bd form {
+#home-page-container p {
     margin-left:11px;
     margin-right:11px;
 }
-#bd td, #bd th {
-  padding: 0.5em;
+#bd form {
+	max-width: 600px;
 }
 
 
 /* General Typography and spacing */
 
-h2 {
-    margin-top:0px;
-    margin-bottom: 7px;
-}   
-
-
-h3 {
-    margin-bottom:7px;
-    margin-top:14px;
-}
-
 td, th {
+    padding: 0.5em;
     border: 1px solid #AAA;
 }
 
@@ -92,47 +132,37 @@ thead th {
     text-align: center;
 }
 
-p {
-    margin-bottom: 1em;
-}
-
 
 /* Home Page */
-#doc {
-    background-color: white;
-    padding-top: 4px;
-}
-
 /* On the homepage, and in the section headers only, change h3 to white */
 #home-page-container {
     font-size: 0.9em;
 }
 
-div.home-page-section {
-}
-
 #home-page-container h3 {
     background-color: #3f3b97;
     color: white;
-    padding: 6px 11px 6px 11px;
+    padding: 8px 11px 8px 11px;
     font-size: 1.3em;
     font-weight: 700;
     letter-spacing: normal;
     border-bottom: 1px #5a5784;
 }
 
-.flickr-badge-container {
-   padding-left: 20px; 
+#bd p.flickr-badge-container {
+   margin: 0px;
 }
 
 .flickr-badge-container a {
-    width: 78px;
-    height: 78px;
     margin: 0;
 }
 
 .flickr-badge-container a img {
-    padding: 2px;
+    padding-right: 2px;
+    padding-bottom: 2px;
+    width: 33.333333%;
+    max-width: 120px;
+    height: auto;
 }
 
 #google-maps-content {
@@ -151,7 +181,7 @@ div.home-page-section {
 
 
 /* Footer */
-#ft {
+footer {
     text-align: right;
     font-size: 0.7em
 }
@@ -163,40 +193,24 @@ div.home-page-section {
 /* Menus */
 
 /* The login menu on the top right of the page */
-#login-logout-container p {
-    float: right;
-    padding: 0;
-    margin: 1em 0 0 0;
-    font-size: 0.8em;
+#login-logout-container {
+    position: absolute;
+    z-index: 50;
+    right: 10px;
+    top: 1em;
+    font-size: 0.9em;
+}
+#login-logout-container .btn {
+	margin-left: 10px;
+}
+#member-menu {
+	border-top: 1px solid #ddd;
+	width: 100%;
 }
 
-#menu-container {
-    margin: 0px 0 0 10px;
-    font-size: 0.8em;
-}
-
-#menu-container h4 {
-    margin: 0;
-    font-size: 1.1em;
-}
-
-#menu-container ul {
-    width: 100%;
-    padding-top: 0;
-    float: right;
-}
-
-#menu-container li {
-    list-style-type: none;
-    font-weight: bold;
-    list-style-type: none;
-    padding: 4px 12px 3px;
-    margin:0;
-}
-
-#menu-container li.active {
-    background-color: #3528A8;
-    color: #fff;
+.nav li.active {
+    padding: 14px;
+    background-color: #ddd;
 }
 
 /* Signup page */
@@ -206,14 +220,6 @@ div.home-page-section {
 }
 
 /* Other */
-div.validation_exception p {
-    color: red;
-    font-size: 1.1em;
-    font-weight: bold;
-    padding: 0.5em;
-    border: 1px solid black;
-}
-
 #bd form table {
     margin-left:0px;
 }
@@ -249,3 +255,60 @@ th a.sortable {
     text-decoration: none;
 }
 
+.navbar-collapse {
+    background-color: #f8f8f8;
+    margin: 10px 2px 0px;
+    cursor: pointer;
+    border: 1px solid #e7e7e7;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    padding-left: 15px;
+    line-height: 20px;
+    color: #777777;
+    position: relative;
+}
+.navbar-collapse:after {
+    content: '−';
+    position: absolute;
+    top: 50%;
+    font-size: 20px;
+    margin-top: -10px;
+    right: 15px;
+}
+.navbar-collapse.collapsed:after {
+    content: '+';
+}
+
+@media (min-width: 481px) {
+    .collapse, .collapsing, .in {
+        display: block;
+        height: auto;
+    }
+    .navbar-collapse {
+    	display: none;
+    }
+}
+@media (max-width: 480px) {
+    #home-page-container h3 {
+        margin: 2px;
+        position: relative;
+        cursor: pointer;
+    }
+    #home-page-container h3:after {
+    	content: '−';
+    	position: absolute;
+    	right: 10px;
+    }
+    #home-page-container h3.collapsed:after {
+    	content: '+';
+    }
+    .collapse {
+        display: none;
+    }
+    .collapsing, .in {
+	    margin: 0px 2px 10px;
+    }
+    footer {
+        margin-top: 20px;
+    }
+}

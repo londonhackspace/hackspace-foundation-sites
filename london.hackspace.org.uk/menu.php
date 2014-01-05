@@ -18,10 +18,9 @@ function menulink($url, $name, $title) {
 }
 
 ?>
-<div id="menu-container" class='grid_2'>
-    <nav id="menu" class="menu">
-        <h4>Options</h4>
-        <ul id="main-menu" class="menu">
+<div class="collapsed navbar-collapse" data-toggle="collapse" data-target=".navbar">Menu</div>
+<nav class="navbar navbar-default collapse" role="navigation">
+        <ul class="nav navbar-nav">
             <?=menulink('/', 'about', 'Home');?>
             <li><a href="http://wiki.london.hackspace.org.uk">Wiki</a></li>
             <? if (!isset($user)) { ?>
@@ -32,8 +31,7 @@ function menulink($url, $name, $title) {
             <?=menulink('/donate.php', 'donate', 'Donate')?>
         </ul>
     <?if (isset($user)) {?>
-        <h4>Member Options</h4>
-        <ul id="member-menu" class="menu">
+        <ul id="member-menu" class="nav navbar-nav">
             <?=menulink('/members/', 'members', 'Members Home')?>
         <? if($user->isMember()) { ?>
             <?=menulink('/members/members.php', 'memberslist', 'Members List')?>
@@ -45,5 +43,4 @@ function menulink($url, $name, $title) {
             <?=menulink('/members/edit.php', 'edit', 'Edit Account')?>
         </ul>
     <? } ?>
-    </nav>
-</div><!-- end of menu-container -->
+</nav>

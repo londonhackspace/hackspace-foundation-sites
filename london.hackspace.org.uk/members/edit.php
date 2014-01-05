@@ -7,7 +7,9 @@ require('../header.php');
 if (!isset($user)) {
     fURL::redirect('/login.php?forward=/members/edit.php');
 }
-
+?>
+<h2>Edit Your Membership Details</h2>
+<?php
 if (isset($_POST['submit'])) {
     try {
         fRequest::validateCSRFToken($_POST['token']);
@@ -41,48 +43,60 @@ if (isset($_POST['submit'])) {
 }
 
 if (isset($_GET['saved'])) {
-    echo "<p>Details saved.</p>";
+  echo "<div class=\"alert alert-success\"><p>Details saved.</p></div>";
 }
 ?>
-<h2>Edit Your Membership Details</h2>
 <p><a href="http://www.legislation.gov.uk/ukpga/2006/46/part/8/chapter/2/crossheading/general">UK law</a> requires us to
 store the full name and address of all our members. If you don't provide these details, you won't receive membership privileges.</p>
 
 <? /* <p>If you prefer to pay for a longer period of time, you can change your membership period here. You must pay at least £5/month.</p> */ ?>
 
-<form method="post">
+<form class="form-horizontal" method="post" role="form">
     <input type="hidden" name="token" value="<?=fRequest::generateCSRFToken()?>" />
-    <fieldset>
-        <table id="edittable">
-            <tr>
-                <td><label for="email">Email</label></td>
-                <td><input type="text" id="email" name="email" value="<?=$user->getEmail()?>" /></td>
-            </tr>
-            <tr>
-                <td><label for="fullname">Full Name</label></td>
-                <td><input type="text" id="fullname" name="fullname" value="<?= htmlspecialchars($user->getFullName()) ?>" /></td>
-            </tr>
-            <tr>
-                <td><label for="address">Address</label></td>
-                <td><textarea id="address" name="address" cols="30" rows="5"><?=$user->getAddress()?></textarea></td>
-            </tr>
-<? /*            <tr>
-                <td><label for="length">Subscription Length (months)</label></td>
-                <td><input id="length" name="length" value="<?=$user->getSubscriptionPeriod()?>" /></td>
-                </tr>
+    <input type="hidden" id="length" name="length" value="<?=$user->getSubscriptionPeriod()?>" />
+    <div class="form-group">
+        <label for="email" class="col-sm-3 control-label">Email</label>
+        <div class="col-sm-9">
+            <input type="email" autofocus id="email" name="email" class="form-control" value="<?=$user->getEmail()?>" />
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="fullname" class="col-sm-3 control-label">Full Name</label>
+        <div class="col-sm-9">
+            <input type="text" id="fullname" name="fullname" class="form-control" value="<?= htmlspecialchars($user->getFullName()) ?>" />
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="address" class="col-sm-3 control-label">Address</label>
+        <div class="col-sm-9">
+            <textarea id="address" name="address" class="form-control" rows="5"><?=$user->getAddress()?></textarea>
+        </div>
+    </div>
+<? /*
+    <div class="form-group">
+       <label for="length" class="col-sm-3 control-label">Subscription Length (months)</label>
+       <div class="col-sm-9">
+           <input id="length" name="length" value="<?=$user->getSubscriptionPeriod()?>" />
+       </div>
+    </div>
 */ ?>
-            <tr>
-                <td><label for="newpassword">New Password (optional)</label></td>
-                <td><input type="password" id="newpassword" name="newpassword" /></td>
-            </tr>
-            <tr>
-                <td><label for="newpasswordconfirm">Confirm New Password</label></td>
-                <td><input type="password" id="newpasswordconfirm" name="newpasswordconfirm" /></td>
-            </tr>
-            <tr>
-                <td colspan="2"><input type="submit" name="submit" value="Submit" /></td>
-            </tr>
-        </table>
-    </fieldset>
+    <div class="form-group">
+        <label for="newpassword" class="col-sm-3 control-label">New Password (optional)</label>
+        <div class="col-sm-9">
+            <input type="password" id="newpassword" name="newpassword" class="form-control" />
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="newpasswordconfirm" class="col-sm-3 control-label">Confirm New Password</label>
+        <div class="col-sm-9">
+            <input type="password" id="newpasswordconfirm" name="newpasswordconfirm" class="form-control" />
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-sm-offset-3 col-sm-9">
+          <input type="submit" name="submit" value="Save" class="btn btn-primary"/>
+        </div>
+    </div>
 </form>
 <? require('../footer.php'); ?>
