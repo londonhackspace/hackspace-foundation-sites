@@ -35,7 +35,7 @@ function menulink($url, $name, $title) {
     <meta name="apple-mobile-web-app-status-bar-style" content="black"/>
 
     <link rel="stylesheet" type="text/css" href="/css/lib/bootstrap/bootstrap.min.css" />
-    <link rel="stylesheet" type="text/css" href="/css/main.css?2" />
+    <link rel="stylesheet" type="text/css" href="/css/main.css?3" />
     <link rel="icon" href="/favicon.ico" />
     <link rel="canonical" href="https://london.hackspace.org.uk<?=$_SERVER['REQUEST_URI']?>" />
 
