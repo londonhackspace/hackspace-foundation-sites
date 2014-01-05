@@ -78,42 +78,45 @@ if (isset($_POST['update_details'])) {
             <td><?=$card->getUid()?></td>
             <td style="text-align: center">
                 <? if ($card->getActive()): ?>
-                <input type="submit" name="disable_<?=$card->getUid()?>" value="Disable" title="This card is currently enabled. Click to disable it." />
+                <input class="btn btn-default" type="submit" name="disable_<?=$card->getUid()?>" value="Disable" title="This card is currently enabled. Click to disable it." />
                 <? else: ?>
-                <input type="submit" name="enable_<?=$card->getUid()?>" value="Enable" title="This card is currently disabled. Click to enable it." />
+                <input class="btn btn-default" type="submit" name="enable_<?=$card->getUid()?>" value="Enable" title="This card is currently disabled. Click to enable it." />
                 <? endif; ?>
             </td>
             <td style="text-align: center">
-                <input type="submit" name="delete_<?=$card->getUid()?>" value="Delete" title="Click to delete this card." <? if ($card->getActive()) { ?>disabled<? } ?> />
+                <input class="btn btn-default" type="submit" name="delete_<?=$card->getUid()?>" value="Delete" title="Click to delete this card." <? if ($card->getActive()) { ?>disabled<? } ?> />
             </td>
         </tr>
         <? endforeach ?>
         </tbody>
     </table>
 </form>
-
-<form method="POST">
-    <input type="hidden" name="token" value="<?=fRequest::generateCSRFToken()?>" />
-    <input type="hidden" name="update_details" value="" />
-    <table>
-        <tr>
-            <td><label for="nickname">Nickname:</label></td>
-            <td><input type="text" id="nickname" name="nickname" size="10" value="<?php echo $user->getNickname() ?>" /></td>
-        </tr>
-        <tr>
-            <td><label for="gladosfile">Glados file:</label></td>
-            <td><input type="text" id="gladosfile" name="gladosfile" size="20" value="<?php echo $user->getGladosfile() ?>" /></td>
-        </tr>
-        <tr>
-            <td colspan="2"><input type="submit" name="submit" value="Save" /></td>
-        </tr>
-    </table>
-</form>
+<br/>
 
 <? if (isset($_GET['saved'])) {
-  echo "<p>Details saved.</p>";
+  echo "<div class=\"alert alert-success\"><p>Details saved.</p></div>";
 } ?>
-<p><a href="index.php">Return to membership home</a></p>
 
+<form class="form-horizontal" method="post" role="form">
+    <input type="hidden" name="token" value="<?=fRequest::generateCSRFToken()?>" />
+    <input type="hidden" name="update_details" value="" />
+    <div class="form-group">
+        <label for="nickname" class="col-sm-3 control-label">Nickname</label>
+        <div class="col-sm-9">
+            <input type="text" required id="nickname" name="nickname" class="form-control" value="<?php echo $user->getNickname() ?>" />
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="gladosfile" class="col-sm-3 control-label">Glados file</label>
+        <div class="col-sm-9">
+            <input type="text" id="gladosfile" name="gladosfile" class="form-control" value="<?php echo $user->getGladosfile() ?>" />
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-offset-3 col-sm-9">
+          <input type="submit" name="submit" value="Save" class="btn btn-primary"/>
+        </div>
+    </div>    
+</form>
 
 <?php require('../footer.php'); ?>

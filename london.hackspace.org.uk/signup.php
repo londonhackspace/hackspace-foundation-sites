@@ -58,34 +58,42 @@ space requires our members to contribute an average subscription of £20/month t
 <p><a href="http://www.legislation.gov.uk/ukpga/2006/46/part/8/chapter/2/crossheading/general">UK law</a> requires that
 you provide your real name and address in order to join. Your name will be visible to all members.</p>
 
-<form method="post">
+<form class="form-horizontal" method="post" role="form">
     <input type="hidden" name="token" value="<?=fRequest::generateCSRFToken()?>" />
-    <fieldset>
-        <table id="signuptable">
-            <tr>
-                <td><label for="email">Email</label></td>
-                <td><input type="email" required autofocus id="email" name="email" /></td>
-            </tr>
-            <tr>
-                <td><label for="password">Password</label></td>
-                <td><input type="password" required id="password" name="password" /></td>
-            </tr>
-            <tr>
-                <td><label for="passwordconfirm">Confirm Password</label></td>
-                <td><input type="password" required id="passwordconfirm" name="passwordconfirm" /></td>
-            </tr>
-            <tr>
-                <td><label for="fullname">Full Name</label></td>
-                <td><input type="text" required id="fullname" name="fullname" /></td>
-            </tr>
-            <tr>
-                <td><label for="address">Address</label></td>
-                <td><textarea id="address" required name="address" cols="30" rows="5"></textarea></td>
-            </tr>
-            <tr>
-                <td colspan="2"><input type="submit" class="submit" name="submit" value="Submit" /></td>
-            </tr>
-        </table>
-    </fieldset>
+    <div class="form-group">
+        <label for="email" class="col-sm-4 control-label">Email</label>
+        <div class="col-sm-8">
+            <input type="email" required autofocus id="email" name="email" class="form-control" />
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="password" class="col-sm-4 control-label">Password</label>
+        <div class="col-sm-8">
+            <input type="password" required id="password" name="password" class="form-control" />
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="password" class="col-sm-4 control-label">Confirm Password</label>
+        <div class="col-sm-8">
+            <input type="password" required id="passwordconfirm" name="passwordconfirm" class="form-control" />
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="fullname" class="col-sm-4 control-label">Full Name</label>
+        <div class="col-sm-8">
+            <input type="text" required id="fullname" name="fullname" class="form-control" />
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="address" class="col-sm-4 control-label">Address</label>
+        <div class="col-sm-8">
+            <textarea required id="address" name="address" class="form-control" rows="5"></textarea>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-offset-4 col-sm-8">
+          <input type="submit" name="submit" value="Join" class="btn btn-primary"/>
+        </div>
+    </div>    
 </form>
 <? require('footer.php'); ?>
