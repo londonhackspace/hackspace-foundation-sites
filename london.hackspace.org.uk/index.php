@@ -75,7 +75,7 @@ require('header.php'); ?>
                 </p>
                 <p>
                     <a href='http://goo.gl/maps/7BVpY'>
-                      <img id="google-map" src="http://maps.googleapis.com/maps/api/staticmap?markers=color:red%7Clabel:A%7C51.532083,-0.060795&zoom=14&size=350x250&visual_refresh=true&key=AIzaSyD1tdIb23oau0tQJrxBxO9umFDQkyzyqAE&sensor=false">
+                      <img id="google-map" src="//maps.googleapis.com/maps/api/staticmap?markers=color:red%7Clabel:A%7C51.532083,-0.060795&zoom=14&size=350x250&visual_refresh=true&key=AIzaSyD1tdIb23oau0tQJrxBxO9umFDQkyzyqAE&sensor=false">
                       </a>
                 </p>
                 <p id='hackspace-physical-address' class="vcard">
