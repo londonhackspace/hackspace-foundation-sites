@@ -1,4 +1,6 @@
-<?php require_once( $_SERVER['DOCUMENT_ROOT'] . '/../lib/init.php'); ?>
+<?php require_once( $_SERVER['DOCUMENT_ROOT'] . '/../lib/init.php'); 
+header("Content-Type: text/html; charset=utf-8");
+?>
 <?php
 function menulink($url, $name, $title) {
     global $page;
@@ -91,7 +93,7 @@ function menulink($url, $name, $title) {
     <? if (isset($large_page_heading)) { ?>
         <div id="hd" class="row large-page-heading">
             <div class="container col-md-4">
-                  <a id="logo" href="/"><img alt="logo" src="/images/london.png"/></a>
+                  <a id="logo" href="/"><img alt="logo" src="/images/london.png" width="60" height="60"/></a>
                   <h1>London<br/>Hackspace</h1>
             </div>
             <? if (isset($blurb)) { ?>
@@ -105,7 +107,7 @@ function menulink($url, $name, $title) {
     <? } else { ?>
         <div id="hd" class="row small-page-heading">
             <div class="col-md-12">
-                  <a id="logo" href="/"><img alt="logo" src="/images/london.png"/></a>
+                  <a id="logo" href="/"><img alt="logo" src="/images/london.png" width="60" height="60"/></a>
                   <h1>London<br/>Hackspace</h1>
             </div>
         </div><!-- end of hd -->
