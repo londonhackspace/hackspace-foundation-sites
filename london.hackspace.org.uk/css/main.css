@@ -107,7 +107,7 @@ h3 {
     padding-top: 3px;
 }
 
-#home-page-container p {
+#home-page-container p, #flickr-badge-container {
     margin-left:11px;
     margin-right:11px;
 }
@@ -149,19 +149,15 @@ thead th {
     border-bottom: 1px #5a5784;
 }
 
-#bd p.flickr-badge-container {
-   margin: 0px;
+#flickr-badge-container {
+    padding-bottom:10px;
 }
 
-.flickr-badge-container a {
-    margin: 0;
-}
-
-.flickr-badge-container a img {
-    padding-right: 2px;
-    padding-bottom: 2px;
-    width: 33.333333%;
+#flickr-badge-container a img {
+    padding:1px;
+    width: 33.3333%;
     max-width: 120px;
+    max-height: 120px;
     height: auto;
 }
 
