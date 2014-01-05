@@ -65,9 +65,8 @@ function menulink($url, $name, $title) {
 <body>
 <div class="page-container container">
     <div id="login-logout-container">
-        <?if ($user) { ?>
-
         <div class="btn-group">
+        <?if ($user) { ?>
           <a class="btn btn-default dropdown-toggle" data-toggle="dropdown" href="/members/">
             <?= htmlspecialchars($user->getFullName()) ?> <span class="caret"></span>
           </a>
@@ -83,10 +82,11 @@ function menulink($url, $name, $title) {
             <li class="divider"></li>
             <li><a href="/logout.php">Logout</a></li>
           </ul>
-        </div>
         <? } else { ?>
-        <a class="btn btn-default" href="/login.php">Login</a>
+        <a class="btn btn-default" href="/login.php">Log In</a>
+        <a class="btn btn-default" href="/signup.php">Join</a>
         <? } ?>
+        </div>
     </div>
     
     <!-- Header section -->
