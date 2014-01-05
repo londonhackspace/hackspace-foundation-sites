@@ -73,17 +73,17 @@ require('header.php'); ?>
                     Hackney Road, open to our members 24 hours a day.
                     We hold regular <a href="/events/">events</a> (often free) which are open to everyone.
                 </p>
-                <div class="google-maps-container">
-                    <p>
-                        <iframe id="google-maps-content" src="https://maps.google.co.uk/maps?f=q&amp;source=embed&amp;hl=en&amp;q=London+Hackspace&amp;sll=51.530746,-0.076218&amp;ie=UTF8&amp;hq=London+Hackspace&amp;hnear=&amp;t=m&amp;z=14&amp;iwloc=near&amp;cid=11666902510411106101&amp;ll=51.532083,-0.060795&amp;output=embed"></iframe><br />
-                        <a id='google-maps-link' href='http://goo.gl/maps/7BVpY'>View larger map</a>                </p>
-                    <p id='hackspace-physical-address' class="vcard">
-                        <span class="fn org">London Hackspace</span><br/>
-                        <span class="street-address">447 Hackney Road</span><br/>
-                        <span class="locality region">London</span><br/>
-                        <span class="postal-code">E2 9DY</span>
-                    </p>
-                </div>
+                <p>
+                    <a href='http://goo.gl/maps/7BVpY'>
+                      <img id="google-map" src="http://maps.googleapis.com/maps/api/staticmap?markers=color:red%7Clabel:A%7C51.532083,-0.060795&zoom=14&size=350x250&visual_refresh=true&key=AIzaSyD1tdIb23oau0tQJrxBxO9umFDQkyzyqAE&sensor=false">
+                      </a>
+                </p>
+                <p id='hackspace-physical-address' class="vcard">
+                    <span class="fn org">London Hackspace</span><br/>
+                    <span class="street-address">447 Hackney Road</span><br/>
+                    <span class="locality region">London</span><br/>
+                    <span class="postal-code">E2 9DY</span>
+                </p>
             </div>
         </section>
         

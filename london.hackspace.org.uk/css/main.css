@@ -161,29 +161,18 @@ thead th {
     height: auto;
 }
 
-#google-maps-content {
-    /*
-        We're in a 'p' tag container so as to align the left hand side of the
-        image with the surrounding text, but the 300 pixel width then
-        overflows the box on the right
-    */
-    width: 278px;
-    height: 200px;
-    padding: 1px;
-    border: 1px solid #5a5784;
+img#google-map {
+  width:100%;
+  max-width: 350px;
+  height:auto;
+  max-height:250px;
 }
-
-
-
 
 /* Footer */
 footer {
     text-align: right;
     font-size: 0.7em
 }
-
-
-
 
 
 /* Menus */
