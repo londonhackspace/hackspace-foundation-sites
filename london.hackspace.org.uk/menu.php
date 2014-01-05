@@ -12,6 +12,8 @@
             <?if (isset($user) && $user->isMember()) {?>
                 <?=menulink('/members/members.php', 'memberslist', 'Members List')?>
                 <?=menulink('/members/webcams.php', 'webcams', 'Webcams')?>
+                <?=menulink('/members/code.php', 'code', 'Gate Code')?>
+                <?=menulink('/members/cards.php', 'cards', 'Access Cards')?>
             <? } ?>
         </ul>
 </nav>
