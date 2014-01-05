@@ -80,7 +80,7 @@ require('header.php'); ?>
     </div>
     <div class="col-md-4 col-md-pull-8">
         <section>
-            <h3 class="collapsed" data-toggle="collapse" data-target=".flickr-badge-container">Photo stream</h3>
+            <h3 class="collapsed" data-toggle="collapse" data-target="#flickr-badge-container">Photo stream</h3>
             <div id="flickr-badge-container" class="collapse">
               <? include('flickr.html') ?>
               <p><a href="http://www.flickr.com/groups/londonhackspace/pool">View more on Flickr&hellip;</a></p>
