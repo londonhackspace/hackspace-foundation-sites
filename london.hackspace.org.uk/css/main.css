@@ -289,13 +289,15 @@ th a.sortable {
         position: relative;
         cursor: pointer;
     }
-    #home-page-container h3:after {
+    #home-page-container h3.collapse:after {
     	content: '−';
     	position: absolute;
     	right: 10px;
     }
     #home-page-container h3.collapsed:after {
     	content: '+';
+    	position: absolute;
+    	right: 10px;
     }
     .collapse {
         display: none;
