@@ -72,13 +72,13 @@ function menulink($url, $name, $title) {
             <?= htmlspecialchars($user->getFullName()) ?> <span class="caret"></span>
           </a>
           <ul class="dropdown-menu pull-right" role="menu">
-            <?=menulink('/members/', 'members', 'Status &amp; Payments')?>
+            <?=menulink('/members/', 'members', 'Membership Status')?>
             <li class="divider"></li>
             <?if (isset($user) && $user->isMember()) {?>
-                <?=menulink('/members/code.php', 'code', 'Back Gate Access')?>
-                <?=menulink('/members/wiki.php', 'wiki', 'Wiki Access')?>
+                <?=menulink('/members/code.php', 'code', 'Back Gate Code')?>
+                <?=menulink('/members/cards.php', 'cards', 'Manage Access Cards')?>
             <? } ?>
-            <?=menulink('/members/cards.php', 'cards', 'Cards Access')?>
+            <?=menulink('/members/wiki.php', 'wiki', 'Wiki')?>
             <?=menulink('/members/edit.php', 'edit', 'Edit Account')?>
             <li class="divider"></li>
             <li><a href="/logout.php">Logout</a></li>
