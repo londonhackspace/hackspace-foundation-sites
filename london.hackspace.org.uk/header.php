@@ -72,9 +72,11 @@ function menulink($url, $name, $title) {
           <ul class="dropdown-menu pull-right" role="menu">
             <?=menulink('/members/', 'members', 'Status &amp; Payments')?>
             <li class="divider"></li>
-            <?=menulink('/members/code.php', 'code', 'Back Gate Access')?>
+            <?if (isset($user) && $user->isMember()) {?>
+                <?=menulink('/members/code.php', 'code', 'Back Gate Access')?>
+                <?=menulink('/members/wiki.php', 'wiki', 'Wiki Access')?>
+            <? } ?>
             <?=menulink('/members/cards.php', 'cards', 'Cards Access')?>
-            <?=menulink('/members/wiki.php', 'wiki', 'Wiki Access')?>
             <?=menulink('/members/edit.php', 'edit', 'Edit Account')?>
             <li class="divider"></li>
             <li><a href="/logout.php">Logout</a></li>
