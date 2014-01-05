@@ -13,8 +13,8 @@ require('header.php'); ?>
             <h3 class="collapsed" data-toggle="collapse" data-target=".flickr-badge-container">Photo stream</h3>
             <div id="flickr-badge-container" class="collapse">
               <? include('flickr.html') ?>
-            </div>
               <p><a href="http://www.flickr.com/groups/londonhackspace/pool">View more on Flickr&hellip;</a></p>
+            </div>
         </section>
 
         <section>

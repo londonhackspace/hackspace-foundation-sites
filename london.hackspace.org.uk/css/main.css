@@ -107,7 +107,7 @@ h3 {
     padding-top: 3px;
 }
 
-#home-page-container p, #flickr-badge-container {
+#home-page-container section > p, #home-page-container section > div {
     margin-left:11px;
     margin-right:11px;
 }
@@ -149,8 +149,8 @@ thead th {
     border-bottom: 1px #5a5784;
 }
 
-#flickr-badge-container {
-    padding-bottom:10px;
+#flickr-badge-container p {
+    padding-top:10px;
 }
 
 #flickr-badge-container a img {
