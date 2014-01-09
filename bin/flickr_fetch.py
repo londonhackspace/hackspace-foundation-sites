@@ -11,8 +11,11 @@ GROUP = '1183951%40N23'
 
 def save_url(url, dest):
     request = requests.get(url)
+    if request.status_code != 200:
+        return request.status_code
     dest.write(request.content)
     dest.flush()
+    return request.status_code
 
 def photo_url(photo):
     if 'pathalias' in photo and photo['pathalias'] != '':
@@ -41,7 +44,10 @@ def pick_photos(photo_list, number_needed, tempdir):
         dest_filename = "photo_%s.jpg" % photo_id
         dest_path = os.path.join(tempdir, dest_filename)
         with tempfile.NamedTemporaryFile() as temp:
-            save_url(photo_data['url_s'], temp)
+            ret = save_url(photo_data['url_s'], temp)
+            if ret != 200:
+                # we sometime get 504 errors, just skip the image
+                continue
             command = ['convert', '-resize', '120x120^', '-gravity', 'Center', '-crop', '120x120+0+0',
                        '-unsharp', '1', '-quality', '90%', temp.name, dest_path]
             ret = subprocess.call(command)
