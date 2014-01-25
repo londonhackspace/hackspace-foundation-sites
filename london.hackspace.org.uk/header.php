@@ -38,22 +38,23 @@ function menulink($url, $name, $title) {
 
     <link rel="stylesheet" type="text/css" href="/css/lib/bootstrap/bootstrap.min.css" />
     <link rel="stylesheet" type="text/css" href="/css/main.css?4" />
+    <link rel="stylesheet" type="text/css" href="/fonts/cssfonts.php" />
     <link rel="icon" href="/favicon.ico" />
     <link rel="canonical" href="https://london.hackspace.org.uk<?=$_SERVER['REQUEST_URI']?>" />
 
     <script type="text/javascript">
       WebFontConfig = {
-            google: { families: [ 'Open+Sans:400,700:latin' ] }
-                };
+        custom: { families: [ 'Open+Sans:400,700:latin' ] }
+      };
       (function() {
-            var wf = document.createElement('script');
-                wf.src = ('https:' == document.location.protocol ? 'https' : 'http') +
-                        '://ajax.googleapis.com/ajax/libs/webfont/1/webfont.js';
-                wf.type = 'text/javascript';
-                wf.async = 'true';
-                    var s = document.getElementsByTagName('script')[0];
-                    s.parentNode.insertBefore(wf, s);
-                      })();
+        var wf = document.createElement('script');
+        wf.src = ('https:' == document.location.protocol ? 'https' : 'http') +
+            '://ajax.googleapis.com/ajax/libs/webfont/1/webfont.js';
+        wf.type = 'text/javascript';
+        wf.async = 'true';
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(wf, s);
+      })();
     </script>
 
     <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
