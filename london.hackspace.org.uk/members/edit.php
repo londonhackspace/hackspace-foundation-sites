@@ -27,9 +27,9 @@ if (isset($_POST['submit'])) {
             $user->setPassword(fCryptography::hashPassword($_POST['newpassword']));
         }
 
-        $user->setEmail(strtolower($_POST['email']));
-        $user->setFullName($_POST['fullname']);
-        $user->setAddress($_POST['address']);
+        $user->setEmail(strtolower(trim($_POST['email'])));
+        $user->setFullName(trim($_POST['fullname']));
+        $user->setAddress(trim($_POST['address']));
         $user->setSubscriptionPeriod($_POST['length']);
         $user->store();
         fURL::redirect('?saved');
