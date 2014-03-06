@@ -11,7 +11,7 @@ require('../header.php');
 
 <h3>Membership</h3>
 
-<p>Anyone can <a href="/signup.php">become a member</a> of London Hackspace by paying a monthly fee. Members of the company are entitled to vote at meetings, and can elect directors.</p>
+<p>Anyone can <a href="/signup.php">become a member</a> of London Hackspace by paying a monthly fee. Members of the company are entitled to vote at meetings and elect trustees.</p>
 
 <h3>Getting in Touch</h3>
 
