@@ -3,11 +3,11 @@
         <? } ?>
     </div>
     <!-- End of Main Body section -->
-    
-    
+<? if (!isset($hide_copyright)){
     <footer id="ft">
         <p>Copyright &copy; <?=date('Y')?> London Hackspace Ltd. Site kindly hosted by <a href="http://www.bitfolk.com">Bitfolk</a>.<br/></p>
     </footer>
+<? } ?>
 </div><!-- doc -->
 
 <? if (isset($show_twitter_feed)) { ?>

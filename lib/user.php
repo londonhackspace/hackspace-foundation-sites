@@ -1,4 +1,5 @@
 <?php
+
 class User extends fActiveRecord {
 
     public function getMemberNumber() {
@@ -13,10 +14,18 @@ class User extends fActiveRecord {
         return $this->getAdmin() == '1';
     }
 
-    public function buildTransactions() {
+    public function buildTransactions($from=null, $to=null) {
+      if ($from == null){
+        $from = new fDate('2009-01-01');
+      }
+      if ($to == null) {
+        $to = new fDate('now');
+      }
         return fRecordSet::build(
             'Transaction',
-            array('user_id=' => $this->getId()),
+            array('user_id=' => $this->getId(),
+            'timestamp>' => $from,
+            'timestamp<' => $to),
             array('timestamp' => 'desc')
         );
     }
@@ -33,7 +42,7 @@ class User extends fActiveRecord {
         global $db;
         $db->execute("DELETE FROM password_resets WHERE expires < datetime('now')");
         $token = fCryptography::randomString(15);
-        $db->execute("INSERT INTO password_resets (key, user_id, expires) 
+        $db->execute("INSERT INTO password_resets (key, user_id, expires)
                                     VALUES (%s, %s, datetime('now', '+1 day'))",
                                     $token, $this->getId());
         return $token;
