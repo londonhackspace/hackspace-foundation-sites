@@ -2,7 +2,7 @@
 require('../header-minimal.php');
 
 if (!$user) {
-    fURL::redirect('/login.php?forward=/members');
+    fURL::redirect('/login.php?forward=/members/receipt.php');
 }
 
 $hide_copyright = true;
