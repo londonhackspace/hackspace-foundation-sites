@@ -56,14 +56,14 @@ foreach($transactions as $transaction) {
     <button class="btn">Generate</button>
   </form>
 
-  <p class="visible-print">For the period <?=$from?> to <?=$to?>.</p>
+  <p class="visible-print">Covering <?=$count?> payments over the period <?=$from?> to <?=$to?>.</p>
 </div>
 
 <table style="margin:2em;">
 <tr>
-  <th>Membership subscriptions (up to £<?=$minimum?> per month):</th><td>£<?=$membership?></td></tr>
-  <th>Donations (payments above minimum):</th><td>£<?=$donations?></td></tr>
-  <th>Total paid:</th><td>£<?=$membership + $donations?></td>
+  <th>Membership subscriptions (up to £<?=number_format($minimum, 2)?> per month):</th><td>£<?=number_format($membership, 2)?></td></tr>
+  <th>Donations (payments above minimum):</th><td>£<?=number_format($donations, 2)?></td></tr>
+  <th>Total paid:</th><td>£<?=number_format($membership + $donations, 2)?></td>
 </table>
 
 <footer>London Hackspace Ltd is a company limited by guarantee in England and Wales with number 06807563.<br>
