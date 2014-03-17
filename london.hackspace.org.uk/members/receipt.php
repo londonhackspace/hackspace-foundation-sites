@@ -67,7 +67,7 @@ foreach($transactions as $transaction) {
 </table>
 
 <footer>London Hackspace Ltd is a company limited by guarantee in England and Wales with number 06807563.<br>
-No VAT is included as London Hackspace is not a VAT registered company.<br>
+No VAT is included as London Hackspace is not VAT registered.<br>
 London Hackspace is not a registered charity. Your donations are not eligible for gift aid.
 </footer>
 
