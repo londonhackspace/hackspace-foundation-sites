@@ -98,7 +98,7 @@
 		</div>
 		<footer id="credits" role="contentinfo" class="text">
 			<hr />
-			<p>Updated in real time. Source: London Hackspace "<a href="https://wiki.london.hackspace.org.uk/view/Budget">Budget</a>" wiki page and the membership DB.</p>
+			<p>Income data from the membership DB is for the last full calendar month. Source: London Hackspace "<a href="https://wiki.london.hackspace.org.uk/view/Budget">Budget</a>" wiki page and the membership DB.</p>
 		</footer>
 	</div>
 </body>
