@@ -50,7 +50,7 @@ require('header.php'); ?>
             <h3>Location</h3>
             <div>
                 <p>
-                    We have a <a href="https://wiki.london.hackspace.org.uk/wiki/447_Hackney_Road">great space</a> on 
+                    We have a <a href="https://wiki.london.hackspace.org.uk/view/447_Hackney_Road">great space</a> on 
                     Hackney Road, open to our members 24 hours a day.
                     We hold regular <a href="/events/">events</a> (often free) which are open to everyone.
                 </p>
