@@ -307,3 +307,27 @@ th a.sortable {
         margin-top: 20px;
     }
 }
+
+
+div#webcam-grid {
+  float: left;
+  padding-left:20px;
+  padding-right:20px;
+}
+
+div.webcam-image {
+  float:left;
+  height:320px;
+  width:362px;
+  margin: 1px;
+}
+
+div.webcam-image img {
+  display:block;
+  margin: 0 auto;
+}
+
+div.webcam-image p {
+  text-align: center;
+  font-weight: bold;
+}
