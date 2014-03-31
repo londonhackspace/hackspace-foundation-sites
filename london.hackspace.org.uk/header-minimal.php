@@ -36,8 +36,8 @@ function menulink($url, $name, $title) {
     <meta name="apple-mobile-web-app-capable" content="yes"/> 
     <meta name="apple-mobile-web-app-status-bar-style" content="black"/>
 
-    <link rel="stylesheet" type="text/css" href="/css/lib/bootstrap/bootstrap.min.css" />
-    <link rel="stylesheet" type="text/css" href="/css/main.css?4" />
+    <link rel="stylesheet" type="text/css" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" href="/css/main.css?5" />
     <link rel="icon" href="/favicon.ico" />
     <link rel="canonical" href="https://london.hackspace.org.uk<?=$_SERVER['REQUEST_URI']?>" />
 
@@ -58,8 +58,8 @@ function menulink($url, $name, $title) {
 
     <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
-      <script src="/javascript/html5shiv.js"></script>
-      <script src="/javascript/respond.min.js"></script>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
 </head>
 <body>

@@ -38,7 +38,7 @@
   })();
 
 </script>
-<script type="text/javascript" src="/javascript/jquery-1.10.2.min.js"></script>
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
 <script type="text/javascript">
 // homepage cleanup events for touch devices and prevent collapseable sections for wide screens
 if($('#home-page-container').length > 0) {
@@ -67,6 +67,6 @@ $(window).bind('resize', function() {
     $('.collapse, .navbar-collapse').removeAttr('style');
 })
 </script>
-<script type="text/javascript" src="/javascript/bootstrap.min.js"></script>
+<script type="text/javascript" src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
 </body>
 </html>
