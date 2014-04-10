@@ -7,7 +7,7 @@ if (!isset($user)) {
 }
 
 $last = array_pop($db->query('select max(date(timestamp)) from transactions')->fetchRow());
-$subscribed = ($user->isAdmin() && isset($_GET['unsubscribed']) && $_GET['unsubscribed'] == 'on') ? true : false;
+$include_unsubscribed = ($user->isAdmin() && isset($_GET['unsubscribed']) && $_GET['unsubscribed'] == 'on') ? true : false;
 ?>
 
 <h2>Members list</h2>
@@ -29,7 +29,7 @@ $subscribed = ($user->isAdmin() && isset($_GET['unsubscribed']) && $_GET['unsubs
 	<form class="subscription-form" method="get">
 		<div class="checkbox">
 			<label>
-				<input type="checkbox" <? if($subscribed) { echo 'checked'; } ?> name="unsubscribed" id="unsubscribed"> Include unsubscribed members
+				<input type="checkbox" <? if($include_unsubscribed) { echo 'checked'; } ?> name="unsubscribed" id="unsubscribed"> Include unsubscribed members
 			</label>
 		</div>
 	</form>
@@ -43,7 +43,7 @@ $subscribed = ($user->isAdmin() && isset($_GET['unsubscribed']) && $_GET['unsubs
 				<? if($user->isAdmin()) { ?>
 	                <th>E</th>
 				<? } ?>
-				<? if($subscribed) { ?>
+				<? if($include_unsubscribed) { ?>
 	                <th>£</th>
 				<? } ?>
                 <th>Full name</th>
@@ -54,7 +54,7 @@ $subscribed = ($user->isAdmin() && isset($_GET['unsubscribed']) && $_GET['unsubs
         </thead>
         <tbody>
         <?php
-        $subscription_query = ($subscribed) ? '' : 'WHERE subscribed=1';
+        $subscription_query = ($include_unsubscribed) ? '' : 'WHERE subscribed=1';
         $users = $db->translatedQuery( 'SELECT id, subscribed, full_name, email, nickname FROM users '.$subscription_query.' ORDER BY lower(full_name)');
         foreach( $users as $row ):
         ?>
@@ -63,7 +63,7 @@ $subscribed = ($user->isAdmin() && isset($_GET['unsubscribed']) && $_GET['unsubs
 				<? if($user->isAdmin()) { ?>
 					<td><a href="mailto:<?= htmlspecialchars( $row['email'] ) ?>" title="<?= htmlspecialchars( $row['email'] ) ?>"><span class="glyphicon glyphicon-envelope"></span></a><p class="hidden"><?= htmlspecialchars( $row['email'] ) ?></p></td>
 				<? } ?>
-				<? if($subscribed) { ?>
+				<? if($include_unsubscribed) { ?>
 	                <td><? if($row['subscribed']) { ?><span class="glyphicon glyphicon-ok"></span><? } ?><p class="hidden"><?=($row['subscribed'] == 0) ? 'unsubscribed' : 'subscribed'; ?></p></td>
 				<? } ?>
                 <td><a href="/members/member.php?id=<?=$row['id']?>" title=""><?= htmlspecialchars( $row['full_name'] ) ?></a></td>
@@ -85,7 +85,7 @@ require('../footer.php'); ?>
 <script type="text/javascript" src="/javascript/jquery.tablesorter.min.js"></script>
 <script type="text/javascript">
 $(document).ready(function() { 
-	$(".search").tablesorter( {sortList: <? if($subscribed) echo "[[3,0]]"; else if($user->isAdmin()) echo "[[2,0]]"; else echo "[[1,0]]"; ?>} );
+	$(".search").tablesorter( {sortList: <? if($include_unsubscribed) echo "[[3,0]]"; else if($user->isAdmin()) echo "[[2,0]]"; else echo "[[1,0]]"; ?>} );
 	$('.search-form button').click(function(e) {
 		e.preventDefault;
 		e.stopPropagation;
