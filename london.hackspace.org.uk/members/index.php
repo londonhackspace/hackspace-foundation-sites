@@ -95,3 +95,5 @@ if (!$user) {
 <? } ?>
 
 <? require('../footer.php'); ?>
+</body>
+</html>

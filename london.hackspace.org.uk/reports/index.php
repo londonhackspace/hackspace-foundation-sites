@@ -27,3 +27,5 @@ financial and organisational health of the Foundation.</p>
 </ul>
 
 <? require('../footer.php'); ?>
+</body>
+</html>

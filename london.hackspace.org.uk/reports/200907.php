@@ -64,3 +64,5 @@ fiddly to do and I don't have the time.</p>
 </table>
 
 <? require('../footer.php'); ?>
+</body>
+</html>

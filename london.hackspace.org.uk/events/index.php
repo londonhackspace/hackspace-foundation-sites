@@ -12,3 +12,5 @@ require('../header.php'); ?>
 <p>You can add <a href="http://www.google.com/calendar/ical/gc1bopmh3c5n0ogvlo6ceujlkc%40group.calendar.google.com/public/basic.ics">add the iCal feed to your calendar</a>.</p>
 
 <? require('../footer.php'); ?>
+</body>
+</html>

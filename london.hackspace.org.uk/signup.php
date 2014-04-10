@@ -97,3 +97,5 @@ you provide your real name and address in order to join. Your name will be visib
     </div>    
 </form>
 <? require('footer.php'); ?>
+</body>
+</html>

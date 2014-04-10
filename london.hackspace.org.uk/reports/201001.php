@@ -45,3 +45,5 @@ require('../header.php');
 </table>
 
 <? require('../footer.php'); ?>
+</body>
+</html>

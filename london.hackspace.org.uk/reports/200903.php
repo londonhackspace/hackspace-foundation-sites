@@ -52,3 +52,5 @@ All funds currently on our books are therefore implicitly earmarked for this cau
 
 
 <? require('../footer.php'); ?>
+</body>
+</html>

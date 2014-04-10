@@ -54,3 +54,5 @@ if (isset($_POST['submit'])) {
 </form>
 
 <?php require('../footer.php'); ?>
+</body>
+</html>

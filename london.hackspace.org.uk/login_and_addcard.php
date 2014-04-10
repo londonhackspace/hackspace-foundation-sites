@@ -99,4 +99,6 @@ if (isset($_GET['added']) && !isset($_POST['submit'])) {
 <?
 }
 
-require('footer.php');
+require('footer.php'); ?>
+</body>
+</html>
