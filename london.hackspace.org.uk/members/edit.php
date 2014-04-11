@@ -100,3 +100,5 @@ store the full name and address of all our members. If you don't provide these d
     </div>
 </form>
 <? require('../footer.php'); ?>
+</body>
+</html>

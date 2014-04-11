@@ -35,3 +35,5 @@ require('../header.php');
    London E2 9DY</p>
 
 <? require('../footer.php'); ?>
+</body>
+</html>

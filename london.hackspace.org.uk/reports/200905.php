@@ -57,3 +57,5 @@ other than London &mdash; this is visible in the Earmarks table.</p>
 
 
 <? require('../footer.php'); ?>
+</body>
+</html>

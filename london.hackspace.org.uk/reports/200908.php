@@ -53,3 +53,5 @@ able to afford a proper space.</p>
 </table>
 
 <? require('../footer.php'); ?>
+</body>
+</html>

@@ -141,3 +141,5 @@ if($user->isMember()) {
 <?php } 
 
 require('../footer.php'); ?>
+</body>
+</html>

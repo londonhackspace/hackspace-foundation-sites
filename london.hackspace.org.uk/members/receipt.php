@@ -72,3 +72,5 @@ London Hackspace is not a registered charity. Your donations are not eligible fo
 </footer>
 
 <? require('../footer.php'); ?>
+</body>
+</html>

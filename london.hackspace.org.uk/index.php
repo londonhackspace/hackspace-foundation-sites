@@ -72,6 +72,7 @@ require('header.php'); ?>
             <h3>Resources</h3>
             <ul>
                 <li><a href="https://wiki.london.hackspace.org.uk/">The wiki</a>, for more about the space</li>
+                <li><a href="https://groups.google.com/forum/#!forum/london-hack-space">Chat to us on the mailing list</a></li>
                 <li><a href="http://webchat.freenode.net/?channels=london-hack-space">Chat to us on IRC</a></li>
                 <li><a href="signup.php">Become a member</a></li>
                 <li><a href="/organisation/">About the organisation</a></li>
@@ -101,3 +102,30 @@ require('header.php'); ?>
 
 
 <? require('footer.php'); ?>
+<script type="text/javascript">
+// homepage cleanup events for touch devices and prevent collapseable sections for wide screens
+if($('#home-page-container').length > 0) {
+	var moved = false;
+    $('#home-page-container h3').bind('touchmove', function(e) {
+    	moved = true;
+	});
+    $('#home-page-container h3').bind('touchend', function(e) {
+    	e.preventDefault();
+    	e.stopPropagation();
+        if($(window).width() <= 480 && !moved) {
+        	$(this).trigger('click');
+        }
+        moved = false;
+       	return false;
+	});
+    $('#home-page-container h3').bind('click', function(e) {
+        //alert($(window).width());
+        if($(window).width() > 480) {
+	        e.preventDefault();
+            e.stopPropagation();
+        }
+    });
+}
+</script>
+</body>
+</html>

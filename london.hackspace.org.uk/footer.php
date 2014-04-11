@@ -40,33 +40,8 @@
 </script>
 <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
 <script type="text/javascript">
-// homepage cleanup events for touch devices and prevent collapseable sections for wide screens
-if($('#home-page-container').length > 0) {
-	var moved = false;
-    $('#home-page-container h3').bind('touchmove', function(e) {
-    	moved = true;
-	});
-    $('#home-page-container h3').bind('touchend', function(e) {
-    	e.preventDefault();
-    	e.stopPropagation();
-        if($(window).width() <= 480 && !moved) {
-        	$(this).trigger('click');
-        }
-        moved = false;
-       	return false;
-	});
-    $('#home-page-container h3').bind('click', function(e) {
-        //alert($(window).width());
-        if($(window).width() > 480) {
-	        e.preventDefault();
-            e.stopPropagation();
-        }
-    });
-}
 $(window).bind('resize', function() {
     $('.collapse, .navbar-collapse').removeAttr('style');
 })
 </script>
 <script type="text/javascript" src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
-</body>
-</html>

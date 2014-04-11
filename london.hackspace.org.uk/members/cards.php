@@ -120,3 +120,5 @@ if (isset($_POST['update_details'])) {
 </form>
 
 <?php require('../footer.php'); ?>
+</body>
+</html>

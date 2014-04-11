@@ -12,6 +12,7 @@ try {
   header('HTTP/1.1 404 Not Found');
   echo "User not found";
   require('../footer.php');
+  echo "</body></html>";
   exit;
 }
 
@@ -56,3 +57,5 @@ if(($user->isMember() && $this_user->isMember()) || $user->isAdmin() ) {
    <p>You don't have access to this page.</p>
 <?php } 
 require('../footer.php'); ?>
+</body>
+</html>

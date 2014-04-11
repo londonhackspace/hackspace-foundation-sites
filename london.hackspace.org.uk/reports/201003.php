@@ -51,3 +51,5 @@ it more, so it's showing up as Donations (other) in our balance sheet.</p>
 </table>
 
 <? require('../footer.php'); ?>
+</body>
+</html>

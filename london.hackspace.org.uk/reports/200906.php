@@ -60,3 +60,5 @@ markup.</p>
 </table>
 
 <? require('../footer.php'); ?>
+</body>
+</html>

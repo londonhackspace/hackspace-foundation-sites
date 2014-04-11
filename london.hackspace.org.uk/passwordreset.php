@@ -77,43 +77,45 @@ The London Hackspace email monkey
 ?>
 <p>OK, now enter your new password:</p>
 
-<form method="post">
-    <fieldset>
-        <input type="hidden" name="resettoken" value="<?=htmlentities($_GET['token'])?>" />
-        <input type="hidden" name="token" value="<?=fRequest::generateCSRFToken()?>" />
-        <table id="resettable">
-            <tr>
-                <td><label for="password">Password</label></td>
-                <td><input type="password" id="password" name="password" /></td>
-            </tr>
-            <tr>
-                <td><label for="passwordconfirm">Confirm Password</label></td>
-                <td><input type="password" id="passwordconfirm" name="passwordconfirm" /></td>
-            </tr>
-            <tr>
-                <td colspan="2"><input type="submit" name="reset" value="Submit" /></td>
-            </tr>
-        </table>
-    </fieldset>
+<form method="post" class="form-horizontal">
+	<input type="hidden" name="resettoken" value="<?=htmlentities($_GET['token'])?>" />
+	<input type="hidden" name="token" value="<?=fRequest::generateCSRFToken()?>" />
+    <div class="form-group">
+        <label for="password" class="col-sm-4 control-label">Password</label>
+        <div class="col-sm-8">
+            <input type="password" required autofocus id="password" name="password" class="form-control" />
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="passwordconfirm" class="col-sm-4 control-label">Confirm Password</label>
+        <div class="col-sm-8">
+            <input type="password" required id="passwordconfirm" name="passwordconfirm" class="form-control" />
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-offset-4 col-sm-8">
+          <input type="submit" name="reset" value="Submit" class="btn btn-primary"/>
+        </div>
+    </div>
 </form>
 <?
 } else {
 ?>
 <p>To reset your password, enter your email address:</p>
 
-<form method="post">
-    <fieldset>
-        <input type="hidden" name="token" value="<?=fRequest::generateCSRFToken()?>" />
-        <table id="resettable">
-            <tr>
-                <td><label for="email">Email</label></td>
-                <td><input type="text" id="email" name="email"/></td>
-            </tr>
-            <tr>
-                <td colspan="2"><input type="submit" name="sendtoken" value="Submit" /></td>
-            </tr>
-        </table>
-    </fieldset>
+<form method="post" class="form-horizontal">
+	<input type="hidden" name="token" value="<?=fRequest::generateCSRFToken()?>" />
+    <div class="form-group">
+        <label for="email" class="col-sm-2 control-label">Email</label>
+        <div class="col-sm-10">
+            <input type="email" required autofocus id="email" name="email" class="form-control" />
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-offset-2 col-sm-10">
+          <input type="submit" name="sendtoken" value="Submit" class="btn btn-primary"/>
+        </div>
+    </div>
 </form>
 
 <p>If you are having difficulty please email <i>contact (at) london.hackspace.org.uk</i>.</p>
@@ -121,3 +123,5 @@ The London Hackspace email monkey
 <? 
 }
 require('footer.php'); ?>
+</body>
+</html>

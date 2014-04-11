@@ -35,3 +35,5 @@ foreach ($cameras as $id => $name) {
 <? } ?>
 </div>
 <? require('../footer.php'); ?>
+</body>
+</html>

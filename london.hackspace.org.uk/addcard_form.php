@@ -40,4 +40,3 @@ $uid = isset($_GET['uid']) ? htmlentities($_GET['uid']) : '{0}';
     </script>
 </body>
 </html>
-<?

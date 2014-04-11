@@ -53,3 +53,5 @@ accounted for under the Miscellaneous category. It's refunded in October.</p>
 </table>
 
 <? require('../footer.php'); ?>
+</body>
+</html>

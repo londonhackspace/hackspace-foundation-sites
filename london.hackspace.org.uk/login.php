@@ -87,3 +87,5 @@ if (isset($_POST['submit'])) {
 <p>Forgotten your password? <a href="passwordreset.php">Reset it here</a>.</p>
 
 <? require('footer.php'); ?>
+</body>
+</html>

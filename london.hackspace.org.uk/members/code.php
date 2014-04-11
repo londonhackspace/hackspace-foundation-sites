@@ -30,3 +30,5 @@ if($user->isMember()) {
 <? }
 
 require('../footer.php'); ?>
+</body>
+</html>
