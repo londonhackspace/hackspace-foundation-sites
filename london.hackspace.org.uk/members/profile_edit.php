@@ -45,7 +45,7 @@ if (isset($_POST['submit'])) {
 		$user_profile->setDescription(filter_var($_POST['description'], FILTER_SANITIZE_STRING));
 
 		if($_POST['photo-upload']) {
-			$filename = $user->getId().'_'.filter_var(str_replace(' ','_',$user->getFullName()), FILTER_SANITIZE_URL).'.png';
+			$filename = $user->getId().'_'.filter_var(str_replace(' ','_',$user->getFullName()), FILTER_SANITIZE_URL);
 			$path = $_SERVER['DOCUMENT_ROOT'] . '/../var/photos/';
 			if (!file_exists($path)) {
 				mkdir($path, 0777, true);
