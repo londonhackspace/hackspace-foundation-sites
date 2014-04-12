@@ -79,7 +79,7 @@ $include_unsubscribed = ($user->isAdmin() && isset($_GET['unsubscribed']) && $_G
 				<? if($user->isAdmin()) { ?>
 	                <td>
 					<? if($row['has_profile'] == 1 && $row['disabled_profile'] == 0) { ?>
-	                	<a href="/members/profile.php?id=<?=$row['id']?>" title="visit member's profile"><span class="glyphicon glyphicon-user"></span></a>
+	                	<p class="hidden">1</p><a href="/members/profile.php?id=<?=$row['id']?>" title="visit member's profile"><span class="glyphicon glyphicon-user"></span></a>
 					<? } ?>
 	                </td>
 		            <td><?= htmlspecialchars( $row['nickname'] ) ?></td>
