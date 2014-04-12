@@ -84,7 +84,6 @@ INSERT INTO learnings (name,description,url) VALUES ('3D printing','3D printer t
 
 CREATE TABLE aliases (
 	id VARCHAR(255) PRIMARY KEY NOT NULL
-	order INTEGER AUTOINCREMENT
 );
 
 CREATE TABLE users_aliases (
