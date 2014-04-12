@@ -47,6 +47,7 @@ $include_unsubscribed = ($user->isAdmin() && isset($_GET['unsubscribed']) && $_G
 	                <th>£</th>
 				<? } ?>
                 <th>Full name</th>
+                <th>Profile</th>
 				<? if($user->isAdmin()) { ?>
 	                <th>Doorbot</th>
 				<? } ?>
@@ -55,7 +56,7 @@ $include_unsubscribed = ($user->isAdmin() && isset($_GET['unsubscribed']) && $_G
         <tbody>
         <?php
         $subscription_query = ($include_unsubscribed) ? '' : 'WHERE subscribed=1';
-        $users = $db->translatedQuery( 'SELECT id, subscribed, full_name, email, nickname FROM users '.$subscription_query.' ORDER BY lower(full_name)');
+        $users = $db->translatedQuery( 'SELECT id, subscribed, full_name, email, nickname, has_profile, disabled_profile FROM users '.$subscription_query.' ORDER BY lower(full_name)');
         foreach( $users as $row ):
         ?>
             <tr>
@@ -67,6 +68,11 @@ $include_unsubscribed = ($user->isAdmin() && isset($_GET['unsubscribed']) && $_G
 	                <td><? if($row['subscribed']) { ?><span class="glyphicon glyphicon-ok"></span><? } ?><p class="hidden"><?=($row['subscribed'] == 0) ? 'unsubscribed' : 'subscribed'; ?></p></td>
 				<? } ?>
                 <td><a href="/members/member.php?id=<?=$row['id']?>" title=""><?= htmlspecialchars( $row['full_name'] ) ?></a></td>
+                <td>
+				<? if($row['has_profile'] == 1 && $row['disabled_profile'] == 0) { ?>
+                	<a href="/members/profile.php?id=<?=$row['id']?>" title="visit member's profile"><span class="glyphicon glyphicon-user"></span></a>
+				<? } ?>
+                </td>
 				<? if($user->isAdmin()) { ?>
 		            <td><?= htmlspecialchars( $row['nickname'] ) ?></td>
 				<? } ?>

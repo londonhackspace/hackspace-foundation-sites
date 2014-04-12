@@ -4,6 +4,10 @@ require_once('config.php');
 require_once('user.php');
 require_once('transaction.php');
 require_once('card.php');
+require_once('usersprofile.php');
+require_once('learning.php');
+require_once('alias.php');
+require_once('interest.php');
 
 $db = new fDatabase('sqlite', dirname(__FILE__) . '/../var/database.db');
 

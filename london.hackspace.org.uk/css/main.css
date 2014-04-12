@@ -1,3 +1,10 @@
+/* override inherited styles from bootstrap */
+.btn-primary {
+	background-color: #283da6;
+	border-color: #23348c;	
+}
+/* /end override */
+
 body {
     font-family: 'Open Sans', sans-serif;
     font-size: 12pt;
@@ -372,4 +379,240 @@ div.webcam-image img {
 div.webcam-image p {
   text-align: center;
   font-weight: bold;
+}
+
+
+.bootstrap-tagsinput {
+  background-color: #fff;
+  border: 1px solid #ccc;
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+  display: inline-block;
+  padding: 4px 6px;
+  margin-bottom: 10px;
+  color: #555;
+  vertical-align: middle;
+  border-radius: 4px;
+  width: 100%;
+  line-height: 22px;
+}
+.bootstrap-tagsinput input {
+  border: none;
+  box-shadow: none;
+  outline: none;
+  background-color: transparent;
+  padding: 0;
+  margin: 0;
+  width: auto !important;
+  max-width: inherit;
+}
+.bootstrap-tagsinput input:focus {
+  border: none;
+  box-shadow: none;
+}
+.bootstrap-tagsinput .tag {
+  margin-right: 4px;
+  color: white;
+  margin-bottom: 4px;
+  float: left;
+  padding: 5px;
+  font-size: 100%;
+}
+.bootstrap-tagsinput .tag [data-role="remove"] {
+  margin-left: 8px;
+  cursor: pointer;
+}
+.bootstrap-tagsinput .tag [data-role="remove"]:after {
+  content: "x";
+  padding: 0px 2px;
+}
+.bootstrap-tagsinput .tag [data-role="remove"]:hover {
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+.bootstrap-tagsinput .tag [data-role="remove"]:hover:active {
+  box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+}
+
+/* profile */
+#bd .profile {
+	margin-top: 30px;
+	max-width: none;
+}
+.profile h3 {
+	margin-top: 5px;
+	margin-bottom: 5px;
+}
+.profile h4 {
+	font-weight: bold;
+	margin-top: 20px;
+	font-size: 1.1em;
+}
+.profile h5 {
+	font-size: 1.1em;
+	margin-top: 10px;
+}
+.profile small {
+	line-height: 0.9;
+}
+.member-avatar img {
+	width: 100%;
+}
+.member-avatar img.display {
+	padding: 10px;
+	border: none;
+}
+.member-avatar button {
+	margin: 0px auto;
+	width: 100%;
+	display:block;
+}
+.member-avatar input {
+	visibility: hidden;
+}
+.member-social-icon {
+	width: 28px;
+}
+.member-training img.icon {
+	width: 50px;
+	padding-right: 8px;
+}
+.profile .checkbox.restyle {
+	padding: 0px;
+}
+.profile .checkbox.restyle label {
+	padding: 6px;
+	display: block;
+	margin: 0px;
+	position: relative;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+}
+.profile .checkbox.restyle label.selected {
+	background-color: #428bca;
+	border-color: #428bca;
+	font-weight: bold;
+	color: white;
+}
+.profile .checkbox.restyle label.selected:after {
+	content: "x";
+	font-weight: bold;
+	line-height: 1;
+	font-size: 110%;
+	position: absolute;
+	right: 15px;
+	top: 50%;
+	margin-top: -11px;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+.profile .checkbox.restyle input[type='checkbox'] {
+	visibility: hidden;
+}
+.profile .interests .checkbox label {
+	font-size: 0.9em;
+	padding: 3px 8px;
+}
+.profile .interests .checkbox.restyle label.selected:after {
+	margin-top: -9px;
+	right: 8px;
+}
+.profile .interests ul {
+	padding: 0px;
+	list-style-type: none;
+}
+.profile .interests li {
+	padding: 0px;
+}
+.profile .interests .list div {
+	float: left;
+	width: 20%;
+}
+@media (max-width: 600px) {
+.profile .interests .list div {
+	width: 50%;
+}
+}
+.profile .dropdown-menu>li {
+	display: block;
+	padding: 3px 20px;
+	clear: both;
+	font-weight: 400;
+	line-height: 1.42857143;
+	color: #333;
+	white-space: nowrap;
+	cursor: pointer;
+}
+.profile .dropdown-menu>li:hover {
+	background-color: #eee;
+}
+.profile .aliases-list {
+	padding: 0px;
+}
+.profile .aliases-list li {
+	display: inline-block;
+	margin-right: 10px;
+}
+.profile .alias-field:first-child .alias-remove {
+	display: none;
+}
+.profile .alias-field:first-child .dropdown-toggle {
+	border-radius: 0px 3px 3px 0px;
+}
+.profile .aliases .input-group {
+	margin-bottom: 10px;
+	max-width: 400px;
+}
+.profile .aliases .dropdown-toggle {
+	border-radius: 0px;
+}
+.profile .personal-site input {
+	max-width: 400px;
+}
+.profile .member-training .training-badges {
+	width: 100%;
+	padding: 0px;
+}
+.profile .member-training .btn-group {
+	width: 100%;
+}
+.profile .member-training .btn {
+	width: 100%;
+	text-align: left;
+	position: relative;
+}
+.profile .member-training .btn .caret {
+	position: absolute;
+	right: 10px;
+	top: 50%;
+	margin-top: -1px;
+}
+.profile .member-training .remove-img {
+	position: relative;
+	float: left;
+	width: 32%;
+	cursor:pointer;
+}
+.profile .member-training .remove-img img {
+	width: 100%;
+	padding: 0px 4px;
+}
+.profile .member-training .remove-img:before {
+	content: 'x';
+	position: absolute;
+	bottom: 0px;
+	right: 0px;
+	font-weight: bold;
+	color: white;
+	background-color: #283da6;
+	border-radius: 20px;
+	border: 1px solid #eee;
+	padding: 3px 10px;
+}
+.profile .member-training .training-badge img {
+	width: 32%;
+	margin: 10px 0px;
+	padding: 0px 4px;
+}
+.profile .profile_edit {
+	float: right;
+	margin-left: 10px;
 }

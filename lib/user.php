@@ -30,6 +30,24 @@ class User extends fActiveRecord {
         );
     }
 
+    public function firstTransaction($from=null, $to=null) {
+      if ($from == null){
+        $from = new fDate('2009-01-01');
+      }
+      if ($to == null) {
+        $to = new fDate('now');
+      }
+        $result = fRecordSet::build(
+            'Transaction',
+            array('user_id=' => $this->getId(),
+            'timestamp>' => $from,
+            'timestamp<' => $to),
+            array('timestamp' => 'asc')
+        );
+		
+		return ($result->count() != 0) ? date('M Y', strtotime($result[0]->getTimestamp())) : null;
+    }
+
     public function buildCards() {
         return fRecordSet::build(
             'Card',
@@ -37,6 +55,48 @@ class User extends fActiveRecord {
             array('added_date' => 'asc')
         );
     }
+
+    public function getInterests() {
+        return fRecordSet::build(
+            'Interest',
+            array('suggested=' => 1),
+            array('category' => 'asc', 'name' => 'asc')
+        );
+    }
+	
+	public function setLearnings($list) {
+        global $db;
+        $db->execute("DELETE FROM users_learnings WHERE user_id = %s", $this->getId());
+		foreach($list as $lid) {
+        	$db->execute("INSERT INTO users_learnings (user_id, learning_id) VALUES (%s, %s)", $this->getId(), $lid);
+		}
+	}
+
+	public function setAliases($list) {
+        global $db;
+        $db->execute("DELETE FROM users_aliases WHERE user_id = %s", $this->getId());
+		foreach($list as $aid=>$username) {
+        	$db->execute("INSERT INTO users_aliases (user_id, alias_id, username) VALUES (%s, %s, %s)", $this->getId(), $aid, $username);
+		}
+	}
+
+	public function setInterests($list) {
+        global $db;
+        $db->execute("DELETE FROM users_interests WHERE user_id = %s", $this->getId());
+		foreach($list as $lid) {
+        	$db->execute("INSERT INTO users_interests (user_id, interest_id) VALUES (%s, %s)", $this->getId(), $lid);
+		}
+	}
+
+	public function addInterest($name,$category) {
+        global $db;
+        $db->execute("INSERT INTO interests (category,name) VALUES (%s, %s)", $category, $name);
+        $record = fRecordSet::build(
+            'Interest',
+            array('name=' => $name, 'category=' => $category)
+        );
+        return $record[0]->getInterestId();
+   	}
 
     public function getResetPasswordToken() {
         global $db;
@@ -47,7 +107,7 @@ class User extends fActiveRecord {
                                     $token, $this->getId());
         return $token;
     }
-
+    
     public static function checkPasswordResetToken($token) {
         global $db;
         $result = $db->query("SELECT * FROM password_resets
