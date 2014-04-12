@@ -151,9 +151,10 @@ if (isset($_GET['saved'])) {
 
 		<h3>
 			<?= htmlspecialchars($user->getFullName()) ?>
-			<? if($user->firstTransaction() != null) {
-				echo '<p><small>First joined '.$user->firstTransaction().'</small></p>'; 
+			<p><small><?=$user->getMemberNumber()?><? if($user->firstTransaction() != null) {
+				echo ', first joined '.$user->firstTransaction(); 
 			}?>
+			</small></p>
 		</h3>
 		<div class="checkbox">
 			<label>

@@ -47,8 +47,8 @@ $include_unsubscribed = ($user->isAdmin() && isset($_GET['unsubscribed']) && $_G
 	                <th>£</th>
 				<? } ?>
                 <th>Full name</th>
-                <th>Profile</th>
 				<? if($user->isAdmin()) { ?>
+	                <th>Profile</th>
 	                <th>Doorbot</th>
 				<? } ?>
             </tr>
@@ -67,13 +67,21 @@ $include_unsubscribed = ($user->isAdmin() && isset($_GET['unsubscribed']) && $_G
 				<? if($include_unsubscribed) { ?>
 	                <td><? if($row['subscribed']) { ?><span class="glyphicon glyphicon-ok"></span><? } ?><p class="hidden"><?=($row['subscribed'] == 0) ? 'unsubscribed' : 'subscribed'; ?></p></td>
 				<? } ?>
-                <td><a href="/members/member.php?id=<?=$row['id']?>" title=""><?= htmlspecialchars( $row['full_name'] ) ?></a></td>
                 <td>
-				<? if($row['has_profile'] == 1 && $row['disabled_profile'] == 0) { ?>
-                	<a href="/members/profile.php?id=<?=$row['id']?>" title="visit member's profile"><span class="glyphicon glyphicon-user"></span></a>
-				<? } ?>
+					<? if(!$user->isAdmin() && $row['has_profile'] == 1 && $row['disabled_profile'] == 0) { ?>
+	                	<a href="/members/profile.php?id=<?=$row['id']?>" title=""><?= htmlspecialchars( $row['full_name'] ) ?></a>
+                	<? } else if(!$user->isAdmin()) { ?>
+	               		<?= htmlspecialchars( $row['full_name'] ) ?>
+                	<? } else { ?>
+	                	<a href="/members/member.php?id=<?=$row['id']?>" title=""><?= htmlspecialchars( $row['full_name'] ) ?></a>
+                	<? } ?>
                 </td>
 				<? if($user->isAdmin()) { ?>
+	                <td>
+					<? if($row['has_profile'] == 1 && $row['disabled_profile'] == 0) { ?>
+	                	<a href="/members/profile.php?id=<?=$row['id']?>" title="visit member's profile"><span class="glyphicon glyphicon-user"></span></a>
+					<? } ?>
+	                </td>
 		            <td><?= htmlspecialchars( $row['nickname'] ) ?></td>
 				<? } ?>
             </tr>

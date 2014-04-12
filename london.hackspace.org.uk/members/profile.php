@@ -18,10 +18,17 @@ else {
 	}
 }
 
-if(($user->isMember() && $this_user->isMember()) || ($user->getMemberNumber() == $this_user->getMemberNumber()) || $user->isAdmin() ) {
-	if($this_user->getHasProfile() == 1 && $this_user->getDisabledProfile() == 0) {
-		$user_profile = $this_user->createUsersProfile();
-?>
+if(	
+	(($user->isMember() && $this_user->isMember()) 
+	|| ($user->getMemberNumber() == $this_user->getMemberNumber()) 
+	|| $user->isAdmin())
+	&& $this_user->getHasProfile() == 1 && $this_user->getDisabledProfile() == 0
+) {
+	$user_profile = $this_user->createUsersProfile();
+
+	if(!$this_user->isMember() && ($user->getMemberNumber() == $this_user->getMemberNumber())) { ?>
+		<div class="alert alert-info"><p>Thanks! Your profile will become available to other members when your payment has been received.</p></div>
+	<? } ?>
 <div class="row profile">
 	<div class="col-md-3">
 		<div class="member-avatar">
@@ -42,9 +49,10 @@ if(($user->isMember() && $this_user->isMember()) || ($user->getMemberNumber() ==
 		<? } ?>
 		<h3>
 			<?= htmlspecialchars($this_user->getFullName()) ?>
-			<? if($this_user->firstTransaction() != null) {
-				echo '<p><small>First joined '.$this_user->firstTransaction().'</small></p>'; 
+			<p><small><?=$this_user->getMemberNumber()?><? if($this_user->firstTransaction() != null) {
+				echo ', first joined '.$this_user->firstTransaction(); 
 			}?>
+			</small></p>
 		</h3>
 
 		<ul class="aliases-list">
@@ -135,7 +143,7 @@ if(($user->isMember() && $this_user->isMember()) || ($user->getMemberNumber() ==
 		</h3>
     </div>
 </div>	
-<? }
+<?
 }
 require('../footer.php'); ?>
 </body>
