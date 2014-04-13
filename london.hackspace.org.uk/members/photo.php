@@ -4,7 +4,9 @@ if (!isset($user)) {
 }
 
 header('Content-Type: image/png');
-$size = filter_var($_GET['size'], FILTER_SANITIZE_STRING);
+$size = '';
+if(isset($_GET['size']))
+	$size = filter_var($_GET['size'], FILTER_SANITIZE_STRING);
 ($size == 'sml') ? $size_name = '_sml' : $size_name = '';
 
 $filter_name = preg_replace("/[^0-9a-zA-Z_]/","",filter_var($_GET['name'], FILTER_SANITIZE_STRING));

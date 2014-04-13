@@ -34,15 +34,15 @@ if (isset($_POST['submit'])) {
         fRequest::validateCSRFToken($_POST['token']);
 
 		// user profile
-		($_POST['allow_email'] && filter_var($_POST['allow_email'], FILTER_SANITIZE_STRING) == 'on') ? 
+		(isset($_POST['allow_email']) && filter_var($_POST['allow_email'], FILTER_SANITIZE_STRING) == 'on') ? 
 			$user_profile->setAllowEmail(1):
 			$user_profile->setAllowEmail(0);
 			
-		($_POST['allow_doorbot'] && filter_var($_POST['allow_doorbot'], FILTER_SANITIZE_STRING) == 'on') ? 
+		(isset($_POST['allow_doorbot']) && filter_var($_POST['allow_doorbot'], FILTER_SANITIZE_STRING) == 'on') ? 
 			$user_profile->setAllowDoorbot(1):
 			$user_profile->setAllowDoorbot(0);
 
-		if($_POST['website'] == 'http://')
+		if(isset($_POST['website']) == 'http://')
 			$_POST['website'] = '';
 
 		$user_profile->setWebsite(filter_var($_POST['website'], FILTER_SANITIZE_STRING));
@@ -58,39 +58,48 @@ if (isset($_POST['submit'])) {
 			file_put_contents($path . $filename . '_sml.png', base64_decode(substr($_POST['photo-upload-sml'], strpos($_POST['photo-upload-sml'],",")+1)));
 			$user_profile->setPhoto($filename);
 		}
+		$user_profile->setUserId($user->getId());
 		$user_profile->store();
 		
 		// user learnings
 		$list = array();
-		foreach($_POST['learnings'] as $key=>$val) {
-			array_push($list, filter_var($key, FILTER_SANITIZE_NUMBER_INT));
+		if(isset($_POST['learnings'])) {
+			foreach($_POST['learnings'] as $key=>$val) {
+				array_push($list, filter_var($key, FILTER_SANITIZE_NUMBER_INT));
+			}
 		}
 		$user->setLearnings($list);
 		
 		// user aliases
 		$list = array();
-		foreach($_POST['aliases'] as $key=>$val) {
-			if($val && $val != null && $val != '')
-				$list[filter_var($key, FILTER_SANITIZE_STRING)] = filter_var($val, FILTER_SANITIZE_STRING);
+		if(isset($_POST['aliases'])) {
+			foreach($_POST['aliases'] as $key=>$val) {
+				if($val && $val != null && $val != '')
+					$list[filter_var($key, FILTER_SANITIZE_STRING)] = filter_var($val, FILTER_SANITIZE_STRING);
+			}
 		}
 		$user->setAliases($list);
 				
 		// user interests
 		$list = array();
-		foreach($_POST['interests'] as $key=>$val) {
-			array_push($list, filter_var($key, FILTER_SANITIZE_NUMBER_INT));
+		if(isset($_POST['interests'])) {
+			foreach($_POST['interests'] as $key=>$val) {
+				array_push($list, filter_var($key, FILTER_SANITIZE_NUMBER_INT));
+			}
 		}
 		$all_interests = $user->getInterests();
-		foreach(explode(',',$_POST['other_interests']) as $val) {
-			$search = filter_var(trim($val), FILTER_SANITIZE_STRING);
-			if($search != '') {
-		        $selected = $all_interests->filter(array('getName=' => $search, 'getCategory=' => 'Other'));
-				if($selected->count() > 0) {
-					$key = $selected->getInterestId();
-				} else {
-					$key = $user->addInterest($search,'Other');
+		if(isset($_POST['other_interests'])) {
+			foreach(explode(',',$_POST['other_interests']) as $val) {
+				$search = filter_var(trim($val), FILTER_SANITIZE_STRING);
+				if($search != '') {
+			        $selected = $all_interests->filter(array('getName=' => $search, 'getCategory=' => 'Other'));
+					if($selected->count() > 0) {
+						$key = $selected->getInterestId();
+					} else {
+						$key = $user->addInterest($search,'Other');
+					}
+					array_push($list, $key);
 				}
-				array_push($list, $key);
 			}
 		}
 		$user->setInterests($list);
