@@ -45,7 +45,7 @@ if (isset($_POST['submit'])) {
 		$user_profile->setDescription(filter_var($_POST['description'], FILTER_SANITIZE_STRING));
 
 		if($_POST['photo-upload']) {
-			$filename = $user->getId().'_'.filter_var(str_replace(' ','_',$user->getFullName()), FILTER_SANITIZE_URL);
+			$filename = preg_replace("/[^0-9a-zA-Z_]/","",$user->getId().'_'.filter_var(str_replace(' ','_',$user->getFullName()), FILTER_SANITIZE_URL));
 			$path = $_SERVER['DOCUMENT_ROOT'] . '/../var/photos/';
 			if (!file_exists($path)) {
 				mkdir($path, 0777, true);
@@ -171,7 +171,7 @@ if (isset($_GET['saved'])) {
 	        <label for="aliases">Aliases</label>
 			<div class="alias-fields">
             <? 
-            $all_aliases = fRecordSet::build('Aliase');
+            $all_aliases = fRecordSet::build('Aliase',array(),array('aliases.type' => 'asc', 'aliases.id' => 'asc'));
 			foreach($my_aliases as $my_alias) { 
 			?>
 				<div class="input-group alias-field">
@@ -206,7 +206,7 @@ if (isset($_GET['saved'])) {
 	    <div class="form-group">
 	        <strong>Projects I'm working on</strong><br/>
 	        <small>The most commonly asked question in the hackspace. What are you doing? Keep it short and sweet.</small>
-	        <textarea id="description" name="description" class="form-control" rows="2"><?=$user_profile->getDescription()?></textarea>
+	        <textarea id="description" name="description" class="form-control" rows="3"><?=$user_profile->getDescription()?></textarea>
 	    </div>
 
 	    <div class="form-group interests">

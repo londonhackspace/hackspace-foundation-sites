@@ -475,6 +475,9 @@ div.webcam-image p {
 	width: 50px;
 	padding-right: 8px;
 }
+.profile textarea {
+	margin-top: 6px;
+}
 .profile .checkbox.restyle {
 	padding: 0px;
 }

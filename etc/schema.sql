@@ -83,7 +83,8 @@ INSERT INTO learnings (name,description,url) VALUES ('Vinyl cutting','Vinyl cutt
 INSERT INTO learnings (name,description,url) VALUES ('3D printing','3D printer trained','https://wiki.london.hackspace.org.uk/view/3dprinter_training');
 
 CREATE TABLE aliases (
-	id VARCHAR(255) PRIMARY KEY NOT NULL
+	id VARCHAR(255) PRIMARY KEY NOT NULL,
+	type INTEGER NOT NULL DEFAULT 2
 );
 
 CREATE TABLE users_aliases (
@@ -93,15 +94,15 @@ CREATE TABLE users_aliases (
 	PRIMARY KEY (user_id, alias_id)
 );
 
-INSERT INTO aliases (id) VALUES ('IRC');
-INSERT INTO aliases (id) VALUES ('Hackspace Wiki');
-INSERT INTO aliases (id) VALUES ('Twitter');
-INSERT INTO aliases (id) VALUES ('Facebook');
-INSERT INTO aliases (id) VALUES ('Google+');
-INSERT INTO aliases (id) VALUES ('LinkedIn');
-INSERT INTO aliases (id) VALUES ('GitHub');
-INSERT INTO aliases (id) VALUES ('YouTube');
-INSERT INTO aliases (id) VALUES ('Flickr');
+INSERT INTO aliases (id,type) VALUES ('IRC',1);
+INSERT INTO aliases (id,type) VALUES ('Hackspace Wiki',1);
+INSERT INTO aliases (id,type) VALUES ('Twitter',2);
+INSERT INTO aliases (id,type) VALUES ('Facebook',2);
+INSERT INTO aliases (id,type) VALUES ('Google+',2);
+INSERT INTO aliases (id,type) VALUES ('LinkedIn',2);
+INSERT INTO aliases (id,type) VALUES ('GitHub',2);
+INSERT INTO aliases (id,type) VALUES ('YouTube',2);
+INSERT INTO aliases (id,type) VALUES ('Flickr',2);
 
 CREATE TABLE interests_categories (
 	id VARCHAR(255) PRIMARY KEY NOT NULL
@@ -131,8 +132,8 @@ INSERT INTO interests (category,suggested,name,url) VALUES ('Computing',1,'Ardui
 INSERT INTO interests (category,suggested,name,url) VALUES ('Computing',1,'Raspberry Pi','https://wiki.london.hackspace.org.uk/view/Not_Just_Arduino');
 INSERT INTO interests (category,suggested,name,url) VALUES ('Computing',1,'Soldering','https://wiki.london.hackspace.org.uk/view/Electronics_Area');
 INSERT INTO interests (category,suggested,name,url) VALUES ('Computing',1,'Hardware','https://wiki.london.hackspace.org.uk/view/Not_Just_Arduino');
-INSERT INTO interests (category,suggested,name) VALUES ('Computing',1,'Software');
-INSERT INTO interests (category,suggested,name) VALUES ('Computing',1,'Programming');
+INSERT INTO interests (category,suggested,name,url) VALUES ('Computing',1,'Software','https://wiki.london.hackspace.org.uk/w/index.php?title=Special%3ASearch&search=software');
+INSERT INTO interests (category,suggested,name,url) VALUES ('Computing',1,'Programming','https://wiki.london.hackspace.org.uk/w/index.php?title=Special%3ASearch&search=programming&go=Go');
 INSERT INTO interests (category,suggested,name,url) VALUES ('Fabrication',1,'3D printing','https://wiki.london.hackspace.org.uk/view/Equipment/Lulzbot_a0_101');
 INSERT INTO interests (category,suggested,name,url) VALUES ('Fabrication',1,'Laser cutting','https://wiki.london.hackspace.org.uk/view/Laser_Cutter');
 INSERT INTO interests (category,suggested,name,url) VALUES ('Fabrication',1,'CNC routing','https://wiki.london.hackspace.org.uk/view/Pledge:_CNC_Mill');

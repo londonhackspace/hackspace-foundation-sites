@@ -56,6 +56,15 @@ class User extends fActiveRecord {
         );
     }
 
+    public function buildUsersAliases() {
+        $record = fRecordSet::build(
+            'UsersAliase',
+            array('user_id=' => $this->getId()),
+            array('aliases.type' => 'asc', 'aliases.id' => 'asc')
+        );
+		return $record;
+    }
+
     public function getInterests() {
         return fRecordSet::build(
             'Interest',
