@@ -124,7 +124,7 @@ if(
 	</div>
 </div>
 <br/>
-<? } else { ?>
+<? } else if (($user->isMember() && $this_user->isMember()) || ($user->getMemberNumber() == $this_user->getMemberNumber()) || $user->isAdmin()){ ?>
 <div class="row profile">
 	<div class="col-md-3">
 		<div class="member-avatar">
@@ -142,8 +142,9 @@ if(
 		</h3>
     </div>
 </div>	
-<?
-}
+<? } else { ?>
+   <p>You don't have access to this page.</p>
+<?php }
 require('../footer.php'); ?>
 </body>
 </html>
