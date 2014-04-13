@@ -93,7 +93,7 @@ if (!$user) {
 
 <h3>Tell us about yourself</h3>
 
-<p>While you're waiting for your payment to process, why don't you tell us a bit about yourself? <a href="/members/profile_edit.php">Create a profile</a> to help other members can get to know you better. When your payment has been received you'll be able to see other member's profiles too.
+<p>While you're waiting for your payment to process, why don't you tell us a bit about yourself? <a href="/members/profile_edit.php">Create a profile</a> to help other members get to know you better. When your payment has been received you'll be able to see other member's profiles too.
 
 <h3>Any problems?</h3>
    <p>If you have any problems paying, please contact 
