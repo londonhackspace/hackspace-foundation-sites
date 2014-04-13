@@ -38,6 +38,10 @@ if (isset($_POST['submit'])) {
 			$user_profile->setAllowEmail(1):
 			$user_profile->setAllowEmail(0);
 			
+		($_POST['allow_doorbot'] && filter_var($_POST['allow_doorbot'], FILTER_SANITIZE_STRING) == 'on') ? 
+			$user_profile->setAllowDoorbot(1):
+			$user_profile->setAllowDoorbot(0);
+
 		if($_POST['website'] == 'http://')
 			$_POST['website'] = '';
 
@@ -50,7 +54,8 @@ if (isset($_POST['submit'])) {
 			if (!file_exists($path)) {
 				mkdir($path, 0777, true);
 			}
-			file_put_contents($path . $filename, base64_decode(substr($_POST['photo-upload'], strpos($_POST['photo-upload'],",")+1)));
+			file_put_contents($path . $filename . '.png', base64_decode(substr($_POST['photo-upload'], strpos($_POST['photo-upload'],",")+1)));
+			file_put_contents($path . $filename . '_sml.png', base64_decode(substr($_POST['photo-upload-sml'], strpos($_POST['photo-upload-sml'],",")+1)));
 			$user_profile->setPhoto($filename);
 		}
 		$user_profile->store();
@@ -117,6 +122,7 @@ if (isset($_GET['saved'])) {
 		<div class="member-avatar">
             <img src="photo.php?name=<?=$user_profile->getPhoto() ?>"/>
             <input type="hidden" name="photo-upload" id="photo-upload" />
+            <input type="hidden" name="photo-upload-sml" id="photo-upload-sml" />
         	<button class="btn btn-primary" id="photo-select">Upload new photo</button>
         	<small class="hidden">'Update profile' to save your photo.</small>
 	        <input type="file" name="photo-filesystem" id="photo-filesystem" accept="image/*">
@@ -159,6 +165,11 @@ if (isset($_GET['saved'])) {
 		<div class="checkbox">
 			<label>
 				<input type="checkbox" <? if($user_profile->getAllowEmail()) { echo 'checked'; } ?> name="allow_email" id="allow_email"> allow members to see my email address (<a href="mailto:<?=$user->getEmail()?>"><?=$user->getEmail()?></a>)
+			</label>
+		</div>
+		<div class="checkbox">
+			<label>
+				<input type="checkbox" <? if($user_profile->getAllowDoorbot()) { echo 'checked'; } ?> name="allow_doorbot" id="allow_doorbot"> allow members to see the date I last visted the space
 			</label>
 		</div>
 	    <div class="form-group personal-site">
@@ -304,44 +315,51 @@ $('.member-avatar #photo-select').bind("click touchend", function (e) {
     return false;
 });
 
-var canvas = document.createElement('canvas');
-var ctx = canvas.getContext("2d");
+var canvas = document.createElement('canvas'), ctx = canvas.getContext("2d");
+var canvas_sml = document.createElement('canvas'), ctx_sml = canvas_sml.getContext("2d");
 function handleFiles(e) {
     var reader = new FileReader;
     reader.onload = function (event) {
         var img = new Image();
         img.src = reader.result;
         img.onload = function () {
-            var maxWidth = 256,
-                maxHeight = 256,
-                imageWidth = img.width,
-                imageHeight = img.height;
+			var size = getImageDimensions (256,256,img.width,img.height);
+            canvas.width = size.width;
+            canvas.height = size.height;
+            ctx.drawImage(this, 0, 0, size.width, size.height);
 
-            if (imageWidth > imageHeight) {
-                if (imageWidth > maxWidth) {
-                    imageHeight *= maxWidth / imageWidth;
-                    imageWidth = maxWidth;
-                }
-            } else {
-                if (imageHeight > maxHeight) {
-                    imageWidth *= maxHeight / imageHeight;
-                    imageHeight = maxHeight;
-                }
-            }
-            canvas.width = imageWidth;
-            canvas.height = imageHeight;
-
-            ctx.drawImage(this, 0, 0, imageWidth, imageHeight);
+			var size = getImageDimensions (48,48,img.width,img.height);
+            canvas_sml.width = size.width;
+            canvas_sml.height = size.height;
+            ctx_sml.drawImage(this, 0, 0, size.width, size.height);
 
             // The resized file ready for upload
             var finalFile = canvas.toDataURL("image/png");
 			$('.member-avatar img').attr('src',finalFile);
 			$('.member-avatar #photo-upload').val(finalFile);
+			$('.member-avatar #photo-upload-sml').val(canvas_sml.toDataURL("image/png"));
 			$('.member-avatar #photo-select').blur();
 			$('.member-avatar small').removeClass('hidden');
         }
     }
     reader.readAsDataURL(e.target.files[0]);
+}
+
+function getImageDimensions(maxWidth, maxHeight, imageWidth, imageHeight) {
+    var result = {width: imageWidth, height: imageHeight};
+
+    if (imageWidth > imageHeight) {
+        if (imageWidth > maxWidth) {
+            result.height *= maxWidth / imageWidth;
+            result.width = maxWidth;
+        }
+    } else {
+        if (imageHeight > maxHeight) {
+            result.width *= maxHeight / imageHeight;
+            result.height = maxHeight;
+        }
+    }
+    return result;
 }
 }
 </script>

@@ -14,7 +14,8 @@ CREATE TABLE users (
     terminated BOOLEAN NOT NULL DEFAULT 0,
     admin BOOLEAN NOT NULL DEFAULT 0,
     has_profile BOOLEAN NOT NULL DEFAULT 0,
-    disabled_profile BOOLEAN NOT NULL DEFAULT 0
+    disabled_profile BOOLEAN NOT NULL DEFAULT 0,
+    doorbot_timestamp DATETIME
 );
 
 CREATE TABLE transactions (
@@ -58,7 +59,8 @@ CREATE TABLE userperms (
 
 CREATE TABLE users_profiles (
 	user_id INTEGER PRIMARY KEY NOT NULL REFERENCES users(id) ON DELETE CASCADE, 
-	allow_email BOOLEAN NOT NULL DEFAULT 0, 
+	allow_email BOOLEAN NOT NULL DEFAULT 0,
+	allow_doorbot BOOLEAN NOT NULL DEFAULT 0, 
 	photo VARCHAR(255), 
 	website VARCHAR(255), 
 	description VARCHAR(500), 

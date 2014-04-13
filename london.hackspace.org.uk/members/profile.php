@@ -49,12 +49,13 @@ if(
 		<? } ?>
 		<h3>
 			<?= htmlspecialchars($this_user->getFullName()) ?>
-			<p><small><?=$this_user->getMemberNumber()?><? if($this_user->firstTransaction() != null) {
-				echo ', first joined '.$this_user->firstTransaction(); 
-			}?>
+			<p><small><?=$this_user->getMemberNumber()?><br/><? if($this_user->firstTransaction() != null) {
+				echo ' Joined '.$this_user->firstTransaction(); 
+			} if($user_profile->getAllowDoorbot() && $this_user->getDoorbotTimestamp() != '') {
+				echo ', last seen '.date('dS M Y', strtotime($this_user->getDoorbotTimestamp()));
+			} ?>
 			</small></p>
 		</h3>
-
 		<ul class="aliases-list">
 			<? if($user_profile->getAllowEmail()) { ?>
 			<li><span class="glyphicon glyphicon-envelope"></span> <a href="mailto:<?=$this_user->getEmail()?>"><?=$this_user->getEmail()?></a></li>
