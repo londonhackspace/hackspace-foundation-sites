@@ -138,9 +138,7 @@ if(
 
 		<h3>
 			<?= htmlspecialchars($this_user->getFullName()) ?>
-			<? if($this_user->firstTransaction() != null) {
-				echo '<p><small>First joined '.$this_user->firstTransaction().'</small></p>'; 
-			}?>
+			<p><small><?=$this_user->getMemberNumber()?></small></p>
 		</h3>
     </div>
 </div>	
