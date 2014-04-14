@@ -166,9 +166,11 @@ if (isset($_GET['saved'])) {
 
 		<h3>
 			<?= htmlspecialchars($user->getFullName()) ?>
-			<p><small><?=$user->getMemberNumber()?><? if($user->firstTransaction() != null) {
-				echo ', first joined '.$user->firstTransaction(); 
-			}?>
+			<p><small><?=$user->getMemberNumber()?><br/><? if($user->firstTransaction() != null) {
+				echo ' Joined '.$user->firstTransaction(); 
+			} if($user_profile->getAllowDoorbot() && $user->getDoorbotTimestamp() != '') {
+				echo ', last seen '.date('dS M Y', strtotime($user->getDoorbotTimestamp()));
+			} ?>
 			</small></p>
 		</h3>
 		<div class="checkbox">
@@ -197,11 +199,15 @@ if (isset($_GET['saved'])) {
 				<div class="input-group alias-field">
 					<input type="text" class="form-control" name="aliases[<?=$my_alias->getAliasId();?>]" value="<?=$my_alias->getUsername();?>">
 					<div class="input-group-btn">
-				        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"><?=$my_alias->getAliasId();?> <span class="caret"></span></button>
+				        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"><span class="member-social-icon iconlhs-<?=strtolower(preg_replace("/[^0-9a-zA-Z]/","",$my_alias->getAliasId()));?>" title="<?=$my_alias->getAliasId()?>"></span><?=$my_alias->getAliasId()?> <span class="caret"></span></button>
 				        <ul class="dropdown-menu pull-right">
-				            <? foreach($all_aliases as $alias) {?>
-							<li><?=$alias->getId()?></li>
-				            <? } ?>
+				            <? $lastType = null; foreach($all_aliases as $alias) {?>
+			            	<?if($lastType != null && ($lastType != $alias->getType())) { ?>
+			            	<li class="divider"></li>
+			            	<? } ?>
+							<li><span class="member-social-icon iconlhs-<?=strtolower(preg_replace("/[^0-9a-zA-Z]/","",$alias->getId()));?>" title="<?=$alias->getId()?>"></span><?=$alias->getId()?></li>
+				            <? $lastType = $alias->getType();
+							} ?>
 				        </ul>
 				        <button title="remove" type="button" class="btn btn-default alias-remove">x</button>
 				    </div><!-- /btn-group -->
@@ -210,11 +216,15 @@ if (isset($_GET['saved'])) {
 				<div class="input-group alias-field">
 					<input type="text" class="form-control" name="aliases[]" value="">
 					<div class="input-group-btn">
-				        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">Find me on <span class="caret"></span></button>
+				        <button type="button" class="btn btn-default dropdown-toggle no-icon" data-toggle="dropdown">Find me on <span class="caret"></span></button>
 				        <ul class="dropdown-menu pull-right">
-				            <? foreach($all_aliases as $alias) {?>
-							<li><?=$alias->getId()?></li>
-				            <? } ?>
+				            <? $lastType = null; foreach($all_aliases as $alias) {?>
+			            	<?if($lastType != null && ($lastType != $alias->getType())) { ?>
+			            	<li class="divider"></li>
+			            	<? } ?>
+							<li><span class="member-social-icon iconlhs-<?=strtolower(preg_replace("/[^0-9a-zA-Z]/","",$alias->getId()));?>" title="<?=$alias->getId()?>"></span><?=$alias->getId()?></li>
+				            <? $lastType = $alias->getType();
+							} ?>
 				        </ul>
 				        <button title="remove" type="button" class="btn btn-default alias-remove">x</button>
 				    </div><!-- /btn-group -->
@@ -290,18 +300,20 @@ function addTrainingRemoveEvent(obj) {
 addTrainingRemoveEvent($('.member-training .remove-img'));
 
 // add aliases features
-$(".aliases .dropdown-menu li").bind('click touchend', function(e){
+$(".aliases .dropdown-menu li").not('.divider').bind('click touchend', function(e){
     e.stopPropagation();
     e.preventDefault();
 
-	$(this).parents('.input-group-btn').removeClass('open').find('.dropdown-toggle').html($(this).text()+' <span class="caret"></span>');
+	$(this).parents('.input-group-btn').removeClass('open');
+	$(this).parents('.input-group-btn').find('.dropdown-toggle').removeClass('no-icon').html($(this).text()+' <span class="caret"></span>');
+	$(this).find('span').clone().appendTo($(this).parents('.input-group-btn').find('.dropdown-toggle'));
 	$(this).parents('.alias-field').find('input').attr('name','aliases['+$(this).text()+']');
     return false;
 });
 $('.add-alias').bind('click touchend', function(e) {
 	e.preventDefault();
 	$('.alias-field:first-child').clone(true, true).appendTo( ".alias-fields" );
-	$('.alias-field:last-child').find('.dropdown-toggle').html('Find me on <span class="caret"></span>');
+	$('.alias-field:last-child').find('.dropdown-toggle').addClass('no-icon').html('Find me on <span class="caret"></span>');
 	$('.alias-field:last-child').find('input').attr('name','aliases[]').val('');
 });
 $('.alias-remove').bind('click touchend', function(e) {

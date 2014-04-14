@@ -68,7 +68,7 @@ if(
 		<h4>Aliases</h4>
 		<ul class="aliases-list">
             <? foreach($this_user->buildUsersAliases() as $alias) {?>
-			<li><img src="/images/icon-<?=strtolower(str_replace(' ','',$alias->getAliasId()));?>.png" title="<?=$alias->getAliasId()?>" class="member-social-icon"/> 
+			<li><span class="member-social-icon iconlhs-<?=strtolower(preg_replace("/[^0-9a-zA-Z]/","",$alias->getAliasId()));?>" title="<?=$alias->getAliasId()?>"></span> 
 				<? switch($alias->getAliasId()) {
 					case 'Facebook': echo '<a target="_blank" href="https://www.facebook.com/' . $alias->getUsername() . '">' . $alias->getUsername() . '</a>'; break;
 					case 'YouTube': echo '<a target="_blank" href="https://www.youtube.com/user/' . $alias->getUsername() . '">' . $alias->getUsername() . '</a>'; break;
