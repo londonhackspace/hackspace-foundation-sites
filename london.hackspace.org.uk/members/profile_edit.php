@@ -42,11 +42,14 @@ if (isset($_POST['submit'])) {
 			$user_profile->setAllowDoorbot(1):
 			$user_profile->setAllowDoorbot(0);
 
-		if(isset($_POST['website']) == 'http://')
-			$_POST['website'] = '';
+		if(isset($_POST['website'])) {
+			if($_POST['website'] == 'http://')
+				$_POST['website'] = '';
+			$user_profile->setWebsite(filter_var($_POST['website'], FILTER_SANITIZE_STRING));
+		}
 
-		$user_profile->setWebsite(filter_var($_POST['website'], FILTER_SANITIZE_STRING));
-		$user_profile->setDescription(filter_var($_POST['description'], FILTER_SANITIZE_STRING));
+		if(isset($_POST['description']))
+			$user_profile->setDescription(filter_var($_POST['description'], FILTER_SANITIZE_STRING));
 
 		if(isset($_POST['photo-upload']) && $_POST['photo-upload'] != '' && $_POST['photo-upload'] != null) {
 			$filename = preg_replace("/[^0-9a-zA-Z_]/","",$user->getId().'_'.filter_var(str_replace(' ','_',$user->getFullName()), FILTER_SANITIZE_URL));
@@ -87,17 +90,25 @@ if (isset($_POST['submit'])) {
 				array_push($list, filter_var($key, FILTER_SANITIZE_NUMBER_INT));
 			}
 		}
-		$all_interests = $user->getInterests();
+		$all_interests = fRecordSet::build(
+            'Interest',
+            array(),
+            array('category' => 'asc', 'name' => 'asc')
+        );
 		if(isset($_POST['other_interests'])) {
 			foreach(explode(',',$_POST['other_interests']) as $val) {
 				$search = filter_var(trim($val), FILTER_SANITIZE_STRING);
 				if($search != '') {
-			        $selected = $all_interests->filter(array('getName=' => $search, 'getCategory=' => 'Other'));
-					if($selected->count() > 0) {
-						$key = $selected->getInterestId();
-					} else {
-						$key = $user->addInterest($search,'Other');
+					$key = null;
+					foreach($all_interests as $check) {
+						if(strtolower($check->getName()) == strtolower($search)) {
+							$key = $check->getInterestId();
+							break;
+						}
 					}
+					if($key == null)
+						$key = $user->addInterest($search,'Other');
+					
 					array_push($list, $key);
 				}
 			}
@@ -180,7 +191,7 @@ if (isset($_GET['saved'])) {
 		</div>
 		<div class="checkbox">
 			<label>
-				<input type="checkbox" <? if($user_profile->getAllowDoorbot()) { echo 'checked'; } ?> name="allow_doorbot" id="allow_doorbot"> allow members to see the date I last visted the space
+				<input type="checkbox" <? if($user_profile->getAllowDoorbot()) { echo 'checked'; } ?> name="allow_doorbot" id="allow_doorbot"> allow members to see the date I last visited the space (this helps people find each other)
 			</label>
 		</div>
 	    <div class="form-group personal-site">
@@ -199,13 +210,13 @@ if (isset($_GET['saved'])) {
 				<div class="input-group alias-field">
 					<input type="text" class="form-control" name="aliases[<?=$my_alias->getAliasId();?>]" value="<?=$my_alias->getUsername();?>">
 					<div class="input-group-btn">
-				        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"><span class="member-social-icon iconlhs-<?=strtolower(preg_replace("/[^0-9a-zA-Z]/","",$my_alias->getAliasId()));?>" title="<?=$my_alias->getAliasId()?>"></span><?=$my_alias->getAliasId()?> <span class="caret"></span></button>
+				        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"><span class="member-social-icon iconlhs-<?=substr(strtolower(preg_replace("/[^0-9a-zA-Z]/","",$my_alias->getAliasId())),0,14);?>" title="<?=$my_alias->getAliasId()?>"></span><?=$my_alias->getAliasId()?> <span class="caret"></span></button>
 				        <ul class="dropdown-menu pull-right">
 				            <? $lastType = null; foreach($all_aliases as $alias) {?>
 			            	<?if($lastType != null && ($lastType != $alias->getType())) { ?>
 			            	<li class="divider"></li>
 			            	<? } ?>
-							<li><span class="member-social-icon iconlhs-<?=strtolower(preg_replace("/[^0-9a-zA-Z]/","",$alias->getId()));?>" title="<?=$alias->getId()?>"></span><?=$alias->getId()?></li>
+							<li><span class="member-social-icon iconlhs-<?=substr(strtolower(preg_replace("/[^0-9a-zA-Z]/","",$alias->getId())),0,14);?>" title="<?=$alias->getId()?>"></span><?=$alias->getId()?></li>
 				            <? $lastType = $alias->getType();
 							} ?>
 				        </ul>
@@ -222,7 +233,7 @@ if (isset($_GET['saved'])) {
 			            	<?if($lastType != null && ($lastType != $alias->getType())) { ?>
 			            	<li class="divider"></li>
 			            	<? } ?>
-							<li><span class="member-social-icon iconlhs-<?=strtolower(preg_replace("/[^0-9a-zA-Z]/","",$alias->getId()));?>" title="<?=$alias->getId()?>"></span><?=$alias->getId()?></li>
+							<li><span class="member-social-icon iconlhs-<?=substr(strtolower(preg_replace("/[^0-9a-zA-Z]/","",$alias->getId())),0,14);?>" title="<?=$alias->getId()?>"></span><?=$alias->getId()?></li>
 				            <? $lastType = $alias->getType();
 							} ?>
 				        </ul>
@@ -236,7 +247,7 @@ if (isset($_GET['saved'])) {
 	    <div class="form-group">
 	        <strong>Projects I'm working on</strong><br/>
 	        <small>The most commonly asked question in the hackspace. What are you doing? Keep it short and sweet.</small>
-	        <textarea id="description" name="description" class="form-control" rows="3"><?=$user_profile->getDescription()?></textarea>
+	        <textarea id="description" name="description" class="form-control" rows="3"><?=stripslashes($user_profile->getDescription())?></textarea>
 	    </div>
 
 	    <div class="form-group interests">
@@ -267,10 +278,12 @@ if (isset($_GET['saved'])) {
 	        </div>
       		<strong>Other interests</strong><br/>
       		<small>Comma separated list</small><br/>
-	        <input type="text" id="interests" name="other_interests" class="form-control bootstrap-tagsinput" value="<? foreach($my_interests as $interest) { if($interest->getCategory() == 'Other') { echo $interest->getName().','; } } ?>" data-role="tagsinput" />
+      		<div class="other-interests-container">
+	        <input type="text" id="other_interests" name="other_interests" class="form-control" value="<? foreach($my_interests as $interest) { if($interest->getCategory() == 'Other') { echo $interest->getName().','; } } ?>" />
+			</div>
 	    </div>	
 	    <div class="form-group">
-	        <input type="submit" name="submit" value="Update profile" class="btn btn-primary"/>
+	        <input type="submit" name="submit" value="Update profile" class="btn btn-primary update-profile"/>
 	    </div>
 	</div>
 </div>
@@ -278,6 +291,7 @@ if (isset($_GET['saved'])) {
 </form>
 <? require('../footer.php'); ?>
 <script type="text/javascript" src="/javascript/bootstrap-tagsinput.min.js"></script>
+<script type="text/javascript" src="/javascript/typeahead.min.js"></script>
 <script>
 window.onload = function() {
 
@@ -319,6 +333,31 @@ $('.add-alias').bind('click touchend', function(e) {
 $('.alias-remove').bind('click touchend', function(e) {
 	e.preventDefault();
 	$(this).parents('.alias-field').remove();
+});
+
+// add intersts features
+$('#other_interests').tagsinput({confirmKeys: [188, 13]});
+var other_interests = [<? 
+	$all_other = fRecordSet::build('Interest',array('category='=>'Other'),array('name'=>'asc')); 
+	$count = 0;
+	foreach($all_other as $other) {
+		if($count != 0)
+			echo ',';
+
+		echo "\n'".$other->getName()."'";
+		$count++;
+	}
+?>];
+$('#other_interests').tagsinput('input').typeahead({
+  local: other_interests
+}).bind('typeahead:selected', $.proxy(function (obj, datum) {  
+	this.tagsinput('add', datum.value);
+	this.tagsinput('input').typeahead('setQuery', '');
+}, $('#other_interests')));
+
+$('.update-profile').bind('click touchend', function(e){
+	$('#other_interests').tagsinput('add', $('#other_interests').tagsinput('input').val());
+	$('#other_interests').tagsinput('input').val('');
 });
 
 // all checkboxes add a class to parent

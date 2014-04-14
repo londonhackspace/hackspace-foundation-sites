@@ -68,7 +68,7 @@ if(
 		<h4>Aliases</h4>
 		<ul class="aliases-list">
             <? foreach($this_user->buildUsersAliases() as $alias) {?>
-			<li><span class="member-social-icon iconlhs-<?=strtolower(preg_replace("/[^0-9a-zA-Z]/","",$alias->getAliasId()));?>" title="<?=$alias->getAliasId()?>"></span> 
+			<li><span class="member-social-icon iconlhs-<?=substr(strtolower(preg_replace("/[^0-9a-zA-Z]/","",$alias->getAliasId())),0,14);?>" title="<?=$alias->getAliasId()?>"></span> 
 				<? switch($alias->getAliasId()) {
 					case 'Facebook': echo '<a target="_blank" href="https://www.facebook.com/' . $alias->getUsername() . '">' . $alias->getUsername() . '</a>'; break;
 					case 'YouTube': echo '<a target="_blank" href="https://www.youtube.com/user/' . $alias->getUsername() . '">' . $alias->getUsername() . '</a>'; break;
@@ -88,7 +88,7 @@ if(
 
 		<? if($user_profile->getDescription() != '') { ?>
 		<h4>Projects I'm working on</h4>
-		<p><?=$user_profile->getDescription() ?></p>
+		<p><?=stripslashes($user_profile->getDescription()) ?></p>
 		<? } ?>
 
         <? if($this_user->hasInterests()) {?>
