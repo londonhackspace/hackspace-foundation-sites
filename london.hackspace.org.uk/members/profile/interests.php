@@ -17,7 +17,7 @@
       <? } ?>
             <li>
               <? if($interest->getUrl() != null && $interest->getUrl() != '') { ?>
-                <a href="<?=$interest->getUrl() ?>" target="_blank"><?=$interest->getName() ?></a>
+                <a href="<?=htmlentities($interest->getUrl())?>" target="_blank"><?=$interest->getName() ?></a>
               <? } else { ?>
                 <?=$interest->getName() ?>
               <? } ?>
