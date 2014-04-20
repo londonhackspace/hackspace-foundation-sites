@@ -17,7 +17,10 @@ if (!$user) {
     <p>Please <a href="/members/edit.php">provide your details</a> to continue.</p>
 <?} else if ($user->isMember()) { ?>
     <p>You're currently a member of London Hackspace, thanks for your support!</p>
-
+    <? if(!$user->getHasProfile()) { ?>
+        <h3>Tell us about yourself</h3>
+        <p><a href="/members/profile_edit.php">Create your profile now</a> so other members can get to know you easier. You can also browse other member's profiles on the <a href="/members/members.php">Members list</a>.</p>
+    <? } ?>
     <h3>Reference Number</h3>
     <p>Your standing order reference number is: <strong><?=$user->getMemberNumber()?></strong></p>
     
@@ -87,6 +90,10 @@ if (!$user) {
       with the correct payment reference. If you can't do this by standing order, you can send a one-off
       bank transfer with the same details, or bring these details to any Barclays branch and pay in cash.
       Please make sure that the reference is correct; bank cashiers frequently get it wrong.</p>
+
+<h3>Tell us about yourself</h3>
+
+<p>While you're waiting for your payment to process, why don't you tell us a bit about yourself? <a href="/members/profile_edit.php">Create a profile</a> to help other members get to know you better. When your payment has been received you'll be able to see other member's profiles too.
 
 <h3>Any problems?</h3>
    <p>If you have any problems paying, please contact 

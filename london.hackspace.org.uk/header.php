@@ -12,7 +12,8 @@
                 <?=menulink('/members/code.php', 'code', 'Back Gate Code')?>
                 <?=menulink('/members/cards.php', 'cards', 'Manage Access Cards')?>
             <? } ?>
-            <?=menulink('/members/wiki.php', 'wiki', 'Wiki')?>
+            <?=menulink('/members/profile.php', 'profile', 'View Profile')?>
+            <?=menulink('/members/wiki.php', 'wiki', 'Edit Wiki Privileges')?>
             <?=menulink('/members/edit.php', 'edit', 'Edit Account')?>
             <li class="divider"></li>
             <li><a href="/logout.php">Logout</a></li>

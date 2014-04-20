@@ -24,6 +24,9 @@ if(($user->isMember() && $this_user->isMember()) || $user->isAdmin() ) {
   <table>
     <tr><th>Name</th><td><?=$this_user->getFullName()?></td></tr>
     <tr><th>ID</th><td><?=$this_user->getMemberNumber()?></td></tr>
+    <?if($this_user->getHasProfile()) { ?>
+    <tr><th>Profile</th><td><a href="/members/profile.php?id=<?=$this_user->getId()?>">Visit member's profile</a></td></tr>
+    <?}?>
     <?if ($user->isAdmin()) { ?>
     <tr><th>Member?</th><td><?=($this_user->isMember())?"Yes":"No"?></td></tr>
     <tr><th>Admin?</th><td><?=($this_user->isAdmin())?"Yes":"No"?></td></tr>
