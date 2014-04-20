@@ -1,25 +1,26 @@
-<? 
-$title = "Member Profile";
-$desc = '';
-require('../header.php');
-
-if (!isset($user)) {
-    fURL::redirect('/login.php?forward=/members/profile.php');
-}
-
-if(!isset($_GET['id']))
-  $this_user = $user;
-else {
+<?
+require('../../lib/init.php');
+if (!isset($_GET['id'])) {
+  fURL::redirect('/members/');
+} else {
 	try {
 	  $this_user = new User(filter_var($_GET['id'], FILTER_SANITIZE_NUMBER_INT));
 	} catch(fNotFoundException $e) {
-	  $this_user = $user;
+    header('HTTP/1.1 404 Not Found');
+    echo "Profile not found";
+    exit;
 	}
 }
 
-if(	
-	(($user->isMember() && $this_user->isMember()) 
-	|| ($user->getMemberNumber() == $this_user->getMemberNumber()) 
+$title = "Member Profile: {$this_user->getFullName()}";
+$desc = '';
+require('../header.php');
+
+ensureLogin();
+
+if(
+	(($user->isMember() && $this_user->isMember())
+	|| ($user->getMemberNumber() == $this_user->getMemberNumber())
 	|| $user->isAdmin())
 	&& $this_user->getHasProfile() == 1 && $this_user->getDisabledProfile() == 0
 ) {

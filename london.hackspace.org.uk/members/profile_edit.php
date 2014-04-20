@@ -18,17 +18,15 @@ $my_interests = $user->buildInterests();
 if (isset($_POST['disable'])) {
 	$user->setDisabledProfile(1);
 	$user->store();
-
-    fURL::redirect('profile.php');
-    exit;
+  fURL::redirect("/members/profile/{$user->getId()}");
 }
+
 if (isset($_POST['enable'])) {
 	$user->setDisabledProfile(0);
-	$user->store();	
-	
-    fURL::redirect('profile.php');
-    exit;
+	$user->store();
+  fURL::redirect("/members/profile/{$user->getId()}");
 }
+
 if (isset($_POST['submit'])) {
     try {
         fRequest::validateCSRFToken($_POST['token']);
@@ -117,16 +115,13 @@ if (isset($_POST['submit'])) {
 
 		$user->setHasProfile(1);
 		$user->store();
-
-        fURL::redirect('profile.php');
-        exit;
+    fURL::redirect("/members/profile/{$user->getId()}");
     } catch (fValidationException $e) {
         echo "<p>" . $e->printMessage() . "</p>";
     } catch (fSQLException $e) {
         echo "<p>An unexpected error occurred, please try again later</p>";
         trigger_error($e);
     }
-
 }
 
 if (isset($_GET['saved'])) {

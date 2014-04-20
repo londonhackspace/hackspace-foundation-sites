@@ -12,7 +12,7 @@
                 <?=menulink('/members/code.php', 'code', 'Back Gate Code')?>
                 <?=menulink('/members/cards.php', 'cards', 'Manage Access Cards')?>
             <? } ?>
-            <?=menulink('/members/profile.php', 'profile', 'View Profile')?>
+            <?=menulink("/members/profile/{$user->getId()}", 'profile', 'View My Profile')?>
             <?=menulink('/members/wiki.php', 'wiki', 'Edit Wiki Privileges')?>
             <?=menulink('/members/edit.php', 'edit', 'Edit Account')?>
             <li class="divider"></li>

@@ -21,3 +21,10 @@ if ($uid = fSession::get('user')) {
 } else {
     $user = null;
 }
+
+function ensureLogin() {
+  global $user;
+  if (!isset($user)) {
+        fURL::redirect("/login.php?forward={$_SERVER['REQUEST_URI']}");
+  }
+}

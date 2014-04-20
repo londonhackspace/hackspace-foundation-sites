@@ -1,10 +1,8 @@
-<? 
+<?
 $page = 'memberslist';
 require( '../header.php' );
 
-if (!isset($user)) {
-    fURL::redirect('/login.php?forward=/members/members.php');
-}
+ensureLogin();
 
 $last = $db->query('SELECT max(date(timestamp)) FROM transactions')->fetchScalar();
 $include_unsubscribed = ($user->isAdmin() && isset($_GET['unsubscribed']) && $_GET['unsubscribed'] == 'on') ? true : false;
@@ -69,7 +67,7 @@ $include_unsubscribed = ($user->isAdmin() && isset($_GET['unsubscribed']) && $_G
 				<? } ?>
                 <td>
 					<? if(!$user->isAdmin() && $row['has_profile'] == 1 && $row['disabled_profile'] == 0) { ?>
-	                	<a href="/members/profile.php?id=<?=$row['id']?>" title=""><?= htmlspecialchars( $row['full_name'] ) ?></a>
+	                	<a href="/members/profile/<?=$row['id']?>" title=""><?= htmlspecialchars( $row['full_name'] ) ?></a>
                 	<? } else if(!$user->isAdmin()) { ?>
 	               		<?= htmlspecialchars( $row['full_name'] ) ?>
                 	<? } else { ?>
@@ -79,7 +77,7 @@ $include_unsubscribed = ($user->isAdmin() && isset($_GET['unsubscribed']) && $_G
 				<? if($user->isAdmin()) { ?>
 	                <td>
 					<? if($row['has_profile'] == 1 && $row['disabled_profile'] == 0) { ?>
-	                	<p class="hidden">profile</p><a href="/members/profile.php?id=<?=$row['id']?>" title="visit member's profile"><span class="glyphicon glyphicon-user"></span></a>
+	                	<p class="hidden">profile</p><a href="/members/profile/<?=$row['id']?>" title="visit member's profile"><span class="glyphicon glyphicon-user"></span></a>
 					<? } ?>
 	                </td>
 		            <td><?= htmlspecialchars( $row['nickname'] ) ?></td>
