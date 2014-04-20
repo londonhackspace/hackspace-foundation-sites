@@ -50,7 +50,8 @@ if (isset($_POST['submit'])) {
 			$user_profile->setDescription(filter_var($_POST['description'], FILTER_SANITIZE_STRING));
 
 		if(isset($_POST['photo-upload']) && $_POST['photo-upload'] != '' && $_POST['photo-upload'] != null) {
-			$filename = preg_replace("/[^0-9a-zA-Z_]/","",$user->getId().'_'.filter_var(str_replace(' ','_',$user->getFullName()), FILTER_SANITIZE_URL));
+			$filename = $user->getId() . '_' . str_replace(' ', '_', $user->getFullName());
+			$filename = preg_replace("/[^0-9a-zA-Z_]/", "" , $filename);
 			$path = $_SERVER['DOCUMENT_ROOT'] . '/../var/photos/';
 			if (!file_exists($path)) {
 				mkdir($path, 0777, true);
