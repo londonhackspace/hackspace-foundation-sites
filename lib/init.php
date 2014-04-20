@@ -28,3 +28,9 @@ function ensureLogin() {
         fURL::redirect("/login.php?forward={$_SERVER['REQUEST_URI']}");
   }
 }
+
+function send404($message) {
+  header('HTTP/1.1 404 File not found');
+  echo $message;
+  exit;
+}
