@@ -37,16 +37,14 @@ if(
         </span>
     </div>
     <? if($this_user->hasLearnings()) {?>
-      <div class="member-training">
+      <div class="member-training well well-sm">
         <? foreach($this_user->buildLearnings() as $training) {?>
 			    <a href="<?=$training->getUrl()?>" class="training-badge" target="_blank">
             <img src="/images/trained-<?=strtolower(str_replace(' ','',$training->getName()));?>.png"
                  title="<?=$training->getDescription()?>"
                  alt="<?=$training->getDescription()?>"
-            />
-          </a>
+            /></a>
         <? } ?>
-			  <p><small><a href="https://wiki.london.hackspace.org.uk/view/Training">More information about training</a></small></p>
       </div>
     <? } ?>
 	</div>
