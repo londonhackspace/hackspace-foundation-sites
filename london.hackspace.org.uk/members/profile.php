@@ -32,7 +32,7 @@ if(
 <div class="row profile">
 	<div class="col-md-3">
 		<div class="member-avatar">
-            <img src="photo.php?name=<?=$user_profile->getPhoto() ?>" class="display"/>
+            <img src="/members/photo.php?name=<?=$user_profile->getPhoto() ?>" class="display"/>
         </div>
         <? if($this_user->hasLearnings()) {?>
         <div class="member-training">
@@ -128,7 +128,7 @@ if(
 <div class="row profile">
 	<div class="col-md-3">
 		<div class="member-avatar">
-            <img src="photo.php?name=" class="display"/>
+            <img src="/members/photo.php?name=" class="display"/>
         </div>
     </div>
 	<div class="col-md-9">
