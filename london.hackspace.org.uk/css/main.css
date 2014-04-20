@@ -509,10 +509,6 @@ div.webcam-image p {
 	margin-top: 30px;
 	max-width: none;
 }
-.profile h3 {
-	margin-top: 5px;
-	margin-bottom: 5px;
-}
 .profile h4 {
 	font-weight: bold;
 	margin-top: 20px;
@@ -522,8 +518,9 @@ div.webcam-image p {
 	font-size: 1.1em;
 	margin-top: 10px;
 }
-.profile small {
-	line-height: 0.9;
+.profile .details {
+  padding-top:5px;
+  color: #999;
 }
 .profile #photo-select {
 	border-radius: 0 0 3px 3px;
