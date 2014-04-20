@@ -1,5 +1,4 @@
 <? 
-$page = 'profile';
 $title = "Member Profile";
 $desc = '';
 require('../header.php');
