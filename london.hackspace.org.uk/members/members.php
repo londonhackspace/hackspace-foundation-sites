@@ -6,7 +6,7 @@ if (!isset($user)) {
     fURL::redirect('/login.php?forward=/members/members.php');
 }
 
-$last = $db->query('SELECT max(date(timestamp)) AS last')->fetchScalar();
+$last = $db->query('SELECT max(date(timestamp)) FROM transactions')->fetchScalar();
 $include_unsubscribed = ($user->isAdmin() && isset($_GET['unsubscribed']) && $_GET['unsubscribed'] == 'on') ? true : false;
 ?>
 
