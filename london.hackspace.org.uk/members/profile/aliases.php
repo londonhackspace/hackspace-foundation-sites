@@ -8,7 +8,7 @@
 </ul>
 <? if($this_user->hasUsersAliases()) {?>
   <h4>Aliases</h4>
-  <ul class="aliases-list">
+  <ul class="aliases-list social-aliases">
     <? foreach($this_user->buildUsersAliases() as $alias) {?>
       <li><span class="member-social-icon iconlhs-<?=substr(strtolower(preg_replace("/[^0-9a-zA-Z]/","",$alias->getAliasId())),0,14);?>" title="<?=$alias->getAliasId()?>"></span>
         <? switch($alias->getAliasId()) {

@@ -599,6 +599,30 @@ span.member-social-icon {
 	float: left;
 	width: 20%;
 }
+
+.profile .profile-heading {
+  border-radius: 3px;
+  border: 1px solid #e3e3e3;
+  padding: 5px;
+  margin-bottom: 15px;
+  background-color: #f5f5f5;
+}
+
+.profile .profile-heading h3 {
+  font-size: 1.75em;
+  margin-top: 3px;
+  margin-bottom: 3px;
+}
+
+.profile .profile-body ul {
+  display:block;
+}
+
+.profile .profile-body h4 {
+  margin-bottom: 3px;
+  margin-top: 20px
+}
+
 @media (max-width: 600px) {
 .profile .interests .list div {
 	width: 50%;
@@ -625,6 +649,11 @@ span.member-social-icon {
 	padding: 0px;
 	list-style-type: none;
 }
+.profile .social-aliases {
+  padding-top: 5px;
+  padding-bottom: 5px;
+}
+
 .profile .aliases-list li {
 	display: inline-block;
 	margin-right: 10px;

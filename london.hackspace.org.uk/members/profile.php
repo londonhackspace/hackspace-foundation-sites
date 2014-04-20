@@ -37,7 +37,7 @@ if(
         </span>
     </div>
     <? if($this_user->hasLearnings()) {?>
-      <div class="member-training well well-sm">
+      <div class="member-training">
         <? foreach($this_user->buildLearnings() as $training) {?>
 			    <a href="<?=$training->getUrl()?>" class="training-badge" target="_blank">
             <img src="/images/trained-<?=strtolower(str_replace(' ','',$training->getName()));?>.png"
@@ -49,14 +49,13 @@ if(
     <? } ?>
 	</div>
   <div class="col-md-9">
-    <div class="panel panel-default">
       <? if($user->getMemberNumber() == $this_user->getMemberNumber()) { ?>
         <small class="profile_edit">
           <a class="btn btn-default btn-sm" href="/members/profile_edit.php">Edit my profile</a>
         </small>
       <? } ?>
-      <div class="panel-heading">
-        <h3 class="panel-title">
+      <div class="profile-heading">
+        <h3>
           <?= htmlspecialchars($this_user->getFullName()) ?>
         </h3>
         <p class="details">
@@ -68,7 +67,7 @@ if(
             } ?>
         </p>
       </div>
-      <div class="panel-body">
+      <div class="profile-body">
         <? require('profile/aliases.php'); ?>
         <? if($user_profile->getDescription() != '') { ?>
           <h4>Projects I'm working on</h4>
@@ -78,7 +77,6 @@ if(
             require('profile/interests.php');
            } ?>
       </div>
-    </div>
   </div>
 </div>
 <br/>
