@@ -337,11 +337,12 @@ th a.sortable {
 .tablesorter th {
 	cursor: pointer;
 }
-.tablesorter th.headerSortDown, .tablesorter th.headerSortUp {
-	position: relative;
+.tablesorter th.headerSortDown.no-ff-absolute-fix, .tablesorter th.headerSortUp.no-ff-absolute-fix,
+.tablesorter th.headerSortDown   .ff-absolute-fix, .tablesorter th.headerSortUp   .ff-absolute-fix {
 	padding-right: 35px;
 }
-.tablesorter th.headerSortDown:after{
+.tablesorter th.headerSortDown.no-ff-absolute-fix:after,
+.tablesorter th.headerSortDown   .ff-absolute-fix:after {
 	content: ' ';
 	width: 0; 
 	height: 0;
@@ -354,7 +355,8 @@ th a.sortable {
 	
 	border-top: 8px solid black;
 }
-.tablesorter th.headerSortUp:after{
+.tablesorter th.headerSortUp.no-ff-absolute-fix:after,
+.tablesorter th.headerSortUp   .ff-absolute-fix:after {
 	content: ' ';
 	width: 0; 
 	height: 0;

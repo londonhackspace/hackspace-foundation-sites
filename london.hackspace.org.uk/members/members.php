@@ -128,6 +128,16 @@ $(document).ready(function() {
 		$('.search-total').text(count);
 	}).val(window.location.hash.substring(1)).trigger('keyup');
 });
+$(document).ready(function() {
+	// Firefox doesn't treat table-cell as position:relative
+	$('.search th').wrapInner(function() {
+		var wrapper = $('<div class="ff-absolute-fix"/>')
+			.width('100%')
+			.height($(this).height())
+			.css('position', 'relative');
+		return wrapper
+	});
+});
 </script>
 </body>
 </html>
