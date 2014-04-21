@@ -1,6 +1,8 @@
 <?php require_once( $_SERVER['DOCUMENT_ROOT'] . '/../lib/init.php');
-if (!isset($user)) {
-    fURL::redirect('/login.php?forward=/members/photo.php');
+ensureLogin();
+
+if (!isset($_GET['name']){
+ send404('Photo not found');
 }
 
 header('Content-Type: image/png');
