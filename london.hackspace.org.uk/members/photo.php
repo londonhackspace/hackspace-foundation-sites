@@ -1,7 +1,7 @@
 <?php require_once( $_SERVER['DOCUMENT_ROOT'] . '/../lib/init.php');
 ensureLogin();
 
-if (!isset($_GET['name']){
+if (!isset($_GET['name'])){
  send404('Photo not found');
 }
 
