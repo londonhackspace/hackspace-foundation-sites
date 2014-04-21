@@ -76,7 +76,7 @@ if(
         <? require('profile/aliases.php'); ?>
         <? if($user_profile->getDescription() != '') { ?>
           <h4>Projects I'm working on</h4>
-          <p><?=stripslashes($user_profile->getDescription()) ?></p>
+          <p><?=nl2br(stripslashes($user_profile->getDescription())) ?></p>
         <? }
            if($this_user->hasInterests()) {
             require('profile/interests.php');
