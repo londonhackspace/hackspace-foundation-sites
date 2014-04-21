@@ -209,7 +209,11 @@ if (isset($_GET['saved'])) {
 				<div class="input-group alias-field">
 					<input type="text" class="form-control" name="aliases[<?=$my_alias->getAliasId();?>]" value="<?=$my_alias->getUsername();?>">
 					<div class="input-group-btn">
+				        <? if (ctype_digit($my_alias->getAliasId())) { ?>
+				        <button type="button" class="btn btn-default dropdown-toggle no-icon" data-toggle="dropdown">Other <span class="caret"></span></button>
+				        <? } else { ?>
 				        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"><span class="member-social-icon iconlhs-<?=substr(strtolower(preg_replace("/[^0-9a-zA-Z]/","",$my_alias->getAliasId())),0,14);?>" title="<?=$my_alias->getAliasId()?>"></span><?=$my_alias->getAliasId()?> <span class="caret"></span></button>
+				        <? } ?>
 				        <ul class="dropdown-menu pull-right">
 				            <? $lastType = null; foreach($all_aliases as $alias) {?>
 			            	<?if($lastType != null && ($lastType != $alias->getType())) { ?>
