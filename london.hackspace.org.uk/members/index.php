@@ -17,10 +17,6 @@ if (!$user) {
     <p>Please <a href="/members/edit.php">provide your details</a> to continue.</p>
 <?} else if ($user->isMember()) { ?>
     <p>You're currently a member of London Hackspace, thanks for your support!</p>
-    <? if(!$user->getHasProfile()) { ?>
-        <h3>Tell us about yourself</h3>
-        <p><a href="/members/profile_edit.php">Create your profile now</a> so other members can get to know you easier. You can also browse other member's profiles on the <a href="/members/members.php">Members list</a>.</p>
-    <? } ?>
     <h3>Reference Number</h3>
     <p>Your standing order reference number is: <strong><?=$user->getMemberNumber()?></strong></p>
     
