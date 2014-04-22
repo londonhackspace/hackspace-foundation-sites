@@ -85,7 +85,7 @@ $optParams = array(
 // Cache this query
 $cache = new Google_Cache_File($client);
 $cacheName = 'events_cache-'.date('Y-m',$thisDisplayTimestamp);
-if($cache->get($cacheName,43200)) {
+if($cache->get($cacheName)) { //,43200)) {
 	// If cache is there & younger than 12 hours then load cached data
     $eventsList = $cache->get($cacheName);
 }
@@ -145,7 +145,7 @@ while(true) {
 		  		<? if($event->getRecurringEventId()) { 
 		  			if(!isset($recurringTags[$event->getRecurringEventId()])) {
 						$cacheName = 'ecache-'.$event->getRecurringEventId();
-						if($cache->get($cacheName,43200)) {
+						if($cache->get($cacheName)) { //,43200)) {
 							// If cache is there & younger than 12 hours then load cached data
 						    $repeater = $cache->get($cacheName);
 						}
