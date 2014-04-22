@@ -18,7 +18,7 @@ def save_url(url, dest):
     return request.status_code
 
 def photo_url(photo):
-    if 'pathalias' in photo and photo['pathalias'] != '':
+    if photo.get('pathalias'):
         user = photo['pathalias']
     else:
         user = photo['owner']
