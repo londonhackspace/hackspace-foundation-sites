@@ -12,7 +12,8 @@
                 <?=menulink('/members/code.php', 'code', 'Back Gate Code')?>
                 <?=menulink('/members/cards.php', 'cards', 'Manage Access Cards')?>
             <? } ?>
-            <?=menulink('/members/wiki.php', 'wiki', 'Wiki')?>
+            <?=menulink("/members/profile/{$user->getId()}", 'profile', 'View My Profile')?>
+            <?=menulink('/members/wiki.php', 'wiki', 'Edit Wiki Privileges')?>
             <?=menulink('/members/edit.php', 'edit', 'Edit Account')?>
             <li class="divider"></li>
             <li><a href="/logout.php">Logout</a></li>
@@ -54,4 +55,12 @@
         <? if (!isset($hide_menu)) { ?>
             <? require('menu.php'); ?>
             <div id="non-menu-content" class="grid_10">
+              <? if ($user && !fSession::get('suppress_profile_notification') && !$user->getHasProfile() && $page != 'edit') {?>
+                <div class="profile-alert alert alert-info alert-dismissable">
+                  <button type="button" class="close" data-dismiss="alert" data-persist="suppress_profile_notification"
+                    aria-hidden="true">&times;</button>
+                  You haven't filled in your member profile details yet.
+                  <a href="/members/profile_edit.php" class="alert-link">Complete your profile</a> to let other members know more about you.
+                </div>
+              <? } ?>
         <? } ?>

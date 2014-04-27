@@ -1,12 +1,10 @@
-<? 
+<?
 $page = 'memberslist';
 require( '../header.php' );
 
-if (!isset($user)) {
-    fURL::redirect('/login.php?forward=/members/members.php');
-}
+ensureLogin();
 
-$last = array_pop($db->query('select max(date(timestamp)) from transactions')->fetchRow());
+$last = $db->query('SELECT max(date(timestamp)) FROM transactions')->fetchScalar();
 $include_unsubscribed = ($user->isAdmin() && isset($_GET['unsubscribed']) && $_GET['unsubscribed'] == 'on') ? true : false;
 ?>
 
@@ -48,6 +46,7 @@ $include_unsubscribed = ($user->isAdmin() && isset($_GET['unsubscribed']) && $_G
 				<? } ?>
                 <th>Full name</th>
 				<? if($user->isAdmin()) { ?>
+	                <th>Profile</th>
 	                <th>Doorbot</th>
 				<? } ?>
             </tr>
@@ -55,7 +54,7 @@ $include_unsubscribed = ($user->isAdmin() && isset($_GET['unsubscribed']) && $_G
         <tbody>
         <?php
         $subscription_query = ($include_unsubscribed) ? '' : 'WHERE subscribed=1';
-        $users = $db->translatedQuery( 'SELECT id, subscribed, full_name, email, nickname FROM users '.$subscription_query.' ORDER BY lower(full_name)');
+        $users = $db->translatedQuery( 'SELECT id, subscribed, full_name, email, nickname, has_profile, disabled_profile FROM users '.$subscription_query.' ORDER BY lower(full_name)');
         foreach( $users as $row ):
         ?>
             <tr>
@@ -66,8 +65,21 @@ $include_unsubscribed = ($user->isAdmin() && isset($_GET['unsubscribed']) && $_G
 				<? if($include_unsubscribed) { ?>
 	                <td><? if($row['subscribed']) { ?><span class="glyphicon glyphicon-ok"></span><? } ?><p class="hidden"><?=($row['subscribed'] == 0) ? 'unsubscribed' : 'subscribed'; ?></p></td>
 				<? } ?>
-                <td><a href="/members/member.php?id=<?=$row['id']?>" title=""><?= htmlspecialchars( $row['full_name'] ) ?></a></td>
+                <td>
+					<? if(!$user->isAdmin() && $row['has_profile'] == 1 && $row['disabled_profile'] == 0) { ?>
+	                	<a href="/members/profile/<?=$row['id']?>" title=""><?= htmlspecialchars( $row['full_name'] ) ?></a>
+                	<? } else if(!$user->isAdmin()) { ?>
+	               		<?= htmlspecialchars( $row['full_name'] ) ?>
+                	<? } else { ?>
+	                	<a href="/members/member.php?id=<?=$row['id']?>" title=""><?= htmlspecialchars( $row['full_name'] ) ?></a>
+                	<? } ?>
+                </td>
 				<? if($user->isAdmin()) { ?>
+	                <td>
+					<? if($row['has_profile'] == 1 && $row['disabled_profile'] == 0) { ?>
+	                	<p class="hidden">profile</p><a href="/members/profile/<?=$row['id']?>" title="visit member's profile"><span class="glyphicon glyphicon-user"></span></a>
+					<? } ?>
+	                </td>
 		            <td><?= htmlspecialchars( $row['nickname'] ) ?></td>
 				<? } ?>
             </tr>

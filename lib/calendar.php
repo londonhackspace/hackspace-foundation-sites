@@ -1,6 +1,6 @@
 <?
 
-set_include_path(get_include_path() . PATH_SEPARATOR . '../../lib/GoogleAPI/src');
+set_include_path(get_include_path() . PATH_SEPARATOR . dirname(__FILE__) . '/GoogleAPI/src');
 require_once "Google/Client.php";
 require_once "Google/Service/Calendar.php";
 require_once "Google/Auth/AssertionCredentials.php";

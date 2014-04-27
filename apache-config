@@ -1,0 +1,6 @@
+Options -Indexes -MultiViews
+
+RewriteEngine On
+
+RewriteRule ^/members/profile/(\d+)$            /members/profile.php?id=$1 [L]
+RewriteRule ^/members/profile/(\d+)/admin$      /members/member.php?id=$1 [L]

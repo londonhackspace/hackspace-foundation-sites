@@ -8,7 +8,7 @@ if (!isset($user)) {
     fURL::redirect('/login.php?forward=/members/edit.php');
 }
 ?>
-<h2>Edit Your Membership Details</h2>
+<h2>Edit Your Membership Account</h2>
 <?php
 if (isset($_POST['submit'])) {
     try {
