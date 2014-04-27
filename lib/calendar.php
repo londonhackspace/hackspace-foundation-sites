@@ -26,7 +26,7 @@ class Calendar {
 		$this->service_account_name = '428545140576-m9u2qace910m7r1cdqh8nu31bju0r14u@developer.gserviceaccount.com';
 		$this->key_file_location = '../../var/876cb3fbc7ebd130f2eb7528ad3d46c066d46f23-privatekey.p12';
 		$this->google_cache_file_directory = $_SERVER['DOCUMENT_ROOT'] . '/../var/Google_Client';
-		$this->cache_timeout = 21600; // 6hrs in seconds
+		$this->cache_timeout = 10800; // 3hrs in seconds
 	}
 
 	/*
