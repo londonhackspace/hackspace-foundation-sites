@@ -84,14 +84,14 @@ while(true) {
 		  		<span class="label label-<?=$repeatStyle?>"><?=$repeatTag?></span>
 		  		<? } 
 		  		if(isset($url[0]) && isset($url[0][0])) { ?>
-		  			<a target="_blank" href="<?=$url[0][0]?>"><?=$event->getSummary()?></a>
+		  			<a target="_blank" href="<?=$url[0][0]?>"><?=htmlspecialchars($event->getSummary())?></a>
 		  		<? } else { ?> 
-		  			<?=$event->getSummary()?>
+		  			<?=htmlspecialchars($event->getSummary())?>
 		  		<? } ?>
 		  		<br/>
-		  		<small><?=$event->getLocation()?></small>
+		  		<small><?=htmlspecialchars($event->getLocation())?></small>
 		  		</h4>
-		  		<p><?=nl2br($desc)?></p>
+		  		<p><?=nl2br(htmlspecialchars(trim($desc)))?></p>
 	  		</div>
 	  	</div>
     <?
