@@ -17,3 +17,11 @@ Create a file in ./var/mediawiki.php with the $type, $server, $username,
 $password, $database, and $path variables set (where $type is a string
 describing the database type, and $path is a complete path including trailing
 slash to the MediaWiki instance).
+
+## Enabling Calendar management
+1. Enable the Calendar API at https://console.developers.google.com/.../apiui/api
+2. Create a service account for OAuth at https://console.developers.google.com/.../apiui/credential
+3. Put the OAuth certificate in ./var, and correct the service_account_name and key_file_location in lib/calendar.php
+4. Go to the Hackspace calendar on Google and share it with the same service_account_name address
+
+API documentation https://developers.google.com/api-client-library/php/
