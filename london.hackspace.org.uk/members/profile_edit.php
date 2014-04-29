@@ -135,7 +135,7 @@ if (isset($_GET['saved'])) {
 
 <div class="row">
 	<div class="col-md-3">
-	    <div class="form-group invisible">
+	    <div class="form-group invisible" style="height: 0; margin: 0">
 	        <input type="submit" name="submit" value="Update profile" class="btn btn-primary update-profile"/>
 	    </div>
 		<div class="member-avatar">
