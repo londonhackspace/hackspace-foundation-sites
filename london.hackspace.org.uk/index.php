@@ -59,15 +59,16 @@ require('header.php'); ?>
                       <img id="google-map" src="//maps.googleapis.com/maps/api/staticmap?markers=color:red%7Clabel:A%7C51.532083,-0.060795&zoom=14&size=350x250&visual_refresh=true&key=AIzaSyD1tdIb23oau0tQJrxBxO9umFDQkyzyqAE&sensor=false">
                       </a>
                 </p>
-                <p id='hackspace-physical-address' class="vcard">
-                    <span class="fn org">London Hackspace</span><br/>
-                    <span class="street-address">447 Hackney Road</span><br/>
-                    <span class="locality region">London</span><br/>
-                    <span class="postal-code">E2 9DY</span>
+                <p itemscope itemtype="http://schema.org/Organization">
+                    <span itemprop="name">London Hackspace</span><br/>
+                    <div itemprop="address" itemscope itemtype="http://schema.org/PostalAddress">
+                      <span itemprop="streetAddress">447 Hackney Road</span><br/>
+                      <span itemprop="addressLocality">London</span><br/>
+                      <span itemprop="postalCode">E2 9DY</span>
+                    </div>
                 </p>
             </div>
         </section>
-        
         <section>
             <h3>Resources</h3>
             <ul>
