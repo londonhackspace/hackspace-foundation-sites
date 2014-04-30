@@ -6,10 +6,13 @@ if (!isset($_GET['name'])){
 }
 
 header('Content-Type: image/png');
+
 $size = '';
 if(isset($_GET['size']))
 	$size = filter_var($_GET['size'], FILTER_SANITIZE_STRING);
+
 ($size == 'sml') ? $size_name = '_sml' : $size_name = '';
+($size == 'med') ? $size_name = '_med' : $size_name = '';
 
 $filter_name = preg_replace("/[^0-9a-zA-Z_]/","",filter_var($_GET['name'], FILTER_SANITIZE_STRING));
 $default = $_SERVER['DOCUMENT_ROOT'] . '/images/generic_avatar.png';

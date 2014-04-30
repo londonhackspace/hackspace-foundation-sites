@@ -13,6 +13,11 @@ if (!isset($_GET['id'])) {
 }
 
 $title = "Member Profile: {$this_user->getFullName()}";
+if ($user->getMemberNumber() == $this_user->getMemberNumber()) {
+  $page = 'profile';
+} else {
+  $page = 'memberslist';
+}
 $desc = '';
 require('../header.php');
 
@@ -29,7 +34,7 @@ if(
 	if(!$this_user->isMember() && ($user->getMemberNumber() == $this_user->getMemberNumber())) { ?>
 		<div class="alert alert-info"><p>Thanks! Your profile will become available to other members when your payment has been received.</p></div>
 	<? } ?>
-<div class="row profile">
+<div class="row profile profile-view">
 	<div class="col-md-3">
     <div class="member-avatar">
         <span class="thumbnail">
@@ -71,7 +76,7 @@ if(
         <? require('profile/aliases.php'); ?>
         <? if($user_profile->getDescription() != '') { ?>
           <h4>Projects I'm working on</h4>
-          <p><?=stripslashes($user_profile->getDescription()) ?></p>
+          <p><?=nl2br(stripslashes($user_profile->getDescription())) ?></p>
         <? }
            if($this_user->hasInterests()) {
             require('profile/interests.php');

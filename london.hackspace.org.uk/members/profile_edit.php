@@ -50,13 +50,15 @@ if (isset($_POST['submit'])) {
 			$user_profile->setDescription(filter_var($_POST['description'], FILTER_SANITIZE_STRING));
 
 		if(isset($_POST['photo-upload']) && $_POST['photo-upload'] != '' && $_POST['photo-upload'] != null) {
-			$filename = preg_replace("/[^0-9a-zA-Z_]/","",$user->getId().'_'.filter_var(str_replace(' ','_',$user->getFullName()), FILTER_SANITIZE_URL));
+			$filename = $user->getId() . '_' . str_replace(' ', '_', $user->getFullName());
+			$filename = preg_replace("/[^0-9a-zA-Z_]/", "" , $filename);
 			$path = $_SERVER['DOCUMENT_ROOT'] . '/../var/photos/';
 			if (!file_exists($path)) {
 				mkdir($path, 0777, true);
 			}
 			file_put_contents($path . $filename . '.png', base64_decode(substr($_POST['photo-upload'], strpos($_POST['photo-upload'],",")+1)));
 			file_put_contents($path . $filename . '_sml.png', base64_decode(substr($_POST['photo-upload-sml'], strpos($_POST['photo-upload-sml'],",")+1)));
+			file_put_contents($path . $filename . '_med.png', base64_decode(substr($_POST['photo-upload-med'], strpos($_POST['photo-upload-med'],",")+1)));
 			$user_profile->setPhoto($filename);
 		}
 		$user_profile->setUserId($user->getId());
@@ -117,9 +119,9 @@ if (isset($_POST['submit'])) {
 		$user->store();
     fURL::redirect("/members/profile/{$user->getId()}");
     } catch (fValidationException $e) {
-        echo "<p>" . $e->printMessage() . "</p>";
+        echo '<div class="alert alert-danger">' . $e->printMessage() . '</div>';
     } catch (fSQLException $e) {
-        echo "<p>An unexpected error occurred, please try again later</p>";
+        echo '<div class="alert alert-danger">An unexpected error occurred, please try again later</div>';
         trigger_error($e);
     }
 }
@@ -134,10 +136,14 @@ if (isset($_GET['saved'])) {
 
 <div class="row">
 	<div class="col-md-3">
+	    <div class="form-group invisible" style="height: 0; margin: 0">
+	        <input type="submit" name="submit" value="Update profile" class="btn btn-primary update-profile"/>
+	    </div>
 		<div class="member-avatar">
             <img src="photo.php?name=<?=$user_profile->getPhoto() ?>"/>
             <input type="hidden" name="photo-upload" id="photo-upload" />
             <input type="hidden" name="photo-upload-sml" id="photo-upload-sml" />
+            <input type="hidden" name="photo-upload-med" id="photo-upload-med" />
         	<button class="btn btn-primary" id="photo-select">Upload new photo</button>
         	<small class="hidden">'Update profile' to save your photo.</small>
 	        <input type="file" name="photo-filesystem" id="photo-filesystem" accept="image/*">
@@ -205,7 +211,11 @@ if (isset($_GET['saved'])) {
 				<div class="input-group alias-field">
 					<input type="text" class="form-control" name="aliases[<?=$my_alias->getAliasId();?>]" value="<?=$my_alias->getUsername();?>">
 					<div class="input-group-btn">
+				        <? if (ctype_digit($my_alias->getAliasId())) { ?>
+				        <button type="button" class="btn btn-default dropdown-toggle no-icon" data-toggle="dropdown">Other <span class="caret"></span></button>
+				        <? } else { ?>
 				        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"><span class="member-social-icon iconlhs-<?=substr(strtolower(preg_replace("/[^0-9a-zA-Z]/","",$my_alias->getAliasId())),0,14);?>" title="<?=$my_alias->getAliasId()?>"></span><?=$my_alias->getAliasId()?> <span class="caret"></span></button>
+				        <? } ?>
 				        <ul class="dropdown-menu pull-right">
 				            <? $lastType = null; foreach($all_aliases as $alias) {?>
 			            	<?if($lastType != null && ($lastType != $alias->getType())) { ?>
@@ -372,27 +382,36 @@ $('.member-avatar #photo-select').bind("click touchend", function (e) {
 
 var canvas = document.createElement('canvas'), ctx = canvas.getContext("2d");
 var canvas_sml = document.createElement('canvas'), ctx_sml = canvas_sml.getContext("2d");
+var canvas_med = document.createElement('canvas'), ctx_med = canvas_med.getContext("2d");
 function handleFiles(e) {
     var reader = new FileReader;
     reader.onload = function (event) {
         var img = new Image();
         img.src = reader.result;
         img.onload = function () {
-			var size = getImageDimensions (256,256,img.width,img.height);
-            canvas.width = size.width;
-            canvas.height = size.height;
-            ctx.drawImage(this, 0, 0, size.width, size.height);
+            canvas.width = 256;
+            canvas.height = 256;
+            var dimensions = getImageDimensionsSquare(256,256,img.width,img.height);
+            ctx.drawImage(this, dimensions.sourceX, dimensions.sourceY, dimensions.sourceWidth, dimensions.sourceHeight, dimensions.destX, dimensions.destY, dimensions.destWidth, dimensions.destHeight);
 
-			var size = getImageDimensions (48,48,img.width,img.height);
-            canvas_sml.width = size.width;
-            canvas_sml.height = size.height;
-            ctx_sml.drawImage(this, 0, 0, size.width, size.height);
+            canvas_sml.width = 48;
+            canvas_sml.height = 48;
+            var dimensions = getImageDimensionsSquare(48,48,img.width,img.height);
+            ctx_sml.drawImage(this, dimensions.sourceX, dimensions.sourceY, dimensions.sourceWidth, dimensions.sourceHeight, dimensions.destX, dimensions.destY, dimensions.destWidth, dimensions.destHeight);
+
+            canvas_med.width = 80;
+            canvas_med.height = 80;
+            var dimensions = getImageDimensionsSquare(80,80,img.width,img.height);
+            ctx_med.drawImage(this, dimensions.sourceX, dimensions.sourceY, dimensions.sourceWidth, dimensions.sourceHeight, dimensions.destX, dimensions.destY, dimensions.destWidth, dimensions.destHeight);
 
             // The resized file ready for upload
             var finalFile = canvas.toDataURL("image/png");
+            var sml = canvas_sml.toDataURL("image/png");
+            var med = canvas_med.toDataURL("image/png");
 			$('.member-avatar img').attr('src',finalFile);
 			$('.member-avatar #photo-upload').val(finalFile);
 			$('.member-avatar #photo-upload-sml').val(canvas_sml.toDataURL("image/png"));
+			$('.member-avatar #photo-upload-med').val(canvas_med.toDataURL("image/png"));
 			$('.member-avatar #photo-select').blur();
 			$('.member-avatar small').removeClass('hidden');
         }
@@ -400,21 +419,27 @@ function handleFiles(e) {
     reader.readAsDataURL(e.target.files[0]);
 }
 
-function getImageDimensions(maxWidth, maxHeight, imageWidth, imageHeight) {
-    var result = {width: imageWidth, height: imageHeight};
-
-    if (imageWidth > imageHeight) {
-        if (imageWidth > maxWidth) {
-            result.height *= maxWidth / imageWidth;
-            result.width = maxWidth;
-        }
-    } else {
-        if (imageHeight > maxHeight) {
-            result.width *= maxHeight / imageHeight;
-            result.height = maxHeight;
-        }
+function getImageDimensionsSquare(maxWidth, maxHeight, imageWidth, imageHeight) {
+    if(imageHeight >= imageWidth) {
+        return {sourceX : 0,
+        	sourceY : (imageHeight-imageWidth)/2,
+        	sourceWidth : imageWidth,
+        	sourceHeight : imageWidth,
+        	destX : 0,
+        	destY : 0,
+        	destWidth : maxWidth,
+        	destHeight : maxHeight};
     }
-    return result;
+    if(imageWidth > imageHeight) {
+        return {sourceX : (imageWidth-imageHeight)/2,
+        	sourceY : 0,
+        	sourceWidth : imageHeight,
+        	sourceHeight : imageHeight,
+        	destX : 0,
+        	destY : 0,
+        	destWidth : maxWidth,
+        	destHeight : maxHeight};
+    }	
 }
 }
 </script>
