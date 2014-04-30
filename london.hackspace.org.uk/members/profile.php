@@ -34,7 +34,7 @@ if(
 	if(!$this_user->isMember() && ($user->getMemberNumber() == $this_user->getMemberNumber())) { ?>
 		<div class="alert alert-info"><p>Thanks! Your profile will become available to other members when your payment has been received.</p></div>
 	<? } ?>
-<div class="row profile">
+<div class="row profile profile-view">
 	<div class="col-md-3">
     <div class="member-avatar">
         <span class="thumbnail">

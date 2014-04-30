@@ -20,6 +20,7 @@
           case 'LinkedIn': echo '<a target="_blank" href="http://www.linkedin.com/in/' . $alias->getUsername() . '">' . $alias->getUsername() . '</a>'; break;
           case 'Flickr': echo '<a target="_blank" href="https://www.flickr.com/photos/' . $alias->getUsername() . '">' . $alias->getUsername() . '</a>'; break;
           case 'IRC': echo '<a target="_blank" href="http://webchat.freenode.net/?channels=london-hack-space">' . $alias->getUsername() . '</a>'; break;
+          case 'Callsign': echo '<a target="_blank" href="https://wiki.london.hackspace.org.uk/view/Amateur_Radio_Callsigns">' . $alias->getUsername() . '</a>'; break;
           case 'Hackspace Wiki': echo '<a target="_blank" href="https://wiki.london.hackspace.org.uk/view/User:' . $alias->getUsername() . '">' . $alias->getUsername() . '</a>'; break;
           default: echo $alias->getUsername();
         }?>
