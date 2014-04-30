@@ -12,6 +12,7 @@ $include_unsubscribed = ($user->isAdmin() && isset($_GET['unsubscribed']) && $_G
 <? if($user->isMember()) { ?>
   <p>This is a list of all members, up to date as of the last accounts reconciliation (<?=$last?>).</p>
     <p>Please keep this list among members only.</p>
+    <p>To see members who have uploaded a photo you can <a href="faces.php">visit the faces page</a>.</p>
 
 	<form class="search-form">
 	    <div class="form-group">
