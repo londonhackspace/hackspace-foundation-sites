@@ -42,8 +42,8 @@ if (!$user) {
 <? } else { ?>
     <p>You're not currently a member of London Hackspace. To become a member, we ask that you pay what you
        think the space is worth to you. Running a place like this isn't cheap, so please be as
-       generous as you can. The Hackspace costs around £20/month per member to run, and the minimum subscription
-       is £5/month.</p>
+       generous as you can. The Hackspace costs around £15/month per member to run, but for students, 
+       retirees or low income members the minimum subscription is £5/month.</p>
 
 <h3>Standing Order</h3>
     <p>Set up a monthly standing order with your bank (most banks let you do this online),

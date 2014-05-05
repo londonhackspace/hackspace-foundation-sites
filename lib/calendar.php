@@ -128,7 +128,7 @@ class Calendar {
 
 	  	$repeats = '';
 	  	if((strpos($this->recurringTags[$eid],'FREQ=WEEKLY') != false) && (strpos($this->recurringTags[$eid],'INTERVAL=2') != false)) {
-	  		$repeats = 'bi-weekly';
+	  		$repeats = 'fortnightly';
 	  	}
 	  	elseif((strpos($this->recurringTags[$eid],'FREQ=WEEKLY') != false)) {
 	  		$repeats = 'weekly';

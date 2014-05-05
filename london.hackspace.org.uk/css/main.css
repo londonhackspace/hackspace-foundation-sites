@@ -761,7 +761,7 @@ span.member-social-icon {
 	margin-top: -9px;
 	right: 8px;
 }
-.profile .interests ul {
+.profile ul {
 	padding: 0px;
 	list-style-type: none;
 }
@@ -820,16 +820,20 @@ span.member-social-icon {
 }
 .profile .aliases-list {
 	padding: 0px;
+	margin-bottom: 0px;
 	list-style-type: none;
 }
 .profile .social-aliases {
   padding-top: 5px;
-  padding-bottom: 5px;
 }
 
+.profile .contact-list li {
+	padding-bottom: 5px;
+}
 .profile .aliases-list li {
 	display: inline-block;
 	margin-right: 10px;
+	margin-bottom: 10px;
 }
 .profile .alias-field:first-child .alias-remove {
 	display: none;

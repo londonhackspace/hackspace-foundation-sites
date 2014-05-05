@@ -1,4 +1,7 @@
-<ul class="aliases-list">
+<ul class="contact-list">
+  <? if($this_user->getEmergencyName() && $this_user->getEmergencyPhone()) { ?>
+    <li><span class="glyphicon glyphicon-heart"></span> I have an emergency contact </li>
+  <? } ?>
   <? if($user_profile->getAllowEmail()) { ?>
     <li><span class="glyphicon glyphicon-envelope"></span> <a href="mailto:<?=$this_user->getEmail()?>"><?=$this_user->getEmail()?></a></li>
   <? } ?>

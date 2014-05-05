@@ -45,7 +45,7 @@ class User extends fActiveRecord {
             array('timestamp' => 'asc')
         );
 		
-		return ($result->count() != 0) ? date('M Y', strtotime($result[0]->getTimestamp())) : null;
+		return ($result->count() != 0) ? date('F Y', strtotime($result[0]->getTimestamp())) : null;
     }
 
     public function buildCards() {

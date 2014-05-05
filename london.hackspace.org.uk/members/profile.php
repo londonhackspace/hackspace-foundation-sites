@@ -66,7 +66,7 @@ if(
         <p class="details">
           <?=$this_user->getMemberNumber()?>
           <? if($this_user->firstTransaction() != null) {
-              echo ' &mdash; joined in '.$this_user->firstTransaction();
+              echo ' joined in '.$this_user->firstTransaction();
             } if($user_profile->getAllowDoorbot() && $this_user->getDoorbotTimestamp() != '') {
               echo ', last seen '.date('dS M Y', strtotime($this_user->getDoorbotTimestamp()));
             } ?>
@@ -101,6 +101,11 @@ if(
 			<?= htmlspecialchars($this_user->getFullName()) ?>
 			<p><small><?=$this_user->getMemberNumber()?></small></p>
 		</h3>
+    <? if($this_user->getEmergencyName() && $this_user->getEmergencyPhone()) { ?>
+    <ul class="contact-list">
+      <li><span class="glyphicon glyphicon-heart"></span> I have supplied an emergency contact </li>
+    </ul>
+    <? } ?>
   </div>
 </div>
 <? } else { ?>

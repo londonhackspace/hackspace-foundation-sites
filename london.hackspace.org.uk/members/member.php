@@ -22,7 +22,7 @@ if(($user->isMember() && $this_user->isMember()) || $user->isAdmin() ) {
 ?>
 <h2>Member Info</h2>
   <table>
-    <tr><th>Name</th><td><?=$this_user->getFullName()?></td></tr>
+    <tr><th>Name</th><td><?=htmlspecialchars($this_user->getFullName())?></td></tr>
     <tr><th>ID</th><td><?=$this_user->getMemberNumber()?></td></tr>
     <?if($this_user->getHasProfile()) { ?>
     <tr><th>Profile</th><td><a href="/members/profile.php?id=<?=$this_user->getId()?>">Visit member's profile</a></td></tr>
@@ -32,6 +32,7 @@ if(($user->isMember() && $this_user->isMember()) || $user->isAdmin() ) {
     <tr><th>Admin?</th><td><?=($this_user->isAdmin())?"Yes":"No"?></td></tr>
     <tr><th>Email</th><td><?=$this_user->getEmail()?></td></tr>
     <tr><th>Address</th><td><?=nl2br($this_user->getAddress())?></td></tr>
+    <tr><th>Emergency Contact</th><td><?=htmlspecialchars($this_user->getEmergencyName())?><br/><?=htmlspecialchars($this_user->getEmergencyPhone())?></td></tr>
     <?}?>
   </table>
 

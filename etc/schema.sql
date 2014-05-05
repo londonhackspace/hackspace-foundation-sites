@@ -15,6 +15,8 @@ CREATE TABLE users (
     admin BOOLEAN NOT NULL DEFAULT 0,
     has_profile BOOLEAN NOT NULL DEFAULT 0,
     disabled_profile BOOLEAN NOT NULL DEFAULT 0,
+    emergency_name VARCHAR(255),
+    emergency_phone VARCHAR(40),
     doorbot_timestamp DATETIME
 );
 

@@ -31,6 +31,8 @@ if (isset($_POST['submit'])) {
         $user->setFullName(trim($_POST['fullname']));
         $user->setAddress(trim($_POST['address']));
         $user->setSubscriptionPeriod($_POST['length']);
+        $user->setEmergencyName(trim($_POST['emergency_name']));
+        $user->setEmergencyPhone(trim($_POST['emergency_phone']));
         $user->store();
         fURL::redirect('?saved');
         exit;
@@ -55,15 +57,15 @@ store the full name and address of all our members. If you don't provide these d
     <input type="hidden" name="token" value="<?=fRequest::generateCSRFToken()?>" />
     <input type="hidden" id="length" name="length" value="<?=$user->getSubscriptionPeriod()?>" />
     <div class="form-group">
-        <label for="email" class="col-sm-3 control-label">Email</label>
-        <div class="col-sm-9">
-            <input type="email" autofocus id="email" name="email" class="form-control" value="<?=$user->getEmail()?>" />
-        </div>
-    </div>
-    <div class="form-group">
         <label for="fullname" class="col-sm-3 control-label">Full Name</label>
         <div class="col-sm-9">
             <input type="text" id="fullname" name="fullname" class="form-control" value="<?= htmlspecialchars($user->getFullName()) ?>" />
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="email" class="col-sm-3 control-label">Email</label>
+        <div class="col-sm-9">
+            <input type="email" id="email" name="email" class="form-control" value="<?=$user->getEmail()?>" />
         </div>
     </div>
     <div class="form-group">
@@ -90,6 +92,21 @@ store the full name and address of all our members. If you don't provide these d
         <label for="newpasswordconfirm" class="col-sm-3 control-label">Confirm New Password</label>
         <div class="col-sm-9">
             <input type="password" id="newpasswordconfirm" name="newpasswordconfirm" class="form-control" />
+        </div>
+    </div>
+    <br/>
+    <strong>Emergency Contact</strong>
+    <p>In case of a medical emergency who should we contact on your behalf?</p>
+    <div class="form-group">
+        <label for="emergency_name" class="col-sm-3 control-label">Full Name</label>
+        <div class="col-sm-9">
+            <input type="text" id="emergency_name" name="emergency_name" class="form-control" value="<?= htmlspecialchars($user->getEmergencyName()) ?>"/>
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="emergency_phone" class="col-sm-3 control-label">Phone number</label>
+        <div class="col-sm-9">
+            <input type="text" id="emergency_phone" name="emergency_phone" class="form-control" value="<?= htmlspecialchars($user->getEmergencyPhone()) ?>"/>
         </div>
     </div>
 
