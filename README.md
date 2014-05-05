@@ -3,6 +3,15 @@ site](http://london.hackspace.org.uk)
 
 (It used to also support http://hackspace.org.uk, but this is now just MediaWiki)
 
+## Setting up Apache
+Make sure you have mod_rewrite enabled.
+You'll need to include the /apache-config file in your apache host config. Example:
+
+    <VirtualHost *:80>
+    ...
+    Include /path/to/root/dir/apache-config
+    </VirtualHost>
+
 ## Creating the DB
 You can create the database from the schema located in ./etc:
 

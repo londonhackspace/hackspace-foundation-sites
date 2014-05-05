@@ -14,7 +14,7 @@ if($user->isMember()) {
         <?php
         foreach( $newUsers as $user ) { 
 			if($user['photo'] != null && $user['photo'] != '') { ?>
-            	<a href="/members/profile/<?=$user['user_id']?>"><img style="max-width: 80px;" src="/members/photo.php?name=<?=$user['photo'] ?>&amp;size=med" alt="<?=htmlspecialchars($user['full_name']) ?>" title="<?=htmlspecialchars($user['full_name'])?>"/></a>
+            	<a href="/members/profile/<?=$user['user_id']?>"><img style="max-width: 80px;padding-bottom:5px;" src="/members/photo/<?=$user['photo'] ?>_med.png" alt="<?=htmlspecialchars($user['full_name']) ?>" title="<?=htmlspecialchars($user['full_name'])?>"/></a>
         <?	}
         } 
     }
@@ -24,7 +24,7 @@ if($user->isMember()) {
 <h2><?=$users->countReturnedRows()?> faces of London Hackspace.</h2> 
 
 <?  foreach( $users as $user ) { ?>
-            	<a href="/members/profile/<?=$user['id']?>"><img style="max-width: 80px;padding-bottom:5px;" src="/members/photo.php?name=<?=$user['photo'] ?>&amp;size=med" alt="<?=htmlspecialchars($user['full_name']) ?>" title="<?=htmlspecialchars($user['full_name'])?>"/></a>
+    <a href="/members/profile/<?=$user['id']?>"><img style="max-width: 80px;padding-bottom:5px;" src="/members/photo/<?=$user['photo'] ?>_med.png" alt="<?=htmlspecialchars($user['full_name']) ?>" title="<?=htmlspecialchars($user['full_name'])?>"/></a>
 <? } 
  } else { ?>
    <p>You must be a member to use this page.</p>
