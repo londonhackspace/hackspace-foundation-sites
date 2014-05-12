@@ -20,7 +20,7 @@ $total = $totalQuery->fetchScalar();
 $query = $db->translatedQuery( "SELECT COUNT(user_id) AS total, name, category FROM users_interests, interests WHERE users_interests.interest_id = interests.interest_id GROUP BY name HAVING total > 2 ORDER BY total DESC;");
 $cats = $db->translatedQuery( "SELECT COUNT(DISTINCT user_id) AS total, category FROM users_interests, interests WHERE users_interests.interest_id = interests.interest_id GROUP BY category HAVING total > 2 ORDER BY total DESC;" );
 ?>
-<p>Out of a total of <?=$total?> completed profiles.</p>
+<p>From a total of <?=$total?> completed profiles.</p>
 <div id="chartCats_div" style="width: 1000px; height: 200px;"></div>
 <br/>
 
