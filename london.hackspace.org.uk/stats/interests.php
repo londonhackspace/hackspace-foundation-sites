@@ -15,10 +15,14 @@ if (!$user->isMember()) {
 
 $graph = Array();
 
+$totalQuery = $db->translatedQuery( "SELECT COUNT(user_id) FROM users, users_profiles p WHERE users.id = p.user_id AND disabled_profile = 0 AND subscribed = 1");
+$total = $totalQuery->fetchScalar();
 $query = $db->translatedQuery( "SELECT COUNT(user_id) AS total, name, category FROM users_interests, interests WHERE users_interests.interest_id = interests.interest_id GROUP BY name HAVING total > 2 ORDER BY total DESC;");
 $cats = $db->translatedQuery( "SELECT COUNT(DISTINCT user_id) AS total, category FROM users_interests, interests WHERE users_interests.interest_id = interests.interest_id GROUP BY category HAVING total > 2 ORDER BY total DESC;" );
 ?>
-<div id="chartCats_div" style="width: 1000px; height: 500px;"></div>
+<p>Out of a total of <?=$total?> completed profiles.</p>
+<div id="chartCats_div" style="width: 1000px; height: 200px;"></div>
+<br/>
 
 <table class="calc-numbers">
 <thead>
@@ -44,7 +48,7 @@ foreach( $cats as $interest ) {
 </table>
 <br/>
 
-<div id="chart_div" style="width: 1000px; height: 500px;"></div>
+<div id="chart_div" style="width: 1000px; height: 700px;"></div>
 
 <table class="calc-numbers">
 <thead>
@@ -77,39 +81,52 @@ foreach( $query as $interest ) {
       google.setOnLoadCallback(drawChart);
       function drawChart() {
         var data = google.visualization.arrayToDataTable([
-          ['Interests', 'Users'],
+          ['Interests', 'Members'],
 <?
 foreach( $query as $interest ) {
 	echo "\t[";
-	echo '\''.$interest['name'].'\','.$interest['total'];
+	echo '\''.$interest['name'].'\','.((int)$interest['total']/(int)$total*100);
 	echo "],\n";
 }
 ?>
         ]);
 
         var options = {
-        	title: 'Member Interests'
+        	title: 'Profiles by Interest',
+        	legend: {position: 'none'},
+        	viewWindowMode: 'explicit',
+        	viewWindow: {
+        		max: 100,
+        		min: 0
+		    },
+		    hAxis: {
+		    	title: "Percentage of completed profiles",
+		    	format: '#\'%\'',
+		    	maxValue: 100,
+		    	minValue: 0
+		    },
+	        gridlines: {
+	          count: 20,
+	        }
         };
 
-        var chart = new google.visualization.PieChart(document.getElementById('chart_div'));
+        var chart = new google.visualization.BarChart(document.getElementById('chart_div'));
         chart.draw(data, options);
 
         var data = google.visualization.arrayToDataTable([
-          ['Categories', 'Users'],
+          ['Categories', 'Members'],
 <?
 foreach( $cats as $interest ) {
 	echo "\t[";
-	echo '\''.$interest['category'].'\','.$interest['total'];
+	echo '\''.$interest['category'].'\','.((int)$interest['total']/(int)$total*100);
 	echo "],\n";
 }
 ?>
         ]);
 
-        var options = {
-        	title: 'Member Interests by Category'
-        };
+        options.title = 'Profiles by Interest Category';
 
-        var chartCats = new google.visualization.PieChart(document.getElementById('chartCats_div'));
+        var chartCats = new google.visualization.BarChart(document.getElementById('chartCats_div'));
         chartCats.draw(data, options);
       }
     </script>
