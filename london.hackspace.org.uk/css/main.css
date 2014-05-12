@@ -95,6 +95,24 @@ nav a, a.btn, .dropdown-menu a {
 	text-decoration: none;
 }
 
+/* Begin stats styles */
+.stats-page pre {
+	border: 0px;
+	background-color: transparent;
+	padding-left: 30px;
+	font-weight: bold;
+	padding-top: 0px;
+	font-size: 1em;
+}
+
+.stats-page .calc-numbers {
+	margin:auto;
+}
+.stats-page .calc-numbers .number {
+	text-align:right;
+}
+/* End stats styles */
+
 .page-container {
 	position: relative;
 }
