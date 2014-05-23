@@ -160,3 +160,4 @@ INSERT INTO interests (category,suggested,name,url) VALUES ('Special interests',
 INSERT INTO interests (category,suggested,name,url) VALUES ('Special interests',1,'Brewing','https://wiki.london.hackspace.org.uk/view/Brewing');
 INSERT INTO interests (category,suggested,name,url) VALUES ('Special interests',1,'Gardening','https://wiki.london.hackspace.org.uk/view/Garden');
 INSERT INTO interests (category,suggested,name,url) VALUES ('Special interests',1,'Cycling','https://wiki.london.hackspace.org.uk/w/index.php?title=Special%3ASearch&search=cycling&go=Go');
+INSERT INTO interests (category,suggested,name,url) VALUES ('Special interests',1,'Aerospace','https://wiki.london.hackspace.org.uk/view/LondonAerospace');
