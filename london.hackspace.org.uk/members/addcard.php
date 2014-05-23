@@ -18,7 +18,8 @@ if (isset($_POST['submit'])) {
 
         $validator->validate();
 
-        if ($_POST['uid'] == '21222324') {
+        $uid = strtoupper($_POST['uid']);
+        if ($uid == '21222324') {
             /* New Visa cards return this, presumably for privacy */
             throw new fValidationException('Non-unique UID.');
         }
@@ -26,7 +27,7 @@ if (isset($_POST['submit'])) {
         $card = new Card();
         $card->setUserId($user->getId());
         $card->setAddedDate(time());
-        $card->setUid($_POST['uid']);
+        $card->setUid($uid);
         $card->store();
         fURL::redirect('/members/cards.php');
         exit;
