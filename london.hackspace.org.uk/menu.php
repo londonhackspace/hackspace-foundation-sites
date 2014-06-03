@@ -14,6 +14,8 @@
                 <?=menulink('/members/webcams.php', 'webcams', 'Webcams')?>
                 <?=menulink('/members/code.php', 'code', 'Gate Code')?>
             <? } ?>
+            <? if (isset($user)) { ?>
             <?=menulink('/members/cards.php', 'cards', 'Access Cards')?>
+            <? } ?>
         </ul>
 </nav>
