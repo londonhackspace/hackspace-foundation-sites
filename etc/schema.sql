@@ -28,6 +28,9 @@ CREATE TABLE transactions (
     amount TEXT NOT NULL
 );
 
+create index transactions_timestamp on transactions (timestamp);
+create index transactions_user_id on transactions (user_id);
+
 CREATE TABLE password_resets (
     key TEXT PRIMARY KEY,
     user_id INTEGER NOT NULL REFERENCES users(id),
