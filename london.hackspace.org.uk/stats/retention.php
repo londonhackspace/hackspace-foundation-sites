@@ -49,8 +49,9 @@ for($x=0;$x<$gofor;$x++) {
 	$ce = (int)$ceQuery->fetchScalar();
 
 	// get the number of members who's first payment was this period
-	$cnQuery = $db->translatedQuery( "SELECT DISTINCT user_id, (SELECT timestamp FROM transactions AS t2 WHERE t1.user_id = t2.user_id ORDER BY t2.timestamp ASC LIMIT 1) AS first FROM transactions AS t1 WHERE first >= '$period_start' AND first <= '$period_end' ORDER BY user_id DESC;" );
-	$cn = $cnQuery->countReturnedRows();
+        $cnQuery = $db->translatedQuery("SELECT COUNT(*) FROM (SELECT user_id, MIN(timestamp) first FROM transactions GROUP BY user_id)
+                        WHERE first >= '$period_start' and first <= '$period_end'");
+	$cn = (int)$cnQuery->fetchScalar();
 
 	// get the number of members who's first payment was before last period, they didn't pay last period but are paying this period
 	$crQuery = $db->translatedQuery( "SELECT user_id, (SELECT min(timestamp) FROM transactions AS t2 WHERE t1.user_id = t2.user_id) AS start 
