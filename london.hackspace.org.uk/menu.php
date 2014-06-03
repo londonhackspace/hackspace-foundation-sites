@@ -13,7 +13,7 @@
                 <?=menulink('/members/members.php', 'memberslist', 'Members List')?>
                 <?=menulink('/members/webcams.php', 'webcams', 'Webcams')?>
                 <?=menulink('/members/code.php', 'code', 'Gate Code')?>
-                <?=menulink('/members/cards.php', 'cards', 'Access Cards')?>
             <? } ?>
+            <?=menulink('/members/cards.php', 'cards', 'Access Cards')?>
         </ul>
 </nav>
