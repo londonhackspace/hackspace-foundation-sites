@@ -22,17 +22,26 @@ def send_email(address, subject, text)
   mail.deliver
 end
 
+def send_imminent_unsubscribe_email(email, full_name, last_payment)
+  vars = {'name' => firstname(full_name),
+          'date' => last_payment.strftime('%Y-%m-%d')}
+  email_send_helper('../emails/imminent-lapse.erb', vars, email, "Your London Hackspace membership is about to lapse")
+end
+
 def send_unsubscribe_email(email, full_name, last_payment)
   vars = {'name' => firstname(full_name),
           'date' => last_payment.strftime('%Y-%m-%d')}
-  template = Erubis::Eruby.new(File.read('../emails/lapse.erb'))
-  send_email(email, "Your London Hackspace membership has lapsed", template.result(vars))
+  email_send_helper('../emails/lapse.erb', vars, email, "Your London Hackspace membership has lapsed")
 end
 
 def send_subscribe_email(email, full_name)
   vars = {'name' => firstname(full_name)}
-  template = Erubis::Eruby.new(File.read('../emails/subscribe.erb'))
-  send_email(email, "Your London Hackspace membership is now active", template.result(vars))
+  email_send_helper('../emails/subscribe.erb', vars, email, "Your London Hackspace membership is now active")
+end
+
+def email_send_helper(filename, vars, email, subject)
+  template = Erubis::Eruby.new(File.read(filename))
+  send_email(email, subject, template.result(vars))
 end
 
 ofx = OfxParser::OfxParser.parse(open(ARGV[0]))
@@ -87,6 +96,7 @@ ofx.bank_account.statement.transactions.each do |transaction|
     end
 end
 
+# Email people who have been unsubscribed.
 db.execute("SELECT users.*, (SELECT max(timestamp) FROM transactions WHERE user_id = users.id) AS lastsubscription
         FROM users WHERE users.subscribed = 1 AND lastsubscription < date('now', '-1 month', '-14 days')") do |user|
 
@@ -94,3 +104,17 @@ db.execute("SELECT users.*, (SELECT max(timestamp) FROM transactions WHERE user_
     db.execute("UPDATE users SET subscribed = 0 WHERE id = ?", user['id'])
     send_unsubscribe_email(user['email'], user['full_name'], Time.iso8601(user['lastsubscription']))
 end
+
+# Email people who are about to be unsubscribed.
+db.execute("SELECT users.*, (SELECT max(timestamp) FROM transactions WHERE user_id = users.id) AS lastsubscription
+            FROM users
+            WHERE users.subscribed = 1
+              AND lastsubscription < date('now', '-1 month', '-10 days')
+              AND (lapsing_membership_reminder_timestamp IS NULL
+                OR lapsing_membership_reminder_timestamp < date('now', '-1 month'))") do |user|
+
+    puts "Warning #{user['full_name']} about imminent subscription lapse."
+    db.execute("UPDATE users SET lapsing_membership_reminder_timestamp = date('now') WHERE id = ?", user['id'])
+    send_imminent_unsubscribe_email(user['email'], user['full_name'], Time.iso8601(user['lastsubscription']))
+end
+
