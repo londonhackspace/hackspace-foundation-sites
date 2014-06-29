@@ -22,13 +22,25 @@ def photo_url(photo):
         user = photo['pathalias']
     else:
         user = photo['owner']
-    return "http://www.flickr.com/photos/%s/%s" % (user, photo['id'])
+    return "https://www.flickr.com/photos/%s/%s" % (user, photo['id'])
 
 def get_photos(api_key):
-    url = ("http://api.flickr.com/services/rest/?method=flickr.groups.pools.getPhotos&api_key=%s&group_id=%s"+
+    url = ("https://api.flickr.com/services/rest/?method=flickr.groups.pools.getPhotos&api_key=%s&group_id=%s"+
           "&extras=url_s,path_alias&per_page=50&format=json&nojsoncallback=1") % (api_key, GROUP)
 
-    data = requests.get(url).json()
+    res = requests.get(url)
+    data = res.json()
+
+    #
+    # example error messsage:
+    # {u'stat': u'fail', u'code': 95, u'message': u'SSL is required'}
+    #
+    if 'stat' in data:
+        if data['stat']  == 'fail':
+            print "failed to get photos:"
+            print data
+            exit()
+
     return data['photos']['photo']
 
 def get_current_path():
