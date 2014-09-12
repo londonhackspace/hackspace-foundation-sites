@@ -1,5 +1,6 @@
 <? 
 $page = 'ldap';
+$title = 'LDAP Account Settings';
 $extra_head = '
         <script type="text/javascript" src="/javascript/md4.js"></script>
         <script type="text/javascript" src="/javascript/sha1.js"></script>
@@ -13,10 +14,29 @@ if (!$user) {
 ?>
 <h2>LDAP Account</h2>
 
+<div id="result"></div>
+
 <script>
 
 function calculateHashes()
 {
+
+        var fields = ["username", "nt_password", "ssha_password"];
+
+        var out = "";
+
+        for (var i = 0; i < fields.length; i++) {
+            var val = document.getElementById(fields[i]).value;
+            if (val === "") {
+                out += "<p>Field " + fields[i] + " must be filled in.</p>";
+            }
+        }
+
+        if (out != "") {
+            bad_things(out);
+            return;
+        }
+
 	/* this is:
 	
 	NThash=MD4(UTF-16-LE(password))
@@ -62,6 +82,16 @@ function calculateHashes()
 	form.submit();
 }
 
+function bad_things(message) {
+    document.getElementById("result").innerHTML = message;
+    document.getElementById("result").className = "alert alert-danger";
+}
+
+function all_ok(message) {
+    document.getElementById("result").innerHTML = message;
+    document.getElementById("result").className = "alert alert-success";
+}
+
 </script>
 
 <?
@@ -71,7 +101,14 @@ if($user->isMember()) {
 
     // Link or unlink a user.
     if( array_key_exists( 'create', $_POST ) ) {
-        fRequest::validateCSRFToken($_POST['token']);
+        $ok = false;
+        try {
+            fRequest::validateCSRFToken($_POST['token']);
+            } catch (fValidationException $e) {
+                $error = $e->getMessage();
+                $error = str_replace(array("\r", "\n"), '', $error);
+                 echo '<script>bad_things("' . $error  . '");</script>';
+            }
         try {
             $validator = new fValidation();
             $validator->addRequiredFields( 'ldapuser', 'ldapnthash', 'ldapsshahash' );
@@ -82,7 +119,8 @@ if($user->isMember()) {
             $nthash = escapeshellarg( $_POST['ldapnthash'] );
             $sshahash = escapeshellarg( $_POST['ldapsshahash'] );
 
-//            $success = trim( shell_exec( "unset REQUEST_METHOD;php {$path}maintenance/createAndPromote.php --globals $username $password 2>&1 1> /dev/null" ) );
+            $success = trim( shell_exec( "echo $username $nthash $sshahash 2>&1 1> /tmp/ldap.foo" ) );
+            $ok = true;
 /*            if( $success === 'account exists.' ) {
                 throw new fValidationException( '<p>An account on the wiki with that username already exists.</p>' );
             } elseif( $success !== '' ) {
@@ -97,6 +135,9 @@ if($user->isMember()) {
         } catch (fSQLException $e) {
             $error = "<p>An unexpected LDAP error occurred, please contact IRC.</p>";
             trigger_error( $e->getMessage() );
+        }
+        if ($ok == true) {
+            echo '<script>all_ok("LDAP account setup successfully!");</script>';
         }
     }
 ?>
@@ -114,6 +155,14 @@ if($user->isMember()) {
         irc_nick is null for all users and has no ui to edit 
         nickname is for the door announcer.
     -->
+
+    <?
+    if (isset($error)) {
+        echo $error;
+        str_replace(array("\r", "\n"), '', $error);
+        echo '<script>bad_things("' . $error . '");</script>';
+    }
+    ?>
 
     <input id="username"   type=text size=32><label for="usernam">LDAP Username</label><br />
     <input id="ssha_password" type=password size=32><label for="ssha_password">SSHA Password</label><br />
