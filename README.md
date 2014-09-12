@@ -3,8 +3,13 @@ site](http://london.hackspace.org.uk)
 
 (It used to also support http://hackspace.org.uk, but this is now just MediaWiki)
 
+## Packages needed
+
+php5 sqlite php5-sqlite php-apc sqlite3 ruby-sqlite3
+
 ## Setting up Apache
-Make sure you have mod_rewrite enabled.
+Make sure you have mod_rewrite and expires enabled. (a2enmod rewrite, a2enmod expires)
+
 You'll need to include the /apache-config file in your apache host config. Example:
 
     <VirtualHost *:80>
@@ -12,14 +17,38 @@ You'll need to include the /apache-config file in your apache host config. Examp
     Include /path/to/root/dir/apache-config
     </VirtualHost>
 
+### Google api libs
+
+    cd /var/www/hackspace-foundation-sites/lib/
+    git clone https://github.com/google/google-api-php-client.git GoogleAPI
+
+(Which revision? does it matter?)
+
+### session dir
+
+    cd /var/www/hackspace-foundation-sites/var
+    chown www-data:www-data session
+
 ## Creating the DB
 You can create the database from the schema located in ./etc:
 
     sqlite3 ./var/database.db < ./etc/schema.sql
+    cd var
+    chown www-data:adm database.db ; chmod 0660 database.db
 
 Note that SQL Lite needs write access to the directory containing the .db file to do its journaling:
 
-    chmod -R 777 ./var
+    chgrp www-data ./var
+    chmod 0775 ./var
+
+Now create an accout on the site ("Join"), and then:
+
+    cd /var/www/hackspace-foundation-sites/var/
+    sqlite3 database.db
+    sqlite> update users set subscribed=1;
+    sqlite> update users set admin=1;
+
+to make yourself a member and an admin
 
 ## Configuring MediaWiki users panel
 Create a file in ./var/mediawiki.php with the $type, $server, $username,
