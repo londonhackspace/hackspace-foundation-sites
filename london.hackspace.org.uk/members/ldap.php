@@ -55,6 +55,9 @@ function calculateHashes()
 	var out = "{SSHA}" + CryptoJS.enc.Base64.stringify(hash);
 	
 	document.getElementById("ldapsshahash").value = out;
+
+	document.getElementById("ldapuser").value = document.getElementById("username").value;
+
 	var form = document.getElementById("ldapform");
 	form.submit();
 }
@@ -120,10 +123,10 @@ if($user->isMember()) {
 
     <form method="POST" style="margin: 0;" id="ldapform">
     <input type="hidden" name="token" value="<?=fRequest::generateCSRFToken()?>" />
-    <input type="hidden" name="ldapuser" value="" />
-    <input type="hidden" name="ldapnthash" value="" />
-    <input type="hidden" name="ldapsshahash" value="" />
-    <input type="hidden" name="create" value="create" />
+    <input type="hidden" name="ldapuser"     id="ldapuser" value="" />
+    <input type="hidden" name="ldapnthash"   id="ldapnthash" value="" />
+    <input type="hidden" name="ldapsshahash" id="ldapsshahash" value="" />
+    <input type="hidden" name="create"       id="create" value="create" />
     </form>
 <? } else { ?>
     <p>You must be a member to use this page.</p>
