@@ -55,7 +55,7 @@ function calculateHashes()
 	var out = "{SSHA}" + CryptoJS.enc.Base64.stringify(hash);
 	
 	document.getElementById("ldapsshahash").value = out;
-	var form = document.getElementByID("ldapform");
+	var form = document.getElementById("ldapform");
 	form.submit();
 }
 
