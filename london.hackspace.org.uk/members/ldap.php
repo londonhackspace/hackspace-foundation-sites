@@ -1,5 +1,10 @@
 <? 
-$page = 'wiki';
+$page = 'ldap';
+$extra_head = '
+        <script type="text/javascript" src="javascript/md4.js"></script>
+        <script type="text/javascript" src="javascript/sha1.js"></script>
+        <script type="text/javascript" src="javascript/enc-base64.js"></script>                  
+';
 require( '../header.php' );
 
 if (!$user) {
