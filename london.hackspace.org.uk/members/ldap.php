@@ -9,7 +9,7 @@ $extra_head = '
 require( '../header.php' );
 
 if (!$user) {
-    fURL::redirect('/login.php?forward=/members/wiki.php');
+    fURL::redirect('/login.php?forward=/members/ldap.php');
 }
 ?>
 <h2>LDAP Account</h2>
