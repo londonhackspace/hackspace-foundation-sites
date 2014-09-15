@@ -21,6 +21,14 @@ Note that SQL Lite needs write access to the directory containing the .db file t
 
     chmod -R 777 ./var
 
+## letting apache add ldap users (!)
+
+use visudo to add this:
+
+    www-data ALL=(root) NOPASSWD:NOSETENV: /var/www/hackspace-foundation-sites/bin/ldap-add.sh, /var/www/hackspace-foundation-sites/bin/ldap-delete.sh
+
+It might be better to have a non-root user to do this, ideally we'd not give user or group www-data read access to /etc/smbldap-tools/smbldap_bind.conf
+
 ## Configuring MediaWiki users panel
 Create a file in ./var/mediawiki.php with the $type, $server, $username,
 $password, $database, and $path variables set (where $type is a string

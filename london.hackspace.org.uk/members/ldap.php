@@ -125,17 +125,16 @@ if($user->isMember()) {
             $nthash = escapeshellarg( $_POST['ldapnthash'] );
             $sshahash = escapeshellarg( $_POST['ldapsshahash'] );
 
-            $success = trim( shell_exec( "echo $username $nthash $sshahash 2>&1 1> /tmp/ldap.foo" ) );
+            $success = trim( shell_exec( "sudo  /var/www/hackspace-foundation-sites/bin/ldap-add.sh $username $nthash $sshahash 2>&1" ) );
             $ok = true;
-/*            if( $success === 'account exists.' ) {
-                throw new fValidationException( '<p>An account on the wiki with that username already exists.</p>' );
-            } elseif( $success !== '' ) {
-                throw new fValidationException( '<p>An unknown error ocurred while creating that wiki account, please contact IRC.</p>' );
+            if( $success !== 'User added ok' ) {
+                throw new fValidationException( '<p>An unknown error ocurred while creating the LDAP account, please contact IRC.'. $success .'</p>' );
             } else {
+                
                 // Update e-mail address for created user.
 //                $username = $_POST['username'];
 //                $db->translatedQuery( 'UPDATE mwuser SET user_email=%s,user_email_authenticated=%s WHERE user_name=%s', $email, date( 'Y-m-d H:i:s' ), $username );
-            }*/
+            }
         } catch (fValidationException $e) {
             $error = $e->getMessage();
         } catch (fSQLException $e) {
