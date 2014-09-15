@@ -100,21 +100,27 @@ if($user->isMember()) {
     $email = $user->getEmail();
 
     // Link or unlink a user.
-    if( array_key_exists( 'create', $_POST ) ) {
+    if( array_key_exists( 'create', $_POST ) && array_key_exists( 'token', $_POST )) {
         $ok = false;
         try {
             fRequest::validateCSRFToken($_POST['token']);
-            } catch (fValidationException $e) {
-                $error = $e->getMessage();
-                $error = str_replace(array("\r", "\n"), '', $error);
-                 echo '<script>bad_things("' . $error  . '");</script>';
-            }
-        try {
             $validator = new fValidation();
             $validator->addRequiredFields( 'ldapuser', 'ldapnthash', 'ldapsshahash' );
             $validator->validate();
 
             // Attempt account creation and promotion.
+            if (!preg_match('/^[a-z0-9_-]+$/', $_POST['ldapuser'])) {
+                throw new fValidationException( '<p>The username must only contain a-z, 0-9 _ and -.'. $username .'</p>' );
+            }
+            
+            if (!preg_match('/^[A-F0-9]{32}$/', $_POST['ldapnthash'])) {
+                throw new fValidationException( '<p>That dosn\'t look like an NT hash</p>' );
+            }
+
+            if (!preg_match('/^\{SSHA\}[A-Za-z0-9+\/]{32}$/', $_POST['ldapsshahash'])) {
+                throw new fValidationException( '<p>That dosn\'t look like an SSHA hash</p>' );
+            }
+            
             $username = escapeshellarg( $_POST['ldapuser'] );
             $nthash = escapeshellarg( $_POST['ldapnthash'] );
             $sshahash = escapeshellarg( $_POST['ldapsshahash'] );
@@ -158,7 +164,6 @@ if($user->isMember()) {
 
     <?
     if (isset($error)) {
-        echo $error;
         str_replace(array("\r", "\n"), '', $error);
         echo '<script>bad_things("' . $error . '");</script>';
     }
