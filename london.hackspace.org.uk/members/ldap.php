@@ -197,7 +197,7 @@ if($user->isMember()) {
                 "sysadmin" => 1,
             );
             
-            if ($not_allowed_names[$_POST['ldapuser']]) {
+            if (array_key_exists($_POST['ldapuser'] ,$not_allowed_names)) {
                 throw new fValidationException( '<p>You are not allowed to use '.htmlspecialchars($_POST['ldapuser']).' as a username.</p>' );
             }
             
@@ -208,7 +208,15 @@ if($user->isMember()) {
             if (!preg_match('/^\{SSHA\}[A-Za-z0-9+\/]{32}$/', $_POST['ldapsshahash'])) {
                 throw new fValidationException( '<p>That dosn\'t look like an SSHA hash</p>' );
             }
-            
+                        
+            # do they have an existing ldapusername?
+            $eluser = $user->getLdapuser();
+            if (isset($eluser)) {
+                if ($eluser !== $_POST['ldapuser']) {
+                    throw new fValidationException( '<p>Your LDAP username must match your existing one: '. htmlspecialchars($eluser) .'.</p>' );
+                }
+            }
+
             $username = escapeshellarg( $_POST['ldapuser'] );
             $nthash = escapeshellarg( $_POST['ldapnthash'] );
             $sshahash = escapeshellarg( $_POST['ldapsshahash'] );
@@ -218,9 +226,10 @@ if($user->isMember()) {
             if( $success !== 'User added ok' ) {
                 throw new fValidationException( '<p>An unknown error ocurred while creating the LDAP account, please contact IRC.'. htmlspecialchars($success) .'</p>' );
             } else {
-                
-                // Update e-mail address for created user.
-//                $db->translatedQuery( 'UPDATE mwuser SET user_email=%s,user_email_authenticated=%s WHERE user_name=%s', $email, date( 'Y-m-d H:i:s' ), $username );
+                $user->setLdapuser($_POST['ldapuser']);
+                $user->setLdapnthash($_POST['ldapnthash']);
+                $user->setLdapsshahash($_POST['ldapsshahash']);
+                $user->store();
             }
         } catch (fValidationException $e) {
             $error = $e->getMessage();
@@ -255,9 +264,9 @@ if($user->isMember()) {
     }
     ?>
 
-    <input id="username"   type=text size=32><label for="usernam">LDAP Username</label><br />
+    <input id="username"      type=text     size=32 value="<? echo htmlspecialchars($user->getLdapuser()); ?>"><label for="username">LDAP Username</label><br />
     <input id="ssha_password" type=password size=32><label for="ssha_password">SSHA Password</label><br />
-    <input id="nt_password" type=password size=32><label for="nt_password">NT Password</label><br />
+    <input id="nt_password"   type=password size=32><label for="nt_password">NT Password</label><br />
 
     <button onclick="calculateHashes()">Update LDAP account</button>
 
