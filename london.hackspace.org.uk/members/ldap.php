@@ -220,8 +220,11 @@ if($user->isMember()) {
             $username = escapeshellarg( $_POST['ldapuser'] );
             $nthash = escapeshellarg( $_POST['ldapnthash'] );
             $sshahash = escapeshellarg( $_POST['ldapsshahash'] );
+            $uid = $user->getId();
+            $uid += 2000;
+            $uid = escapeshellarg( $uid );
 
-            $success = trim( shell_exec( "sudo  /var/www/hackspace-foundation-sites/bin/ldap-add.sh $username $nthash $sshahash 2>&1" ) );
+            $success = trim( shell_exec( "sudo  /var/www/hackspace-foundation-sites/bin/ldap-add.sh $username $uid $nthash $sshahash 2>&1" ) );
             $ok = true;
             if( $success !== 'User added ok' ) {
                 throw new fValidationException( '<p>An unknown error ocurred while creating the LDAP account, please contact IRC.'. htmlspecialchars($success) .'</p>' );

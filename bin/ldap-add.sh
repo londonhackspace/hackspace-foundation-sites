@@ -4,14 +4,14 @@
 
 if [ $? -ne 0 ] ; then
    # user dosn't exist, so create them
-   /usr/sbin/smbldap-useradd -a -c $1 -d /home/$1 -s /bin/bash -A 1 $1
+   /usr/sbin/smbldap-useradd -a -c $1 -u $2 -d /home/$1 -s /bin/bash -A 1 $1
    if [ $? -ne 0 ] ; then
    	echo "Error adding user"
    	exit 1
    fi
 fi
 
-/var/www/hackspace-foundation-sites/bin/smbldap-passwd-hashes $1 $2 $3
+/var/www/hackspace-foundation-sites/bin/smbldap-passwd-hashes $1 $3 $4
 
 if [ $? -ne 0 ] ; then
 	echo "error adding password hashes"
