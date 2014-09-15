@@ -109,8 +109,96 @@ if($user->isMember()) {
             $validator->validate();
 
             // Attempt account creation and promotion.
-            if (!preg_match('/^[a-z0-9_-]+$/', $_POST['ldapuser'])) {
-                throw new fValidationException( '<p>The username must only contain a-z, 0-9 _ and -.'. $username .'</p>' );
+            if (!preg_match('/^[a-z][a-z0-9_-]{0,31}$/', $_POST['ldapuser'])) {
+                throw new fValidationException( '<p>The username must only contain a-z, 0-9 _ and -.</p>' );
+            }
+            
+            $not_allowed_names = array(
+                # system accounts
+                "root" => 1,
+                "daemon" => 1,
+                "bin" => 1,
+                "sys" => 1,
+                "sync" => 1,
+                "games" => 1,
+                "man" => 1,
+                "lp" => 1,
+                "mail" => 1,
+                "news" => 1,
+                "uucp" => 1,
+                "proxy" => 1,
+                "www-data" => 1,
+                "backup" => 1,
+                "list" => 1,
+                "irc" => 1,
+                "gnats" => 1,
+                "nobody" => 1,
+                "libuuid" => 1,
+                "sshd" => 1,
+                "ntp" => 1,
+                "messagebus" => 1,
+                "colord" => 1,
+                "saned" => 1,
+                "openldap" => 1,
+                # and some other bits
+                "avahi" => 1,
+                "mpd" => 1,
+                "radvd" => 1,
+                "quasselcore" => 1,
+                "statd" => 1,
+                "ntop" => 1,
+                "postgres" => 1,
+                "bitlbee" => 1,
+                "smokeping" => 1,
+                "Debian-exim" => 1,
+                "snmp" => 1,                
+                "asterisk" => 1,
+                "debian-tor" => 1,
+                "privoxy" => 1,
+                "bind" => 1,
+                "dhcpd" => 1,
+                "ircensus" => 1,
+                "cacti" => 1,
+                "mysql" => 1,
+                "hplip" => 1,
+                "haldaemon" => 1,
+                "mosquitto" => 1,
+                "postfix" => 1,
+                # lhs system accounts
+                "glados" => 1,
+                "boarded" => 1,
+                "board" => 1,
+                "bmeter" => 1,
+                "netometer" => 1,
+                "robonaut" => 1,
+                # net stuff
+                "postmaster" => 1,
+                "hostmaster" => 1,
+                "webmaster" => 1,
+                "abuse" => 1,                
+                "spam" => 1,                
+                # could be used to troll etc (if we ever do member email accounts),
+                # an infinate number of these :/
+                "billing" => 1,
+                "accounts" => 1,
+                "support" => 1,
+                "techsupport" => 1,
+                "trustees" => 1,
+                "noc" => 1,
+                "security" => 1,
+                "directors" => 1,
+                "contact" => 1,
+                "info" => 1,
+                "property" => 1,
+                "ebay" => 1,
+                "elections" => 1,
+                "accounts" => 1,
+                "membership" => 1,
+                "sysadmin" => 1,
+            );
+            
+            if ($not_allowed_names[$_POST['ldapuser']]) {
+                throw new fValidationException( '<p>You are not allowed to use '.htmlspecialchars($_POST['ldapuser']).' as a username.</p>' );
             }
             
             if (!preg_match('/^[A-F0-9]{32}$/', $_POST['ldapnthash'])) {
@@ -128,11 +216,10 @@ if($user->isMember()) {
             $success = trim( shell_exec( "sudo  /var/www/hackspace-foundation-sites/bin/ldap-add.sh $username $nthash $sshahash 2>&1" ) );
             $ok = true;
             if( $success !== 'User added ok' ) {
-                throw new fValidationException( '<p>An unknown error ocurred while creating the LDAP account, please contact IRC.'. $success .'</p>' );
+                throw new fValidationException( '<p>An unknown error ocurred while creating the LDAP account, please contact IRC.'. htmlspecialchars($success) .'</p>' );
             } else {
                 
                 // Update e-mail address for created user.
-//                $username = $_POST['username'];
 //                $db->translatedQuery( 'UPDATE mwuser SET user_email=%s,user_email_authenticated=%s WHERE user_name=%s', $email, date( 'Y-m-d H:i:s' ), $username );
             }
         } catch (fValidationException $e) {
@@ -163,8 +250,8 @@ if($user->isMember()) {
 
     <?
     if (isset($error)) {
-        str_replace(array("\r", "\n"), '', $error);
-        echo '<script>bad_things("' . $error . '");</script>';
+//        str_replace(array("\r", "\n"), '', $error);
+        echo '<script>bad_things(' . json_encode($error) . ');</script>';
     }
     ?>
 
