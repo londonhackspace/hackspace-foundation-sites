@@ -35,8 +35,6 @@ my $sshahash= $ARGV[2];
 
 my $pass_old=undef;
 
-print $user, $nthash, $sshahash."\n";
-
 # check if $user variable is not tainted
 # [TODO] create proper user mask
 $user =~ /^([-\@\ \w.]+\$?)$/ and $user = $1 or
