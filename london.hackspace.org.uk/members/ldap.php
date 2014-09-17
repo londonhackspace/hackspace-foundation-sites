@@ -78,6 +78,8 @@ function calculateHashes()
 
 	document.getElementById("ldapuser").value = document.getElementById("username").value;
 
+	document.getElementById("ldapshell").value = document.getElementById("shell").value;
+
 	var form = document.getElementById("ldapform");
 	form.submit();
 }
@@ -96,6 +98,8 @@ function all_ok(message) {
 
 <?
 
+$shells = array('/bin/bash', '/bin/sh', '/bin/zsh');
+
 if($user->isMember()) {
     $email = $user->getEmail();
 
@@ -105,7 +109,7 @@ if($user->isMember()) {
         try {
             fRequest::validateCSRFToken($_POST['token']);
             $validator = new fValidation();
-            $validator->addRequiredFields( 'ldapuser', 'ldapnthash', 'ldapsshahash' );
+            $validator->addRequiredFields( 'ldapuser', 'ldapnthash', 'ldapsshahash', 'ldapshell');
             $validator->validate();
 
             // Attempt account creation and promotion.
@@ -197,8 +201,12 @@ if($user->isMember()) {
                 "sysadmin" => 1,
             );
             
-            if (array_key_exists($_POST['ldapuser'] ,$not_allowed_names)) {
+            if (array_key_exists($_POST['ldapuser'], $not_allowed_names)) {
                 throw new fValidationException( '<p>You are not allowed to use '.htmlspecialchars($_POST['ldapuser']).' as a username.</p>' );
+            }
+
+            if (!in_array($_POST['ldapshell'], $shells)) {
+                throw new fValidationException( '<p>'.htmlspecialchars($_POST['ldapshell']).' is not a valid shell.</p>' );
             }
             
             if (!preg_match('/^[A-F0-9]{32}$/', $_POST['ldapnthash'])) {
@@ -220,11 +228,13 @@ if($user->isMember()) {
             $username = escapeshellarg( $_POST['ldapuser'] );
             $nthash = escapeshellarg( $_POST['ldapnthash'] );
             $sshahash = escapeshellarg( $_POST['ldapsshahash'] );
+            $shell = escapeshellarg( $_POST['ldapshell'] );
+
             $uid = $user->getId();
             $uid += 100000;
             $uid = escapeshellarg( $uid );
 
-            $success = trim( shell_exec( "sudo  /var/www/hackspace-foundation-sites/bin/ldap-add.sh $username $uid $nthash $sshahash 2>&1" ) );
+            $success = trim( shell_exec( "sudo  /var/www/hackspace-foundation-sites/bin/ldap-add.sh $username $uid $nthash $sshahash $shell 2>&1" ) );
             $ok = true;
             if( $success !== 'User added ok' ) {
                 throw new fValidationException( '<p>An unknown error ocurred while creating the LDAP account, please contact IRC.'. htmlspecialchars($success) .'</p>' );
@@ -232,6 +242,7 @@ if($user->isMember()) {
                 $user->setLdapuser($_POST['ldapuser']);
                 $user->setLdapnthash($_POST['ldapnthash']);
                 $user->setLdapsshahash($_POST['ldapsshahash']);
+                $user->setLdapshell($_POST['ldapshell']);
                 $user->store();
             }
         } catch (fValidationException $e) {
@@ -262,7 +273,6 @@ if($user->isMember()) {
 
     <?
     if (isset($error)) {
-//        str_replace(array("\r", "\n"), '', $error);
         echo '<script>bad_things(' . json_encode($error) . ');</script>';
     }
     ?>
@@ -270,6 +280,17 @@ if($user->isMember()) {
     <input id="username"      type=text     size=32 value="<? echo htmlspecialchars($user->getLdapuser()); ?>"><label for="username">LDAP Username</label><br />
     <input id="ssha_password" type=password size=32><label for="ssha_password">SSHA Password</label><br />
     <input id="nt_password"   type=password size=32><label for="nt_password">NT Password</label><br />
+    <select id="shell">
+    <? 
+    foreach ($shells as $shell) {
+        if ($user->getLdapshell() === $shell) {
+            echo '<option value="'.$shell.'" selected>'.$shell.'</option>';
+        } else {
+            echo '<option value="'.$shell.'">'.$shell.'</option>';
+        }
+    }
+     ?>
+    </select><label for="shell">Login shell</label><br />
 
     <button onclick="calculateHashes()">Update LDAP account</button>
 
@@ -278,6 +299,7 @@ if($user->isMember()) {
     <input type="hidden" name="ldapuser"     id="ldapuser" value="" />
     <input type="hidden" name="ldapnthash"   id="ldapnthash" value="" />
     <input type="hidden" name="ldapsshahash" id="ldapsshahash" value="" />
+    <input type="hidden" name="ldapshell"    id="ldapshell" value="" />
     <input type="hidden" name="create"       id="create" value="create" />
     </form>
 <? } else { ?>

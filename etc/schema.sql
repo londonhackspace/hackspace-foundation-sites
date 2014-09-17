@@ -20,7 +20,8 @@ CREATE TABLE users (
     doorbot_timestamp DATETIME,
     ldapuser VARCHAR(32) UNIQUE,
     ldapnthash VARCHAR(32),
-    ldapsshahash VARCHAR(38)
+    ldapsshahash VARCHAR(38),
+    ldapshell VARCHAR(32)
 );
 
 CREATE TABLE transactions (
