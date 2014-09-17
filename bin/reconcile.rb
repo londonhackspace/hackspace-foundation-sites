@@ -85,8 +85,8 @@ ofx.bank_account.statement.transactions.each do |transaction|
         send_subscribe_email(user['email'], user['full_name'])
         # check for ldap infos, enable if they exist.
         if user['ldapuser'] != ''
-          puts "enabling LDAP account: #{user['ldapuser']} (with uid #{user['id'] + 2000})"
-          system("/var/www/hackspace-foundation-sites/bin/ldap-add.sh", user['ldapuser'], (user['id'] + 2000).to_s, user['ldapnthash'], user['ldapsshahash'])
+          puts "enabling LDAP account: #{user['ldapuser']} (with uid #{user['id'] + 100000})"
+          system("/var/www/hackspace-foundation-sites/bin/ldap-add.sh", user['ldapuser'], (user['id'] + 100000).to_s, user['ldapnthash'], user['ldapsshahash'])
         end
       end
     end

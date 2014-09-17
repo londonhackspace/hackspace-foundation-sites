@@ -221,7 +221,7 @@ if($user->isMember()) {
             $nthash = escapeshellarg( $_POST['ldapnthash'] );
             $sshahash = escapeshellarg( $_POST['ldapsshahash'] );
             $uid = $user->getId();
-            $uid += 2000;
+            $uid += 100000;
             $uid = escapeshellarg( $uid );
 
             $success = trim( shell_exec( "sudo  /var/www/hackspace-foundation-sites/bin/ldap-add.sh $username $uid $nthash $sshahash 2>&1" ) );
