@@ -20,3 +20,12 @@ else
 	echo "Error Deleting user"
 	exit 1
 fi
+
+/usr/sbin/smbldap-groupdel $1
+
+if [ $? -eq 0 ] ; then
+	echo "Group deleted ok"
+else
+	echo "Error Deleting group"
+	exit 1
+fi

@@ -4,7 +4,8 @@
 
 if [ $? -ne 0 ] ; then
    # user dosn't exist, so create them
-   /usr/sbin/smbldap-useradd -a -c $1 -u $2 -d /home/$1 -s /bin/bash -A 1 $1
+   /usr/sbin/smbldap-groupadd -ag $2 $1
+   /usr/sbin/smbldap-useradd -a -c $1 -u $2 -g $2 -d /home/$1 -s /bin/bash -A 1 $1
    if [ $? -ne 0 ] ; then
    	echo "Error adding user"
    	exit 1
