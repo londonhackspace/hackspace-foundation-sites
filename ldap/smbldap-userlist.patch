@@ -1,5 +1,5 @@
---- trunk/smbldap-userlist.pl	2012/05/07 06:58:27	134
-+++ trunk/smbldap-userlist.pl	2012/07/15 17:03:54	135
+--- trunk/smbldap-userlist	2012/05/07 06:58:27	134
++++ trunk/smbldap-userlistl	2012/07/15 17:03:54	135
 @@ -195,13 +195,13 @@
      print "|\n";
  }

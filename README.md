@@ -25,9 +25,12 @@ Note that SQL Lite needs write access to the directory containing the .db file t
 
 use visudo to add this:
 
-    www-data ALL=(root) NOPASSWD:NOSETENV: /var/www/hackspace-foundation-sites/bin/ldap-add.sh, /var/www/hackspace-foundation-sites/bin/ldap-delete.sh
+    www-data ALL=(www-data:ldapadmin) NOPASSWD:NOSETENV: /var/www/hackspace-foundation-sites/bin/ldap-add.sh, /var/www/hackspace-foundation-sites/bin/ldap-delete.sh
 
-It might be better to have a non-root user to do this, ideally we'd not give user or group www-data read access to /etc/smbldap-tools/smbldap_bind.conf
+and then:
+
+chgrp ldapadmin /etc/smbldap-tools/smbldap_bind.conf
+chmod 0640 /etc/smbldap-tools/smbldap_bind.conf
 
 ## Configuring MediaWiki users panel
 Create a file in ./var/mediawiki.php with the $type, $server, $username,

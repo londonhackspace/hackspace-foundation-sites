@@ -42,24 +42,8 @@ $user =~ /^([-\@\ \w.]+\$?)$/ and $user = $1 or
 
 my ($dn,$ldap_master);
 # First, connecting to the directory
-if ($< != 0) {
-    # non-root user
-    if (!defined($pass_old)) {
-	# prompt for password
-	print "Identity validation...\n";
-	$pass_old = password_read("Enter your UNIX password: ");
-
-	$config{masterDN}="uid=$user,$config{usersdn}";
-	$config{masterPw} = $pass_old;
-	$ldap_master=connect_ldap_master();
-	$dn=$config{masterDN};
-	if (!is_user_valid($user, $dn, $pass_old)) {
-	    print "Authentication failure\n";
-	    exit (10);
-	}
-    }
-} else {
-    # root user
+if (can_read_bind_conf()) {
+    # ldapadmin user
     $ldap_master=connect_ldap_master();
     # test existence of user in LDAP
     my $dn_line;
@@ -68,18 +52,12 @@ if ($< != 0) {
 	exit (10);
     }
     $dn = get_dn_from_line($dn_line);
+} else {
+    print "You need to be able to read /etc/smbldap-tools/smbldap_bind.conf to use this tool\n";
+    exit(1);
 }
 
 my $samba = is_samba_user($user);
-
-# First, connecting to the directory
-if ($< != 0) {
-    # if we are not root, we close the connection to re-open it as a normal user
-    $ldap_master->unbind;
-    $config{masterDN}="uid=$user,$config{usersdn}";
-    $config{masterPw} = $pass_old;
-    $ldap_master=connect_ldap_master();
-}
 
 # only modify smb passwords if smb user
 # the sambaPwdLastSet must be updating

@@ -1,5 +1,5 @@
---- trunk/smbldap-grouplist.pl	2012/05/07 06:58:27	134
-+++ trunk/smbldap-grouplist.pl	2012/07/15 17:03:54	135
+--- trunk/smbldap-grouplist	2012/05/07 06:58:27	134
++++ trunk/smbldap-grouplist	2012/07/15 17:03:54	135
 @@ -122,24 +122,23 @@
      print "|\n";
  }
