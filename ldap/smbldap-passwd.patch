@@ -1,0 +1,12 @@
+--- smbldap-passwd.prev	2013-08-06 08:01:54.000000000 +0000
++++ smbldap-passwd	2014-09-11 23:31:33.000000000 +0000
+@@ -157,7 +157,8 @@
+ 	# the sambaPwdLastSet must be updating
+ 	my $date=time;
+ 	my @mods;
+-	push(@mods, 'sambaLMPassword' => $sambaLMPassword);
++	# XXX modified by jasper to generate an invalid LM password.
++	push(@mods, 'sambaLMPassword' => '!'); #$sambaLMPassword);
+ 	push(@mods, 'sambaNTPassword' => $sambaNTPassword);
+ 	push(@mods, 'sambaPwdLastSet' => $date);
+ 	if (defined $config{defaultMaxPasswordAge}) {

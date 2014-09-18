@@ -1,0 +1,10 @@
+--- smbldap_tools.pm.orig	2013-08-06 09:01:54.000000000 +0100
++++ smbldap_tools.pm	2014-09-15 21:48:27.000000000 +0100
+@@ -106,6 +106,7 @@
+   list_union
+   list_minus
+   account_by_sid
++  user_by_uid
+   user_next_uid
+   user_next_rid
+   group_next_uid
