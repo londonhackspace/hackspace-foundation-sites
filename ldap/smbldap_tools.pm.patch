@@ -1,0 +1,38 @@
+--- smbldap_tools.pm.orig	2013-08-06 09:01:54.000000000 +0100
++++ smbldap_tools.pm	2014-09-18 02:03:37.000000000 +0100
+@@ -99,6 +99,7 @@
+   group_name_by_type
+   group_type_by_name
+   subst_configvar
++  can_read_bind_conf
+   read_conf
+   read_parameter
+   subst_user
+@@ -106,6 +107,7 @@
+   list_union
+   list_minus
+   account_by_sid
++  user_by_uid
+   user_next_uid
+   user_next_rid
+   group_next_uid
+@@ -154,6 +156,10 @@
+     return $value;
+ }
+ 
++sub can_read_bind_conf {
++    return -r $smbldap_bind_conf
++}
++
+ sub read_conf {
+     my %conf;
+     open( CONFIGFILE, "$smbldap_conf" )
+@@ -169,7 +175,7 @@
+     }
+     close(CONFIGFILE);
+ 
+-    if ( $< == 0 ) {
++    if ( -r $smbldap_bind_conf ) {
+         open( CONFIGFILE, "$smbldap_bind_conf" )
+           || die "Unable to open $smbldap_bind_conf for reading !\n";
+         while (<CONFIGFILE>) {

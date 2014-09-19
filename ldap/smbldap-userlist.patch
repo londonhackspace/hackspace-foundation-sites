@@ -1,0 +1,54 @@
+--- trunk/smbldap-userlist	2012/05/07 06:58:27	134
++++ trunk/smbldap-userlistl	2012/07/15 17:03:54	135
+@@ -195,13 +195,13 @@
+     print "|\n";
+ }
+ 
+-my $attrs="['username','uidNumber','uid'";
++my @attrs= qw(username uidNumber uid);
+ my $banner="uid  |username             ";
+ if ($Options{'d'} || $Options{'a'})
+ {
+     $banner .= "|sambaPwdLastSet        ";
+     $banner .= "|shadowLastChange  ";
+-    $attrs  .=  ",'sambaPwdLastSet','shadowLastChange'";
++    push(@attrs, qw(sambaPwdLastSet shadowLastChange));
+ }
+ if ($Options{'e'} || $Options{'a'})
+ {
+@@ -209,22 +209,21 @@
+     $banner .= "|sambaKickoffTime      ";
+     $banner .= "|shadowExpire    ";
+     $banner .= "|shadowMax ";
+-    $attrs  .= ",'sambaPwdMustChange','sambaKickoffTime','shadowExpire','shadowMax'";
+     $banner .= "|shadowMin ";
+-    $attrs  .= ",'sambaPwdMustChange','sambaKickoffTime','shadowExpire','shadowMin'";
++    push(@attrs, qw(sambaPwdMustChange sambaKickoffTime shadowExpire shadowMax shadowMin));
+ }
+ if ($Options{'l'} || $Options{'a'})
+ {
+     $banner .= "|status UNX";
+     $banner .= "|status SMB";
+-    $attrs  .= ",'userPassword','sambaAcctFlags'";
++    push(@attrs, qw(userPassword sambaAcctFlags));
+ }
+ if ($Options{'g'} || $Options{'a'})
+ {
+     $banner .= "|gecos      |";
+-    $attrs  .= ",'gecos'";
++    push(@attrs, qw(gecos));
+ }
+-$attrs.="]";
++
+ print "$banner\n\n";
+ my $filter;
+ $filter = "(&(objectclass=posixAccount)";
+@@ -247,7 +246,7 @@
+ my  $mesg = $ldap_master->search ( base   => $base,
+                                    scope => $config{scope},
+                                    filter => $filter,
+-				   attrs => "$attrs"
++				   attrs => \@attrs
+ 				   );
+ $mesg->code && warn $mesg->error;
+ 

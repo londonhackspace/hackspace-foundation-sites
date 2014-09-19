@@ -1,0 +1,13 @@
+--- smbldap-usermod.orig	2014-09-18 01:43:46.000000000 +0100
++++ smbldap-usermod	2014-09-18 01:52:14.000000000 +0100
+@@ -140,8 +140,8 @@
+     exit(1);
+ }
+ 
+-if ( $< != 0 ) {
+-    print "You must be root to modify an user\n";
++if (!can_read_bind_conf()) {
++    print "You must have access to the ldap admin user to be able to modify a user\n";
+     exit(1);
+ }
+ 

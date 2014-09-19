@@ -14,6 +14,7 @@
             <? } ?>
             <?=menulink("/members/profile/{$user->getId()}", 'profile', 'View My Profile')?>
             <?=menulink('/members/wiki.php', 'wiki', 'Edit Wiki Privileges')?>
+            <?=menulink('/members/ldap.php', 'LDAP', 'Edit LDAP Account')?>
             <?=menulink('/members/edit.php', 'edit', 'Edit Account')?>
             <li class="divider"></li>
             <li><a href="/logout.php">Logout</a></li>

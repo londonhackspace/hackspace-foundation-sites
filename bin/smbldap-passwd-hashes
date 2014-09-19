@@ -1,0 +1,93 @@
+#!/usr/bin/perl
+
+# $Id$
+
+#  This code was developped by Jerome Tournier (jtournier@gmail.com) and
+#  contributors (their names can be found in the CONTRIBUTORS file).
+
+#  This was first contributed by IDEALX (http://www.opentrust.com/)
+
+#  This program is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 2 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+#  Purpose :
+#       . ldap-unix passwd sync for SAMBA>2.2.2 + LDAP
+#       . may also replace /bin/passwd
+
+use strict;
+use warnings;
+use smbldap_tools;
+use MIME::Base64 qw(encode_base64);
+
+my $user= $ARGV[0];
+my $nthash= $ARGV[1];
+my $sshahash= $ARGV[2];
+
+my $pass_old=undef;
+
+# check if $user variable is not tainted
+# [TODO] create proper user mask
+$user =~ /^([-\@\ \w.]+\$?)$/ and $user = $1 or
+    die "$0: username '$user' is tainted\n";
+
+my ($dn,$ldap_master);
+# First, connecting to the directory
+if (can_read_bind_conf()) {
+    # ldapadmin user
+    $ldap_master=connect_ldap_master();
+    # test existence of user in LDAP
+    my $dn_line;
+    if (!defined($dn_line = get_user_dn($user))) {
+	print "$0: user $user doesn't exist\n";
+	exit (10);
+    }
+    $dn = get_dn_from_line($dn_line);
+} else {
+    print "You need to be able to read /etc/smbldap-tools/smbldap_bind.conf to use this tool\n";
+    exit(1);
+}
+
+my $samba = is_samba_user($user);
+
+# only modify smb passwords if smb user
+# the sambaPwdLastSet must be updating
+my $date=time;
+my @mods;
+#push(@mods, 'sambaLMPassword' => $sambaLMPassword);
+push(@mods, 'sambaNTPassword' => $nthash);
+push(@mods, 'sambaPwdLastSet' => $date);
+push(@mods, 'userPassword' => $sshahash); # looks encode_base64($sshahash));
+
+if (defined $config{defaultMaxPasswordAge}) {
+    my $new_sambaPwdMustChange=$date+$config{defaultMaxPasswordAge}*24*60*60;
+    push(@mods, 'sambaPwdMustChange' => $new_sambaPwdMustChange);
+    if ($< ==0) {
+        push(@mods, 'sambaAcctFlags' => '[U]');
+    }
+}
+# Let's change nt/lm passwords
+my $modify = $ldap_master->modify ( "$dn",
+                                    'replace' => { @mods }
+                                );
+$modify->code && warn "Failed to modify SMB password: ", $modify->error ;
+
+#my $pass=undef;
+
+#password_set($dn, $pass, $pass_old);
+
+# take down session
+$ldap_master->unbind;
+
+exit 0;
+
+# - The End

@@ -50,6 +50,17 @@ Now create an accout on the site ("Join"), and then:
 
 to make yourself a member and an admin
 
+## letting apache add ldap users (!)
+
+use visudo to add this:
+
+    www-data ALL=(www-data:ldapadmin) NOPASSWD:NOSETENV: /var/www/hackspace-foundation-sites/bin/ldap-add.sh, /var/www/hackspace-foundation-sites/bin/ldap-delete.sh
+
+and then:
+
+chgrp ldapadmin /etc/smbldap-tools/smbldap_bind.conf
+chmod 0640 /etc/smbldap-tools/smbldap_bind.conf
+
 ## Configuring MediaWiki users panel
 Create a file in ./var/mediawiki.php with the $type, $server, $username,
 $password, $database, and $path variables set (where $type is a string
