@@ -84,7 +84,7 @@ ofx.bank_account.statement.transactions.each do |transaction|
         puts "User #{user['full_name']} now subscribed."
         send_subscribe_email(user['email'], user['full_name'])
         # check for ldap infos, enable if they exist.
-        if user['ldapuser'] != ''
+        if user['ldapuser']
           puts "enabling LDAP account: #{user['ldapuser']} (with uid #{user['id'] + 100000})"
           system("/var/www/hackspace-foundation-sites/bin/ldap-add.sh", user['ldapuser'], (user['id'] + 100000).to_s, user['ldapnthash'], user['ldapsshahash'], user['ldapshell'])
         end
@@ -99,7 +99,7 @@ db.execute("SELECT users.*, (SELECT max(timestamp) FROM transactions WHERE user_
     db.execute("UPDATE users SET subscribed = 0 WHERE id = ?", user['id'])
     send_unsubscribe_email(user['email'], user['full_name'], Time.iso8601(user['lastsubscription']))
     # check for ldap infos, delete if they exist
-    if user['ldapuser'] != ''
+    if user['ldapuser']
     	puts "deleting LDAP account: #{user['ldapuser']}"
       	system("/var/www/hackspace-foundation-sites/bin/ldap-delete.sh", user['ldapuser'])
     end
