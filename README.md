@@ -58,8 +58,9 @@ use visudo to add this:
 
 and then:
 
-chgrp ldapadmin /etc/smbldap-tools/smbldap_bind.conf
-chmod 0640 /etc/smbldap-tools/smbldap_bind.conf
+    groupadd ldapadmin
+    chgrp ldapadmin /etc/smbldap-tools/smbldap_bind.conf
+    chmod 0640 /etc/smbldap-tools/smbldap_bind.conf
 
 ## Configuring MediaWiki users panel
 Create a file in ./var/mediawiki.php with the $type, $server, $username,
