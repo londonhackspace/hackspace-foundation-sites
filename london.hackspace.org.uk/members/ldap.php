@@ -199,6 +199,8 @@ if($user->isMember()) {
                 "accounts" => 1,
                 "membership" => 1,
                 "sysadmin" => 1,
+                "anonymous" => 1,
+                "anon" => 1
             );
             
             if (array_key_exists($_POST['ldapuser'], $not_allowed_names)) {
