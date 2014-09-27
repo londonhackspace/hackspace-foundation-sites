@@ -116,6 +116,10 @@ INSERT INTO aliases (id,type) VALUES ('GitHub',2);
 INSERT INTO aliases (id,type) VALUES ('YouTube',2);
 INSERT INTO aliases (id,type) VALUES ('Flickr',2);
 INSERT INTO aliases (id,type) VALUES ('Callsign',2);
+INSERT INTO aliases (id,type) VALUES ('XMPP/Jabber',2);
+INSERT INTO aliases (id,type) VALUES ('RSS',2);
+INSERT INTO aliases (id,type) VALUES ('Minecraft',2);
+INSERT INTO aliases (id,type) VALUES ('Ello',2);
 
 CREATE TABLE interests_categories (
 	id VARCHAR(255) PRIMARY KEY NOT NULL
