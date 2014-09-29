@@ -5,6 +5,10 @@ if (!$user) {
     fURL::redirect('/login.php?forward=/members/receipt.php');
 }
 
+if (isset($_GET['userid']) && $user->isAdmin()) {
+    $user = new User($_GET['userid']);
+}
+
 $hide_copyright = true;
 
 $from = new fDate('now - 1 year');
