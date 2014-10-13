@@ -13,7 +13,7 @@ $cameras = array(
   13 => "Back Lobby",
   12 => "Back Door",
   10 => "Back Yard",
-  9 => "Back Gate"
+  15 => "Back Gate"
 );
 
 if (!isset($user) || !$user->isMember()) {
