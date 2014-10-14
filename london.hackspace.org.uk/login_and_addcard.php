@@ -11,6 +11,10 @@ if (isset($_POST['submit'])) {
     try {
         fRequest::validateCSRFToken($_POST['token']);
 
+        // Strip colons from uid (easier to copy paste from some NFC
+        // reader apps).
+        fRequest::set('uid', str_replace(':','',fRequest::get('uid')) );
+
         $validator = new fValidation();
         $validator->addRequiredFields('password', 'email', 'uid');
         $validator->addEmailFields('email');
