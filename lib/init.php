@@ -9,6 +9,7 @@ require_once('learning.php');
 require_once('alias.php');
 require_once('interest.php');
 require_once('calendar.php');
+require_once('project.php');
 
 $db = new fDatabase('sqlite', dirname(__FILE__) . '/../var/database.db');
 
