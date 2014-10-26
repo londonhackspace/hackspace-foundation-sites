@@ -1,11 +1,12 @@
 <?
 $page = 'storagedetails_edit';
+$title = "Storage details";
 require( '../header.php' );
 
+$project = new Project(filter_var($_GET['id'], FILTER_SANITIZE_STRING));
 if (!isset($user))
 	fURL::redirect("/login.php?forward=/storage/{$project->getId()}");
 
-$project = new Project(filter_var($_GET['id'], FILTER_SANITIZE_STRING));
 $projectslogs = fRecordSet::build('ProjectsLog',array('project_id=' => $project->getId()), array('timestamp' => 'asc'));
 $states = fRecordSet::build('ProjectState');
 $from = new DateTime($project->getFromDate());
@@ -136,11 +137,13 @@ if (isset($_POST['submit']) && ($user->getId() != $project->getUserId() || $user
 	echo '<li><span class="light-color">'.date('g:ia jS M',$log->getTimestamp()).'</span> | '.str_replace('Mailing List','<a target="_blank" href="https://groups.google.com/forum/#!topicsearchin/london-hack-space-test/subject$3AStorage$20AND$20subject$3ARequest$20AND$20subject$3A$23'.$project->getId().'">Mailing List</a>',$log->getDetails()).$userURL.'</li>';
 } ?>
 </ul><br/>
+<a target="_blank" href="/storage/print/<?=$project->getId()?>" class="btn btn-success">Print DO NOT HACK label</a>
 <? if($user->getId() == $project->getUserId() && ($project->getState() == 'Pending Approval' || $project->getState() == 'Unapproved')) { ?>
 <a href="/storage/edit/<?=$project->getId()?>" class="btn btn-primary">Edit request</a>
 <? } if($user->getId() == $project->getUserId() && ($project->getState() == 'Approved' || $project->getState() == 'Passed Deadline')) { ?>
-<form class="form-inline" role="form" method="post">
-<input type="submit" name="remove" class="btn btn-primary">Mark as removed from the space</a>
+<form class="form-inline" role="form" method="post" style="display: inline;">
+	<input type="hidden" name="token" value="<?=fRequest::generateCSRFToken()?>" />
+	<input type="submit" name="remove" class="btn btn-primary" value="Mark as removed from the space"/>
 </form>
 <? } ?>
 <br/></br>

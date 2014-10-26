@@ -3,6 +3,15 @@ $page = 'storagedetails_edit';
 $title = "Storage request";
 require( '../header.php' );
 
+if(isset($_GET['id'])) {
+    $project = new Project(filter_var($_GET['id'], FILTER_SANITIZE_STRING));
+    if($user->getId() != $project->getUserId() 
+       || ($project->getState() != 'Unapproved' && $project->getState() != 'Pending Approval'))
+        fURL::redirect("/storage/{$project->getId()}");
+} else {
+    $project = new Project();
+}
+
 if (!isset($user))
     fURL::redirect("/login.php?forward=/storage/edit/{$project->getId()}");
 ?>
@@ -12,13 +21,6 @@ if (!isset($user))
 <br/><br/>
 
 <?
-if(isset($_GET['id'])) {
-    $project = new Project(filter_var($_GET['id'], FILTER_SANITIZE_STRING));
-    if($user->getId() != $project->getUserId())
-        fURL::redirect("/storage/{$project->getId()}");
-} else {
-    $project = new Project();
-}
 $locations = fRecordSet::build('Location');
 $maxStorageMonths = 6;
 if (isset($_POST['token'])) {
@@ -212,7 +214,6 @@ if (isset($_POST['token'])) {
 
 <script type="text/javascript" src="/javascript/moment.min.js"></script>
 <script type="text/javascript">
-
 /*
  * Fix dates so they fall in the required time period
  */
@@ -324,6 +325,5 @@ window.onload = function() {
         $("#formStorageRequest").trigger('submit');
     });
 };
-
 </script>
 <? require('../footer.php'); ?>
