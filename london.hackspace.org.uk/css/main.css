@@ -1052,7 +1052,7 @@ h3 .status {
 .status.pending, .status.removed, .status.archived {
 	background-color: #ccc;
 }
-.status.approved {
+.status.approved, .status.extended {
 	background-color: #5cb85c;
 }
 .status.unapproved {

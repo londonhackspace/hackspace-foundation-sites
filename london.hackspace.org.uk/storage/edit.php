@@ -63,9 +63,10 @@ if (isset($_POST['token'])) {
             $auto = true;
             $logDetails = "Request created";
             $project->setState('Pending Approval');
-        } else
+        } else {
             $auto = false;
             $logDetails = "Request updated";
+        }
 
         $project->setUpdatedDate(date('Y-m-d'));
         $project->setUserId($user->getId());
@@ -120,6 +121,43 @@ if (isset($_POST['token'])) {
         $log->setTimestamp(time()+1);
         $log->setDetails('Posted to the Mailing List');
         $log->store();
+
+        // is this a short term request? If so automatically approve it
+        $from = new DateTime($project->getFromDate());
+        $to = new DateTime($project->getToDate()); 
+        $now = new DateTime(date('Y-m-d'));
+
+        if($from <= $now->modify('+1 day') && $to <= $from->modify('+3 days')) {
+            $project->setState('Approved');
+            $project->store();
+
+            // log the update
+            $logmsg = 'Short term storage detected, status automatically changed to '.$project->getState();
+            $log = new ProjectsLog();
+            $log->setProjectId($project->getId());
+            $log->setTimestamp(time()+2);
+            $log->setDetails($logmsg);
+            $log->store();
+
+            // send to mailing list
+            $toEmail = 'london-hack-space-test@googlegroups.com';
+            $subject = 'Storage Request #'.$project->getId().': '.$project->getName();
+            $message =  $logmsg;
+
+            $headers = 'From: no-reply@london.hackspace.org.uk' . "\r\n" .
+                'Reply-To: no-reply@london.hackspace.org.uk' . "\r\n" .
+                'Content-Type:text/html;charset=utf-8' . "\r\n" .
+                'X-Mailer: PHP/' . phpversion();
+
+            mail($toEmail, $subject, $message, $headers);
+
+            // log the google groups post
+            $log = new ProjectsLog();
+            $log->setProjectId($project->getId());
+            $log->setTimestamp(time()+3);
+            $log->setDetails('Posted to the Mailing List');
+            $log->store();
+        }
 
         fURL::redirect("/storage/{$project->getId()}");
     } catch (fValidationException $e) {
@@ -261,7 +299,7 @@ function tipShortTermStorage(from,to) {
 
     // project arrives in the next day and is removed in 3 days
     if(moment(from.val(), 'YYYY-MM-DD').format('X') <= moment(from.attr('min'), 'YYYY-MM-DD').add(1, 'day').format('X') 
-       && moment(to.val(), 'YYYY-MM-DD').format('X') <= moment(from.attr('min'), 'YYYY-MM-DD').add(3, 'days').format('X'))
+       && moment(to.val(), 'YYYY-MM-DD').format('X') <= moment(from.val(), 'YYYY-MM-DD').add(3, 'days').format('X'))
         $('.tip-short-term-storage').removeClass('hide');
 }
 

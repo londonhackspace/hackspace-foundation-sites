@@ -83,6 +83,7 @@ INSERT INTO project_states (name) VALUES ('Unapproved');
 INSERT INTO project_states (name) VALUES ('Passed Deadline');
 INSERT INTO project_states (name) VALUES ('Removed');
 INSERT INTO project_states (name) VALUES ('Archived');
+INSERT INTO project_states (name) VALUES ('Extended');
 
 CREATE TABLE projects (
 	id INTEGER PRIMARY KEY AUTOINCREMENT, 

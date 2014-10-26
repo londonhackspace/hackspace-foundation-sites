@@ -16,7 +16,7 @@ $projectUser = new User($project->getUserId());
 if (isset($_POST['remove']) && ($user->getId() == $project->getUserId())) {
 	try {
 		fRequest::validateCSRFToken($_POST['token']);
-		if($project->getState() == 'Approved' || $project->getState() == 'Passed Deadline') {
+		if($project->getState() == 'Approved' || $project->getState() == 'Passed Deadline' || $project->getState() == 'Extended') {
 			$project->setState('Removed');
 			$project->store();
 
@@ -50,8 +50,9 @@ if (isset($_POST['submit']) && ($user->getId() != $project->getUserId() || $user
 			   ($newStatus == 'Removed' && ($project->getState() == 'Approved' || $project->getState() == 'Passed Deadline')) ||
 			   ($newStatus == 'Approved' && ($project->getState() == 'Unapproved' || $project->getState() == 'Pending Approval')) ||
 			   ($newStatus == 'Unapproved' && ($project->getState() == 'Approved' || $project->getState() == 'Pending Approval')) ||
+			   ($newStatus == 'Extended' && ($project->getState() == 'Approved' || $project->getState() == 'Passed Deadline')) ||
 			   ($newStatus == 'Archived' && ($project->getState() == 'Unapproved')) ||
-			   ($newStatus == 'Passed Deadline' && ($project->getState() == 'Approved'))
+			   ($newStatus == 'Passed Deadline' && ($project->getState() == 'Approved' || $project->getState() == 'Extended'))
 		   )) {
 			$project->setState(filter_var($_POST['state'], FILTER_SANITIZE_STRING));
 			$project->store();
@@ -140,7 +141,7 @@ if (isset($_POST['submit']) && ($user->getId() != $project->getUserId() || $user
 <a target="_blank" href="/storage/print/<?=$project->getId()?>" class="btn btn-success">Print DO NOT HACK label</a>
 <? if($user->getId() == $project->getUserId() && ($project->getState() == 'Pending Approval' || $project->getState() == 'Unapproved')) { ?>
 <a href="/storage/edit/<?=$project->getId()?>" class="btn btn-primary">Edit request</a>
-<? } if($user->getId() == $project->getUserId() && ($project->getState() == 'Approved' || $project->getState() == 'Passed Deadline')) { ?>
+<? } if($user->getId() == $project->getUserId() && ($project->getState() == 'Approved' || $project->getState() == 'Passed Deadline' || $project->getState() == 'Extended')) { ?>
 <form class="form-inline" role="form" method="post" style="display: inline;">
 	<input type="hidden" name="token" value="<?=fRequest::generateCSRFToken()?>" />
 	<input type="submit" name="remove" class="btn btn-primary" value="Mark as removed from the space"/>
@@ -159,8 +160,9 @@ if (isset($_POST['submit']) && ($user->getId() != $project->getUserId() || $user
 					   ($newStatus == 'Removed' && ($project->getState() == 'Approved' || $project->getState() == 'Passed Deadline')) ||
 					   ($newStatus == 'Approved' && ($project->getState() == 'Unapproved' || $project->getState() == 'Pending Approval')) ||
 					   ($newStatus == 'Unapproved' && ($project->getState() == 'Approved' || $project->getState() == 'Pending Approval')) ||
+					   ($newStatus == 'Extended' && ($project->getState() == 'Approved' || $project->getState() == 'Passed Deadline')) ||
 					   ($newStatus == 'Archived' && ($project->getState() == 'Unapproved')) ||
-					   ($newStatus == 'Passed Deadline' && ($project->getState() == 'Approved'))
+					   ($newStatus == 'Passed Deadline' && ($project->getState() == 'Approved' || $project->getState() == 'Extended'))
 				   )) {
 
 					echo '<option value="'.$state->getName().'" ';
