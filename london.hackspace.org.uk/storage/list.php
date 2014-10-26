@@ -7,7 +7,7 @@ if (!isset($user)) {
     fURL::redirect('/login.php?forward=/storage/list.php');
 }
 
-$projects = fRecordSet::build('Project',array('state!='=>'Removed'), array('location_id' => 'asc', 'name' => 'asc'));
+$projects = fRecordSet::build('Project',array('state!='=>array('Removed','Archived')), array('location_id' => 'asc', 'name' => 'asc'));
 ?>
 
 <h2>Storage Requests</h2>
@@ -25,6 +25,16 @@ $projects = fRecordSet::build('Project',array('state!='=>'Removed'), array('loca
         <div class="status small <?= strtolower($project->getState()); ?>"><?= $project->getState(); ?></div>
         <a href="/storage/<?=$project->getId()?>"><?=$project->getName()?></a><br/>
         <?
-    } ?>
+    }
 
-<? require('../footer.php'); ?>
+$projects = fRecordSet::build('Project',array('state='=>array('Removed','Archived')), array('name' => 'asc')); ?>
+
+<br/><br/>
+<h3>Old requests</h3>
+
+<? foreach($projects as $project) { ?>
+        <div class="status small <?= strtolower($project->getState()); ?>"><?= $project->getState(); ?></div>
+        <a href="/storage/<?=$project->getId()?>"><?=$project->getName()?></a><br/>
+<? }
+
+require('../footer.php'); ?>

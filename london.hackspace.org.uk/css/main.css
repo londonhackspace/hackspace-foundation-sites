@@ -1026,6 +1026,9 @@ span.member-social-icon {
 	width: auto;
 	display: inline-block;
 }
+.light-color {
+	color: #999;
+}
 
 .status {
 	padding: 8px 14px;
@@ -1046,7 +1049,7 @@ h3 .status {
 	top: -3px;	
 	margin-top: 0;
 }
-.status.pending, .status.removed {
+.status.pending, .status.removed, .status.archived {
 	background-color: #ccc;
 }
 .status.approved {

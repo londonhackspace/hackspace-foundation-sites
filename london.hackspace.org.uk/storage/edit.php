@@ -4,7 +4,7 @@ $title = "Storage request";
 require( '../header.php' );
 
 if (!isset($user))
-    fURL::redirect("/storage/edit/{$project->getId()}");
+    fURL::redirect("/login.php?forward=/storage/edit/{$project->getId()}");
 ?>
 
 <h2>Request for storage</h2>
@@ -21,7 +21,7 @@ if(isset($_GET['id'])) {
 }
 $locations = fRecordSet::build('Location');
 $maxStorageMonths = 6;
-if (isset($_POST['submit'])) {
+if (isset($_POST['token'])) {
     try {
         fRequest::validateCSRFToken($_POST['token']);
 
@@ -57,12 +57,67 @@ if (isset($_POST['submit'])) {
         $project->setLocation(filter_var($_POST['location'], FILTER_SANITIZE_STRING));
         $project->setFromDate(filter_var($_POST['from_date'], FILTER_SANITIZE_STRING));
         $project->setToDate(filter_var($_POST['to_date'], FILTER_SANITIZE_STRING));
-        if(!$project->getId())
+        if(!$project->getId()) {
+            $auto = true;
+            $logDetails = "Request created";
             $project->setState('Pending Approval');
+        } else
+            $auto = false;
+            $logDetails = "Request updated";
 
         $project->setUpdatedDate(date('Y-m-d'));
         $project->setUserId($user->getId());
         $project->store();
+
+        // log the update
+        $log = new ProjectsLog();
+        $log->setProjectId($project->getId());
+        $log->setTimestamp(time());
+        $log->setDetails($logDetails);
+        $log->setUserId($user->getId());
+        $log->store();
+
+        // post to Google Groups
+        $from = new DateTime($project->getFromDate());
+        $to = new DateTime($project->getToDate()); 
+        if($from->diff($to)->format('%d') == '0') { 
+            $duration = $from->diff($to)->format('%m month(s)');
+        } else if($from->diff($to)->format('%m') == '0') { 
+            $duration = $from->diff($to)->format('%d day(s)');
+        } else { 
+            $duration = $from->diff($to)->format('%d day(s), %m month(s)'); 
+        }
+        $x = ($project->getLocationId() == 'Yard') ? 7 : 2;
+        $projectUser = new User($project->getUserId());
+
+        $toEmail = 'london-hack-space-test@googlegroups.com';
+        $subject = 'Storage Request #'.$project->getId().': '.$project->getName();
+        $message = 
+            '<strong>' . $project->getName() . "</strong><br/>" .
+            "by " . htmlspecialchars($projectUser->getFullName()) . " https://london.hackspace.org.uk/storage/" . $project->getId() . "<br/><br/>" .
+            $duration . "  " .
+            $from->format('jS M Y') . " - " .
+            $to->format('jS M Y') . "<br/>" .
+            $project->getLocationId() . ", " .
+            $project->getLocation() . "<br/><br/>" .
+            nl2br(stripslashes($project->getDescription())) . "<br/><br/>";
+
+        if($auto)
+            $message .= "<strong>***If no one replies to this topic the request will be automatically approved within $x days.***</strong>";
+
+        $headers = 'From: no-reply@london.hackspace.org.uk' . "\r\n" .
+            'Reply-To: no-reply@london.hackspace.org.uk' . "\r\n" .
+            'Content-Type:text/html;charset=utf-8' . "\r\n" .
+            'X-Mailer: PHP/' . phpversion();
+
+        mail($toEmail, $subject, $message, $headers);
+
+        // log the google groups post
+        $log = new ProjectsLog();
+        $log->setProjectId($project->getId());
+        $log->setTimestamp(time()+1);
+        $log->setDetails('Posted to the Mailing List');
+        $log->store();
 
         fURL::redirect("/storage/{$project->getId()}");
     } catch (fValidationException $e) {
@@ -74,7 +129,7 @@ if (isset($_POST['submit'])) {
 ?>
 <div class="row">
     <div class="col-sm-offset-1 col-sm-9">
-        <form class="form-horizontal storage-form" role="form" method="post">
+        <form id="formStorageRequest" class="form-horizontal storage-form" role="form" method="post">
             <input type="hidden" name="token" value="<?=fRequest::generateCSRFToken()?>" />
             <div class="form-group">
                 <label for="name" class="col-sm-3 control-label">Name</label>
@@ -104,6 +159,7 @@ if (isset($_POST['submit'])) {
                             } ?>
                     </select>
                     <input type="text" id="location" name="location" class="form-control" placeholder="Where abouts exactly?" value="<? if($_POST && $_POST['location']) { echo $_POST['location']; } else if($project->getLocation()) { echo $project->getLocation(); }?>"/>
+                    <p class="alert alert-warning tip-loading-bay hide" role="alert"><span class="glyphicon glyphicon-star"></span> The loading bay must be kept clear at all times.</p>
                 </div>
             </div>
             <div class="form-group">
@@ -114,12 +170,6 @@ if (isset($_POST['submit'])) {
                     <p class="alert alert-info tip-short-term-storage hide" role="alert"><span class="glyphicon glyphicon-star"></span> It's okay to store your project short term to let paint dry, give yourself a break, etc. But short term storage requests can <strong> only be extended 2 days</strong> at most. If it takes longer you'll need to submit a new storage request and leave enough time for other members to review.</p>
                     <p class="alert alert-warning tip-indoor-review hide" role="alert"><span class="glyphicon glyphicon-star"></span> We need <strong>2 days to review</strong> indoor storage requests unless it's a matter of urgency.</p>
                     <p class="alert alert-warning tip-yard-review hide" role="alert"><span class="glyphicon glyphicon-star"></span> We need <strong>7 days to review</strong> yard storage requests unless it's a matter of urgency.</p>
-                    <!--
-                    <p>Find out more about our <a target="_blank" href="https://wiki.london.hackspace.org.uk/view/Yard">yard facilities here</a>.</p>
-                    <p class="alert alert-warning" role="alert"><span class="glyphicon glyphicon-star"></span> Large projects stored in the yard can be expensive to dispose of if they're abandoned. We may ask for a £250 deposit depending on the details of your request.</p>
-                    <p class="alert alert-warning" role="alert"><span class="glyphicon glyphicon-star"></span> No power tools or loud noises are permitted in the yard past 8pm on weekdays and 6pm on weekends.</p>
-                    <p class="alert alert-warning" role="alert"><span class="glyphicon glyphicon-star"></span> The loading bay and three parking spaces must be kept clear at all times.</p>
-                    -->
                     <p class="help-block">Think carefully about the date of removal as we take your commitment seriously.</p>
                     <p class="help-block">It helps to estimate how long your project will take then double it. If you're still waiting on parts to be delivered, then double it again.</p>
                 </div>
@@ -132,12 +182,33 @@ if (isset($_POST['submit'])) {
             </div>
             <div class="form-group">
                 <div class="col-sm-offset-3 col-sm-9">
-                    <input type="submit" name="submit" value="Submit request" class="btn btn-primary"/>
+                    <input type="submit" id="formSubmit" name="submitForm" value="Submit request" class="btn btn-primary"/>
                 </div>
             </div>
         </form>
     </div>
 </div>
+<div class="modal fade" id="yardStorageModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title">Note about yard storage</h4>
+            </div>
+            <div class="modal-body">
+                <ul>
+                    <li>We may ask for a <strong>£250 deposit</strong> depending on how large your project is how long you intend to store it.</li>
+                    <li>No power tools or loud noises are permitted in the yard past <strong>8pm on weekdays</strong> and <strong>6pm on weekends</strong>.</li>
+                    <li>The <strong>loading bay</strong> and <strong>three parking spaces</strong> must be kept clear at all times.</li>
+                </ul>
+                <p>Find out more about our <a target="_blank" href="https://wiki.london.hackspace.org.uk/view/Yard">yard facilities here</a>.</p>
+            </div>
+            <div class="modal-footer">
+                <button id="continueSubmit" type="button" class="btn btn-primary">Continue</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
 
 <script type="text/javascript" src="/javascript/moment.min.js"></script>
 <script type="text/javascript">
@@ -212,16 +283,45 @@ function tipReviewPeriod(from,location) {
     }
 }
 
+/*
+ * Display a message about keeping the loading bay clear
+ */
+function tipLoadingBay(text) {
+    $('.tip-loading-bay').addClass('hide');
+    if(text.toLowerCase().indexOf('loading bay') > -1) {
+        $('.tip-loading-bay').removeClass('hide');
+    }
+}
+
 window.onload = function() {
     tipShortTermStorage($('#from_date'),$('#to_date'));
     tipReviewPeriod($('#from_date'),$('#location_id option:selected'));
+    tipLoadingBay($('#location').val());
+
     $('#from_date,#to_date').bind("change", function() {
         validateDates($('#from_date'),$('#to_date'),<?=$maxStorageMonths?>);
         tipShortTermStorage($('#from_date'),$('#to_date'));
         tipReviewPeriod($('#from_date'),$('#location_id option:selected'));
     });
+
     $('#location_id').bind("change", function() {
         tipReviewPeriod($('#from_date'),$('#location_id option:selected'));
+    });
+
+    $('#location').bind("keyup", function() {
+        tipLoadingBay($('#location').val());
+    });
+
+    $("#formStorageRequest").bind('submit',function(e) {
+        if($('#location_id option:selected').text() == 'Yard' && !$('#yardStorageModal').hasClass('in')) {
+             $('#yardStorageModal').modal()
+             return false;
+        }
+        return true;
+    });
+
+    $('#continueSubmit').bind('click',function(e) {
+        $("#formStorageRequest").trigger('submit');
     });
 };
 
