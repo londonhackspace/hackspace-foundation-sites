@@ -9,25 +9,17 @@ if (!isset($user))
 
 $projectslogs = fRecordSet::build('ProjectsLog',array('project_id=' => $project->getId()), array('timestamp' => 'asc'));
 $states = fRecordSet::build('ProjectState');
-$from = new DateTime($project->getFromDate());
-$to = new DateTime($project->getToDate()); 
 $projectUser = new User($project->getUserId());
 
 if (isset($_POST['remove']) && ($user->getId() == $project->getUserId())) {
 	try {
 		fRequest::validateCSRFToken($_POST['token']);
-		if($project->getState() == 'Approved' || $project->getState() == 'Passed Deadline' || $project->getState() == 'Extended') {
+		if($project->canTransitionStates($project->getState(),'Removed')) {
 			$project->setState('Removed');
 			$project->store();
 
 			// log the update
-			$logmsg = 'Status changed to '.$project->getState();
-			$log = new ProjectsLog();
-			$log->setProjectId($project->getId());
-			$log->setTimestamp(time());
-			$log->setDetails($logmsg);
-			$log->setUserId($user->getId());
-			$log->store();
+			$project->submitLog($logmsg,$user->getId());
 		}
 		fURL::redirect("/storage/list.php");
 	} catch (fValidationException $e) {
@@ -45,47 +37,16 @@ if (isset($_POST['submit']) && ($user->getId() != $project->getUserId() || $user
 			throw new fValidationException('Status field is required.');
 
 		$newStatus = filter_var($_POST['state'], FILTER_SANITIZE_STRING);
-		if($newStatus != $project->getState() && (
-			   ($newStatus == 'Pending Approval') ||
-			   ($newStatus == 'Removed' && ($project->getState() == 'Approved' || $project->getState() == 'Passed Deadline')) ||
-			   ($newStatus == 'Approved' && ($project->getState() == 'Unapproved' || $project->getState() == 'Pending Approval')) ||
-			   ($newStatus == 'Unapproved' && ($project->getState() == 'Approved' || $project->getState() == 'Pending Approval')) ||
-			   ($newStatus == 'Extended' && ($project->getState() == 'Approved' || $project->getState() == 'Passed Deadline')) ||
-			   ($newStatus == 'Archived' && ($project->getState() == 'Unapproved')) ||
-			   ($newStatus == 'Passed Deadline' && ($project->getState() == 'Approved' || $project->getState() == 'Extended'))
-		   )) {
-			$project->setState(filter_var($_POST['state'], FILTER_SANITIZE_STRING));
+		if($newStatus != $project->getState() && $project->canTransitionStates($project->getState(),$newStatus)) {
+			$project->setState($newStatus);
 			$project->store();
 
 			// log the update
-			$logmsg = 'Status changed to '.$project->getState();
-			$log = new ProjectsLog();
-			$log->setProjectId($project->getId());
-			$log->setTimestamp(time());
-			$log->setDetails($logmsg);
-			$log->setUserId($user->getId());
-			$log->store();
+			$project->submitLog('Status changed to ' . $project->getState() , $user->getId());
 
 			// send to mailing list
-			if($project->getState() != 'Archived') {
-				$toEmail = 'london-hack-space-test@googlegroups.com';
-				$subject = 'Storage Request #'.$project->getId().': '.$project->getName();
-				$message =  $logmsg . " by " . htmlspecialchars($user->getFullName());
-
-				$headers = 'From: no-reply@london.hackspace.org.uk' . "\r\n" .
-					'Reply-To: no-reply@london.hackspace.org.uk' . "\r\n" .
-					'Content-Type:text/html;charset=utf-8' . "\r\n" .
-					'X-Mailer: PHP/' . phpversion();
-
-				mail($toEmail, $subject, $message, $headers);
-
-				// log the google groups post
-				$log = new ProjectsLog();
-				$log->setProjectId($project->getId());
-				$log->setTimestamp(time()+1);
-				$log->setDetails('Posted to the Mailing List');
-				$log->store();
-			}
+			if($project->getState() != 'Archived')
+				$project->submitMailingList('Status changed to ' . $project->getState() . " by " . htmlspecialchars($user->getFullName()));
 		}
 
 		fURL::redirect("/storage/list.php");
@@ -98,31 +59,27 @@ if (isset($_POST['submit']) && ($user->getId() != $project->getUserId() || $user
 ?>
 
 <h2>Storage Request</h2>
-<h3>
-	<?=$project->getName(); ?>
+<h3><?=$project->getName(); ?>
 	<div class="status <?= strtolower($project->getState()); ?>"><?= $project->getState(); ?></div>
-	<p><small>
-		Stored for 
-		<? 
-		if($from->diff($to)->format('%d') == '0') { 
-			echo $from->diff($to)->format('%m month(s)');
-		} else if($from->diff($to)->format('%m') == '0') { 
-			echo $from->diff($to)->format('%d day(s)');
-		} else { 
-			echo $from->diff($to)->format('%d day(s), %m month(s)'); 
-		}
-		echo ' | '.$from->format('jS M Y').' - '.$to->format('jS M Y');
-		?>
-	<br/>
-	<a href="/members/member.php?id=<?=$project->getUserId()?>"><?=htmlspecialchars($projectUser->getFullName())?></a> | 
-	<a target="_blank" href="https://groups.google.com/forum/#!topicsearchin/london-hack-space-test/subject$3AStorage$20AND$20subject$3ARequest$20AND$20subject$3A$23<?=$project->getId()?>">Mailing list topic</a></small>
-</p>
 </h3>
-<p>
-<? $location = new Location($project->getLocationId());
-	echo $location->getName(); ?>, 
-	<?=$project->getLocation(); ?>
-</p>
+<? if($project->recentPost() && $user->getId() == $project->getUserId()) { ?>
+	<div class="alert alert-success storage-request-notice">
+		<p>Now you've made a storage request don't forget:</p>
+		<div><? if($project->getLocationId() != 'Yard') { ?><a target="_blank" href="/storage/print/<?=$project->getId()?>" class="btn btn-success">Print DO NOT HACK label</a> and attach it to your project. This is to let other members know your project is accounted for. <? } ?></div>
+		<div><a target="_blank" href="https://groups.google.com/forum/#!topicsearchin/london-hack-space-test/subject$3AStorage$20AND$20subject$3ARequest$20AND$20subject$3A$23<?=$project->getId()?>" class="btn btn-primary">Read mailing list topic</a> This is where other members can choose to expediate your request (if its urgent) or unapprove it.</div>
+		<? if($project->getState() == 'Pending Approval') { ?><p>Your project will be automatically approved after <?=$project->automaticApprovalDuration();?> days if you don't make any changes and no one replies on the mailing list.</p><? } ?>
+	</div>
+<? } else { ?>
+	<a target="_blank" href="/storage/print/<?=$project->getId()?>" class="btn btn-success">Print DO NOT HACK label</a>
+	<a target="_blank" href="https://groups.google.com/forum/#!topicsearchin/london-hack-space-test/subject$3AStorage$20AND$20subject$3ARequest$20AND$20subject$3A$23<?=$project->getId()?>" class="btn btn-primary">Read mailing list topic</a><br/>
+<? } ?>
+<p></p>
+<p><small>
+	Requested by <a href="/members/member.php?id=<?=$project->getUserId()?>"><?=htmlspecialchars($projectUser->getFullName())?></a><br/>
+	<?=$project->outputDates(); ?><br/>
+	<?=$project->outputDuration(); ?>
+	<?=$project->outputLocation(); ?>
+</small></p>
 <p>
 	<?=nl2br(stripslashes($project->getDescription())); ?>
 </p>
@@ -138,7 +95,6 @@ if (isset($_POST['submit']) && ($user->getId() != $project->getUserId() || $user
 	echo '<li><span class="light-color">'.date('g:ia jS M',$log->getTimestamp()).'</span> | '.str_replace('Mailing List','<a target="_blank" href="https://groups.google.com/forum/#!topicsearchin/london-hack-space-test/subject$3AStorage$20AND$20subject$3ARequest$20AND$20subject$3A$23'.$project->getId().'">Mailing List</a>',$log->getDetails()).$userURL.'</li>';
 } ?>
 </ul><br/>
-<a target="_blank" href="/storage/print/<?=$project->getId()?>" class="btn btn-success">Print DO NOT HACK label</a>
 <? if($user->getId() == $project->getUserId() && ($project->getState() == 'Pending Approval' || $project->getState() == 'Unapproved')) { ?>
 <a href="/storage/edit/<?=$project->getId()?>" class="btn btn-primary">Edit request</a>
 <? } if($user->getId() == $project->getUserId() && ($project->getState() == 'Approved' || $project->getState() == 'Passed Deadline' || $project->getState() == 'Extended')) { ?>
@@ -154,24 +110,14 @@ if (isset($_POST['submit']) && ($user->getId() != $project->getUserId() || $user
 	<select class="form-control" name="state">
 		<option value="" disabled selected></option>
 		<? foreach($states as $state) {
-				$newStatus = $state->getName();
-				if($newStatus != $project->getState() && (
-					   ($newStatus == 'Pending Approval') ||
-					   ($newStatus == 'Removed' && ($project->getState() == 'Approved' || $project->getState() == 'Passed Deadline')) ||
-					   ($newStatus == 'Approved' && ($project->getState() == 'Unapproved' || $project->getState() == 'Pending Approval')) ||
-					   ($newStatus == 'Unapproved' && ($project->getState() == 'Approved' || $project->getState() == 'Pending Approval')) ||
-					   ($newStatus == 'Extended' && ($project->getState() == 'Approved' || $project->getState() == 'Passed Deadline')) ||
-					   ($newStatus == 'Archived' && ($project->getState() == 'Unapproved')) ||
-					   ($newStatus == 'Passed Deadline' && ($project->getState() == 'Approved' || $project->getState() == 'Extended'))
-				   )) {
-
-					echo '<option value="'.$state->getName().'" ';
-					if($project->getState() == $state->getName()) { 
-						echo 'selected'; 
-					}
-					echo '>'.$state->getName().'</option>';
-				}
-			} ?>
+			$newStatus = $state->getName();
+			if($newStatus != $project->getState() && $project->canTransitionStates($project->getState(),$newStatus)) {
+				echo '<option value="'.$state->getName().'" ';
+				if($project->getState() == $state->getName())
+					echo 'selected'; 
+				echo '>'.$state->getName().'</option>';
+			}
+		} ?>
 	</select>
 	<input type="submit" name="submit" value="Update status" class="btn btn-primary"/>
 </form>

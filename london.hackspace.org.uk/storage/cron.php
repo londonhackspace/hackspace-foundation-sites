@@ -9,47 +9,30 @@ function __autoload($class_name)
     }
     throw new Exception('The class ' . $class_name . ' could not be loaded');
 }
-
 require_once(dirname(__FILE__) . '/../../lib/user.php');
 require_once(dirname(__FILE__) . '/../../lib/project.php');
-
 $db = new fDatabase('sqlite', dirname(__FILE__) . '/../../var/database.db');
-
 fORMDatabase::attach($db);
 
 $projects = fRecordSet::build('Project',array('state='=>array('Approved','Passed Deadline','Extended')), array('name' => 'asc'));
+$now = new DateTime(date('Y-m-d'));
+
 foreach($projects as $project) {
     $from = new DateTime($project->getFromDate());
     $to = new DateTime($project->getToDate());
-    $now = new DateTime(date('Y-m-d'));
     $user = new User($project->getUserId());
-    $extension = $to->modify('+14 days');
+    $extension = $to->modify('+'.$project->getExtensionDuration().' days');
     $logs = fRecordSet::build('ProjectsLog',array('project_id=' => $project->getId()));
-    $then = new DateTime(date('Y-m-d',$logs[0]->getTimestamp()));
     $last = new DateTime(date('Y-m-d',$logs[count($logs)-1]->getTimestamp()));
-    $shortTerm = false;
-    $hasBeenExtended = false;
 
-    // Short term projects only get a 2 day extension
-    if($from <= $then->modify('+1 day') && $to <= $from->modify('+3 days')) {
-        $shortTerm = true;
-        $extension = $to->modify('+2 days');
-    }
-    // Has this project been extended
-    $logs = fRecordSet::build('ProjectsLog',array('project_id=' => $project->getId(), 'details=' => 'Status changed to Extended'));
-    if(count($logs) > 0) {
+    // We only care about the latest due date if it's been extended
+    if($project->hasExtension())
         $to = $extension;
-        $hasBeenExtended = true;
-    }
 
     // -----------
     // ----------- TODO
-    // automatically approve indoor projects after 2 days with no ML posts
-    if($now > $last->modify('+2 days') && $project->getLocationId != 'Yard') {
-        // ML post count?
-    }
-    // automatically approve yard projects after 7 days with no ML posts
-    if($now > $last->modify('+7 days') && $project->getLocationId == 'Yard') {
+    // automatically approve projects with no ML posts
+    if($now > $last->modify('+'.$project->automaticApprovalDuration().' days')) {
         // ML post count?
     }
     // LINK to extend status
@@ -69,11 +52,8 @@ foreach($projects as $project) {
         $message = "Dear ".htmlspecialchars($user->getFullName()).",<br/><br/>". 
             "This is a friendly reminder that you had intended to remove your project '".$project->getName()."' on ".$from->format('jS M Y').".<br/>";
 
-        if(!$hasBeenExtended && !$shortTerm) {
-            $message .= "We know life and other commitments can get in the way of hackspace projects. To help you finish up and organise your belongings you can extend your deadline once for two weeks. Simply click the link below:<br/><br/>".
-                "[link]<br/><br/>";
-        } else if(!$hasBeenExtended && $shortTerm) {
-            $message .= "We know life and other commitments can get in the way of hackspace projects. To help you finish up and organise your belongings you can extend your deadline once for two days. Simply click the link below:<br/><br/>".
+        if(!$project->hasExtension()) {
+            $message .= "We know life and other commitments can get in the way of hackspace projects. To help you finish up and organise your belongings you can extend your deadline once for ".$project->getExtensionDuration()." days. Simply click the link below:<br/><br/>".
                 "[link]<br/><br/>";
         }
 
@@ -84,7 +64,14 @@ foreach($projects as $project) {
             "Thanks,<br/><br/>".
             "The London Hackspace trustees<br/>".
             "trustees@london.hackspace.org.uk";
-        sendEmail($user->getEmail(),$message,$project);
+
+        $subject = 'London Hackspace Storage Request #'.$project->getId().': '.$project->getName();
+        $headers = 'From: trustees@london.hackspace.org.uk' . "\r\n" .
+            'Reply-To: trustees@london.hackspace.org.uk' . "\r\n" .
+            'Content-Type:text/html;charset=utf-8' . "\r\n" .
+            'X-Mailer: PHP/' . phpversion();
+
+        mail($user->getEmail(), $subject, $message, $headers);
     }
 
     // a day after removal update the status to 'Passed Deadline'
@@ -94,70 +81,16 @@ foreach($projects as $project) {
 
         // log the update
         $logmsg = 'Status automatically changed to '.$project->getState();
-        $log = new ProjectsLog();
-        $log->setProjectId($project->getId());
-        $log->setTimestamp(time());
-        $log->setDetails($logmsg);
-        $log->store();
-
-        // send to mailing list
-        $toEmail = 'london-hack-space-test@googlegroups.com';
-        $subject = 'Storage Request #'.$project->getId().': '.$project->getName();
-        $message =  $logmsg;
-
-        $headers = 'From: no-reply@london.hackspace.org.uk' . "\r\n" .
-            'Reply-To: no-reply@london.hackspace.org.uk' . "\r\n" .
-            'Content-Type:text/html;charset=utf-8' . "\r\n" .
-            'X-Mailer: PHP/' . phpversion();
-
-        mail($toEmail, $subject, $message, $headers);
-
-        // log the google groups post
-        $log = new ProjectsLog();
-        $log->setProjectId($project->getId());
-        $log->setTimestamp(time()+1);
-        $log->setDetails('Posted to the Mailing List');
-        $log->store();
+        $project->submitLog($logmsg);
+        $project->submitMailingList($logmsg);
     }
 
     // reminder email every 7 days after removal
     if($now > $to && $now->format('w') == $to->format('w')) {
         // log the update
-        $logmsg = 'Reminder sent regarding passed deadline';
-        $log = new ProjectsLog();
-        $log->setProjectId($project->getId());
-        $log->setTimestamp(time());
-        $log->setDetails($logmsg);
-        $log->store();
-
-        // send to mailing list
-        $toEmail = 'london-hack-space-test@googlegroups.com';
-        $subject = 'Storage Request #'.$project->getId().': '.$project->getName();
-        $message =  $logmsg;
-
-        $headers = 'From: no-reply@london.hackspace.org.uk' . "\r\n" .
-            'Reply-To: no-reply@london.hackspace.org.uk' . "\r\n" .
-            'Content-Type:text/html;charset=utf-8' . "\r\n" .
-            'X-Mailer: PHP/' . phpversion();
-
-        mail($toEmail, $subject, $message, $headers);
-
-        // log the google groups post
-        $log = new ProjectsLog();
-        $log->setProjectId($project->getId());
-        $log->setTimestamp(time()+1);
-        $log->setDetails('Posted to the Mailing List');
-        $log->store();
+        $logmsg = 'Reminder sent to owner regarding passed deadline';
+        $project->submitLog($logmsg);
+        $project->submitMailingList($logmsg);
     }
-}
-
-function sendEmail($to,$message,$project) {
-    $subject = 'London Hackspace Storage Request #'.$project->getId().': '.$project->getName();
-    $headers = 'From: trustees@london.hackspace.org.uk' . "\r\n" .
-        'Reply-To: trustees@london.hackspace.org.uk' . "\r\n" .
-        'Content-Type:text/html;charset=utf-8' . "\r\n" .
-        'X-Mailer: PHP/' . phpversion();
-
-    mail($to, $subject, $message, $headers);
 }
 ?>

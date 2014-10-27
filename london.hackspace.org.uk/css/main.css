@@ -1026,6 +1026,18 @@ span.member-social-icon {
 	width: auto;
 	display: inline-block;
 }
+.storage-request-notice {
+	div:first-child {
+		margin: 15px 20px 5px;
+	}
+	div:last-child {
+		margin: 5px 20px 15px;
+	}
+	.btn {
+		width: 200px;
+	}
+}
+
 .light-color {
 	color: #999;
 }

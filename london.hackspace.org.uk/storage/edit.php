@@ -71,92 +71,32 @@ if (isset($_POST['token'])) {
         $project->setUpdatedDate(date('Y-m-d'));
         $project->setUserId($user->getId());
         $project->store();
-
-        // log the update
-        $log = new ProjectsLog();
-        $log->setProjectId($project->getId());
-        $log->setTimestamp(time());
-        $log->setDetails($logDetails);
-        $log->setUserId($user->getId());
-        $log->store();
+        $project->submitLog($logDetails, $user->getId());
 
         // post to Google Groups
-        $from = new DateTime($project->getFromDate());
-        $to = new DateTime($project->getToDate()); 
-        if($from->diff($to)->format('%d') == '0') { 
-            $duration = $from->diff($to)->format('%m month(s)');
-        } else if($from->diff($to)->format('%m') == '0') { 
-            $duration = $from->diff($to)->format('%d day(s)');
-        } else { 
-            $duration = $from->diff($to)->format('%d day(s), %m month(s)'); 
-        }
-        $x = ($project->getLocationId() == 'Yard') ? 7 : 2;
         $projectUser = new User($project->getUserId());
-
-        $toEmail = 'london-hack-space-test@googlegroups.com';
-        $subject = 'Storage Request #'.$project->getId().': '.$project->getName();
         $message = 
             '<strong>' . $project->getName() . "</strong><br/>" .
             "by " . htmlspecialchars($projectUser->getFullName()) . " https://london.hackspace.org.uk/storage/" . $project->getId() . "<br/><br/>" .
-            $duration . "  " .
-            $from->format('jS M Y') . " - " .
-            $to->format('jS M Y') . "<br/>" .
-            $project->getLocationId() . ", " .
-            $project->getLocation() . "<br/><br/>" .
+            $project->outputDates() . "<br/>" .
+            $project->outputDuration() .
+            $project->outputLocation() . "<br/><br/>" .
             nl2br(stripslashes($project->getDescription())) . "<br/><br/>";
 
         if($auto)
-            $message .= "<strong>***If no one replies to this topic the request will be automatically approved within $x days.***</strong>";
+            $message .= "<strong>***If no one replies to this topic the request will be automatically approved within ".$project->automaticApprovalDuration()." days.***</strong>";
 
-        $headers = 'From: no-reply@london.hackspace.org.uk' . "\r\n" .
-            'Reply-To: no-reply@london.hackspace.org.uk' . "\r\n" .
-            'Content-Type:text/html;charset=utf-8' . "\r\n" .
-            'X-Mailer: PHP/' . phpversion();
-
-        mail($toEmail, $subject, $message, $headers);
-
-        // log the google groups post
-        $log = new ProjectsLog();
-        $log->setProjectId($project->getId());
-        $log->setTimestamp(time()+1);
-        $log->setDetails('Posted to the Mailing List');
-        $log->store();
+        $project->submitMailingList($message);
 
         // is this a short term request? If so automatically approve it
-        $from = new DateTime($project->getFromDate());
-        $to = new DateTime($project->getToDate()); 
-        $now = new DateTime(date('Y-m-d'));
-
-        if($from <= $now->modify('+1 day') && $to <= $from->modify('+3 days')) {
+        if($project->isShortTerm()) {
             $project->setState('Approved');
             $project->store();
 
             // log the update
             $logmsg = 'Short term storage detected, status automatically changed to '.$project->getState();
-            $log = new ProjectsLog();
-            $log->setProjectId($project->getId());
-            $log->setTimestamp(time()+2);
-            $log->setDetails($logmsg);
-            $log->store();
-
-            // send to mailing list
-            $toEmail = 'london-hack-space-test@googlegroups.com';
-            $subject = 'Storage Request #'.$project->getId().': '.$project->getName();
-            $message =  $logmsg;
-
-            $headers = 'From: no-reply@london.hackspace.org.uk' . "\r\n" .
-                'Reply-To: no-reply@london.hackspace.org.uk' . "\r\n" .
-                'Content-Type:text/html;charset=utf-8' . "\r\n" .
-                'X-Mailer: PHP/' . phpversion();
-
-            mail($toEmail, $subject, $message, $headers);
-
-            // log the google groups post
-            $log = new ProjectsLog();
-            $log->setProjectId($project->getId());
-            $log->setTimestamp(time()+3);
-            $log->setDetails('Posted to the Mailing List');
-            $log->store();
+            $project->submitLog($logmsg);
+            $project->submitMailingList($logmsg);
         }
 
         fURL::redirect("/storage/{$project->getId()}");
