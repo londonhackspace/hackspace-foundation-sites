@@ -3,9 +3,8 @@ $page = 'storagelist';
 $title = "Storage list";
 require( '../header.php' );
 
-if (!isset($user)) {
+if (!isset($user))
     fURL::redirect('/login.php?forward=/storage/list.php');
-}
 
 $projects = fRecordSet::build('Project',array('state!='=>array('Removed','Archived')), array('location_id' => 'asc', 'name' => 'asc'));
 ?>
@@ -27,7 +26,7 @@ $projects = fRecordSet::build('Project',array('state!='=>array('Removed','Archiv
         <?
     }
 
-$projects = fRecordSet::build('Project',array('state='=>array('Removed','Archived')), array('name' => 'asc')); ?>
+$projects = fRecordSet::build('Project',array('state='=>array('Removed','Archived')), array('state' => 'desc', 'name' => 'asc')); ?>
 
 <br/><br/>
 <h3>Old requests</h3>

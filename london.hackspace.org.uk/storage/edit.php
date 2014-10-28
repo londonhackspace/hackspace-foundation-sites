@@ -3,20 +3,17 @@ $page = 'storagedetails_edit';
 $title = "Storage request";
 require( '../header.php' );
 
+if (!isset($user))
+    fURL::redirect("/login.php?forward=/storage/edit/{$_GET['id']}");
+
 if(isset($_GET['id'])) {
     $project = new Project(filter_var($_GET['id'], FILTER_SANITIZE_STRING));
-
-    if (!isset($user))
-        fURL::redirect("/login.php?forward=/storage/edit/{$project->getId()}");
 
     if($user->getId() != $project->getUserId() || ($project->getState() != 'Unapproved' && $project->getState() != 'Pending Approval'))
         fURL::redirect("/storage/{$project->getId()}");
 } else {
     $project = new Project();
 }
-
-if (!isset($user))
-    fURL::redirect("/login.php?forward=/storage/edit/{$project->getId()}");
 ?>
 
 <h2>Request for storage</h2>

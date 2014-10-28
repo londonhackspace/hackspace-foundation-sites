@@ -3,10 +3,10 @@ $page = 'storagedetails_edit';
 $title = "Storage details";
 require( '../header.php' );
 
-$project = new Project(filter_var($_GET['id'], FILTER_SANITIZE_STRING));
 if (!isset($user))
-	fURL::redirect("/login.php?forward=/storage/{$project->getId()}");
+	fURL::redirect("/login.php?forward=/storage/{$_GET['id']}");
 
+$project = new Project(filter_var($_GET['id'], FILTER_SANITIZE_STRING));
 $projectslogs = fRecordSet::build('ProjectsLog',array('project_id=' => $project->getId()), array('id' => 'asc'));
 $states = fRecordSet::build('ProjectState',array(), array('sort' => 'asc'));
 $projectUser = new User($project->getUserId());
