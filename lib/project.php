@@ -5,14 +5,21 @@ class Project extends fActiveRecord {
 		$to = new DateTime($this->getToDate()); 
 
 		$output = 'Stored for ';
-		if($from->diff($to)->format('%d') == '0') { 
-			$output .= $from->diff($to)->format('%m month(s)');
-		} else if($from->diff($to)->format('%m') == '0') { 
-			$output .= $from->diff($to)->format('%d day(s)');
-		} else { 
-			$output .- $from->diff($to)->format('%d day(s), %m month(s)'); 
-		}
-		return $output;
+		$days = (int)$from->diff($to)->format('%d');
+		$months = (int)$from->diff($to)->format('%m');
+
+		$daysString = $days.' day';
+		if($days > 1) $daysString .= 's';
+
+		$monthsString = $months.' month';
+		if($months > 1) $monthsString .= 's';
+
+		if($days > 0 && $months > 0)
+			return 'Request for '.$daysString.', '.$monthsString;
+		else if($days > 0)
+			return 'Request for '.$daysString;
+		else if($months > 0)
+			return 'Request for '.$monthsString;
 	}
 
 	public function outputDates() {
@@ -24,7 +31,7 @@ class Project extends fActiveRecord {
 	public function outputLocation() {
 		$location = new Location($this->getLocationId());
 		$output = 'in the '.strtolower($location->getName());
-		$output .= ', '.$this->getLocation();
+		$output .= ' ('.$this->getLocation().')';
 		return $output;
 	}
 
@@ -39,7 +46,7 @@ class Project extends fActiveRecord {
 
 	public function submitMailingList($message) {
 		$toEmail = 'london-hack-space-test@googlegroups.com';
-		$subject = 'Storage Request #'.$project->getId().': '.$project->getName();
+		$subject = 'Storage Request #'.$this->getId().': '.$this->getName();
 		$headers = 'From: no-reply@london.hackspace.org.uk' . "\r\n" .
 			'Reply-To: no-reply@london.hackspace.org.uk' . "\r\n" .
 			'Content-Type:text/html;charset=utf-8' . "\r\n" .
@@ -48,7 +55,7 @@ class Project extends fActiveRecord {
 		mail($toEmail, $subject, $message, $headers);
 
 		// log the post
-		$project->submitLog('Posted to the Mailing List');
+		$this->submitLog('Posted to the Mailing List');
 	}
 
 	public function canTransitionStates($from,$to) {
@@ -77,7 +84,9 @@ class Project extends fActiveRecord {
 			if($ltime >= $now->modify('-1 day'))
 				$rlogs++;
 		}
-		if($clogs == 2 && $rlogs == 2) {
+		if($this->isShortTerm() && $clogs == 4 && $rlogs == 4) {
+			return true;
+		} else if(!$this->isShortTerm() && $clogs == 2 && $rlogs == 2) {
 			return true;
 		}
 		return false;
@@ -99,7 +108,10 @@ class Project extends fActiveRecord {
 		$from = new DateTime($this->getFromDate());
 		$to = new DateTime($this->getToDate());
 		$logs = fRecordSet::build('ProjectsLog',array('project_id=' => $this->getId()));
-		$then = new DateTime(date('Y-m-d',$logs[0]->getTimestamp()));
+		if(count($logs) > 0)
+			$then = new DateTime(date('Y-m-d',$logs[0]->getTimestamp()));
+		else
+			return false;
 
 		// Short term projects only get a 2 day extension
 		if($from <= $then->modify('+1 day') && $to <= $from->modify('+3 days'))

@@ -940,7 +940,7 @@ span.member-social-icon {
 	width: 32%;
 	padding: 4px;
 }
-.profile .profile_edit {
+.edit_bttn {
 	float: right;
 	margin-left: 10px;
 }
@@ -1026,16 +1026,15 @@ span.member-social-icon {
 	width: auto;
 	display: inline-block;
 }
-.storage-request-notice {
-	div:first-child {
-		margin: 15px 20px 5px;
-	}
-	div:last-child {
-		margin: 5px 20px 15px;
-	}
-	.btn {
-		width: 200px;
-	}
+
+.storage-request-notice div:nth-child(2) {
+	margin: 15px 20px 5px;
+}
+.storage-request-notice div:nth-child(3) {
+	margin: 5px 20px 15px;
+}
+.storage-request-notice .btn {
+	width: 200px;
 }
 
 .light-color {
@@ -1061,8 +1060,11 @@ h3 .status {
 	top: -3px;	
 	margin-top: 0;
 }
-.status.pending, .status.removed, .status.archived {
+.status.pending, .status.removed {
 	background-color: #ccc;
+}
+.status.archived {
+	background-color: #eee;
 }
 .status.approved, .status.extended {
 	background-color: #5cb85c;

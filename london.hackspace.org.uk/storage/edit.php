@@ -26,9 +26,12 @@ $maxStorageMonths = 6;
 if (isset($_POST['token'])) {
     try {
         fRequest::validateCSRFToken($_POST['token']);
+        $identicalNames = fRecordSet::build('Project',array('user_id='=>$user->getId(),'name='=>array(filter_var($_POST['name'], FILTER_SANITIZE_STRING))), array('name' => 'asc'));
 
         if(!isset($_POST['name']) || $_POST['name'] == '')
             throw new fValidationException('Name field is required.');
+        if(count($identicalNames) > 0 && !$project->getId())
+            throw new fValidationException('You\'ve already made a request with that name. How is this request different to the last time? Our members like to know a project with multiple storage requests is being actively worked on and progress is being made.');
         if(!isset($_POST['description']) || $_POST['description'] == '')
             throw new fValidationException('Description field is required.');
         if(!isset($_POST['location_id']) || $_POST['location_id'] == '')
@@ -79,7 +82,7 @@ if (isset($_POST['token'])) {
             '<strong>' . $project->getName() . "</strong><br/>" .
             "by " . htmlspecialchars($projectUser->getFullName()) . " https://london.hackspace.org.uk/storage/" . $project->getId() . "<br/><br/>" .
             $project->outputDates() . "<br/>" .
-            $project->outputDuration() .
+            $project->outputDuration() . ' ' .
             $project->outputLocation() . "<br/><br/>" .
             nl2br(stripslashes($project->getDescription())) . "<br/><br/>";
 

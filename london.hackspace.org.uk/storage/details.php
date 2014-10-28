@@ -7,8 +7,8 @@ $project = new Project(filter_var($_GET['id'], FILTER_SANITIZE_STRING));
 if (!isset($user))
 	fURL::redirect("/login.php?forward=/storage/{$project->getId()}");
 
-$projectslogs = fRecordSet::build('ProjectsLog',array('project_id=' => $project->getId()), array('timestamp' => 'asc'));
-$states = fRecordSet::build('ProjectState');
+$projectslogs = fRecordSet::build('ProjectsLog',array('project_id=' => $project->getId()), array('id' => 'asc'));
+$states = fRecordSet::build('ProjectState',array(), array('sort' => 'asc'));
 $projectUser = new User($project->getUserId());
 
 if (isset($_POST['remove']) && ($user->getId() == $project->getUserId())) {
@@ -58,33 +58,44 @@ if (isset($_POST['submit']) && ($user->getId() != $project->getUserId() || $user
 }
 ?>
 
+<? if($user->getId() == $project->getUserId() && ($project->getState() == 'Pending Approval' || $project->getState() == 'Unapproved')) { ?>
+	<small class="edit_bttn">
+	<a href="/storage/edit/<?=$project->getId()?>" class="btn btn-default">Edit request</a>
+	</small>
+<? } if($user->getId() == $project->getUserId() && ($project->getState() == 'Approved' || $project->getState() == 'Passed Deadline' || $project->getState() == 'Extended')) { ?>
+	<small class="edit_bttn">
+	<form class="form-inline" role="form" method="post" style="display: inline;">
+		<input type="hidden" name="token" value="<?=fRequest::generateCSRFToken()?>" />
+		<input type="submit" name="remove" class="btn btn-default" value="Mark as removed from the space"/>
+	</form>
+	</small>
+<? } ?>
 <h2>Storage Request</h2>
 <h3><?=$project->getName(); ?>
 	<div class="status <?= strtolower($project->getState()); ?>"><?= $project->getState(); ?></div>
+<p><small>
+	<?=$project->outputDates(); ?>
+	by <a href="/members/member.php?id=<?=$project->getUserId()?>"><?=htmlspecialchars($projectUser->getFullName())?></a><br/>
+	<?=$project->outputDuration(); ?>
+	<?=$project->outputLocation(); ?>
+</small></p>
 </h3>
 <? if($project->recentPost() && $user->getId() == $project->getUserId()) { ?>
 	<div class="alert alert-success storage-request-notice">
 		<p>Now you've made a storage request don't forget:</p>
 		<div><? if($project->getLocationId() != 'Yard') { ?><a target="_blank" href="/storage/print/<?=$project->getId()?>" class="btn btn-success">Print DO NOT HACK label</a> and attach it to your project. This is to let other members know your project is accounted for. <? } ?></div>
-		<div><a target="_blank" href="https://groups.google.com/forum/#!topicsearchin/london-hack-space-test/subject$3AStorage$20AND$20subject$3ARequest$20AND$20subject$3A$23<?=$project->getId()?>" class="btn btn-primary">Read mailing list topic</a> This is where other members can choose to expediate your request (if its urgent) or unapprove it.</div>
-		<? if($project->getState() == 'Pending Approval') { ?><p>Your project will be automatically approved after <?=$project->automaticApprovalDuration();?> days if you don't make any changes and no one replies on the mailing list.</p><? } ?>
+		<div><a target="_blank" href="https://groups.google.com/forum/#!topicsearchin/london-hack-space-test/subject$3AStorage$20AND$20subject$3ARequest$20AND$20subject$3A$23<?=$project->getId()?>" class="btn btn-success">Read the mailing list topic</a> this is where other members <? if(!$project->isShortTerm()) { ?> can choose to expediate your request (if its urgent) or unapprove it.<? } else { ?> can raise any concerns they have with your request.<? } ?></div>
+		<? if($project->getState() == 'Pending Approval') { ?><p>Your request will be automatically approved after <?=$project->automaticApprovalDuration();?> days if you don't make any changes and no one replies on the mailing list.</p><? } ?>
 	</div>
 <? } else { ?>
 	<a target="_blank" href="/storage/print/<?=$project->getId()?>" class="btn btn-success">Print DO NOT HACK label</a>
-	<a target="_blank" href="https://groups.google.com/forum/#!topicsearchin/london-hack-space-test/subject$3AStorage$20AND$20subject$3ARequest$20AND$20subject$3A$23<?=$project->getId()?>" class="btn btn-primary">Read mailing list topic</a><br/>
+	<a target="_blank" href="https://groups.google.com/forum/#!topicsearchin/london-hack-space-test/subject$3AStorage$20AND$20subject$3ARequest$20AND$20subject$3A$23<?=$project->getId()?>" class="btn btn-success">Read the mailing list topic</a><br/>
 <? } ?>
-<p></p>
-<p><small>
-	Requested by <a href="/members/member.php?id=<?=$project->getUserId()?>"><?=htmlspecialchars($projectUser->getFullName())?></a><br/>
-	<?=$project->outputDates(); ?><br/>
-	<?=$project->outputDuration(); ?>
-	<?=$project->outputLocation(); ?>
-</small></p>
-<p>
-	<?=nl2br(stripslashes($project->getDescription())); ?>
-</p>
 <br/>
-<h4>Activity log</h4>
+<p><?=nl2br(stripslashes($project->getDescription())); ?></p>
+<br/>
+<hr/>
+<strong>Activity log</strong><br/><br/>
 <ul>
 <? foreach($projectslogs as $log) {
 	$userURL = '';
@@ -94,18 +105,12 @@ if (isset($_POST['submit']) && ($user->getId() != $project->getUserId() || $user
 	}
 	echo '<li><span class="light-color">'.date('g:ia jS M',$log->getTimestamp()).'</span> | '.str_replace('Mailing List','<a target="_blank" href="https://groups.google.com/forum/#!topicsearchin/london-hack-space-test/subject$3AStorage$20AND$20subject$3ARequest$20AND$20subject$3A$23'.$project->getId().'">Mailing List</a>',$log->getDetails()).$userURL.'</li>';
 } ?>
-</ul><br/>
-<? if($user->getId() == $project->getUserId() && ($project->getState() == 'Pending Approval' || $project->getState() == 'Unapproved')) { ?>
-<a href="/storage/edit/<?=$project->getId()?>" class="btn btn-primary">Edit request</a>
-<? } if($user->getId() == $project->getUserId() && ($project->getState() == 'Approved' || $project->getState() == 'Passed Deadline' || $project->getState() == 'Extended')) { ?>
-<form class="form-inline" role="form" method="post" style="display: inline;">
-	<input type="hidden" name="token" value="<?=fRequest::generateCSRFToken()?>" />
-	<input type="submit" name="remove" class="btn btn-primary" value="Mark as removed from the space"/>
-</form>
-<? } ?>
-<br/></br>
+</ul>
 <? if($user->getId() != $project->getUserId() || $user->isAdmin()) { ?>
+<hr/>
 <form class="form-inline" role="form" method="post">
+	<strong>Update Status</strong><br/>
+	<p><small>Status changes are notified to the mailing list.</small></p>
 	<input type="hidden" name="token" value="<?=fRequest::generateCSRFToken()?>" />
 	<select class="form-control" name="state">
 		<option value="" disabled selected></option>

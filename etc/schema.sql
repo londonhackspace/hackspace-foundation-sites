@@ -75,15 +75,16 @@ INSERT INTO locations (name) VALUES ('Basement');
 INSERT INTO locations (name) VALUES ('Yard');
 
 CREATE TABLE project_states (
-	name VARCHAR(255) PRIMARY KEY NOT NULL
+	name VARCHAR(255) PRIMARY KEY NOT NULL,
+	sort INTEGER 
 );
-INSERT INTO project_states (name) VALUES ('Pending');
-INSERT INTO project_states (name) VALUES ('Approved');
-INSERT INTO project_states (name) VALUES ('Unapproved');
-INSERT INTO project_states (name) VALUES ('Passed Deadline');
-INSERT INTO project_states (name) VALUES ('Removed');
-INSERT INTO project_states (name) VALUES ('Archived');
-INSERT INTO project_states (name) VALUES ('Extended');
+INSERT INTO project_states (name,sort) VALUES ('Pending Approval',1);
+INSERT INTO project_states (name,sort) VALUES ('Approved',2);
+INSERT INTO project_states (name,sort) VALUES ('Unapproved',3);
+INSERT INTO project_states (name,sort) VALUES ('Extended',4);
+INSERT INTO project_states (name,sort) VALUES ('Passed Deadline',5);
+INSERT INTO project_states (name,sort) VALUES ('Removed',6);
+INSERT INTO project_states (name,sort) VALUES ('Archived',7);
 
 CREATE TABLE projects (
 	id INTEGER PRIMARY KEY AUTOINCREMENT, 
@@ -100,7 +101,8 @@ CREATE TABLE projects (
 );
 
 CREATE TABLE projects_logs (
-    	timestamp INTEGER PRIMARY KEY NOT NULL,
+	id INTEGER PRIMARY KEY AUTOINCREMENT, 
+    	timestamp INTEGER NOT NULL,
 	project_id INTEGER NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
 	user_id INTEGER REFERENCES users(id),
 	details VARCHAR(255) NOT NULL
