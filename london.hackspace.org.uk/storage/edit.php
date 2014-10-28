@@ -5,8 +5,11 @@ require( '../header.php' );
 
 if(isset($_GET['id'])) {
     $project = new Project(filter_var($_GET['id'], FILTER_SANITIZE_STRING));
-    if($user->getId() != $project->getUserId() 
-       || ($project->getState() != 'Unapproved' && $project->getState() != 'Pending Approval'))
+
+    if (!isset($user))
+        fURL::redirect("/login.php?forward=/storage/edit/{$project->getId()}");
+
+    if($user->getId() != $project->getUserId() || ($project->getState() != 'Unapproved' && $project->getState() != 'Pending Approval'))
         fURL::redirect("/storage/{$project->getId()}");
 } else {
     $project = new Project();
@@ -86,7 +89,7 @@ if (isset($_POST['token'])) {
             $project->outputLocation() . "<br/><br/>" .
             nl2br(stripslashes($project->getDescription())) . "<br/><br/>";
 
-        if($auto)
+        if($auto && !$project->isShortTerm())
             $message .= "<strong>***If no one replies to this topic the request will be automatically approved within ".$project->automaticApprovalDuration()." days.***</strong>";
 
         $project->submitMailingList($message);
@@ -98,7 +101,7 @@ if (isset($_POST['token'])) {
 
             // log the update
             $logmsg = 'Short term storage detected, status automatically changed to '.$project->getState();
-            $project->submitLog($logmsg);
+            $project->submitLog($logmsg,false);
             $project->submitMailingList($logmsg);
         }
 
@@ -117,7 +120,7 @@ if (isset($_POST['token'])) {
             <div class="form-group">
                 <label for="name" class="col-sm-3 control-label">Name</label>
                 <div class="col-sm-9">
-                    <input type="text" class="form-control" id="name" name="name" placeholder="How would you describe it?" value="<? if($_POST && $_POST['name']) { echo $_POST['name']; } else if($project->getName()) { echo $project->getName(); } ?>">
+                    <input type="text" class="form-control" id="name" name="name" placeholder="What is it?" value="<? if($_POST && $_POST['name']) { echo $_POST['name']; } else if($project->getName()) { echo $project->getName(); } ?>">
                 </div>
             </div>
             <div class="form-group">
@@ -153,8 +156,8 @@ if (isset($_POST['token'])) {
                     <p class="alert alert-info tip-short-term-storage hide" role="alert"><span class="glyphicon glyphicon-star"></span> It's okay to store your project short term to let paint dry, give yourself a break, etc. But short term storage requests can <strong> only be extended 2 days</strong> at most. If it takes longer you'll need to submit a new storage request and leave enough time for other members to review.</p>
                     <p class="alert alert-warning tip-indoor-review hide" role="alert"><span class="glyphicon glyphicon-star"></span> We need <strong>2 days to review</strong> indoor storage requests unless it's a matter of urgency.</p>
                     <p class="alert alert-warning tip-yard-review hide" role="alert"><span class="glyphicon glyphicon-star"></span> We need <strong>7 days to review</strong> yard storage requests unless it's a matter of urgency.</p>
-                    <p class="help-block">Think carefully about the date of removal as we take your commitment seriously.</p>
-                    <p class="help-block">It helps to estimate how long your project will take then double it. If you're still waiting on parts to be delivered, then double it again.</p>
+                    <p class="help-block">Think carefully about your date of removal as we take your commitment seriously. It helps to estimate how long your project will take then double it.</p>
+                    <p class="help-block">If you're still waiting on parts to be delivered, please reconsider submitting your request until you have everything you need.</p>
                 </div>
             </div>
             <div class="form-group location-fields">

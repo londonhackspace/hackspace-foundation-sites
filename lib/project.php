@@ -15,7 +15,7 @@ class Project extends fActiveRecord {
 		if($months > 1) $monthsString .= 's';
 
 		if($days > 0 && $months > 0)
-			return 'Request for '.$daysString.', '.$monthsString;
+			return 'Request for '.$monthsString.', '.$daysString;
 		else if($days > 0)
 			return 'Request for '.$daysString;
 		else if($months > 0)
@@ -55,7 +55,7 @@ class Project extends fActiveRecord {
 		mail($toEmail, $subject, $message, $headers);
 
 		// log the post
-		$this->submitLog('Posted to the Mailing List');
+		$this->submitLog('Posted to the Mailing List',false);
 	}
 
 	public function canTransitionStates($from,$to) {
@@ -69,6 +69,16 @@ class Project extends fActiveRecord {
 		)
 		   return true;
 
+		return false;
+	}
+
+	public function noActivity() {
+		$projectslogs = fRecordSet::build('ProjectsLog',array('project_id=' => $this->getId()), array('timestamp' => 'asc'));
+		if($this->isShortTerm() && count($projectslogs) == 4) {
+			return true;
+		} else if(!$this->isShortTerm() && count($projectslogs) == 2) {
+			return true;
+		}
 		return false;
 	}
 
@@ -98,6 +108,9 @@ class Project extends fActiveRecord {
 
 	public function hasExtension() {
 		// Has this project been extended
+		if($this->getState() == 'Extended')
+			return true;
+
 		$logs = fRecordSet::build('ProjectsLog',array('project_id=' => $this->getId(), 'details=' => 'Status changed to Extended'));
 		if(count($logs) > 0)
 			return true;
@@ -123,6 +136,10 @@ class Project extends fActiveRecord {
 		if($this->isShortTerm())
 			return 2;
 		return 14;
+	}
+
+	public function getMailingListURL() {
+		return 'https://groups.google.com/forum/#!topicsearchin/london-hack-space-test/subject$3A%22Storage$20Request$20$23'.$this->getId().'$3A%22';
 	}
 }
 class Location extends fActiveRecord { }

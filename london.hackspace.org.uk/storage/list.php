@@ -22,7 +22,7 @@ $projects = fRecordSet::build('Project',array('state!='=>array('Removed','Archiv
             echo "<h3>$loc</h3>";
         }
         ?>
-        <div class="status small <?= strtolower($project->getState()); ?>"><?= $project->getState(); ?></div>
+        <div class="status small <?= strtolower($project->getState()); ?>"><?= $project->getState(); ?> <?if($project->getState() == 'Extended') { ?>(<?=$project->getExtensionDuration()?> days)<? } ?></div>
         <a href="/storage/<?=$project->getId()?>"><?=$project->getName()?></a><br/>
         <?
     }

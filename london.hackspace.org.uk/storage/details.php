@@ -11,17 +11,17 @@ $projectslogs = fRecordSet::build('ProjectsLog',array('project_id=' => $project-
 $states = fRecordSet::build('ProjectState',array(), array('sort' => 'asc'));
 $projectUser = new User($project->getUserId());
 
-if (isset($_POST['remove']) && ($user->getId() == $project->getUserId())) {
+if (isset($_POST['remove']) || isset($_POST['extend']) && ($user->getId() == $project->getUserId())) {
 	try {
 		fRequest::validateCSRFToken($_POST['token']);
-		if($project->canTransitionStates($project->getState(),'Removed')) {
+		if(isset($_POST['remove']) && $project->canTransitionStates($project->getState(),'Removed'))
 			$project->setState('Removed');
-			$project->store();
+		else if(isset($_POST['extend']) && $project->canTransitionStates($project->getState(),'Extended'))
+			$project->setState('Extended');
 
-			// log the update
-			$project->submitLog($logmsg,$user->getId());
-		}
-		fURL::redirect("/storage/list.php");
+		$project->store();
+		$project->submitLog('Status changed to ' . $project->getState(),$user->getId());
+		fURL::redirect("/storage/{$project->getId()}");
 	} catch (fValidationException $e) {
 		echo $e->printMessage();
 	} catch (fSQLException $e) {
@@ -67,12 +67,15 @@ if (isset($_POST['submit']) && ($user->getId() != $project->getUserId() || $user
 	<form class="form-inline" role="form" method="post" style="display: inline;">
 		<input type="hidden" name="token" value="<?=fRequest::generateCSRFToken()?>" />
 		<input type="submit" name="remove" class="btn btn-default" value="Mark as removed from the space"/>
+		<? if(!$project->hasExtension()) { ?>
+		<input type="submit" name="extend" class="btn btn-default" value="Extend the deadline"/>
+		<? } ?>
 	</form>
 	</small>
 <? } ?>
 <h2>Storage Request</h2>
 <h3><?=$project->getName(); ?>
-	<div class="status <?= strtolower($project->getState()); ?>"><?= $project->getState(); ?></div>
+	<div class="status <?= strtolower($project->getState()); ?>"><?= $project->getState(); ?> <?if($project->getState() == 'Extended') { ?>(<?=$project->getExtensionDuration()?> days)<? } ?></div>
 <p><small>
 	<?=$project->outputDates(); ?>
 	by <a href="/members/member.php?id=<?=$project->getUserId()?>"><?=htmlspecialchars($projectUser->getFullName())?></a><br/>
@@ -83,15 +86,16 @@ if (isset($_POST['submit']) && ($user->getId() != $project->getUserId() || $user
 <? if($project->recentPost() && $user->getId() == $project->getUserId()) { ?>
 	<div class="alert alert-success storage-request-notice">
 		<p>Now you've made a storage request don't forget:</p>
-		<div><? if($project->getLocationId() != 'Yard') { ?><a target="_blank" href="/storage/print/<?=$project->getId()?>" class="btn btn-success">Print DO NOT HACK label</a> and attach it to your project. This is to let other members know your project is accounted for. <? } ?></div>
-		<div><a target="_blank" href="https://groups.google.com/forum/#!topicsearchin/london-hack-space-test/subject$3AStorage$20AND$20subject$3ARequest$20AND$20subject$3A$23<?=$project->getId()?>" class="btn btn-success">Read the mailing list topic</a> this is where other members <? if(!$project->isShortTerm()) { ?> can choose to expediate your request (if its urgent) or unapprove it.<? } else { ?> can raise any concerns they have with your request.<? } ?></div>
+		<div><a target="_blank" href="/storage/print/<?=$project->getId()?>" class="btn btn-success">Print DO NOT HACK label</a> and attach it to your project. This is to let other members know your project is accounted for.</div>
+		<div><a target="_blank" href="<?=$project->getMailingListURL()?>" class="btn btn-success">Read the mailing list topic</a> this is where other members <? if(!$project->isShortTerm()) { ?> can choose to expediate your request (if its urgent) or unapprove it.<? } else { ?> can raise any concerns they have with your request.<? } ?></div>
 		<? if($project->getState() == 'Pending Approval') { ?><p>Your request will be automatically approved after <?=$project->automaticApprovalDuration();?> days if you don't make any changes and no one replies on the mailing list.</p><? } ?>
 	</div>
 <? } else { ?>
-	<a target="_blank" href="/storage/print/<?=$project->getId()?>" class="btn btn-success">Print DO NOT HACK label</a>
-	<a target="_blank" href="https://groups.google.com/forum/#!topicsearchin/london-hack-space-test/subject$3AStorage$20AND$20subject$3ARequest$20AND$20subject$3A$23<?=$project->getId()?>" class="btn btn-success">Read the mailing list topic</a><br/>
+	<a target="_blank" href="/storage/print/<?=$project->getId()?>" class="btn btn-default">Print DO NOT HACK label</a>
+	<a target="_blank" href="<?=$project->getMailingListURL()?>" class="btn btn-default">Read the mailing list topic</a><br/>
 <? } ?>
 <br/>
+	<?if($project->hasExtension()) { ?><strong>Extended for <?=$project->getExtensionDuration()?> days</strong><br/><br/><? } ?>
 <p><?=nl2br(stripslashes($project->getDescription())); ?></p>
 <br/>
 <hr/>
@@ -103,14 +107,14 @@ if (isset($_POST['submit']) && ($user->getId() != $project->getUserId() || $user
 		$logUser = new User($log->getUserId());
 		$userURL = ' by <a href="/members/member.php?id='.$log->getUserId().'">'.htmlspecialchars($logUser->getFullName()).'</a>';
 	}
-	echo '<li><span class="light-color">'.date('g:ia jS M',$log->getTimestamp()).'</span> | '.str_replace('Mailing List','<a target="_blank" href="https://groups.google.com/forum/#!topicsearchin/london-hack-space-test/subject$3AStorage$20AND$20subject$3ARequest$20AND$20subject$3A$23'.$project->getId().'">Mailing List</a>',$log->getDetails()).$userURL.'</li>';
+	echo '<li><span class="light-color">'.date('g:ia jS M',$log->getTimestamp()).'</span> | '.str_replace('Mailing List','<a target="_blank" href="'.$project->getMailingListURL().'">Mailing List</a>',$log->getDetails()).$userURL.'</li>';
 } ?>
 </ul>
 <? if($user->getId() != $project->getUserId() || $user->isAdmin()) { ?>
 <hr/>
 <form class="form-inline" role="form" method="post">
 	<strong>Update Status</strong><br/>
-	<p><small>Status changes are notified to the mailing list.</small></p>
+	<p><small>Status changes are notified to the mailing list (except for archived).</small></p>
 	<input type="hidden" name="token" value="<?=fRequest::generateCSRFToken()?>" />
 	<select class="form-control" name="state">
 		<option value="" disabled selected></option>
