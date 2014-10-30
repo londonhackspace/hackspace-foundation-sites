@@ -59,7 +59,7 @@ class Project extends fActiveRecord {
 	}
 
 	public function submitMailingList($message) {
-		$toEmail = 'london-hack-space@googlegroups.com';
+		$toEmail = 'london-hack-space-test@googlegroups.com';
 		$subject = 'Storage Request #'.$this->getId().': '.$this->getName();
 		$headers = 'From: no-reply@london.hackspace.org.uk' . "\r\n" .
 			'Reply-To: no-reply@london.hackspace.org.uk' . "\r\n" .
