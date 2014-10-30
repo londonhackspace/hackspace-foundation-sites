@@ -6,7 +6,7 @@ require( '../header.php' );
 if (!isset($user))
     fURL::redirect('/login.php?forward=/storage/list.php');
 
-$projects = fRecordSet::build('Project',array('state!='=>array('Removed','Archived')), array('location_id' => 'asc', 'name' => 'asc'));
+$projects = fRecordSet::build('Project',array('state_id!='=>array('6','7')), array('location_id' => 'asc', 'name' => 'asc'));
 ?>
 
 <h2>Storage Requests</h2>
@@ -18,7 +18,8 @@ $projects = fRecordSet::build('Project',array('state!='=>array('Removed','Archiv
     foreach($projects as $project) {
         if($project->getLocationId() != $loc) {
             $loc = $project->getLocationId();
-            echo "<h3>$loc</h3>";
+            $location = new Location($project->getLocationId());
+            echo "<h3>".$location->getName()."</h3>";
         }
         ?>
         <div class="status small <?= strtolower($project->getState()); ?>"><?= $project->getState(); ?> <?if($project->getState() == 'Extended') { ?>(<?=$project->getExtensionDuration()?> days)<? } ?></div>
@@ -26,7 +27,7 @@ $projects = fRecordSet::build('Project',array('state!='=>array('Removed','Archiv
         <?
     }
 
-$projects = fRecordSet::build('Project',array('state='=>array('Removed','Archived')), array('state' => 'desc', 'name' => 'asc')); ?>
+$projects = fRecordSet::build('Project',array('state_id='=>array('6','7')), array('state_id' => 'asc', 'name' => 'asc')); ?>
 
 <br/><br/>
 <h3>Old requests</h3>

@@ -8,7 +8,7 @@ if (!isset($user))
 
 $project = new Project(filter_var($_GET['id'], FILTER_SANITIZE_STRING));
 $projectslogs = fRecordSet::build('ProjectsLog',array('project_id=' => $project->getId()), array('id' => 'asc'));
-$states = fRecordSet::build('ProjectState',array(), array('sort' => 'asc'));
+$states = fRecordSet::build('ProjectState',array(), array('id' => 'asc'));
 $projectUser = new User($project->getUserId());
 
 if (isset($_POST['remove']) || isset($_POST['extend']) && ($user->getId() == $project->getUserId())) {

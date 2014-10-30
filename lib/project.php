@@ -1,5 +1,19 @@
 <?php
 class Project extends fActiveRecord { 
+	public function getState() {
+		$state = new ProjectState($this->getStateId());
+		return $state->getName();
+	}
+
+	public function setState($name) {
+		$states = fRecordSet::build('ProjectState',array('name=' => $name), array('id' => 'asc'));
+		if(count($states)) {
+			$this->setStateId($states[0]->getId());
+			return true;
+		}
+		return false;
+	}
+
 	public function outputDuration() {
 		$from = new DateTime($this->getFromDate());
 		$to = new DateTime($this->getToDate()); 
@@ -45,7 +59,7 @@ class Project extends fActiveRecord {
 	}
 
 	public function submitMailingList($message) {
-		$toEmail = 'london-hack-space-test@googlegroups.com';
+		$toEmail = 'london-hack-space@googlegroups.com';
 		$subject = 'Storage Request #'.$this->getId().': '.$this->getName();
 		$headers = 'From: no-reply@london.hackspace.org.uk' . "\r\n" .
 			'Reply-To: no-reply@london.hackspace.org.uk' . "\r\n" .
