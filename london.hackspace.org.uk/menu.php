@@ -12,7 +12,6 @@
             <?if (isset($user) && $user->isMember()) {?>
                 <?=menulink('/members/members.php', 'memberslist', 'Members List')?>
                 <?=menulink('/members/webcams.php', 'webcams', 'Webcams')?>
-                <?=menulink('/storage/list.php', 'storagelist', 'Storage Requests')?>
                 <?=menulink('/members/code.php', 'code', 'Gate Code')?>
             <? } ?>
             <? if (isset($user)) { ?>

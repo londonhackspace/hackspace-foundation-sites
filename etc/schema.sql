@@ -67,47 +67,6 @@ CREATE TABLE userperms (
     user_id INTEGER NOT NULL REFERENCES users(id)
 );
 
-CREATE TABLE locations (
-	name VARCHAR(255) PRIMARY KEY
-);
-INSERT INTO locations (name) VALUES ('Ground floor');
-INSERT INTO locations (name) VALUES ('Basement');
-INSERT INTO locations (name) VALUES ('Yard');
-
-CREATE TABLE project_states (
-	name VARCHAR(255) PRIMARY KEY NOT NULL,
-	sort INTEGER 
-);
-INSERT INTO project_states (name,sort) VALUES ('Pending Approval',1);
-INSERT INTO project_states (name,sort) VALUES ('Approved',2);
-INSERT INTO project_states (name,sort) VALUES ('Unapproved',3);
-INSERT INTO project_states (name,sort) VALUES ('Extended',4);
-INSERT INTO project_states (name,sort) VALUES ('Passed Deadline',5);
-INSERT INTO project_states (name,sort) VALUES ('Removed',6);
-INSERT INTO project_states (name,sort) VALUES ('Archived',7);
-
-CREATE TABLE projects (
-	id INTEGER PRIMARY KEY AUTOINCREMENT, 
-	user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE, 
-	name VARCHAR(255) NOT NULL,
-	description VARCHAR(500) NOT NULL,
-	state VARCHAR(255) NOT NULL REFERENCES project_states(name) ON DELETE CASCADE,
-	location_id VARCHAR(255) NOT NULL REFERENCES locations(name) ON DELETE CASCADE,
-	location VARCHAR(255),
-    	updated_date DATETIME NOT NULL,
-    	from_date DATETIME NOT NULL,
-    	to_date DATETIME NOT NULL,
-	FOREIGN KEY(user_id) REFERENCES users(id)
-);
-
-CREATE TABLE projects_logs (
-	id INTEGER PRIMARY KEY AUTOINCREMENT, 
-    	timestamp INTEGER NOT NULL,
-	project_id INTEGER NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
-	user_id INTEGER REFERENCES users(id),
-	details VARCHAR(255) NOT NULL
-);
-
 CREATE TABLE users_profiles (
 	user_id INTEGER PRIMARY KEY NOT NULL REFERENCES users(id) ON DELETE CASCADE, 
 	allow_email BOOLEAN NOT NULL DEFAULT 0,
