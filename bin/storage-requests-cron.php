@@ -92,31 +92,33 @@ foreach($projects as $project) {
         'X-Mailer: PHP/' . phpversion();
 
     // reminder email 3 days before removal
-    if($from < $now && $now == $to->modify('-3 days') && ($project->getState() == 'Approved' || $project->getState() == 'Extended')) {
+    if($from < $now && $now == $to->modify('-3 days') && $project->getState() != 'Pending Approval') {
         echo("3 days until deadline, sending reminder\n");
         mail($user->getEmail(), $subject, $message, $headers);
+        $project->submitLog('Three days before removal, reminder email sent to owner',false);
     }
     $to->modify('+3 days');
 
     // reminder email a day after removal
-    if($now == $to->modify('+1 day') && ($project->getState() == 'Approved' || $project->getState() == 'Extended')) {
+    if($now == $to->modify('+1 day') && $project->getState() != 'Pending Approval') {
         echo("Day after deadline, sending reminder\n");
         mail($user->getEmail(), $subject, $message, $headers);
+        $project->submitLog('Day after removal, reminder email sent to owner',false);
     }
     $to->modify('-1 day');
 
     // reminder email every 7 days after removal
-    if($now > $to && $now->format('w') == $to->format('w') && ($project->getState() == 'Approved' || $project->getState() == 'Extended')) {
+    if($now > $to && $now->format('w') == $to->format('w') && $project->getState() != 'Pending Approval') {
         echo("Anniversary of deadline, sending reminder and logging\n");
         mail($user->getEmail(), $subject, $message, $headers);
 
-        $logmsg = 'Reminder sent to owner regarding passed deadline';
+        $logmsg = 'Week anniversary of Passed Deadline, reminder email sent to owner';
         $project->submitLog($logmsg,false);
         $project->submitMailingList($logmsg);
     }
 
     // a day after removal update the status to 'Passed Deadline'
-    if($now >= $to->modify('+1 day') && ($project->getState() == 'Approved' || $project->getState() == 'Extended')) {
+    if($now >= $to->modify('+1 day') && $project->getState() != 'Pending Approval' && $project->getState() != 'Passed Deadline') {
         echo("Setting status to Passed Deadline and updating Mailing List\n");
         $project->setState('Passed Deadline');
         $project->store();
