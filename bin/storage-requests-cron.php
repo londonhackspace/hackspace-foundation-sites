@@ -133,8 +133,8 @@ foreach($projects as $project) {
         $project->setState('Archived');
         $project->store();
 
-        $logmsg = 'Status automatically changed to '.$project->getState();
-        $project->submitLog($logmsg,false);
+        $project->submitLog('Status automatically changed to Unapproved',false);
+        $project->submitLog('Status automatically changed to '.$project->getState(),false);
     }
 }
 if(count($projects) == 0)
