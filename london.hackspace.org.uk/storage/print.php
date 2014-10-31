@@ -35,7 +35,9 @@ $projectUser = new User($project->getUserId());
 	<div id="qrcode"></div>
 	<h1>DO NOT HACK</h1>
 	<h1><?=$project->getName()?></h1>
-	<h3><?=htmlspecialchars($projectUser->getFullName())?></h3><br/>
+	<h3><?=htmlspecialchars($projectUser->getFullName())?></h3>
+	<h3><?=$projectUser->getEmail()?></h3>
+	<br/>
 	<h2>Removed by <?=$to->format('jS M Y')?></h2>
 	<strong><?=$project->getExtensionDuration()?> days maximum time extension</strong>
 </div>
