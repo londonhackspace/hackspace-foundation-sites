@@ -68,31 +68,32 @@ CREATE TABLE userperms (
 );
 
 CREATE TABLE locations (
-	name VARCHAR(255) PRIMARY KEY
+	id INTEGER PRIMARY KEY AUTOINCREMENT, 
+	name VARCHAR(255) NOT NULL
 );
 INSERT INTO locations (name) VALUES ('Ground floor');
 INSERT INTO locations (name) VALUES ('Basement');
 INSERT INTO locations (name) VALUES ('Yard');
 
 CREATE TABLE project_states (
-	name VARCHAR(255) PRIMARY KEY NOT NULL,
-	sort INTEGER 
+	id INTEGER PRIMARY KEY AUTOINCREMENT, 
+	name VARCHAR(255) NOT NULL
 );
-INSERT INTO project_states (name,sort) VALUES ('Pending Approval',1);
-INSERT INTO project_states (name,sort) VALUES ('Approved',2);
-INSERT INTO project_states (name,sort) VALUES ('Unapproved',3);
-INSERT INTO project_states (name,sort) VALUES ('Extended',4);
-INSERT INTO project_states (name,sort) VALUES ('Passed Deadline',5);
-INSERT INTO project_states (name,sort) VALUES ('Removed',6);
-INSERT INTO project_states (name,sort) VALUES ('Archived',7);
+INSERT INTO project_states (name) VALUES ('Pending Approval');
+INSERT INTO project_states (name) VALUES ('Approved');
+INSERT INTO project_states (name) VALUES ('Unapproved');
+INSERT INTO project_states (name) VALUES ('Extended');
+INSERT INTO project_states (name) VALUES ('Passed Deadline');
+INSERT INTO project_states (name) VALUES ('Removed');
+INSERT INTO project_states (name) VALUES ('Archived');
 
 CREATE TABLE projects (
 	id INTEGER PRIMARY KEY AUTOINCREMENT, 
 	user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE, 
 	name VARCHAR(255) NOT NULL,
 	description VARCHAR(500) NOT NULL,
-	state VARCHAR(255) NOT NULL REFERENCES project_states(name) ON DELETE CASCADE,
-	location_id VARCHAR(255) NOT NULL REFERENCES locations(name) ON DELETE CASCADE,
+	state_id INTEGER NOT NULL REFERENCES project_states(id) ON DELETE CASCADE, 
+	location_id INTEGER NOT NULL REFERENCES locations(id) ON DELETE CASCADE, 
 	location VARCHAR(255),
     	updated_date DATETIME NOT NULL,
     	from_date DATETIME NOT NULL,
