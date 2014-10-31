@@ -1,5 +1,19 @@
 <?php
 class Project extends fActiveRecord { 
+	public function getState() {
+		$state = new ProjectState($this->getStateId());
+		return $state->getName();
+	}
+
+	public function setState($name) {
+		$states = fRecordSet::build('ProjectState',array('name=' => $name), array('id' => 'asc'));
+		if(count($states)) {
+			$this->setStateId($states[0]->getId());
+			return true;
+		}
+		return false;
+	}
+
 	public function outputDuration() {
 		$from = new DateTime($this->getFromDate());
 		$to = new DateTime($this->getToDate()); 

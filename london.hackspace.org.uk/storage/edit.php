@@ -132,10 +132,10 @@ if (isset($_POST['token'])) {
                     <select class="form-control" id="location_id" name="location_id">
                         <option value="" disabled <? if((!$_POST || !$_POST['location_id']) && !$project->getLocationId()) { echo 'selected'; } ?>></option>
                         <? foreach($locations as $location) {
-                                echo '<option value="'.$location->getName().'" ';
-                                if($_POST && $_POST['location_id'] == $location->getName()) { 
+                                echo '<option value="'.$location->getId().'" ';
+                                if($_POST && $_POST['location_id'] == $location->getId()) { 
                                     echo 'selected'; 
-                                } else if($project->getLocationId() == $location->getName()) { 
+                                } else if($project->getLocationId() == $location->getId()) { 
                                     echo 'selected'; 
                                 }
                                 echo '>'.$location->getName().'</option>';

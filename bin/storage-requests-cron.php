@@ -16,7 +16,7 @@ require_once(dirname(__FILE__) . '/../lib/project.php');
 $db = new fDatabase('sqlite', dirname(__FILE__) . '/../var/database.db');
 fORMDatabase::attach($db);
 
-$projects = fRecordSet::build('Project',array('state='=>array('Pending Approval','Approved','Passed Deadline','Extended')), array('id' => 'asc'));
+$projects = fRecordSet::build('Project',array('state_id='=>array('1','2','4','5')), array('id' => 'asc'));
 $now = new DateTime(date('Y-m-d'));
 $nowTime = new DateTime();
 
@@ -30,6 +30,7 @@ foreach($projects as $project) {
     $to = new DateTime($project->getToDate());
     $user = new User($project->getUserId());
     $extension = $to->modify('+'.$project->getExtensionDuration().' days');
+    $to->modify('-'.$project->getExtensionDuration().' days');
     $logs = fRecordSet::build('ProjectsLog',array('project_id=' => $project->getId()));
     if(count($logs) > 0)
         $postedTime = new DateTime(date("c", $logs[0]->getTimestamp()));
@@ -91,31 +92,33 @@ foreach($projects as $project) {
         'X-Mailer: PHP/' . phpversion();
 
     // reminder email 3 days before removal
-    if($from < $now && $now == $to->modify('-3 days')) {
+    if($from < $now && $now == $to->modify('-3 days') && $project->getState() != 'Pending Approval') {
         echo("3 days until deadline, sending reminder\n");
         mail($user->getEmail(), $subject, $message, $headers);
+        $project->submitLog('Three days before removal, reminder email sent to owner',false);
     }
     $to->modify('+3 days');
 
     // reminder email a day after removal
-    if($now == $to->modify('+1 day')) {
+    if($now == $to->modify('+1 day') && $project->getState() != 'Pending Approval') {
         echo("Day after deadline, sending reminder\n");
         mail($user->getEmail(), $subject, $message, $headers);
+        $project->submitLog('Day after removal, reminder email sent to owner',false);
     }
     $to->modify('-1 day');
 
     // reminder email every 7 days after removal
-    if($now > $to && $now->format('w') == $to->format('w')) {
+    if($now > $to && $now->format('w') == $to->format('w') && $project->getState() != 'Pending Approval') {
         echo("Anniversary of deadline, sending reminder and logging\n");
         mail($user->getEmail(), $subject, $message, $headers);
 
-        $logmsg = 'Reminder sent to owner regarding passed deadline';
+        $logmsg = 'Week anniversary of Passed Deadline, reminder email sent to owner';
         $project->submitLog($logmsg,false);
         $project->submitMailingList($logmsg);
     }
 
     // a day after removal update the status to 'Passed Deadline'
-    if($now >= $to->modify('+1 day') && $project->getState() != 'Passed Deadline') {
+    if($now >= $to->modify('+1 day') && $project->getState() != 'Pending Approval' && $project->getState() != 'Passed Deadline') {
         echo("Setting status to Passed Deadline and updating Mailing List\n");
         $project->setState('Passed Deadline');
         $project->store();
@@ -123,6 +126,17 @@ foreach($projects as $project) {
         $logmsg = 'Status automatically changed to '.$project->getState();
         $project->submitLog($logmsg,false);
         $project->submitMailingList($logmsg);
+    }
+    $to->modify('-1 day');
+
+    // if it was never approved (manually or automatically) three weeks after it was meant to start update the status to 'Archived'
+    if($now >= $from->modify('+21 days') && $project->getState() == 'Pending Approval') {
+        echo("Old request detected, setting status to Archived\n");
+        $project->setState('Archived');
+        $project->store();
+
+        $project->submitLog('Status automatically changed to Unapproved',false);
+        $project->submitLog('Status automatically changed to '.$project->getState(),false);
     }
 }
 if(count($projects) == 0)
