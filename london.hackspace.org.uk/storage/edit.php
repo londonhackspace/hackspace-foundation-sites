@@ -53,7 +53,7 @@ if (isset($_POST['token'])) {
         if(strtotime($_POST['to_date']) < strtotime($_POST['from_date']))
             throw new fValidationException('Removal date must come after arrival date.');
         // to < max
-        if(strtotime($_POST['to_date']) > strtotime("+$maxStorageMonths months", strtotime($_POST['to_date'])))
+        if(strtotime($_POST['to_date']) > strtotime("+$maxStorageMonths months", strtotime($_POST['from_date'])))
             throw new fValidationException('Removal date must be 6 months after arrival.');
 
         $project->setName(filter_var($_POST['name'], FILTER_SANITIZE_STRING));
