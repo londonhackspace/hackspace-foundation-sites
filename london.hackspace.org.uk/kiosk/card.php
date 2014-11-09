@@ -17,7 +17,7 @@ Card ID: <?=$card->prepareUid()?><br>
 Subscribed: <?=$user->isMember()?"Yes":"No"?>
 </p>
 
-
+<a href="/kiosk/storage.php?cardid=<?=$_GET['cardid']?>" class="btn btn-success">Storage Requests</a>
 <a href="/kiosk/" class="btn btn-default">Go back</a>
 <?require('./footer.php')?>
 </body>
