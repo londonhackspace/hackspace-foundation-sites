@@ -10,9 +10,6 @@ require('./header.php');
 
 <p><small>If you have any problems with this kiosk, contact Russ or Jasper.</small></p>
 
-<form action="card.php" style="position:absolute; left:-9999px;">
-<input type="text" name="cardid" id="cardid" accesskey="i"/>
-</form>
 <? require('./footer.php'); ?>
 </body>
 </html>
