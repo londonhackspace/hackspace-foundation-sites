@@ -19,5 +19,8 @@ $(function() {
                 e.preventDefault();
             }
         }
+        if (e.which == 27) { // Escape
+            window.location = '/kiosk/';
+        }
     });
 });
