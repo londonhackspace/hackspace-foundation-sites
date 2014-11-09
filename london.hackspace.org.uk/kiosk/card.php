@@ -2,9 +2,7 @@
 require('./header.php');
 $cards = fRecordSet::build('Card', array('uid=' => $_GET['cardid']));
 if($cards->count() == 0) {
-    //TODO: add card
-    print "nonexistent card";
-    exit;
+    fURL::redirect("/kiosk/addcard.php?cardid=" . $_GET['cardid']);
 }
 $card = $cards->getRecord(0);
 $user = new User($card->getUserId());
