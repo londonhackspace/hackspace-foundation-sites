@@ -1,4 +1,5 @@
 <?
+$title = 'Add a card';
 require('./header.php');
 
 if (isset($_POST['submit'])) {
@@ -45,25 +46,21 @@ if (isset($_POST['submit'])) {
 }
 
 ?>
-<h2>Add a card to your account</h2>
+<p>Please log in with your London Hackspace membership account:</p>
 <form method="post">
     <input type="hidden" name="token" value="<?=fRequest::generateCSRFToken()?>" />
-    <fieldset>
-        <table>
-            <tr>
-                <td><label for="email">Email</label></td>
-                <td><input type="email" id="email" name="email"/></td>
-            </tr>
-            <tr>
-                <td><label for="password">Password</label></td>
-                <td><input type="password" id="password" name="password" /></td>
-            </tr>
-            <tr>
-                <td colspan="2"><input type="submit" name="submit" class="btn btn-default" value="Add card" /></td>
-            </tr>
-        </table>
-        <input type="hidden" name="uid" value="<?=htmlentities($_GET['cardid'])?>">
-    </fieldset>
+    <div class="form-group">
+        <label for="email">Email</label>
+        <input class="form-control" type="email" id="email" name="email">
+    </div>
+    <div class="form-group">
+        <label for="password">Password</label>
+        <input class="form-control" type="password" id="password" name="password">
+    </div>
+    <div class="form-group">
+        <input type="submit" name="submit" class="btn btn-default" value="Add card">
+    </div>
+    <input type="hidden" name="uid" value="<?=htmlentities($_GET['cardid'])?>">
 </form>
 
 <a href="/kiosk/" class="btn btn-default">Go back</a>

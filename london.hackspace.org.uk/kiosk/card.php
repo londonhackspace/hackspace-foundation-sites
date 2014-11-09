@@ -1,4 +1,5 @@
 <?
+$title = 'Membership Management';
 require('./header.php');
 $cards = fRecordSet::build('Card', array('uid=' => $_GET['cardid']));
 if($cards->count() == 0) {
@@ -9,7 +10,6 @@ $user = new User($card->getUserId());
 $user->load();
 
 ?>
-<h2>Membership Management</h2>
 <p>
 Member Name: <?=$user->prepareFullName()?><br>
 Member ID: <?=$user->getMemberNumber()?><br>
