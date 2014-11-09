@@ -20,3 +20,5 @@ Subscribed: <?=$user->isMember()?"Yes":"No"?>
 
 <a href="/kiosk/" class="btn btn-default">Go back</a>
 <?require('./footer.php')?>
+</body>
+</html>

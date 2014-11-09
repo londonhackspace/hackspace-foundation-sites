@@ -8,3 +8,5 @@ require('./header.php');
 <input type="text" name="cardid" id="cardid" accesskey="i"/>
 </form>
 <? require('./footer.php'); ?>
+</body>
+</html>

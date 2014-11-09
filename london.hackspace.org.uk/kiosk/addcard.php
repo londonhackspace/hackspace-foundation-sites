@@ -69,3 +69,10 @@ if (isset($_POST['submit'])) {
 
 <a href="/kiosk/" class="btn btn-default">Go back</a>
     <?require('./footer.php')?>
+<script type="text/javascript">
+    $(function() {
+        $('#email').focus();
+});
+</script>
+</body>
+</html>
