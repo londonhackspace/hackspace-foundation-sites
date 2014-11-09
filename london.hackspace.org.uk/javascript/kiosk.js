@@ -19,8 +19,12 @@ $(function() {
                 e.preventDefault();
             }
         }
-        if (e.which == 27) { // Escape
+        if (e.which == 27) { // Send people back to the root page on escape
             window.location = '/kiosk/';
         }
+    });
+
+    $(document).bind("contextmenu", function (e) {
+        e.preventDefault();
     });
 });
