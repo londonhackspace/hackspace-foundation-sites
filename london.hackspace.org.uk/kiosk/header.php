@@ -17,4 +17,4 @@ header("Content-Type: text/html; charset=utf-8");
         <h1><img alt="logo" src="/images/london.png" width="60" height="60"/>&nbsp;<?=$title?></h1>
     </div>
     <div class="row">
-        <div class="col-md-6 col-md-offset-3">
+        <div class="col-md-8 col-md-offset-2">
