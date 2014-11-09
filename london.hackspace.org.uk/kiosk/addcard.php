@@ -3,6 +3,7 @@ $title = 'Add a card';
 require('./header.php');
 
 if (isset($_POST['submit'])) {
+    try{
         $validator = new fValidation();
         $validator->addRequiredFields('password', 'email', 'uid');
         $validator->addEmailFields('email');
@@ -43,6 +44,9 @@ if (isset($_POST['submit'])) {
 <?
         require('./footer.php');
         exit;
+    } catch (fValidationException $e) {
+        echo "<p>" . $e->printMessage() . "</p>";
+    }
 }
 
 ?>
