@@ -1,15 +1,17 @@
 <?php
 ob_start();
-require_once('config.php');
-require_once('user.php');
-require_once('transaction.php');
-require_once('card.php');
-require_once('usersprofile.php');
-require_once('learning.php');
-require_once('alias.php');
-require_once('interest.php');
-require_once('calendar.php');
-require_once('project.php');
+$root = dirname(__FILE__);
+
+require_once("$root/config.php");
+require_once("$root/user.php");
+require_once("$root/transaction.php");
+require_once("$root/card.php");
+require_once("$root/usersprofile.php");
+require_once("$root/learning.php");
+require_once("$root/alias.php");
+require_once("$root/interest.php");
+require_once("$root/calendar.php");
+require_once("$root/project.php");
 
 $db = new fDatabase('sqlite', dirname(__FILE__) . '/../var/database.db');
 
