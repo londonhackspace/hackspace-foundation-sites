@@ -1,5 +1,5 @@
 <?
-$title = 'Member Box Sticker';
+$title = 'Notice of Disposal';
 require('./header.php');
 $cards = fRecordSet::build('Card', array('uid=' => $_GET['cardid']));
 if($cards->count() == 0) {
@@ -9,13 +9,16 @@ $card = $cards->getRecord(0);
 $user = new User($card->getUserId());
 $user->load();
 
+# echo json_encode($_POST);
+
 if (isset($_POST['print']) && $user->isMember()) {
+    fRequest::validateCSRFToken($_POST['token']);
     $data = array(
-        'owner_id' => $user->getId(),
-        'owner_name' => $user->getFull_Name(),
+        'reporter_id' => $user->getId()
     );
     $data_string = json_encode($data);
-    $ch = curl_init('http://kiosk.london.hackspace.org.uk:12345/print/box');
+#    echo($data_string);
+    $ch = curl_init('http://kiosk.london.hackspace.org.uk:12345/print/nod');
     curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
     curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -31,19 +34,11 @@ if (isset($_POST['print']) && $user->isMember()) {
 
 <? if($user->isMember()) { ?>
 
-<p>On this page you can print A label for your box.</p>
+<p>On this page you can print a Notice of Disposal sticker, use them with care.</p>
 
-<p>It will have:</p>
-
-<form method="post">
-<table class="table">
-<tbody>
-    <tr><th>Your memberid:</th><td><?=$user->getId()?></td></tr>
-    <tr><th>Your name:</th><td><?=$user->getFull_Name()?></td></tr>
-    <tr><td colspan="2">... and a qr code with a link to your profile page.</td></tr>
-    <tr><td><button name="print" value="<?=$user->getId()?>" class="btn btn-primary">Print Sticker</button></td></tr>
-</tbody>
-</table>
+<form method="post" class="form-horizontal" role="form">
+<input type="hidden" name="token" value="<?=fRequest::generateCSRFToken()?>" />
+<p><input type="submit" id="print" name="print" value="Print" class="btn btn-primary"/></p>
 </form>
 <? } ?>
 
