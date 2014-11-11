@@ -6,7 +6,17 @@ require('./header.php');
                   swipe the card you want to add on the reader below, and follow the instructions.
 </div>
 
-<p>Coming soon: the ability to print Do Not Hack stickers and members box labels!</p>
+<p>If you card is already registered you can swipe it on the reader to print stickers!</p>
+
+<p>Stickers include:</p>
+
+<ul>
+<li>Do Not Hack</li>
+<li>Member Box labels</li>
+<li>Fix Me</li>
+<li>Hack Me</li>
+<li>notice of displosal</li>
+</ul>
 
 <p><small>If you have any problems with this kiosk, contact Russ or Jasper.</small></p>
 
