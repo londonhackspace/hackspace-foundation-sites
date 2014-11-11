@@ -29,7 +29,7 @@ if (isset($_POST['print']) && $user->isMember() && isset($_POST['name']) && isse
     curl_setopt($ch, CURLOPT_HTTPHEADER, array(
                 'Content-Type: application/json',
                 'Content-Length: ' . strlen($data_string)));
-#    $result = curl_exec($ch);
+    $result = curl_exec($ch);
     curl_close($ch);
     echo("<p>Your sticker is being printed now.</p>");
 }
