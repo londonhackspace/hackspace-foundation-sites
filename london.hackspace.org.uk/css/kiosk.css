@@ -4,25 +4,29 @@ html {
 }
 body {
   /* Margin bottom by footer height */
-  margin-bottom: 60px;
+  margin-bottom: 80px;
 }
 .footer {
   position: absolute;
   bottom: 0;
-  height: 60px;
+  height: 80px;
 }
 
 h1 {
     font-weight: bold;
-    font-size: 40px;
+    font-size: 50px;
 }
 
 h2 {
     font-size: 30px;
 }
 
-body, .btn {
+body {
     font-size: 25px;
+}
+
+.btn {
+    font-size: 35px;
 }
 
 .form-control {

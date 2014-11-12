@@ -11,12 +11,12 @@ $user = new User($card->getUserId());
 $user->load();
 
 ?>
-<p>
-Member Name: <?=$user->prepareFullName()?><br>
-Member ID: <?=$user->getMemberNumber()?><br>
-Card ID: <?=$card->prepareUid()?><br>
-Subscribed: <?=$user->isMember() ? "Yes":"No"?>
-</p>
+<table class="table">
+<tr><th>Member Name</th><td><?=$user->prepareFullName()?></td></tr>
+<tr><th>Member ID</th><td> <?=$user->getMemberNumber()?></td></tr>
+<tr><th>Card ID</th><td> <?=$card->prepareUid()?></td></tr>
+<tr><th>Subscribed</th><td> <?=$user->isMember() ? "Yes":"No"?></td></tr>
+</table>
 
 <h2>Print Membership Stickers</h2>
 <div class="btn-group">

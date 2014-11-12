@@ -3,8 +3,9 @@
 <? if (isset($_GET['cardid'])) { ?>
 
 <div class="footer">
-  <div class="container-fluid">
-    <a href="/kiosk/" class="btn btn-default">Log Out</a><a href="/kiosk/" class="btn btn-default">Back</a>
+  <div class="container-fluid btn-group">
+    <a href="/kiosk/" class="btn btn-warning">Log Out</a>
+    <a href="/kiosk/card.php?cardid=<?=$_GET['cardid']?>" class="btn btn-default">Back</a>
   </div>
 </div>
 
