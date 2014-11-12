@@ -63,7 +63,6 @@ $projects = fRecordSet::build('Project', array('state_id!='=>array('6','7'), 'us
 
 <? } ?>
 
-<a href="/kiosk/card.php?cardid=<?=$_GET['cardid']?>" class="btn btn-default">Go back</a>
 <?require('./footer.php')?>
 </body>
 </html>

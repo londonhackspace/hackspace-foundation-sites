@@ -31,14 +31,14 @@ if (isset($_POST['print']) && $user->isMember()) {
 
 <? if($user->isMember()) { ?>
 
-<p>On this page you can print A label for your box.</p>
+<p>On this page you can print a label for your box.</p>
 
 <p>It will have:</p>
 
 <form method="post">
 <table class="table">
 <tbody>
-    <tr><th>Your memberid:</th><td><?=$user->getId()?></td></tr>
+    <tr><th>Your membership ID:</th><td><?=$user->getId()?></td></tr>
     <tr><th>Your name:</th><td><?=$user->getFull_Name()?></td></tr>
     <tr><td colspan="2">... and a qr code with a link to your profile page.</td></tr>
     <tr><td><button name="print" value="<?=$user->getId()?>" class="btn btn-primary">Print Sticker</button></td></tr>
@@ -47,7 +47,6 @@ if (isset($_POST['print']) && $user->isMember()) {
 </form>
 <? } ?>
 
-<a href="/kiosk/card.php?cardid=<?=$_GET['cardid']?>" class="btn btn-default">Go back</a>
 <?require('./footer.php')?>
 </body>
 </html>

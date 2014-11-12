@@ -39,8 +39,6 @@ if (isset($_POST['submit'])) {
 
 <h2>Card successfully added</h2>
 
-<p><a href="/kiosk/" class="btn btn-default">Go back</a></p>
-
 <?
         require('./footer.php');
         exit;
@@ -67,7 +65,6 @@ if (isset($_POST['submit'])) {
     <input type="hidden" name="uid" value="<?=htmlentities($_GET['cardid'])?>">
 </form>
 
-<a href="/kiosk/" class="btn btn-default">Go back</a>
     <?require('./footer.php')?>
 <script type="text/javascript">
     $(function() {

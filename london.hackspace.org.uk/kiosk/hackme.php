@@ -69,7 +69,6 @@ if (isset($_POST['print']) && $user->isMember() && isset($_POST['more_info'])) {
 </form>
 <? } ?>
 
-<a href="/kiosk/card.php?cardid=<?=$_GET['cardid']?>" class="btn btn-default">Go back</a>
 <?require('./footer.php')?>
 </body>
 </html>

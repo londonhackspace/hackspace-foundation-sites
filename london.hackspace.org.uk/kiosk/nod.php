@@ -41,8 +41,6 @@ if (isset($_POST['print']) && $user->isMember()) {
 <p><input type="submit" id="print" name="print" value="Print" class="btn btn-primary"/></p>
 </form>
 <? } ?>
-
-<a href="/kiosk/card.php?cardid=<?=$_GET['cardid']?>" class="btn btn-default">Go back</a>
 <?require('./footer.php')?>
 </body>
 </html>

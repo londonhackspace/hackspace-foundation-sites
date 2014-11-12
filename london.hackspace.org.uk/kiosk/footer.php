@@ -1,6 +1,15 @@
-
-<p>To go back to the beginning, hit <i>escape</i>.</p>
 </div></div>
+
+<? if (isset($_GET['cardid'])) { ?>
+
+<div class="footer">
+  <div class="container-fluid">
+    <a href="/kiosk/" class="btn btn-default">Log Out</a><a href="/kiosk/" class="btn btn-default">Back</a>
+  </div>
+</div>
+
+<? } ?>
+
 <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
 <script type="text/javascript" src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
 <script type="text/javascript" src="/javascript/kiosk.js"></script>

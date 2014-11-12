@@ -18,14 +18,19 @@ Card ID: <?=$card->prepareUid()?><br>
 Subscribed: <?=$user->isMember() ? "Yes":"No"?>
 </p>
 
-<h2>Stickers!:</h2>
+<h2>Print Membership Stickers</h2>
+<div class="btn-group">
+<a href="/kiosk/storage.php?cardid=<?=$cardid?>" class="btn btn-default">Storage Request</a>
+<a href="/kiosk/box.php?cardid=<?=$cardid?>" class="btn btn-default">Member Box</a>
+</div>
 
-<p><a href="/kiosk/storage.php?cardid=<?=$cardid?>" class="btn btn-success">Storage Requests</a></p>
-<p><a href="/kiosk/box.php?cardid=<?=$cardid?>" class="btn btn-success">Member Box</a></p>
-<p><a href="/kiosk/fixme.php?cardid=<?=$cardid?>" class="btn btn-success">Fix Me</a></p>
-<p><a href="/kiosk/hackme.php?cardid=<?=$cardid?>" class="btn btn-success">Hack Me</a></p>
-<p><a href="/kiosk/nod.php?cardid=<?=$cardid?>" class="btn btn-success">Notice of Disposal</a></p>
-<p><a href="/kiosk/" class="btn btn-default">Go back</a></p>
+<h2>Other Stickers</h2>
+
+<div class="btn-group">
+<a href="/kiosk/fixme.php?cardid=<?=$cardid?>" class="btn btn-default">Fix Me</a>
+<a href="/kiosk/hackme.php?cardid=<?=$cardid?>" class="btn btn-default">Hack Me</a>
+<a href="/kiosk/nod.php?cardid=<?=$cardid?>" class="btn btn-default">Notice of Disposal</a>
+</div>
 
 
 <?require('./footer.php')?>
