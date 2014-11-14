@@ -29,6 +29,10 @@ body {
     font-size: 35px;
 }
 
+table .btn {
+    font-size: 25px;
+}
+
 .form-control {
     font-size:25px;
     height:42px;

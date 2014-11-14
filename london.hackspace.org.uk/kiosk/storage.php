@@ -42,21 +42,34 @@ $projects = fRecordSet::build('Project', array('state_id!='=>array('6','7'), 'us
 
 <? if($projects->count() > 0) { ?>
 
-<p>On this page you can print Do Not Hack stickers for your current storage projects.</p>
+<p>You can print Do Not Hack stickers for your current storage projects.</p>
 
-<h3>Your current projects</h3>
+<h2>Your current projects</h2>
 <form method="post">
-<table class="table">
+<table class="table table-striped table-bordered">
+<thead>
+    <tr><th>Project</th><th>State</th><th>Print</th>
+</thead>
 <tbody>
 <? foreach($projects as $project) { ?>
     <tr>
     <th><?=$project->prepareName() ?></th>
-    <td><button name="print" value="<?=$project->getId()?>" class="btn btn-primary">Print Sticker</button></td>
+    <td><?=$project->getState()?></td>
+    <td><? if ($project->getStateId() == 2 or $project->getStateId() == 4) {?>
+            <button name="print" value="<?=$project->getId()?>" class="btn btn-primary">
+                 <span class="glyphicon glyphicon-print"></span>
+                Print
+            </button>
+        <? } ?>
+    </td>
     </tr>
 <? } ?>
 </tbody>
 </table>
 </form>
+
+<p>You can only print stickers for projects which have been approved.</p>
+
 <? } else { ?>
 
 <p>You don't have any current storage requests. To create one, please log into the Hackspace web site.</p>
