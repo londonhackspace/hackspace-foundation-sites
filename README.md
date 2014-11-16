@@ -17,6 +17,10 @@ You'll need to include the /apache-config file in your apache host config. Examp
     Include /path/to/root/dir/apache-config
     </VirtualHost>
 
+### Create config file
+
+    cp etc/config.php.example etc/config.php
+
 ### Google api libs
 
     cd /var/www/hackspace-foundation-sites/lib/
@@ -36,7 +40,7 @@ You can create the database from the schema located in ./etc:
     cd var
     chown www-data:adm database.db ; chmod 0660 database.db
 
-Note that SQL Lite needs write access to the directory containing the .db file to do its journaling:
+Note that SQLite needs write access to the directory containing the .db file to do its journaling:
 
     chgrp www-data ./var
     chmod 0775 ./var

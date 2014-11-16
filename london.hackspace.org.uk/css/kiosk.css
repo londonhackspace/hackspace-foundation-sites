@@ -1,0 +1,39 @@
+html {
+  position: relative;
+  min-height: 100%;
+}
+body {
+  /* Margin bottom by footer height */
+  margin-bottom: 80px;
+}
+.footer {
+  position: absolute;
+  bottom: 0;
+  height: 80px;
+}
+
+h1 {
+    font-weight: bold;
+    font-size: 50px;
+}
+
+h2 {
+    font-size: 30px;
+}
+
+body {
+    font-size: 25px;
+}
+
+.btn {
+    font-size: 35px;
+}
+
+table .btn {
+    font-size: 25px;
+}
+
+.form-control {
+    font-size:25px;
+    height:42px;
+}

@@ -59,8 +59,9 @@ class Project extends fActiveRecord {
 	}
 
 	public function submitMailingList($message) {
+		global $PROJECT_MAILING_LIST;
 		$projectUser = new User($this->getUserId());
-		$toEmail = 'london-hack-space-test@googlegroups.com';
+		$toEmail = $PROJECT_MAILING_LIST . '@googlegroups.com';
 		$subject = 'Storage Request #'.$this->getId().': '.$this->getName().' by '.htmlspecialchars($projectUser->getFullName());
 		$headers = 'From: no-reply@london.hackspace.org.uk' . "\r\n" .
 			'Reply-To: no-reply@london.hackspace.org.uk' . "\r\n" .
@@ -169,7 +170,8 @@ class Project extends fActiveRecord {
 	}
 
 	public function getMailingListURL() {
-		return 'https://groups.google.com/forum/#!topicsearchin/london-hack-space-test/subject$3A%22Storage$20Request$20$23'.$this->getId().'$3A%22';
+		global $PROJECT_MAILING_LIST;
+		return "https://groups.google.com/forum/#!topicsearchin/$PROJECT_MAILING_LIST/subject$3A%22Storage$20Request$20$23".$this->getId().'$3A%22';
 	}
 }
 class Location extends fActiveRecord { }
