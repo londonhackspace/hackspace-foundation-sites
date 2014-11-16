@@ -5,7 +5,9 @@
 <div class="footer">
   <div class="container-fluid btn-group">
     <a href="/kiosk/" class="btn btn-warning">Log Out</a>
-    <a href="/kiosk/card.php?cardid=<?=$_GET['cardid']?>" class="btn btn-default">Back</a>
+    <? if(isset($page) && $page != 'main') { ?>
+        <a href="/kiosk/card.php?cardid=<?=$_GET['cardid']?>" class="btn btn-default">Back</a>
+    <? } ?>
   </div>
 </div>
 

@@ -1,5 +1,6 @@
 <?
 $title = 'Membership Management';
+$page = 'main';
 require('./header.php');
 $cardid = strtoupper($_GET['cardid']);
 $cards = fRecordSet::build('Card', array('uid=' => $cardid));
