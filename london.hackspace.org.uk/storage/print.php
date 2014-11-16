@@ -14,6 +14,11 @@ if(!$user->isMember()) {
 $project = new Project(filter_var($_GET['id'], FILTER_SANITIZE_STRING));
 $to = new DateTime($project->getToDate()); 
 $projectUser = new User($project->getUserId());
+
+if($project->getState() != 'Approved') {
+	echo "<p>Your Do Not Hack sticker will become available when your storage request is approved.</p>";
+	exit;
+}
 ?>
 <style type="text/css">
 	.print {

@@ -108,13 +108,13 @@ if (isset($_POST['submit']) && ($user->getId() != $project->getUserId() || $user
 <? if($project->recentPost() && $user->getId() == $project->getUserId()) { ?>
 	<div class="alert alert-success storage-request-notice">
 		<p>Now you've made a storage request don't forget:</p>
-		<div><a target="_blank" href="/storage/print/<?=$project->getId()?>" class="btn btn-success">Print DO NOT HACK label</a> and attach it to your project. This is to let other members know your project is accounted for.</div>
 		<div><a target="_blank" href="<?=$project->getMailingListURL()?>" class="btn btn-success">Read the mailing list topic</a> this is where other members <? if(!$project->isShortTerm()) { ?> can choose to expediate your request (if its urgent) or unapprove it.<? } else { ?> can raise any concerns they have with your request.<? } ?></div>
+		<div><a target="_blank" href="/storage/print/<?=$project->getId()?>" class="btn btn-success">Print DO NOT HACK label</a> after it's been <strong>approved</strong> and attach it to your project. This is to let other members know your project is accounted for. You can print it at the kiosk on the ground floor outside the classroom.</div>
 		<? if($project->getState() == 'Pending Approval') { ?><p>Your request will be automatically approved after <?=$project->automaticApprovalDuration();?> days if you don't make any changes and no one replies on the mailing list.</p><? } ?>
 	</div>
 <? } else { ?>
-	<a target="_blank" href="/storage/print/<?=$project->getId()?>" class="btn btn-default">Print DO NOT HACK label</a>
-	<a target="_blank" href="<?=$project->getMailingListURL()?>" class="btn btn-default">Read the mailing list topic</a><br/>
+	<a target="_blank" href="<?=$project->getMailingListURL()?>" class="btn btn-default">Read the mailing list topic</a>
+	<a target="_blank" href="/storage/print/<?=$project->getId()?>" class="btn btn-default">Print DO NOT HACK label</a><br/>
 <? } ?>
 <br/>
 	<?if($project->hasExtension()) { ?><strong>Extended for <?=$project->getExtensionDuration()?> days</strong><br/><br/><? } ?>
