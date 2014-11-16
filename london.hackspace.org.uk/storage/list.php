@@ -6,6 +6,11 @@ require( '../header.php' );
 if (!isset($user))
     fURL::redirect('/login.php?forward=/storage/list.php');
 
+if(!$user->isMember()) {
+    echo "<p>Only subscribed members may access this area.</p>";
+    exit;
+}
+
 $projects = fRecordSet::build('Project',array('state_id!='=>array('6','7')), array('location_id' => 'asc', 'name' => 'asc'));
 ?>
 
@@ -22,7 +27,7 @@ $projects = fRecordSet::build('Project',array('state_id!='=>array('6','7')), arr
             echo "<h3>".$location->getName()."</h3>";
         }
         ?>
-        <div class="status small <?= strtolower($project->getState()); ?>"><?= $project->getState(); ?> <?if($project->getState() == 'Extended') { ?>(<?=$project->getExtensionDuration()?> days)<? } ?></div>
+        <div class="status list small <?= strtolower($project->getState()); ?>"><?= $project->getState(); ?> <?if($project->getState() == 'Extended') { ?>(<?=$project->getExtensionDuration()?> days)<? } ?></div>
         <a href="/storage/<?=$project->getId()?>"><?=$project->getName()?></a><br/>
         <?
     }
@@ -33,7 +38,7 @@ $projects = fRecordSet::build('Project',array('state_id='=>array('6','7')), arra
 <h3>Old requests</h3>
 
 <? foreach($projects as $project) { ?>
-        <div class="status small <?= strtolower($project->getState()); ?>"><?= $project->getState(); ?></div>
+        <div class="status list small <?= strtolower($project->getState()); ?>"><?= $project->getState(); ?></div>
         <a href="/storage/<?=$project->getId()?>"><?=$project->getName()?></a><br/>
 <? }
 

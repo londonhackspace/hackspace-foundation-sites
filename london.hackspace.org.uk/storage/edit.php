@@ -6,6 +6,11 @@ require( '../header.php' );
 if (!isset($user))
     fURL::redirect("/login.php?forward=/storage/edit/{$_GET['id']}");
 
+if(!$user->isMember()) {
+    echo "<p>Only subscribed members may access this area.</p>";
+    exit;
+}
+
 if(isset($_GET['id'])) {
     $project = new Project(filter_var($_GET['id'], FILTER_SANITIZE_STRING));
 
@@ -80,7 +85,8 @@ if (isset($_POST['token'])) {
         $projectUser = new User($project->getUserId());
         $message = 
             '<strong>' . $project->getName() . "</strong><br/>" .
-            "by " . htmlspecialchars($projectUser->getFullName()) . " https://london.hackspace.org.uk/storage/" . $project->getId() . "<br/><br/>" .
+            "https://london.hackspace.org.uk/storage/" . $project->getId() . "<br/>" .
+            "by <a href=\"https://london.hackspace.org.uk/members/member.php?id=".$project->getUserId()."\">" . htmlspecialchars($projectUser->getFullName()) . "</a><br/>" .
             $project->outputDates() . "<br/>" .
             $project->outputDuration() . ' ' .
             $project->outputLocation() . "<br/><br/>" .
@@ -126,6 +132,13 @@ if (isset($_POST['token'])) {
                     <textarea id="description" name="description" class="form-control" placeholder="What will you be doing? What tools do you need and how often do you plan to work on it?" rows="3"><? if($_POST && $_POST['description']) { echo $_POST['description']; } else if($project->getDescription()) { echo $project->getDescription(); } ?></textarea>
                 </div>
             </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">Contact</label>
+                <div class="col-sm-9">
+                    <p class="read-only"><?=$user->getEmail();?></p>
+                    <p class="help-block">Your email address (above) will be made available to all members in case there's a problem with your project while it's being stored in the space</p>
+                </div>
+            </div>
             <div class="form-group location-fields">
                 <label for="location_id" class="col-sm-3 control-label">Location</label>
                 <div class="col-sm-9">
@@ -148,8 +161,8 @@ if (isset($_POST['token'])) {
             <div class="form-group">
                 <label for="from_date" class="col-sm-3 control-label">Storage Dates</label>
                 <div class="col-sm-9">
-                    arrival <input type="date" value="<? if($_POST && $_POST['from_date']) { echo $_POST['from_date']; } else if($project->getFromDate()) { echo $project->getFromDate(); } ?>" min="<?=date('Y-m-d') ?>" max="<?=date('Y-m-d', strtotime("+$maxStorageMonths months"))?>" id="from_date" name="from_date" class="form-control" />
-                    &nbsp;&nbsp;&nbsp;removal <input type="date" value="<? if($_POST && $_POST['to_date']) { echo $_POST['to_date']; } else if($project->getToDate()) { echo $project->getToDate(); } ?>" min="<?=date('Y-m-d') ?>" max="<?=date('Y-m-d', strtotime("+$maxStorageMonths months"))?>" id="to_date" name="to_date" class="form-control" />
+                    arrival <input type="date" placeholder="yyyy-mm-dd" value="<? if($_POST && $_POST['from_date']) { echo $_POST['from_date']; } else if($project->getFromDate()) { echo $project->getFromDate(); } ?>" min="<?=date('Y-m-d') ?>" max="<?=date('Y-m-d', strtotime("+$maxStorageMonths months"))?>" id="from_date" name="from_date" class="form-control" />
+                    &nbsp;&nbsp; <div style="display:inline;white-space:nowrap;">removal&nbsp;<input type="date" placeholder="yyyy-mm-dd" value="<? if($_POST && $_POST['to_date']) { echo $_POST['to_date']; } else if($project->getToDate()) { echo $project->getToDate(); } ?>" min="<?=date('Y-m-d') ?>" max="<?=date('Y-m-d', strtotime("+$maxStorageMonths months"))?>" id="to_date" name="to_date" class="form-control" /></div>
                     <p class="alert alert-info tip-short-term-storage hide" role="alert"><span class="glyphicon glyphicon-star"></span> It's okay to store your project short term to let paint dry, give yourself a break, etc. But short term storage requests can <strong> only be extended 2 days</strong> at most. If it takes longer you'll need to submit a new storage request and leave enough time for other members to review.</p>
                     <p class="alert alert-warning tip-indoor-review hide" role="alert"><span class="glyphicon glyphicon-star"></span> We need <strong>2 days to review</strong> indoor storage requests unless it's a matter of urgency.</p>
                     <p class="alert alert-warning tip-yard-review hide" role="alert"><span class="glyphicon glyphicon-star"></span> We need <strong>7 days to review</strong> yard storage requests unless it's a matter of urgency.</p>
@@ -193,7 +206,9 @@ if (isset($_POST['token'])) {
     </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
 
+<? require('../footer.php'); ?>
 <script type="text/javascript" src="/javascript/moment.min.js"></script>
+<script type="text/javascript" src="/javascript/jquery-ui-1.9.2.custom.min.js"></script>
 <script type="text/javascript">
 /*
  * Fix dates so they fall in the required time period
@@ -275,7 +290,18 @@ function tipLoadingBay(text) {
     }
 }
 
+
+
+
+
 window.onload = function() {
+    // date picker polyfill
+    if(document.getElementById('from_date').type == 'text') {
+        $.datepicker.setDefaults({dateFormat: 'yy-mm-dd'});
+        $('#from_date').datepicker(); 
+        $('#to_date').datepicker(); 
+    }
+
     tipShortTermStorage($('#from_date'),$('#to_date'));
     tipReviewPeriod($('#from_date'),$('#location_id option:selected'));
     tipLoadingBay($('#location').val());
@@ -307,4 +333,5 @@ window.onload = function() {
     });
 };
 </script>
-<? require('../footer.php'); ?>
+</body>
+</html>

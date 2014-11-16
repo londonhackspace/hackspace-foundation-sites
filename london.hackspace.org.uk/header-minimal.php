@@ -37,6 +37,7 @@ function menulink($url, $name, $title) {
     <meta name="apple-mobile-web-app-status-bar-style" content="black"/>
 
     <link rel="stylesheet" type="text/css" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" href="/css/jquery-ui-1.9.2.custom.min.css" />
     <link rel="stylesheet" type="text/css" href="/css/main.css?10" />
     <link rel="icon" href="/favicon.ico" />
     <link rel="canonical" href="https://london.hackspace.org.uk<?=$_SERVER['REQUEST_URI']?>" />

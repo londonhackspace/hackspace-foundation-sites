@@ -13,6 +13,9 @@ form .alert {
 	margin-bottom: 2px;
 	font-size: 0.8em;
 }
+.ui-datepicker {
+	font-size: 11px;
+}
 /* /end override */
 
 /* setup custom hackspace font families */
@@ -1055,6 +1058,10 @@ span.member-social-icon {
 	font-size: 10px;
 	padding: 4px 6px;
 }
+.status.list {
+	width: 120px;
+	text-align: center;
+}
 h3 .status {
 	position: relative;
 	top: -3px;	
@@ -1070,8 +1077,11 @@ h3 .status {
 	background-color: #5cb85c;
 }
 .status.unapproved {
-	background-color: #d9534f;
+	background-color: #ea8880;
 }
 .status.passed {
 	background-color: #d9534f;
+}
+form .read-only {
+	padding-top: 7px;
 }

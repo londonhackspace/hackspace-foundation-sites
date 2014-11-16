@@ -58,19 +58,35 @@ class Project extends fActiveRecord {
 		$log->store();
 	}
 
-  public function submitMailingList($message) {
-    global $PROJECT_MAILING_LIST;
+	public function submitMailingList($message) {
+		global $PROJECT_MAILING_LIST;
+		$projectUser = new User($this->getUserId());
 		$toEmail = $PROJECT_MAILING_LIST . '@googlegroups.com';
+		$subject = 'Storage Request #'.$this->getId().': '.$this->getName().' by '.htmlspecialchars($projectUser->getFullName());
+		$headers = 'From: no-reply@london.hackspace.org.uk' . "\r\n" .
+			'Reply-To: no-reply@london.hackspace.org.uk' . "\r\n" .
+			'Content-Type:text/html;charset=utf-8' . "\r\n" .
+			'X-Mailer: PHP/' . phpversion();
+
+		if(mail($toEmail, $subject, $message, $headers)) {
+			// log the post
+			$this->submitLog('Posted to the Mailing List',false);
+		}
+	}
+
+	public function submitEmailToOwner($message) {
+		$projectUser = new User($this->getUserId());
+		$toEmail = $projectUser->getEmail();
 		$subject = 'Storage Request #'.$this->getId().': '.$this->getName();
 		$headers = 'From: no-reply@london.hackspace.org.uk' . "\r\n" .
 			'Reply-To: no-reply@london.hackspace.org.uk' . "\r\n" .
 			'Content-Type:text/html;charset=utf-8' . "\r\n" .
 			'X-Mailer: PHP/' . phpversion();
 
-		mail($toEmail, $subject, $message, $headers);
-
-		// log the post
-		$this->submitLog('Posted to the Mailing List',false);
+		if(mail($toEmail, $subject, $message, $headers)) {
+			// log the email
+			$this->submitLog('Email sent to owner',false);
+		}
 	}
 
 	public function canTransitionStates($from,$to) {
@@ -153,8 +169,8 @@ class Project extends fActiveRecord {
 		return 14;
 	}
 
-  public function getMailingListURL() {
-    global $PROJECT_MAILING_LIST;
+	public function getMailingListURL() {
+		global $PROJECT_MAILING_LIST;
 		return "https://groups.google.com/forum/#!topicsearchin/$PROJECT_MAILING_LIST/subject$3A%22Storage$20Request$20$23".$this->getId().'$3A%22';
 	}
 }
