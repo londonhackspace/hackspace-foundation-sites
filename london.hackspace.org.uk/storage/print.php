@@ -6,6 +6,11 @@ require( '../header-mini.php' );
 if (!isset($user))
 	fURL::redirect("/login.php?forward=/storage/print/{$_GET['id']}");
 
+if(!$user->isMember()) {
+	echo "<p>Only subscribed members may access this area.</p>";
+	exit;
+}
+
 $project = new Project(filter_var($_GET['id'], FILTER_SANITIZE_STRING));
 $to = new DateTime($project->getToDate()); 
 $projectUser = new User($project->getUserId());

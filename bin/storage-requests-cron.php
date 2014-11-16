@@ -19,12 +19,13 @@ fORMDatabase::attach($db);
 $projects = fRecordSet::build('Project',array('state_id='=>array('1','2','4','5')), array('id' => 'asc'));
 $now = new DateTime(date('Y-m-d'));
 $nowTime = new DateTime();
+echo "Starting process ".$nowTime->format('g:ia jS M')."\n";
 
 if(count($projects) > 0)
     echo(count($projects)." outstanding storage request(s).\n"); 
 
 foreach($projects as $project) {
-    echo('checking for updates to "#'.$project->getId() . ': ' . $project->getName()."\" ...\n");
+    echo('checking for changes to "#'.$project->getId() . ': ' . $project->getName()."\" ...\n");
 
     $from = new DateTime($project->getFromDate());
     $to = new DateTime($project->getToDate());
@@ -39,11 +40,59 @@ foreach($projects as $project) {
     if($project->hasExtension())
         $to = $extension;
 
+    // automatically unapprove projects when user is unsubscribed
+    if(!$user->isMember() && $project->getState() == 'Pending Approval') {
+        $project->setState('Unapproved');
+        $project->store();
+
+        // email the owner
+        $message = "Dear ".htmlspecialchars($user->getFullName()).",<br/><br/>". 
+            "Just to let you know our records show you're no longer a paying member at London Hackspace. Your outstanding storage request <a href=\"https://london.hackspace.org.uk/storage/".$project->getId()."\">".$project->getName()."</a> has been automatically unapproved. If you're having trouble with your membership payment please <a href=\"mailto:contact@london.hackspace.org.uk\">get in touch</a>.<br/><br/>".
+            "Best,<br/>".
+            "Monkeys in the machine";
+        $subject = 'London Hackspace Storage Request #'.$project->getId().': '.$project->getName();
+        $headers = 'From: no-reply@london.hackspace.org.uk' . "\r\n" .
+            'Reply-To: contact@london.hackspace.org.uk' . "\r\n" .
+            'Content-Type:text/html;charset=utf-8' . "\r\n" .
+            'X-Mailer: PHP/' . phpversion();
+        mail($user->getEmail(), $subject, $message, $headers);
+
+        // log the update
+        $logmsg = 'Owner isn\'t a subscribed member, status automatically changed to '.$project->getState();
+        $project->submitLog($logmsg,false);
+        $project->submitMailingList($logmsg);
+        echo($logmsg."\n");
+    }
+
+    // automatically pass the deadline on projects when the user is unsubscribed
+    if(!$user->isMember() && ($project->getState() == 'Approved' || $project->getState() == 'Extended')) {
+        $project->setState('Passed Deadline');
+        $project->store();
+
+        // email the owner
+        $message = "Dear ".htmlspecialchars($user->getFullName()).",<br/><br/>". 
+            "Just to let you know our records show you're no longer a paying member at London Hackspace. Your project <a href=\"https://london.hackspace.org.uk/storage/".$project->getId()."\">".$project->getName()."</a> currently approved for storage at London Hackspace has been automatically set to passed deadline. You'll need to remove it from the space ASAP. If you're having trouble with your membership payment please <a href=\"mailto:contact@london.hackspace.org.uk\">get in touch</a>.<br/><br/>".
+            "Best,<br/>".
+            "Monkeys in the machine";
+        $subject = 'London Hackspace Storage Request #'.$project->getId().': '.$project->getName();
+        $headers = 'From: no-reply@london.hackspace.org.uk' . "\r\n" .
+            'Reply-To: contact@london.hackspace.org.uk' . "\r\n" .
+            'Content-Type:text/html;charset=utf-8' . "\r\n" .
+            'X-Mailer: PHP/' . phpversion();
+        mail($user->getEmail(), $subject, $message, $headers);
+
+        // log the update
+        $logmsg = 'Owner isn\'t a subscribed member, status automatically changed to '.$project->getState();
+        $project->submitLog($logmsg,false);
+        $project->submitMailingList($logmsg);
+        echo($logmsg."\n");
+    }
+
     // automatically approve projects with no ML posts
-    if($nowTime > $postedTime->modify('+'.$project->automaticApprovalDuration().' days') && $project->noActivity() && $project->getState() == 'Pending Approval') {
+    if($user->isMember() && $nowTime > $postedTime->modify('+'.$project->automaticApprovalDuration().' days') && $project->noActivity() && $project->getState() == 'Pending Approval') {
         // ML post count?
         $out = array();
-        $pathToPhatomJs = '/Users/chixor/Downloads/phantomjs-1.9.8-macosx/bin/phantomjs';
+        $pathToPhatomJs = '/usr/local/bin/phantomjs';
         $pathToJsScript = 'storage-requests-phantomjs-ml-scrape.js';
         $stdOut = exec(sprintf('%s %s %s', $pathToPhatomJs,  $pathToJsScript, $project->getId()), $out);
 

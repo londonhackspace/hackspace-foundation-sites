@@ -6,11 +6,17 @@ require( '../header.php' );
 if (!isset($user))
 	fURL::redirect("/login.php?forward=/storage/{$_GET['id']}");
 
+if(!$user->isMember()) {
+	echo "<p>Only subscribed members may access this area.</p>";
+	exit;
+}
+
 $project = new Project(filter_var($_GET['id'], FILTER_SANITIZE_STRING));
 $projectslogs = fRecordSet::build('ProjectsLog',array('project_id=' => $project->getId()), array('id' => 'asc'));
 $states = fRecordSet::build('ProjectState',array(), array('id' => 'asc'));
 $projectUser = new User($project->getUserId());
 
+// has the project owner set the status to removed or extended?
 if (isset($_POST['remove']) || isset($_POST['extend']) && ($user->getId() == $project->getUserId())) {
 	try {
 		fRequest::validateCSRFToken($_POST['token']);
@@ -29,6 +35,7 @@ if (isset($_POST['remove']) || isset($_POST['extend']) && ($user->getId() == $pr
 	}
 }
 
+// has another member updated the status?
 if (isset($_POST['submit']) && ($user->getId() != $project->getUserId() || $user->isAdmin())) {
 	try {
 		fRequest::validateCSRFToken($_POST['token']);
@@ -37,16 +44,31 @@ if (isset($_POST['submit']) && ($user->getId() != $project->getUserId() || $user
 			throw new fValidationException('Status field is required.');
 
 		$newStatus = filter_var($_POST['state'], FILTER_SANITIZE_STRING);
+		$reason = filter_var($_POST['reason'], FILTER_SANITIZE_STRING);
+
 		if($newStatus != $project->getState() && $project->canTransitionStates($project->getState(),$newStatus)) {
 			$project->setState($newStatus);
 			$project->store();
+			if($reason != '') {
+				$reason = ' with the reason \''.$reason."'";
+			}
 
 			// log the update
-			$project->submitLog('Status changed to ' . $project->getState() , $user->getId());
+			$project->submitLog('Status changed to ' . $project->getState() . $reason, $user->getId());
 
-			// send to mailing list
-			if($project->getState() != 'Archived')
-				$project->submitMailingList('Status changed to ' . $project->getState() . " by " . htmlspecialchars($user->getFullName()));
+			if($project->getState() != 'Archived') {
+				// send to mailing list
+				$project->submitMailingList('Status changed to ' . $project->getState() . $reason . " by " . htmlspecialchars($user->getFullName()));
+
+				// inform the owner
+				$project->submitEmailToOwner(
+					"Dear {$projectUser->getFullName()},<br/><br/>".
+					"This is an automatic email to let you know your project {$project->getName()} has been updated with status {$project->getState()}{$reason}.<br/><br/>".
+					"If you have any questions or concerns regarding this change you can discuss this with members on the <a href=\"{$project->getMailingListURL()}\">Mailing List</a>.<br/><br/>".
+					"Best,<br/>Monkeys in the machine"
+				);
+			}
+
 		}
 
 		fURL::redirect("/storage/list.php");
@@ -77,8 +99,8 @@ if (isset($_POST['submit']) && ($user->getId() != $project->getUserId() || $user
 <h3><?=$project->getName(); ?>
 	<div class="status <?= strtolower($project->getState()); ?>"><?= $project->getState(); ?> <?if($project->getState() == 'Extended') { ?>(<?=$project->getExtensionDuration()?> days)<? } ?></div>
 <p><small>
-	<?=$project->outputDates(); ?>
-	by <a href="/members/member.php?id=<?=$project->getUserId()?>"><?=htmlspecialchars($projectUser->getFullName())?></a><br/>
+	By <a href="/members/member.php?id=<?=$project->getUserId()?>"><?=htmlspecialchars($projectUser->getFullName())?></a> (incase of emergency contact <a href="mailto:<?=$projectUser->getEmail()?>"><span class="glyphicon glyphicon-envelope" style="margin-left:5px;margin-right:4px;" aria-hidden="true"></span><?=$projectUser->getEmail()?></a>)<br/>
+	<?=$project->outputDates(); ?><br/>
 	<?=$project->outputDuration(); ?>
 	<?=$project->outputLocation(); ?>
 </small></p>
@@ -128,6 +150,7 @@ if (isset($_POST['submit']) && ($user->getId() != $project->getUserId() || $user
 			}
 		} ?>
 	</select>
+	<input type="text" name="reason" class="form-control" placeholder="Is there a reason for this change?" style="width: 280px;" />
 	<input type="submit" name="submit" value="Update status" class="btn btn-primary"/>
 </form>
 <? }
