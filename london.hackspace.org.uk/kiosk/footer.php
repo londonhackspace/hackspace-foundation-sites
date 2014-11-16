@@ -25,7 +25,7 @@
             console.log("Idle");
             window.location = "/kiosk";
         },
-        timeout: 60000
+        timeout: 30000
     });
 </script>
 <? } ?>
