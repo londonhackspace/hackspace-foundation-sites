@@ -51,8 +51,6 @@ $count = 0;
     <label>To:</label>  <input class="input-small" type="text" name="to" value="<?=$to?>">
     <button class="btn">Generate</button>
   </form>
-
-  <p class="visible-print">Covering <?=$count?> payments over the period <?=$from?> to <?=$to?>.</p>
 </div>
 
 <table style="margin:2em;">
