@@ -2,6 +2,7 @@
 ob_start();
 $root = dirname(__FILE__);
 
+require_once("$root/../etc/config.php");
 require_once("$root/config.php");
 require_once("$root/user.php");
 require_once("$root/transaction.php");
