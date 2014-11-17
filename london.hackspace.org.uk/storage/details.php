@@ -3,13 +3,7 @@ $page = 'storagedetails_edit';
 $title = "Storage details";
 require( '../header.php' );
 
-if (!isset($user))
-	fURL::redirect("/login.php?forward=/storage/{$_GET['id']}");
-
-if(!$user->isMember()) {
-	echo "<p>Only subscribed members may access this area.</p>";
-	exit;
-}
+ensureMember();
 
 $project = new Project(filter_var($_GET['id'], FILTER_SANITIZE_STRING));
 $projectslogs = fRecordSet::build('ProjectsLog',array('project_id=' => $project->getId()), array('id' => 'asc'));

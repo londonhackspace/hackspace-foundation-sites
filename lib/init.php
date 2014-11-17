@@ -34,6 +34,15 @@ function ensureLogin() {
   }
 }
 
+function ensureMember() {
+    global $user;
+    ensureLogin();
+    if (!$user->isMember()) {
+        echo "<p>Only subscribed members may access this area.</p>";
+        exit;
+   }
+}
+
 function send404($message) {
   header('HTTP/1.1 404 File not found');
   echo $message;

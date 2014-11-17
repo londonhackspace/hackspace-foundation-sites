@@ -3,13 +3,7 @@ $page = 'storagelist';
 $title = "Storage list";
 require( '../header.php' );
 
-if (!isset($user))
-    fURL::redirect('/login.php?forward=/storage/list.php');
-
-if(!$user->isMember()) {
-    echo "<p>Only subscribed members may access this area.</p>";
-    exit;
-}
+ensureMember();
 
 $projects = fRecordSet::build('Project',array('state_id!='=>array('6','7')), array('location_id' => 'asc', 'name' => 'asc'));
 ?>

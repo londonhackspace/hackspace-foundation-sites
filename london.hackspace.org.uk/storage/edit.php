@@ -3,13 +3,7 @@ $page = 'storagedetails_edit';
 $title = "Storage request";
 require( '../header.php' );
 
-if (!isset($user))
-    fURL::redirect("/login.php?forward=/storage/edit/{$_GET['id']}");
-
-if(!$user->isMember()) {
-    echo "<p>Only subscribed members may access this area.</p>";
-    exit;
-}
+ensureMember();
 
 if(isset($_GET['id'])) {
     $project = new Project(filter_var($_GET['id'], FILTER_SANITIZE_STRING));
