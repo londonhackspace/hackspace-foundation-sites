@@ -33,6 +33,13 @@ if (isset($_POST['token'])) {
             throw new fValidationException('You\'ve already made a request with that name. How is this request different to the last time? Our members like to know a project with multiple storage requests is being actively worked on and progress is being made.');
         if(!isset($_POST['description']) || $_POST['description'] == '')
             throw new fValidationException('Description field is required.');
+
+        if($_POST['contact'] && $_POST['contact'] != '') {
+            $validator = new fValidation();
+            $validator->addEmailFields('contact');
+            $validator->validate();
+        }
+
         if(!isset($_POST['location_id']) || $_POST['location_id'] == '')
             throw new fValidationException('Location select is required.');
         if(!isset($_POST['location']) || $_POST['location'] == '')
@@ -57,6 +64,11 @@ if (isset($_POST['token'])) {
 
         $project->setName(filter_var($_POST['name'], FILTER_SANITIZE_STRING));
         $project->setDescription(filter_var($_POST['description'], FILTER_SANITIZE_STRING));
+        if($_POST['contact'] && $_POST['contact'] != '')
+            $project->setContact(filter_var($_POST['contact'], FILTER_SANITIZE_EMAIL));
+        else
+            $project->setContact(null);
+
         $project->setLocationId(filter_var($_POST['location_id'], FILTER_SANITIZE_STRING));
         $project->setLocation(filter_var($_POST['location'], FILTER_SANITIZE_STRING));
         $project->setFromDate(filter_var($_POST['from_date'], FILTER_SANITIZE_STRING));
@@ -126,11 +138,11 @@ if (isset($_POST['token'])) {
                     <textarea id="description" name="description" class="form-control" placeholder="What will you be doing? What tools do you need and how often do you plan to work on it?" rows="3"><? if($_POST && $_POST['description']) { echo $_POST['description']; } else if($project->getDescription()) { echo $project->getDescription(); } ?></textarea>
                 </div>
             </div>
-            <div class="form-group">
+            <div class="form-group location-fields">
                 <label class="col-sm-3 control-label">Contact</label>
                 <div class="col-sm-9">
-                    <p class="read-only"><?=$user->getEmail();?></p>
-                    <p class="help-block">Your email address (above) will be made available to all members in case there's a problem with your project while it's being stored in the space</p>
+                    <input type="email" id="contact" name="contact" placeholder="Email address" class="form-control" value="<? if($_POST && $_POST['contact']) { echo $_POST['contact']; } else if($project->getContact()) { echo $project->getContact(); }?>"/> or <?=$user->getEmail();?> (if left blank)
+                    <p class="help-block">Your email address (above) will be made available to all members in case there's a problem with your project while it's being stored in the space.</p>
                 </div>
             </div>
             <div class="form-group location-fields">

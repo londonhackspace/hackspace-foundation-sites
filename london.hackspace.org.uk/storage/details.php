@@ -93,7 +93,7 @@ if (isset($_POST['submit']) && ($user->getId() != $project->getUserId() || $user
 <h3><?=$project->getName(); ?>
 	<div class="status <?= strtolower($project->getState()); ?>"><?= $project->getState(); ?> <?if($project->getState() == 'Extended') { ?>(<?=$project->getExtensionDuration()?> days)<? } ?></div>
 <p><small>
-	By <a href="/members/member.php?id=<?=$project->getUserId()?>"><?=htmlspecialchars($projectUser->getFullName())?></a> (incase of emergency contact <a href="mailto:<?=$projectUser->getEmail()?>"><span class="glyphicon glyphicon-envelope" style="margin-left:5px;margin-right:4px;" aria-hidden="true"></span><?=$projectUser->getEmail()?></a>)<br/>
+	By <a href="/members/member.php?id=<?=$project->getUserId()?>"><?=htmlspecialchars($projectUser->getFullName())?></a> (incase of emergency contact <? if($project->getContact()) { ?><a href="mailto:<?=$project->getContact()?>"><span class="glyphicon glyphicon-envelope" style="margin-left:5px;margin-right:4px;" aria-hidden="true"></span><?=$project->getContact()?></a><? } else { ?><a href="mailto:<?=$projectUser->getEmail()?>"><span class="glyphicon glyphicon-envelope" style="margin-left:5px;margin-right:4px;" aria-hidden="true"></span><?=$projectUser->getEmail()?></a><? } ?>)<br/>
 	<?=$project->outputDates(); ?><br/>
 	<?=$project->outputDuration(); ?>
 	<?=$project->outputLocation(); ?>
