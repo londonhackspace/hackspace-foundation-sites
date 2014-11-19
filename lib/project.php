@@ -134,7 +134,8 @@ class Project extends fActiveRecord {
 	}
 
 	public function automaticApprovalDuration() {
-		return ($this->getLocationId() == 'Yard') ? 7 : 2;
+		$location = new Location($this->getLocationId());
+		return ($location->getName() == 'Yard') ? 7 : 2;
 	}
 
 	public function hasExtension() {
