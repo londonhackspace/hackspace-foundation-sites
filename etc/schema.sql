@@ -17,6 +17,7 @@ CREATE TABLE "users" (
     has_profile BOOLEAN NOT NULL DEFAULT 0,
     disabled_profile BOOLEAN NOT NULL DEFAULT 0,
     doorbot_timestamp DATETIME,
+    lapsing_membership_reminder_timestamp DATETIME,
     emergency_name VARCHAR(255),
     emergency_phone VARCHAR(40),
     ldapuser VARCHAR(32) UNIQUE,
