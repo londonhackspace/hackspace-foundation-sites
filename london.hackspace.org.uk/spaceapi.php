@@ -6,8 +6,8 @@ $data = array(
     'url' => 'https://london.hackspace.org.uk',
     'location' => array(
         'address' => '447 Hackney Road, London E2 9DY',
-        'lat' => '51.5321',
-        'long' => '-0.0607'
+        'lat' => 51.5321,
+        'lon' => -0.0607
     ),
     'spacefed' => array(
         'spacenet' => true,
