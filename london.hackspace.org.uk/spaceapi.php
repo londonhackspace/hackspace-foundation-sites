@@ -15,7 +15,9 @@ $data = array(
         'spacephone' => false
     ),
     'state' => array(
-        'open' => null
+        // the android app needs a boolean here
+        'open' => true,
+        'message' => 'members only'
     ),
     'contact' => array(
         'irc' => 'ircs://chat.freenode.net/london-hack-space',
@@ -37,6 +39,22 @@ $data = array(
         )
     )
 );
+
+$dw = date("N");
+
+// is it the Tuesday open evening?
+if ($dw == 2) {
+    $hr = date("G");
+    if ($hr > 18) {
+        $data['state']['open'] = true;
+        $data['state']['message'] = 'weekly open evening';
+    }
+}
+
+// http://spaceapi.net/validator suggests these headers
+header('Content-Type: application/json');
+header('Access-Control-Allow-Origin: *');
+header('Cache-Control: no-cache');
 
 echo json_encode($data);
 ?>
