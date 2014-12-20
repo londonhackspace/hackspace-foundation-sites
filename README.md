@@ -21,12 +21,9 @@ You'll need to include the /apache-config file in your apache host config. Examp
 
     cp etc/config.php.example etc/config.php
 
-### Google api libs
+### Fetch libraries
 
-    cd /var/www/hackspace-foundation-sites/lib/
-    git clone https://github.com/google/google-api-php-client.git GoogleAPI
-
-(Which revision? does it matter?)
+    git submodule update --init
 
 ### session dir
 
