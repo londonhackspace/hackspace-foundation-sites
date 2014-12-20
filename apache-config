@@ -8,3 +8,5 @@ RewriteRule ^/members/photo/([0-9A-Za-z_]+)_([a-z]+).png$            /members/ph
 RewriteRule ^/storage/(\d+)$            /storage/details.php?id=$1 [L]
 RewriteRule ^/storage/edit/(\d+)$            /storage/edit.php?id=$1 [L]
 RewriteRule ^/storage/print/(\d+)$            /storage/print.php?id=$1 [L]
+
+RewriteRule ^/spaceapi$                      /spaceapi.php [L]
