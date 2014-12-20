@@ -24,7 +24,9 @@ fORMDatabase::attach($db);
 fSession::setLength('30 minutes', '10 weeks');
 fSession::setPath(dirname(__FILE__) . '/../var/session');
 
-GoCardless::set_account_details($GOCARDLESS_CREDENTIALS);
+if (isset($GOCARDLESS_CREDENTIALS)) {
+    GoCardless::set_account_details($GOCARDLESS_CREDENTIALS);
+}
 
 if ($uid = fSession::get('user')) {
     $user = new User($uid);
