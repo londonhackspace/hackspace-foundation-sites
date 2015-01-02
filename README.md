@@ -5,7 +5,8 @@ site](http://london.hackspace.org.uk)
 
 ## Packages needed
 
-php5 sqlite php5-sqlite php-apc sqlite3 ruby-sqlite3 ruby-erubis rubygems ruby-hpricot ruby-mail
+php5 sqlite php5-sqlite php5-curl php-apc sqlite3
+ruby-sqlite3 ruby-erubis rubygems ruby-hpricot ruby-mail
 
 ## Setting up Apache
 Make sure you have mod_rewrite and expires enabled. (a2enmod rewrite, a2enmod expires)

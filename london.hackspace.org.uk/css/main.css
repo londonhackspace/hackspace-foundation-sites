@@ -1085,3 +1085,16 @@ h3 .status {
 form .read-only {
 	padding-top: 7px;
 }
+
+.card-management .blocked {
+  color: #777;
+}
+
+.card-management .blocked [name^=enable_] {
+  background-color: #484;
+  color: #fff;
+}
+.card-management .blocked [name^=delete_] {
+  background-color: #a44;
+  color: #fff;
+}
