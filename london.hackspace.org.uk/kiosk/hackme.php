@@ -11,27 +11,38 @@ $user->load();
 
 # echo json_encode($_POST);
 
-if (isset($_POST['print']) && $user->isMember() && isset($_POST['more_info'])) {
-    fRequest::validateCSRFToken($_POST['token']);
-    $data = array(
-        'donor_id' => $user->getId(),
-        'donor_name' => $user->getFull_Name(),
-        'donor_email' => $user->getEmail(),
-        'dispose_date' => date('Y-m-d', strtotime("+2 weeks")),
-        'more_info' => $_POST['more_info']
-    );
-    $data_string = json_encode($data);
-#    echo($data_string);
-    $ch = curl_init('http://kiosk.london.hackspace.org.uk:12345/print/hackme');
-    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
-    curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+if (isset($_POST['print']) && $user->isMember()) {
+    try {
+        fRequest::validateCSRFToken($_POST['token']);
+
+        $validator = new fValidation();
+        $validator->addRequiredFields('more_info');
+
+        $validator->validate();
+
+
+        $data = array(
+            'donor_id' => $user->getId(),
+            'donor_name' => $user->getFull_Name(),
+            'donor_email' => $user->getEmail(),
+            'dispose_date' => date('Y-m-d', strtotime("+2 weeks")),
+            'more_info' => $_POST['more_info']
+        );
+        $data_string = json_encode($data);
+
+        $ch = curl_init('http://kiosk.london.hackspace.org.uk:12345/print/hackme');
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array(
                 'Content-Type: application/json',
                 'Content-Length: ' . strlen($data_string)));
-    $result = curl_exec($ch);
-    curl_close($ch);
-    echo("<p>Your sticker is being printed now.</p>");
+        $result = curl_exec($ch);
+        curl_close($ch);
+        echo("<p>Your sticker is being printed now.</p>");
+    } catch (fValidationException $e) {
+        $e->printMessage();
+    }
 }
 
 ?>

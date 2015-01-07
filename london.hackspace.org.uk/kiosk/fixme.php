@@ -9,29 +9,37 @@ $card = $cards->getRecord(0);
 $user = new User($card->getUserId());
 $user->load();
 
-# echo json_encode($_POST);
+if (isset($_POST['print']) && $user->isMember()) {
+    try {
+        fRequest::validateCSRFToken($_POST['token']);
 
-if (isset($_POST['print']) && $user->isMember() && isset($_POST['name']) && isset($_POST['more_info'])) {
-    fRequest::validateCSRFToken($_POST['token']);
-    $data = array(
-        'name' => $_POST['name'],
-        'reporter_id' => $user->getId(),
-        'reporter_name' => $user->getFull_Name(),
-        'reporter_email' => $user->getEmail(),
-        'more_info' => $_POST['more_info']
-    );
-    $data_string = json_encode($data);
-#    echo($data_string);
-    $ch = curl_init('http://kiosk.london.hackspace.org.uk:12345/print/fixme');
-    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
-    curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+        $validator = new fValidation();
+        $validator->addRequiredFields('name', 'more_info');
+
+        $validator->validate();
+
+        $data = array(
+            'name' => $_POST['name'],
+            'reporter_id' => $user->getId(),
+            'reporter_name' => $user->getFull_Name(),
+            'reporter_email' => $user->getEmail(),
+            'more_info' => $_POST['more_info']
+        );
+        $data_string = json_encode($data);
+
+        $ch = curl_init('http://kiosk.london.hackspace.org.uk:12345/print/fixme');
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array(
                 'Content-Type: application/json',
                 'Content-Length: ' . strlen($data_string)));
-    $result = curl_exec($ch);
-    curl_close($ch);
-    echo("<p>Your sticker is being printed now.</p>");
+        $result = curl_exec($ch);
+        curl_close($ch);
+        echo("<p>Your sticker is being printed now.</p>");
+    } catch (fValidationException $e) {
+        $e->printMessage();
+    }
 }
 
 ?>
