@@ -16,7 +16,7 @@ $data = array(
     ),
     'state' => array(
         // the android app needs a boolean here
-        'open' => true,
+        'open' => null,
         'message' => 'members only'
     ),
     'contact' => array(
