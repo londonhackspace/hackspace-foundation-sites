@@ -24,6 +24,6 @@ header('Content-Type: image/jpeg');
 
 $chan = intval($_GET['id']);
 
-echo(file_get_contents("$host/cgi-bin/nph-zms?mode=single&scale=$scale&monitor=$chan"));
+echo(file_get_contents("$host/cgi-bin/nph-zms?mode=single&scale=$scale&monitor=$chan&user=hackspace&pass=hackspace"));
 
 ?>
