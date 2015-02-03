@@ -14,7 +14,7 @@ if (isset($_POST['submit'])) {
         $uid = strtoupper($_POST['uid']);
         if ($uid == '21222324') {
             /* New Visa cards return this, presumably for privacy */
-            throw new fValidationException('Non-unique UID.');
+            throw new fValidationException('Non-unique UID. This card cannot be added to the system.');
         }
 
         $users = fRecordSet::build('User', array('email=' => strtolower($_POST['email'])));
