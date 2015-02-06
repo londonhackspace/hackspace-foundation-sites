@@ -14,7 +14,9 @@ $user->load();
 if (isset($_POST['print']) && $user->isMember()) {
     fRequest::validateCSRFToken($_POST['token']);
     $data = array(
-        'reporter_id' => $user->getId()
+        'id' => $user->getId(),
+        'name' => $user->getFull_Name(),
+        'email' => $user->getEmail()
     );
     $data_string = json_encode($data);
 #    echo($data_string);
@@ -36,10 +38,28 @@ if (isset($_POST['print']) && $user->isMember()) {
 
 <p>On this page you can print a Notice of Disposal sticker, use them with care.</p>
 
+<p>It will have:</p>
+
 <form method="post" class="form-horizontal" role="form">
 <input type="hidden" name="token" value="<?=fRequest::generateCSRFToken()?>" />
-<p><input type="submit" id="print" name="print" value="Print" class="btn btn-primary"/></p>
+<div class="form-group">
+    <label class="col-sm-3 control-label">Your name:</label><div class="col-sm-9"><p class="help-block"><?=$user->getFull_Name()?></p></div>
+</div>
+<div class="form-group">
+    <label class="col-sm-3 control-label">Your email:</label><div class="col-sm-9"><p class="help-block"><?=$user->getEmail()?></p></div>
+</div>
+<div class="form-group">
+    <label class="col-sm-3 control-label">The date the sticker was printed:</label>
+    <div class="col-sm-9"><p class="help-block"><?=date('Y-m-d', strtotime("+2 weeks"))?></p></div>
+</div>
+<input type=hidden name="print" value="<?=$user->getId()?>">
+<div class="form-group">
+    <div class="col-sm-offset-3 col-sm-9">
+        <input type="submit" id="print" name="print" value="Print" class="btn btn-primary"/>
+    </div>
+</div>
 </form>
+
 <? } ?>
 <?require('./footer.php')?>
 </body>
