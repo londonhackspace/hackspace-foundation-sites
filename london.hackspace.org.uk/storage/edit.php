@@ -90,18 +90,18 @@ if (isset($_POST['token'])) {
         // post to Google Groups
         $projectUser = new User($project->getUserId());
         $message = 
-            '<strong>' . $project->getName() . "</strong><br/>" .
-            "https://london.hackspace.org.uk/storage/" . $project->getId() . "<br/>" .
-            "by <a href=\"https://london.hackspace.org.uk/members/member.php?id=".$project->getUserId()."\">" . htmlspecialchars($projectUser->getFullName()) . "</a><br/>" .
-            $project->outputDates() . "<br/>" .
+            '<strong>' . $project->getName() . "</strong><br>\n" .
+            "https://london.hackspace.org.uk/storage/" . $project->getId() . "<br>\n" .
+            "by <a href=\"https://london.hackspace.org.uk/members/member.php?id=".$project->getUserId()."\">" . htmlspecialchars($projectUser->getFullName()) . "</a><br>\n" .
+            $project->outputDates() . "<br>\n" .
             $project->outputDuration() . ' ' .
-            $project->outputLocation() . "<br/><br/>" .
-            nl2br(stripslashes($project->getDescription())) . "<br/><br/>";
+            $project->outputLocation() . "<br>\n<br>\n" .
+            nl2br(stripslashes($project->getDescription())) . "<br>\n<br>\n";
 
         if($auto && !$project->isShortTerm())
             $message .= "<strong>***If no one replies to this topic the request will be automatically approved within ".$project->automaticApprovalDuration()." days.***</strong>";
 
-        $project->submitMailingList($message);
+        $project->submitMailingList($message, true);
 
         // is this a short term request? If so automatically approve it
         if($project->isShortTerm()) {

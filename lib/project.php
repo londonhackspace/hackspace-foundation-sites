@@ -58,16 +58,28 @@ class Project extends fActiveRecord {
 		$log->store();
 	}
 
-	public function submitMailingList($message) {
+	public function submitMailingList($message, $first = false) {
 		global $PROJECT_MAILING_LIST;
 		$projectUser = new User($this->getUserId());
+		$from = new DateTime($this->getFromDate());
 		$toEmail = $PROJECT_MAILING_LIST . '@googlegroups.com';
 		$subject = 'Storage Request #'.$this->getId().': '.$this->getName().' by '.htmlspecialchars($projectUser->getFullName());
 		$headers = 'From: no-reply@london.hackspace.org.uk' . "\r\n" .
 			'Reply-To: no-reply@london.hackspace.org.uk' . "\r\n" .
 			'Content-Type:text/html;charset=utf-8' . "\r\n" .
-			'X-Mailer: PHP/' . phpversion();
+			'X-Mailer: PHP/' . phpversion() . "\r\n";
 
+		$id = '<storage-' .$this->getId(). '-' . $this->getUserId() . '-' . $from->format('YmdHis'). '@london.hackspace.org.uk>';
+
+		// if this is the 1st message about this project to the list give it a predictable message id
+		if ($first) {
+			$headers .= 'Message-Id: ' . $id . "\r\n";
+		} else {
+			// then in later messages we can refer to that message id so we get better threading
+			// (we don't need to bother with a message id for subsequent messages, our mta should add one).
+			//
+			$headers .= 'References: ' . $id . "\r\n";
+		}
 		if(mail($toEmail, $subject, $message, $headers)) {
 			// log the post
 			$this->submitLog('Posted to the Mailing List',false);
