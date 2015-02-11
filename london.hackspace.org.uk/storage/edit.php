@@ -127,9 +127,9 @@ if (isset($_POST['token'])) {
         <form id="formStorageRequest" class="form-horizontal storage-form" role="form" method="post">
             <input type="hidden" name="token" value="<?=fRequest::generateCSRFToken()?>" />
             <div class="form-group">
-                <label for="name" class="col-sm-3 control-label">Name</label>
+                <label for="name" class="col-sm-3 control-label">Name of Item</label>
                 <div class="col-sm-9">
-                    <input type="text" class="form-control" id="name" name="name" placeholder="What is it?" value="<? if($_POST && $_POST['name']) { echo $_POST['name']; } else if($project->getName()) { echo $project->getName(); } ?>">
+                    <input type="text" class="form-control" id="name" name="name" placeholder="What are you storing?" value="<? if($_POST && $_POST['name']) { echo $_POST['name']; } else if($project->getName()) { echo $project->getName(); } ?>">
                 </div>
             </div>
             <div class="form-group">
