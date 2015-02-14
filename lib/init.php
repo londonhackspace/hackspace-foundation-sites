@@ -6,6 +6,7 @@ require_once("$root/../etc/config.php");
 require_once("$root/config.php");
 require_once("$root/user.php");
 require_once("$root/transaction.php");
+require_once("$root/subscription.php");
 require_once("$root/card.php");
 require_once("$root/usersprofile.php");
 require_once("$root/learning.php");
@@ -26,6 +27,7 @@ fSession::setPath(dirname(__FILE__) . '/../var/session');
 
 if (isset($GOCARDLESS_CREDENTIALS)) {
     GoCardless::set_account_details($GOCARDLESS_CREDENTIALS);
+    GoCardless::$environment = $GOCARDLESS_ENVIRONMENT;
 }
 
 if ($uid = fSession::get('user')) {

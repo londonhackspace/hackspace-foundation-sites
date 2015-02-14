@@ -212,3 +212,12 @@ INSERT INTO interests (category,suggested,name,url) VALUES ('Special interests',
 INSERT INTO interests (category,suggested,name,url) VALUES ('Special interests',1,'Gardening','https://wiki.london.hackspace.org.uk/view/Garden');
 INSERT INTO interests (category,suggested,name,url) VALUES ('Special interests',1,'Cycling','https://wiki.london.hackspace.org.uk/w/index.php?title=Special%3ASearch&search=cycling&go=Go');
 INSERT INTO interests (category,suggested,name,url) VALUES ('Special interests',1,'Aerospace','https://wiki.london.hackspace.org.uk/view/LondonAerospace');
+
+CREATE TABLE subscriptions (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    created DATETIME NOT NULL,
+    provider TEXT NOT NULL,
+    remote_id TEXT,
+    state TEXT NOT NULL,
+    amount TEXT NOT NULL
+);
