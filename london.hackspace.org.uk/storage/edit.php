@@ -77,9 +77,11 @@ if (isset($_POST['token'])) {
             $auto = true;
             $logDetails = "Request created";
             $project->setState('Pending Approval');
+            $initial = true;
         } else {
             $auto = false;
             $logDetails = "Request updated";
+            $initial = false;
         }
 
         $project->setUpdatedDate(date('Y-m-d'));
@@ -101,7 +103,7 @@ if (isset($_POST['token'])) {
         if($auto && !$project->isShortTerm())
             $message .= "<strong>***If no one replies to this topic the request will be automatically approved within ".$project->automaticApprovalDuration()." days.***</strong>";
 
-        $project->submitMailingList($message, true);
+        $project->submitMailingList($message, $initial);
 
         // is this a short term request? If so automatically approve it
         if($project->isShortTerm()) {
