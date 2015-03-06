@@ -67,27 +67,70 @@ CREATE TABLE userperms (
     user_id INTEGER NOT NULL REFERENCES users(id)
 );
 
+CREATE TABLE locations (
+    id INTEGER PRIMARY KEY AUTOINCREMENT, 
+    name VARCHAR(255) NOT NULL
+);
+INSERT INTO locations (name) VALUES ('Ground floor');
+INSERT INTO locations (name) VALUES ('Basement');
+INSERT INTO locations (name) VALUES ('Yard');
+
+CREATE TABLE project_states (
+    id INTEGER PRIMARY KEY AUTOINCREMENT, 
+    name VARCHAR(255) NOT NULL
+);
+INSERT INTO project_states (name) VALUES ('Pending Approval');
+INSERT INTO project_states (name) VALUES ('Approved');
+INSERT INTO project_states (name) VALUES ('Unapproved');
+INSERT INTO project_states (name) VALUES ('Extended');
+INSERT INTO project_states (name) VALUES ('Passed Deadline');
+INSERT INTO project_states (name) VALUES ('Removed');
+INSERT INTO project_states (name) VALUES ('Archived');
+
+CREATE TABLE projects (
+    id INTEGER PRIMARY KEY AUTOINCREMENT, 
+    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE, 
+    name VARCHAR(255) NOT NULL,
+    description VARCHAR(500) NOT NULL,
+    contact VARCHAR(255),
+    state_id INTEGER NOT NULL REFERENCES project_states(id) ON DELETE CASCADE, 
+    location_id INTEGER NOT NULL REFERENCES locations(id) ON DELETE CASCADE, 
+    location VARCHAR(255),
+        updated_date DATETIME NOT NULL,
+        from_date DATETIME NOT NULL,
+        to_date DATETIME NOT NULL,
+    FOREIGN KEY(user_id) REFERENCES users(id)
+);
+
+CREATE TABLE projects_logs (
+    id INTEGER PRIMARY KEY AUTOINCREMENT, 
+        timestamp INTEGER NOT NULL,
+    project_id INTEGER NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
+    user_id INTEGER REFERENCES users(id),
+    details VARCHAR(255) NOT NULL
+);
+
 CREATE TABLE users_profiles (
-	user_id INTEGER PRIMARY KEY NOT NULL REFERENCES users(id) ON DELETE CASCADE, 
-	allow_email BOOLEAN NOT NULL DEFAULT 0,
-	allow_doorbot BOOLEAN NOT NULL DEFAULT 0, 
-	photo VARCHAR(255), 
-	website VARCHAR(255), 
-	description VARCHAR(500), 
-	FOREIGN KEY(user_id) REFERENCES users(id)
+    user_id INTEGER PRIMARY KEY NOT NULL REFERENCES users(id) ON DELETE CASCADE, 
+    allow_email BOOLEAN NOT NULL DEFAULT 0,
+    allow_doorbot BOOLEAN NOT NULL DEFAULT 0, 
+    photo VARCHAR(255), 
+    website VARCHAR(255), 
+    description VARCHAR(500), 
+    FOREIGN KEY(user_id) REFERENCES users(id)
 );
 
 CREATE TABLE learnings (
-	learning_id INTEGER PRIMARY KEY AUTOINCREMENT, 
-	name VARCHAR(255) NOT NULL, 
-	description VARCHAR(255) NOT NULL,
-	url VARCHAR(255)
+    learning_id INTEGER PRIMARY KEY AUTOINCREMENT, 
+    name VARCHAR(255) NOT NULL, 
+    description VARCHAR(255) NOT NULL,
+    url VARCHAR(255)
 );
 
 CREATE TABLE users_learnings (
-	user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE, 
-	learning_id INTEGER NOT NULL REFERENCES learnings(learning_id) ON DELETE CASCADE,
-	PRIMARY KEY (user_id, learning_id)
+    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE, 
+    learning_id INTEGER NOT NULL REFERENCES learnings(learning_id) ON DELETE CASCADE,
+    PRIMARY KEY (user_id, learning_id)
 );
 
 INSERT INTO learnings (name,description,url) VALUES ('Laser cutting','Laser cutter trained','https://wiki.london.hackspace.org.uk/view/Lasercutter_Training');
@@ -95,15 +138,15 @@ INSERT INTO learnings (name,description,url) VALUES ('Vinyl cutting','Vinyl cutt
 INSERT INTO learnings (name,description,url) VALUES ('3D printing','3D printer trained','https://wiki.london.hackspace.org.uk/view/3dprinter_training');
 
 CREATE TABLE aliases (
-	id VARCHAR(255) PRIMARY KEY NOT NULL,
-	type INTEGER NOT NULL DEFAULT 2
+    id VARCHAR(255) PRIMARY KEY NOT NULL,
+    type INTEGER NOT NULL DEFAULT 2
 );
 
 CREATE TABLE users_aliases (
-	user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,  
-	alias_id VARCHAR(255) NOT NULL REFERENCES aliases(id) ON DELETE CASCADE, 
-	username VARCHAR(255) NOT NULL,
-	PRIMARY KEY (user_id, alias_id)
+    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,  
+    alias_id VARCHAR(255) NOT NULL REFERENCES aliases(id) ON DELETE CASCADE, 
+    username VARCHAR(255) NOT NULL,
+    PRIMARY KEY (user_id, alias_id)
 );
 
 INSERT INTO aliases (id,type) VALUES ('IRC',1);
@@ -122,21 +165,21 @@ INSERT INTO aliases (id,type) VALUES ('Minecraft',2);
 INSERT INTO aliases (id,type) VALUES ('Ello',2);
 
 CREATE TABLE interests_categories (
-	id VARCHAR(255) PRIMARY KEY NOT NULL
+    id VARCHAR(255) PRIMARY KEY NOT NULL
 );
 
 CREATE TABLE interests (
-	interest_id INTEGER PRIMARY KEY AUTOINCREMENT, 
-	category VARCHAR(255) NOT NULL REFERENCES interests_categories(id) ON DELETE CASCADE,
-	suggested BOOLEAN NOT NULL DEFAULT 0,
-	name VARCHAR(255) NOT NULL, 
-	url VARCHAR(255)
+    interest_id INTEGER PRIMARY KEY AUTOINCREMENT, 
+    category VARCHAR(255) NOT NULL REFERENCES interests_categories(id) ON DELETE CASCADE,
+    suggested BOOLEAN NOT NULL DEFAULT 0,
+    name VARCHAR(255) NOT NULL, 
+    url VARCHAR(255)
 );
 
 CREATE TABLE users_interests (
-	user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE, 
-	interest_id INTEGER NOT NULL REFERENCES interests(interest_id) ON DELETE CASCADE,
-	PRIMARY KEY (user_id, interest_id)
+    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE, 
+    interest_id INTEGER NOT NULL REFERENCES interests(interest_id) ON DELETE CASCADE,
+    PRIMARY KEY (user_id, interest_id)
 );
 
 INSERT INTO interests_categories (id) VALUES ('Computing');

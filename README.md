@@ -5,7 +5,8 @@ site](http://london.hackspace.org.uk)
 
 ## Packages needed
 
-php5 sqlite php5-sqlite php-apc sqlite3 ruby-sqlite3 ruby-erubis rubygems ruby-hpricot ruby-mail
+php5 sqlite php5-sqlite php5-curl php-apc sqlite3
+ruby-sqlite3 ruby-erubis rubygems ruby-hpricot ruby-mail
 
 ## Setting up Apache
 Make sure you have mod_rewrite and expires enabled. (a2enmod rewrite, a2enmod expires)
@@ -17,12 +18,13 @@ You'll need to include the /apache-config file in your apache host config. Examp
     Include /path/to/root/dir/apache-config
     </VirtualHost>
 
-### Google api libs
+### Create config file
 
-    cd /var/www/hackspace-foundation-sites/lib/
-    git clone https://github.com/google/google-api-php-client.git GoogleAPI
+    cp etc/config.php.example etc/config.php
 
-(Which revision? does it matter?)
+### Fetch libraries
+
+    git submodule update --init
 
 ### session dir
 
@@ -36,7 +38,7 @@ You can create the database from the schema located in ./etc:
     cd var
     chown www-data:adm database.db ; chmod 0660 database.db
 
-Note that SQL Lite needs write access to the directory containing the .db file to do its journaling:
+Note that SQLite needs write access to the directory containing the .db file to do its journaling:
 
     chgrp www-data ./var
     chmod 0775 ./var

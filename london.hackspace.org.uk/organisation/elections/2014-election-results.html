@@ -1,0 +1,772 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<title>Trustees Election</title>
+<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+<script type="text/javascript">
+    google.load("visualization", "1.0", {"packages":["corechart"]});
+</script>
+</head>
+<body>
+<h1>Trustees Election</h1>
+<p> Counting votes using Meek STV. There are 19 candidates competing for 5 seats. 
+The number of votes is 300 and there were 299 valid votes.</p>
+<ul>
+<li><a href="#anchor-1">Round 1</a>
+<li><a href="#anchor-2">Round 2</a>
+<li><a href="#anchor-3">Round 3</a>
+<li><a href="#anchor-4">Round 4</a>
+<li><a href="#anchor-5">Round 5</a>
+<li><a href="#anchor-6">Round 6</a>
+<li><a href="#anchor-7">Round 7</a>
+<li><a href="#anchor-8">Round 8</a>
+<li><a href="#anchor-9">Round 9</a>
+<li><a href="#anchor-10">Round 10</a>
+<li><a href="#anchor-11">Round 11</a>
+<li><a href="#anchor-12">Round 12</a>
+<li><a href="#anchor-13">Round 13</a>
+<li><a href="#anchor-14">Round 14</a>
+<li><a href="#anchor-15">Round 15</a>
+<li><a href="#anchor-16">Round 16</a>
+<li><a href="#anchor-17">Round 17</a>
+<li><a href="#anchor-18">Round 18</a>
+<li><a href="#anchor-19">Round 19</a>
+<li><a href="#anchor-20">Round 20</a>
+<li><a href="#anchor-21">Round 21</a>
+<li><a href="#anchor-22">Round 22</a>
+<li><a href="#anchor-23">Round 23</a>
+</ul>
+<p> The bar charts below show the vote counts for each candidate in each round.
+Place the mouse over a bar to see the number of votes.</p>
+<ul>
+<li> Yellow &mdash; Votes carried over from the previous round.
+<li> Green &mdash; Votes received in this round.
+<li> Red &mdash; Votes transferred away in this round.
+</ul>
+<p> A candidate's votes in a round is the sum of the yellow and green bars.
+Since the green and red bars represent votes being transferred, the sum of the 
+green and red bars is the same. </p>
+<p> The exhausted bar represents votes where the voter did not indicate a next 
+preference and thus there were no candidates to transfer the vote to.  The 
+threshold bar (where shown) indicates the number of votes that ensures that a 
+candidate will win a seat. </p>
+<hr>
+<h3 style="margin-bottom:0"><a id="anchor-1">Round 1</a></h3>
+<p style="margin-top:0;font-size:small;">(<a href="#anchor-2">next</a>)</p><div id="round-1"></div>
+<script type="text/javascript">
+var data = new google.visualization.DataTable();
+data.addColumn("string", "Candidate");
+data.addColumn("number", "Votes");
+data.addColumn({type:"string", role:"tooltip"});
+data.addColumn({type: "boolean", role:"certainty"});
+data.addColumn("number", "Received");
+data.addColumn({type:"string", role:"tooltip"});
+data.addColumn("number", "Transferred");
+data.addColumn({type:"string", role:"tooltip"});
+data.addRows([["Martin Clarke", 7.000000, "Votes: 7.000000", true, 0.000000, "Votes: 7.000000", 0.000000, "Votes: 7.000000"],["Sam Cook", 3.000000, "Votes: 3.000000", true, 0.000000, "Votes: 3.000000", 0.000000, "Votes: 3.000000"],["Thomas Greer", 15.000000, "Votes: 15.000000", true, 0.000000, "Votes: 15.000000", 0.000000, "Votes: 15.000000"],["Matthew Israelsohn", 20.000000, "Votes: 20.000000", true, 0.000000, "Votes: 20.000000", 0.000000, "Votes: 20.000000"],["Nick Large", 2.000000, "Votes: 2.000000", true, 0.000000, "Votes: 2.000000", 0.000000, "Votes: 2.000000"],["Ruben Martin", 4.000000, "Votes: 4.000000", true, 0.000000, "Votes: 4.000000", 0.000000, "Votes: 4.000000"],["Eugene Nadyrshin", 39.000000, "Votes: 39.000000", true, 0.000000, "Votes: 39.000000", 0.000000, "Votes: 39.000000"],["Lucia Naidu", 20.000000, "Votes: 20.000000", true, 0.000000, "Votes: 20.000000", 0.000000, "Votes: 20.000000"],["Blanca Regina", 12.000000, "Votes: 12.000000", true, 0.000000, "Votes: 12.000000", 0.000000, "Votes: 12.000000"],["Tim Reynolds", 7.000000, "Votes: 7.000000", true, 0.000000, "Votes: 7.000000", 0.000000, "Votes: 7.000000"],["Philip Roy", 8.000000, "Votes: 8.000000", true, 0.000000, "Votes: 8.000000", 0.000000, "Votes: 8.000000"],["Henry Sands", 8.000000, "Votes: 8.000000", true, 0.000000, "Votes: 8.000000", 0.000000, "Votes: 8.000000"],["Ryan Sayre", 16.000000, "Votes: 16.000000", true, 0.000000, "Votes: 16.000000", 0.000000, "Votes: 16.000000"],["David Sullivan", 2.000000, "Votes: 2.000000", true, 0.000000, "Votes: 2.000000", 0.000000, "Votes: 2.000000"],["Samantha Thompson", 37.000000, "Votes: 37.000000", true, 0.000000, "Votes: 37.000000", 0.000000, "Votes: 37.000000"],["Jonty Wareing", 88.000000, "Votes: 88.000000", true, 0.000000, "Votes: 88.000000", 0.000000, "Votes: 88.000000"],["Tom Wyatt", 9.000000, "Votes: 9.000000", true, 0.000000, "Votes: 9.000000", 0.000000, "Votes: 9.000000"],["NO FURTHER PLACES", 2.000000, "Votes: 2.000000", true, 0.000000, "Votes: 2.000000", 0.000000, "Votes: 2.000000"],["Exhausted", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Threshold", 49.833334, "Threshold: 49.833334", false, 0, null, 0, null]]);
+var formatter = new google.visualization.NumberFormat({fractionDigits:6});
+formatter.format(data, 1);
+formatter.format(data, 3);
+formatter.format(data, 5);
+var options = {
+width:760,
+height:550,
+legend:{position:"none"},
+chartArea:{left:100,top:0,width:660,height:525},
+hAxis:{maxValue:88},
+isStacked:true,
+colors:["#fcd050", "#87cf32", "#ef3638"],
+};
+var chart = new google.visualization.BarChart(document.getElementById("round-1"));
+chart.draw(data, options);
+</script>
+<p>Count of first choices. Candidate Jonty Wareing has reached the threshold and is elected. </p>
+<hr>
+<h3 style="margin-bottom:0"><a id="anchor-2">Round 2</a></h3>
+<p style="margin-top:0;font-size:small;">(<a href="#anchor-1">prev</a>) (<a href="#anchor-3">next</a>)</p><div id="round-2"></div>
+<script type="text/javascript">
+var data = new google.visualization.DataTable();
+data.addColumn("string", "Candidate");
+data.addColumn("number", "Votes");
+data.addColumn({type:"string", role:"tooltip"});
+data.addColumn({type: "boolean", role:"certainty"});
+data.addColumn("number", "Received");
+data.addColumn({type:"string", role:"tooltip"});
+data.addColumn("number", "Transferred");
+data.addColumn({type:"string", role:"tooltip"});
+data.addRows([["Martin Clarke", 7.000000, "Votes: 7.433712\nReceived: 0.433712", true, 0.433712, "Votes: 7.433712\nReceived: 0.433712", 0.000000, "Votes: 7.433712\nReceived: 0.433712"],["Sam Cook", 3.000000, "Votes: 5.168560\nReceived: 2.168560", true, 2.168560, "Votes: 5.168560\nReceived: 2.168560", 0.000000, "Votes: 5.168560\nReceived: 2.168560"],["Thomas Greer", 15.000000, "Votes: 16.301136\nReceived: 1.301136", true, 1.301136, "Votes: 16.301136\nReceived: 1.301136", 0.000000, "Votes: 16.301136\nReceived: 1.301136"],["Matthew Israelsohn", 20.000000, "Votes: 25.638256\nReceived: 5.638256", true, 5.638256, "Votes: 25.638256\nReceived: 5.638256", 0.000000, "Votes: 25.638256\nReceived: 5.638256"],["Nick Large", 2.000000, "Votes: 4.168560\nReceived: 2.168560", true, 2.168560, "Votes: 4.168560\nReceived: 2.168560", 0.000000, "Votes: 4.168560\nReceived: 2.168560"],["Ruben Martin", 4.000000, "Votes: 4.000000", true, 0.000000, "Votes: 4.000000", 0.000000, "Votes: 4.000000"],["Eugene Nadyrshin", 39.000000, "Votes: 42.903408\nReceived: 3.903408", true, 3.903408, "Votes: 42.903408\nReceived: 3.903408", 0.000000, "Votes: 42.903408\nReceived: 3.903408"],["Lucia Naidu", 20.000000, "Votes: 22.602272\nReceived: 2.602272", true, 2.602272, "Votes: 22.602272\nReceived: 2.602272", 0.000000, "Votes: 22.602272\nReceived: 2.602272"],["Blanca Regina", 12.000000, "Votes: 12.867424\nReceived: 0.867424", true, 0.867424, "Votes: 12.867424\nReceived: 0.867424", 0.000000, "Votes: 12.867424\nReceived: 0.867424"],["Tim Reynolds", 7.000000, "Votes: 7.867424\nReceived: 0.867424", true, 0.867424, "Votes: 7.867424\nReceived: 0.867424", 0.000000, "Votes: 7.867424\nReceived: 0.867424"],["Philip Roy", 8.000000, "Votes: 10.602272\nReceived: 2.602272", true, 2.602272, "Votes: 10.602272\nReceived: 2.602272", 0.000000, "Votes: 10.602272\nReceived: 2.602272"],["Henry Sands", 8.000000, "Votes: 10.602272\nReceived: 2.602272", true, 2.602272, "Votes: 10.602272\nReceived: 2.602272", 0.000000, "Votes: 10.602272\nReceived: 2.602272"],["Ryan Sayre", 16.000000, "Votes: 18.168560\nReceived: 2.168560", true, 2.168560, "Votes: 18.168560\nReceived: 2.168560", 0.000000, "Votes: 18.168560\nReceived: 2.168560"],["David Sullivan", 2.000000, "Votes: 3.301136\nReceived: 1.301136", true, 1.301136, "Votes: 3.301136\nReceived: 1.301136", 0.000000, "Votes: 3.301136\nReceived: 1.301136"],["Samantha Thompson", 37.000000, "Votes: 41.770832\nReceived: 4.770832", true, 4.770832, "Votes: 41.770832\nReceived: 4.770832", 0.000000, "Votes: 41.770832\nReceived: 4.770832"],["Jonty Wareing", 49.833344, "Votes: 49.833344\nTransferred: 38.166656", true, 0.000000, "Votes: 49.833344\nTransferred: 38.166656", 38.166656, "Votes: 49.833344\nTransferred: 38.166656"],["Tom Wyatt", 9.000000, "Votes: 13.337120\nReceived: 4.337120", true, 4.337120, "Votes: 13.337120\nReceived: 4.337120", 0.000000, "Votes: 13.337120\nReceived: 4.337120"],["NO FURTHER PLACES", 2.000000, "Votes: 2.433712\nReceived: 0.433712", true, 0.433712, "Votes: 2.433712\nReceived: 0.433712", 0.000000, "Votes: 2.433712\nReceived: 0.433712"],["Exhausted", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Threshold", 49.833334, "Threshold: 49.833334", false, 0, null, 0, null]]);
+var formatter = new google.visualization.NumberFormat({fractionDigits:6});
+formatter.format(data, 1);
+formatter.format(data, 3);
+formatter.format(data, 5);
+var options = {
+width:760,
+height:550,
+legend:{position:"none"},
+chartArea:{left:100,top:0,width:660,height:525},
+hAxis:{maxValue:88},
+isStacked:true,
+colors:["#fcd050", "#87cf32", "#ef3638"],
+};
+var chart = new google.visualization.BarChart(document.getElementById("round-2"));
+chart.draw(data, options);
+</script>
+<p>Count after transferring surplus votes. Keep factors of candidates who have exceeded the threshold: Jonty Wareing, 0.566288. </p>
+<hr>
+<h3 style="margin-bottom:0"><a id="anchor-3">Round 3</a></h3>
+<p style="margin-top:0;font-size:small;">(<a href="#anchor-2">prev</a>) (<a href="#anchor-4">next</a>)</p><div id="round-3"></div>
+<script type="text/javascript">
+var data = new google.visualization.DataTable();
+data.addColumn("string", "Candidate");
+data.addColumn("number", "Votes");
+data.addColumn({type:"string", role:"tooltip"});
+data.addColumn({type: "boolean", role:"certainty"});
+data.addColumn("number", "Received");
+data.addColumn({type:"string", role:"tooltip"});
+data.addColumn("number", "Transferred");
+data.addColumn({type:"string", role:"tooltip"});
+data.addRows([["Martin Clarke", 7.433712, "Votes: 7.433712", true, 0.000000, "Votes: 7.433712", 0.000000, "Votes: 7.433712"],["Sam Cook", 5.168560, "Votes: 5.602272\nReceived: 0.433712", true, 0.433712, "Votes: 5.602272\nReceived: 0.433712", 0.000000, "Votes: 5.602272\nReceived: 0.433712"],["Thomas Greer", 16.301136, "Votes: 16.301136", true, 0.000000, "Votes: 16.301136", 0.000000, "Votes: 16.301136"],["Matthew Israelsohn", 25.638256, "Votes: 25.638256", true, 0.000000, "Votes: 25.638256", 0.000000, "Votes: 25.638256"],["Nick Large", 4.168560, "Votes: 5.168560\nReceived: 1.000000", true, 1.000000, "Votes: 5.168560\nReceived: 1.000000", 0.000000, "Votes: 5.168560\nReceived: 1.000000"],["Ruben Martin", 4.000000, "Votes: 4.000000", true, 0.000000, "Votes: 4.000000", 0.000000, "Votes: 4.000000"],["Eugene Nadyrshin", 42.903408, "Votes: 42.903408", true, 0.000000, "Votes: 42.903408", 0.000000, "Votes: 42.903408"],["Lucia Naidu", 22.602272, "Votes: 23.035984\nReceived: 0.433712", true, 0.433712, "Votes: 23.035984\nReceived: 0.433712", 0.000000, "Votes: 23.035984\nReceived: 0.433712"],["Blanca Regina", 12.867424, "Votes: 12.867424", true, 0.000000, "Votes: 12.867424", 0.000000, "Votes: 12.867424"],["Tim Reynolds", 7.867424, "Votes: 7.867424", true, 0.000000, "Votes: 7.867424", 0.000000, "Votes: 7.867424"],["Philip Roy", 10.602272, "Votes: 10.602272", true, 0.000000, "Votes: 10.602272", 0.000000, "Votes: 10.602272"],["Henry Sands", 10.602272, "Votes: 10.602272", true, 0.000000, "Votes: 10.602272", 0.000000, "Votes: 10.602272"],["Ryan Sayre", 18.168560, "Votes: 18.168560", true, 0.000000, "Votes: 18.168560", 0.000000, "Votes: 18.168560"],["David Sullivan", 3.301136, "Votes: 3.301136", true, 0.000000, "Votes: 3.301136", 0.000000, "Votes: 3.301136"],["Samantha Thompson", 41.770832, "Votes: 41.770832", true, 0.000000, "Votes: 41.770832", 0.000000, "Votes: 41.770832"],["Jonty Wareing", 49.833344, "Votes: 50.399632\nReceived: 0.566288", true, 0.566288, "Votes: 50.399632\nReceived: 0.566288", 0.000000, "Votes: 50.399632\nReceived: 0.566288"],["Tom Wyatt", 13.337120, "Votes: 13.337120", true, 0.000000, "Votes: 13.337120", 0.000000, "Votes: 13.337120"],["NO FURTHER PLACES", 0.000000, "Votes: 0.000000\nTransferred: 2.433712", true, 0.000000, "Votes: 0.000000\nTransferred: 2.433712", 2.433712, "Votes: 0.000000\nTransferred: 2.433712"],["Exhausted", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Threshold", 49.833334, "Threshold: 49.833334", false, 0, null, 0, null]]);
+var formatter = new google.visualization.NumberFormat({fractionDigits:6});
+formatter.format(data, 1);
+formatter.format(data, 3);
+formatter.format(data, 5);
+var options = {
+width:760,
+height:550,
+legend:{position:"none"},
+chartArea:{left:100,top:0,width:660,height:525},
+hAxis:{maxValue:88},
+isStacked:true,
+colors:["#fcd050", "#87cf32", "#ef3638"],
+};
+var chart = new google.visualization.BarChart(document.getElementById("round-3"));
+chart.draw(data, options);
+</script>
+<p>Count after eliminating NO FURTHER PLACES and transferring votes. All losing candidates are eliminated. </p>
+<hr>
+<h3 style="margin-bottom:0"><a id="anchor-4">Round 4</a></h3>
+<p style="margin-top:0;font-size:small;">(<a href="#anchor-3">prev</a>) (<a href="#anchor-5">next</a>)</p><div id="round-4"></div>
+<script type="text/javascript">
+var data = new google.visualization.DataTable();
+data.addColumn("string", "Candidate");
+data.addColumn("number", "Votes");
+data.addColumn({type:"string", role:"tooltip"});
+data.addColumn({type: "boolean", role:"certainty"});
+data.addColumn("number", "Received");
+data.addColumn({type:"string", role:"tooltip"});
+data.addColumn("number", "Transferred");
+data.addColumn({type:"string", role:"tooltip"});
+data.addRows([["Martin Clarke", 7.433712, "Votes: 7.867424\nReceived: 0.433712", true, 0.433712, "Votes: 7.867424\nReceived: 0.433712", 0.000000, "Votes: 7.867424\nReceived: 0.433712"],["Sam Cook", 5.602272, "Votes: 5.602272", true, 0.000000, "Votes: 5.602272", 0.000000, "Votes: 5.602272"],["Thomas Greer", 16.301136, "Votes: 16.734848\nReceived: 0.433712", true, 0.433712, "Votes: 16.734848\nReceived: 0.433712", 0.000000, "Votes: 16.734848\nReceived: 0.433712"],["Matthew Israelsohn", 25.638256, "Votes: 25.638256", true, 0.000000, "Votes: 25.638256", 0.000000, "Votes: 25.638256"],["Nick Large", 5.168560, "Votes: 6.035984\nReceived: 0.867424", true, 0.867424, "Votes: 6.035984\nReceived: 0.867424", 0.000000, "Votes: 6.035984\nReceived: 0.867424"],["Ruben Martin", 4.000000, "Votes: 4.000000", true, 0.000000, "Votes: 4.000000", 0.000000, "Votes: 4.000000"],["Eugene Nadyrshin", 42.903408, "Votes: 42.903408", true, 0.000000, "Votes: 42.903408", 0.000000, "Votes: 42.903408"],["Lucia Naidu", 23.035984, "Votes: 23.035984", true, 0.000000, "Votes: 23.035984", 0.000000, "Votes: 23.035984"],["Blanca Regina", 12.867424, "Votes: 12.867424", true, 0.000000, "Votes: 12.867424", 0.000000, "Votes: 12.867424"],["Tim Reynolds", 7.867424, "Votes: 8.867424\nReceived: 1.000000", true, 1.000000, "Votes: 8.867424\nReceived: 1.000000", 0.000000, "Votes: 8.867424\nReceived: 1.000000"],["Philip Roy", 10.602272, "Votes: 10.602272", true, 0.000000, "Votes: 10.602272", 0.000000, "Votes: 10.602272"],["Henry Sands", 10.602272, "Votes: 10.602272", true, 0.000000, "Votes: 10.602272", 0.000000, "Votes: 10.602272"],["Ryan Sayre", 18.168560, "Votes: 18.168560", true, 0.000000, "Votes: 18.168560", 0.000000, "Votes: 18.168560"],["David Sullivan", 0.000000, "Votes: 0.000000\nTransferred: 3.301136", true, 0.000000, "Votes: 0.000000\nTransferred: 3.301136", 3.301136, "Votes: 0.000000\nTransferred: 3.301136"],["Samantha Thompson", 41.770832, "Votes: 41.770832", true, 0.000000, "Votes: 41.770832", 0.000000, "Votes: 41.770832"],["Jonty Wareing", 50.399632, "Votes: 50.965920\nReceived: 0.566288", true, 0.566288, "Votes: 50.965920\nReceived: 0.566288", 0.000000, "Votes: 50.965920\nReceived: 0.566288"],["Tom Wyatt", 13.337120, "Votes: 13.337120", true, 0.000000, "Votes: 13.337120", 0.000000, "Votes: 13.337120"],["NO FURTHER PLACES", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Exhausted", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Threshold", 49.833334, "Threshold: 49.833334", false, 0, null, 0, null]]);
+var formatter = new google.visualization.NumberFormat({fractionDigits:6});
+formatter.format(data, 1);
+formatter.format(data, 3);
+formatter.format(data, 5);
+var options = {
+width:760,
+height:550,
+legend:{position:"none"},
+chartArea:{left:100,top:0,width:660,height:525},
+hAxis:{maxValue:88},
+isStacked:true,
+colors:["#fcd050", "#87cf32", "#ef3638"],
+};
+var chart = new google.visualization.BarChart(document.getElementById("round-4"));
+chart.draw(data, options);
+</script>
+<p>Count after eliminating David Sullivan and transferring votes. All losing candidates are eliminated. </p>
+<hr>
+<h3 style="margin-bottom:0"><a id="anchor-5">Round 5</a></h3>
+<p style="margin-top:0;font-size:small;">(<a href="#anchor-4">prev</a>) (<a href="#anchor-6">next</a>)</p><div id="round-5"></div>
+<script type="text/javascript">
+var data = new google.visualization.DataTable();
+data.addColumn("string", "Candidate");
+data.addColumn("number", "Votes");
+data.addColumn({type:"string", role:"tooltip"});
+data.addColumn({type: "boolean", role:"certainty"});
+data.addColumn("number", "Received");
+data.addColumn({type:"string", role:"tooltip"});
+data.addColumn("number", "Transferred");
+data.addColumn({type:"string", role:"tooltip"});
+data.addRows([["Martin Clarke", 7.867424, "Votes: 7.867424", true, 0.000000, "Votes: 7.867424", 0.000000, "Votes: 7.867424"],["Sam Cook", 5.602272, "Votes: 6.035984\nReceived: 0.433712", true, 0.433712, "Votes: 6.035984\nReceived: 0.433712", 0.000000, "Votes: 6.035984\nReceived: 0.433712"],["Thomas Greer", 16.734848, "Votes: 16.734848", true, 0.000000, "Votes: 16.734848", 0.000000, "Votes: 16.734848"],["Matthew Israelsohn", 25.638256, "Votes: 25.638256", true, 0.000000, "Votes: 25.638256", 0.000000, "Votes: 25.638256"],["Nick Large", 6.035984, "Votes: 6.035984", true, 0.000000, "Votes: 6.035984", 0.000000, "Votes: 6.035984"],["Ruben Martin", 0.000000, "Votes: 0.000000\nTransferred: 4.000000", true, 0.000000, "Votes: 0.000000\nTransferred: 4.000000", 4.000000, "Votes: 0.000000\nTransferred: 4.000000"],["Eugene Nadyrshin", 42.903408, "Votes: 43.337120\nReceived: 0.433712", true, 0.433712, "Votes: 43.337120\nReceived: 0.433712", 0.000000, "Votes: 43.337120\nReceived: 0.433712"],["Lucia Naidu", 23.035984, "Votes: 23.035984", true, 0.000000, "Votes: 23.035984", 0.000000, "Votes: 23.035984"],["Blanca Regina", 12.867424, "Votes: 12.867424", true, 0.000000, "Votes: 12.867424", 0.000000, "Votes: 12.867424"],["Tim Reynolds", 8.867424, "Votes: 8.867424", true, 0.000000, "Votes: 8.867424", 0.000000, "Votes: 8.867424"],["Philip Roy", 10.602272, "Votes: 10.602272", true, 0.000000, "Votes: 10.602272", 0.000000, "Votes: 10.602272"],["Henry Sands", 10.602272, "Votes: 11.602272\nReceived: 1.000000", true, 1.000000, "Votes: 11.602272\nReceived: 1.000000", 0.000000, "Votes: 11.602272\nReceived: 1.000000"],["Ryan Sayre", 18.168560, "Votes: 18.602272\nReceived: 0.433712", true, 0.433712, "Votes: 18.602272\nReceived: 0.433712", 0.000000, "Votes: 18.602272\nReceived: 0.433712"],["David Sullivan", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Samantha Thompson", 41.770832, "Votes: 41.770832", true, 0.000000, "Votes: 41.770832", 0.000000, "Votes: 41.770832"],["Jonty Wareing", 50.965920, "Votes: 52.664784\nReceived: 1.698864", true, 1.698864, "Votes: 52.664784\nReceived: 1.698864", 0.000000, "Votes: 52.664784\nReceived: 1.698864"],["Tom Wyatt", 13.337120, "Votes: 13.337120", true, 0.000000, "Votes: 13.337120", 0.000000, "Votes: 13.337120"],["NO FURTHER PLACES", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Exhausted", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Threshold", 49.833334, "Threshold: 49.833334", false, 0, null, 0, null]]);
+var formatter = new google.visualization.NumberFormat({fractionDigits:6});
+formatter.format(data, 1);
+formatter.format(data, 3);
+formatter.format(data, 5);
+var options = {
+width:760,
+height:550,
+legend:{position:"none"},
+chartArea:{left:100,top:0,width:660,height:525},
+hAxis:{maxValue:88},
+isStacked:true,
+colors:["#fcd050", "#87cf32", "#ef3638"],
+};
+var chart = new google.visualization.BarChart(document.getElementById("round-5"));
+chart.draw(data, options);
+</script>
+<p>Count after eliminating Ruben Martin and transferring votes. All losing candidates are eliminated. </p>
+<hr>
+<h3 style="margin-bottom:0"><a id="anchor-6">Round 6</a></h3>
+<p style="margin-top:0;font-size:small;">(<a href="#anchor-5">prev</a>) (<a href="#anchor-7">next</a>)</p><div id="round-6"></div>
+<script type="text/javascript">
+var data = new google.visualization.DataTable();
+data.addColumn("string", "Candidate");
+data.addColumn("number", "Votes");
+data.addColumn({type:"string", role:"tooltip"});
+data.addColumn({type: "boolean", role:"certainty"});
+data.addColumn("number", "Received");
+data.addColumn({type:"string", role:"tooltip"});
+data.addColumn("number", "Transferred");
+data.addColumn({type:"string", role:"tooltip"});
+data.addRows([["Martin Clarke", 7.867424, "Votes: 7.928314\nReceived: 0.060890", true, 0.060890, "Votes: 7.928314\nReceived: 0.060890", 0.000000, "Votes: 7.928314\nReceived: 0.060890"],["Sam Cook", 6.035984, "Votes: 6.249099\nReceived: 0.213115", true, 0.213115, "Votes: 6.249099\nReceived: 0.213115", 0.000000, "Votes: 6.249099\nReceived: 0.213115"],["Thomas Greer", 16.734848, "Votes: 16.856628\nReceived: 0.121780", true, 0.121780, "Votes: 16.856628\nReceived: 0.121780", 0.000000, "Votes: 16.856628\nReceived: 0.121780"],["Matthew Israelsohn", 25.638256, "Votes: 26.034041\nReceived: 0.395785", true, 0.395785, "Votes: 26.034041\nReceived: 0.395785", 0.000000, "Votes: 26.034041\nReceived: 0.395785"],["Nick Large", 6.035984, "Votes: 6.249099\nReceived: 0.213115", true, 0.213115, "Votes: 6.249099\nReceived: 0.213115", 0.000000, "Votes: 6.249099\nReceived: 0.213115"],["Ruben Martin", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Eugene Nadyrshin", 43.337120, "Votes: 43.641570\nReceived: 0.304450", true, 0.304450, "Votes: 43.641570\nReceived: 0.304450", 0.000000, "Votes: 43.641570\nReceived: 0.304450"],["Lucia Naidu", 23.035984, "Votes: 23.249099\nReceived: 0.213115", true, 0.213115, "Votes: 23.249099\nReceived: 0.213115", 0.000000, "Votes: 23.249099\nReceived: 0.213115"],["Blanca Regina", 12.867424, "Votes: 12.928314\nReceived: 0.060890", true, 0.060890, "Votes: 12.928314\nReceived: 0.060890", 0.000000, "Votes: 12.928314\nReceived: 0.060890"],["Tim Reynolds", 8.867424, "Votes: 8.928314\nReceived: 0.060890", true, 0.060890, "Votes: 8.928314\nReceived: 0.060890", 0.000000, "Votes: 8.928314\nReceived: 0.060890"],["Philip Roy", 10.602272, "Votes: 10.784942\nReceived: 0.182670", true, 0.182670, "Votes: 10.784942\nReceived: 0.182670", 0.000000, "Votes: 10.784942\nReceived: 0.182670"],["Henry Sands", 11.602272, "Votes: 11.784942\nReceived: 0.182670", true, 0.182670, "Votes: 11.784942\nReceived: 0.182670", 0.000000, "Votes: 11.784942\nReceived: 0.182670"],["Ryan Sayre", 18.602272, "Votes: 18.784942\nReceived: 0.182670", true, 0.182670, "Votes: 18.784942\nReceived: 0.182670", 0.000000, "Votes: 18.784942\nReceived: 0.182670"],["David Sullivan", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Samantha Thompson", 41.770832, "Votes: 42.105727\nReceived: 0.334895", true, 0.334895, "Votes: 42.105727\nReceived: 0.334895", 0.000000, "Votes: 42.105727\nReceived: 0.334895"],["Jonty Wareing", 49.833399, "Votes: 49.833399\nTransferred: 2.831385", true, 0.000000, "Votes: 49.833399\nTransferred: 2.831385", 2.831385, "Votes: 49.833399\nTransferred: 2.831385"],["Tom Wyatt", 13.337120, "Votes: 13.641570\nReceived: 0.304450", true, 0.304450, "Votes: 13.641570\nReceived: 0.304450", 0.000000, "Votes: 13.641570\nReceived: 0.304450"],["NO FURTHER PLACES", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Exhausted", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Threshold", 49.833334, "Threshold: 49.833334", false, 0, null, 0, null]]);
+var formatter = new google.visualization.NumberFormat({fractionDigits:6});
+formatter.format(data, 1);
+formatter.format(data, 3);
+formatter.format(data, 5);
+var options = {
+width:760,
+height:550,
+legend:{position:"none"},
+chartArea:{left:100,top:0,width:660,height:525},
+hAxis:{maxValue:88},
+isStacked:true,
+colors:["#fcd050", "#87cf32", "#ef3638"],
+};
+var chart = new google.visualization.BarChart(document.getElementById("round-6"));
+chart.draw(data, options);
+</script>
+<p>Count after transferring surplus votes. Keep factors of candidates who have exceeded the threshold: Jonty Wareing, 0.535843. </p>
+<hr>
+<h3 style="margin-bottom:0"><a id="anchor-7">Round 7</a></h3>
+<p style="margin-top:0;font-size:small;">(<a href="#anchor-6">prev</a>) (<a href="#anchor-8">next</a>)</p><div id="round-7"></div>
+<script type="text/javascript">
+var data = new google.visualization.DataTable();
+data.addColumn("string", "Candidate");
+data.addColumn("number", "Votes");
+data.addColumn({type:"string", role:"tooltip"});
+data.addColumn({type: "boolean", role:"certainty"});
+data.addColumn("number", "Received");
+data.addColumn({type:"string", role:"tooltip"});
+data.addColumn("number", "Transferred");
+data.addColumn({type:"string", role:"tooltip"});
+data.addRows([["Martin Clarke", 7.928314, "Votes: 7.928314", true, 0.000000, "Votes: 7.928314", 0.000000, "Votes: 7.928314"],["Sam Cook", 6.249099, "Votes: 6.249099", true, 0.000000, "Votes: 6.249099", 0.000000, "Votes: 6.249099"],["Thomas Greer", 16.856628, "Votes: 16.856628", true, 0.000000, "Votes: 16.856628", 0.000000, "Votes: 16.856628"],["Matthew Israelsohn", 26.034041, "Votes: 26.034041", true, 0.000000, "Votes: 26.034041", 0.000000, "Votes: 26.034041"],["Nick Large", 6.249099, "Votes: 6.249099", true, 0.000000, "Votes: 6.249099", 0.000000, "Votes: 6.249099"],["Ruben Martin", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Eugene Nadyrshin", 43.641570, "Votes: 43.641570", true, 0.000000, "Votes: 43.641570", 0.000000, "Votes: 43.641570"],["Lucia Naidu", 23.249099, "Votes: 23.249099", true, 0.000000, "Votes: 23.249099", 0.000000, "Votes: 23.249099"],["Blanca Regina", 12.928314, "Votes: 12.928314", true, 0.000000, "Votes: 12.928314", 0.000000, "Votes: 12.928314"],["Tim Reynolds", 8.928314, "Votes: 8.928314", true, 0.000000, "Votes: 8.928314", 0.000000, "Votes: 8.928314"],["Philip Roy", 10.784942, "Votes: 10.784942", true, 0.000000, "Votes: 10.784942", 0.000000, "Votes: 10.784942"],["Henry Sands", 11.784942, "Votes: 11.784942", true, 0.000000, "Votes: 11.784942", 0.000000, "Votes: 11.784942"],["Ryan Sayre", 18.784942, "Votes: 18.784942", true, 0.000000, "Votes: 18.784942", 0.000000, "Votes: 18.784942"],["David Sullivan", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Samantha Thompson", 42.105727, "Votes: 42.105727", true, 0.000000, "Votes: 42.105727", 0.000000, "Votes: 42.105727"],["Jonty Wareing", 49.833399, "Votes: 49.833399", true, 0.000000, "Votes: 49.833399", 0.000000, "Votes: 49.833399"],["Tom Wyatt", 13.641570, "Votes: 13.641570", true, 0.000000, "Votes: 13.641570", 0.000000, "Votes: 13.641570"],["NO FURTHER PLACES", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Exhausted", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Threshold", 49.833334, "Threshold: 49.833334", false, 0, null, 0, null]]);
+var formatter = new google.visualization.NumberFormat({fractionDigits:6});
+formatter.format(data, 1);
+formatter.format(data, 3);
+formatter.format(data, 5);
+var options = {
+width:760,
+height:550,
+legend:{position:"none"},
+chartArea:{left:100,top:0,width:660,height:525},
+hAxis:{maxValue:88},
+isStacked:true,
+colors:["#fcd050", "#87cf32", "#ef3638"],
+};
+var chart = new google.visualization.BarChart(document.getElementById("round-7"));
+chart.draw(data, options);
+</script>
+<p>Count after transferring surplus votes. Keep factors of candidates who have exceeded the threshold: Jonty Wareing, 0.535843. </p>
+<hr>
+<h3 style="margin-bottom:0"><a id="anchor-8">Round 8</a></h3>
+<p style="margin-top:0;font-size:small;">(<a href="#anchor-7">prev</a>) (<a href="#anchor-9">next</a>)</p><div id="round-8"></div>
+<script type="text/javascript">
+var data = new google.visualization.DataTable();
+data.addColumn("string", "Candidate");
+data.addColumn("number", "Votes");
+data.addColumn({type:"string", role:"tooltip"});
+data.addColumn({type: "boolean", role:"certainty"});
+data.addColumn("number", "Received");
+data.addColumn({type:"string", role:"tooltip"});
+data.addColumn("number", "Transferred");
+data.addColumn({type:"string", role:"tooltip"});
+data.addRows([["Martin Clarke", 7.928314, "Votes: 8.392471\nReceived: 0.464157", true, 0.464157, "Votes: 8.392471\nReceived: 0.464157", 0.000000, "Votes: 8.392471\nReceived: 0.464157"],["Sam Cook", 0.000000, "Votes: 0.000000\nTransferred: 6.249099", true, 0.000000, "Votes: 0.000000\nTransferred: 6.249099", 6.249099, "Votes: 0.000000\nTransferred: 6.249099"],["Thomas Greer", 16.856628, "Votes: 17.784942\nReceived: 0.928314", true, 0.928314, "Votes: 17.784942\nReceived: 0.928314", 0.000000, "Votes: 17.784942\nReceived: 0.928314"],["Matthew Israelsohn", 26.034041, "Votes: 26.034041", true, 0.000000, "Votes: 26.034041", 0.000000, "Votes: 26.034041"],["Nick Large", 6.249099, "Votes: 7.177413\nReceived: 0.928314", true, 0.928314, "Votes: 7.177413\nReceived: 0.928314", 0.000000, "Votes: 7.177413\nReceived: 0.928314"],["Ruben Martin", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Eugene Nadyrshin", 43.641570, "Votes: 43.641570", true, 0.000000, "Votes: 43.641570", 0.000000, "Votes: 43.641570"],["Lucia Naidu", 23.249099, "Votes: 24.713256\nReceived: 1.464157", true, 1.464157, "Votes: 24.713256\nReceived: 1.464157", 0.000000, "Votes: 24.713256\nReceived: 1.464157"],["Blanca Regina", 12.928314, "Votes: 13.928314\nReceived: 1.000000", true, 1.000000, "Votes: 13.928314\nReceived: 1.000000", 0.000000, "Votes: 13.928314\nReceived: 1.000000"],["Tim Reynolds", 8.928314, "Votes: 8.928314", true, 0.000000, "Votes: 8.928314", 0.000000, "Votes: 8.928314"],["Philip Roy", 10.784942, "Votes: 11.249099\nReceived: 0.464157", true, 0.464157, "Votes: 11.249099\nReceived: 0.464157", 0.000000, "Votes: 11.249099\nReceived: 0.464157"],["Henry Sands", 11.784942, "Votes: 11.784942", true, 0.000000, "Votes: 11.784942", 0.000000, "Votes: 11.784942"],["Ryan Sayre", 18.784942, "Votes: 18.784942", true, 0.000000, "Votes: 18.784942", 0.000000, "Votes: 18.784942"],["David Sullivan", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Samantha Thompson", 42.105727, "Votes: 42.105727", true, 0.000000, "Votes: 42.105727", 0.000000, "Votes: 42.105727"],["Jonty Wareing", 49.833399, "Votes: 50.369242\nReceived: 0.535843", true, 0.535843, "Votes: 50.369242\nReceived: 0.535843", 0.000000, "Votes: 50.369242\nReceived: 0.535843"],["Tom Wyatt", 13.641570, "Votes: 14.105727\nReceived: 0.464157", true, 0.464157, "Votes: 14.105727\nReceived: 0.464157", 0.000000, "Votes: 14.105727\nReceived: 0.464157"],["NO FURTHER PLACES", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Exhausted", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Threshold", 49.833334, "Threshold: 49.833334", false, 0, null, 0, null]]);
+var formatter = new google.visualization.NumberFormat({fractionDigits:6});
+formatter.format(data, 1);
+formatter.format(data, 3);
+formatter.format(data, 5);
+var options = {
+width:760,
+height:550,
+legend:{position:"none"},
+chartArea:{left:100,top:0,width:660,height:525},
+hAxis:{maxValue:88},
+isStacked:true,
+colors:["#fcd050", "#87cf32", "#ef3638"],
+};
+var chart = new google.visualization.BarChart(document.getElementById("round-8"));
+chart.draw(data, options);
+</script>
+<p>Count after eliminating Sam Cook and transferring votes. Candidates Sam Cook and Nick Large were tied when choosing candidates to eliminate. Candidate Sam Cook was chosen by breaking the tie at round 4. Candidates tied within precision of computations. </p>
+<hr>
+<h3 style="margin-bottom:0"><a id="anchor-9">Round 9</a></h3>
+<p style="margin-top:0;font-size:small;">(<a href="#anchor-8">prev</a>) (<a href="#anchor-10">next</a>)</p><div id="round-9"></div>
+<script type="text/javascript">
+var data = new google.visualization.DataTable();
+data.addColumn("string", "Candidate");
+data.addColumn("number", "Votes");
+data.addColumn({type:"string", role:"tooltip"});
+data.addColumn({type: "boolean", role:"certainty"});
+data.addColumn("number", "Received");
+data.addColumn({type:"string", role:"tooltip"});
+data.addColumn("number", "Transferred");
+data.addColumn({type:"string", role:"tooltip"});
+data.addRows([["Martin Clarke", 8.392471, "Votes: 9.320785\nReceived: 0.928314", true, 0.928314, "Votes: 9.320785\nReceived: 0.928314", 0.000000, "Votes: 9.320785\nReceived: 0.928314"],["Sam Cook", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Thomas Greer", 17.784942, "Votes: 17.784942", true, 0.000000, "Votes: 17.784942", 0.000000, "Votes: 17.784942"],["Matthew Israelsohn", 26.034041, "Votes: 27.034041\nReceived: 1.000000", true, 1.000000, "Votes: 27.034041\nReceived: 1.000000", 0.000000, "Votes: 27.034041\nReceived: 1.000000"],["Nick Large", 0.000000, "Votes: 0.000000\nTransferred: 7.177413", true, 0.000000, "Votes: 0.000000\nTransferred: 7.177413", 7.177413, "Votes: 0.000000\nTransferred: 7.177413"],["Ruben Martin", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Eugene Nadyrshin", 43.641570, "Votes: 44.569884\nReceived: 0.928314", true, 0.928314, "Votes: 44.569884\nReceived: 0.928314", 0.000000, "Votes: 44.569884\nReceived: 0.928314"],["Lucia Naidu", 24.713256, "Votes: 26.641570\nReceived: 1.928314", true, 1.928314, "Votes: 26.641570\nReceived: 1.928314", 0.000000, "Votes: 26.641570\nReceived: 1.928314"],["Blanca Regina", 13.928314, "Votes: 14.392471\nReceived: 0.464157", true, 0.464157, "Votes: 14.392471\nReceived: 0.464157", 0.000000, "Votes: 14.392471\nReceived: 0.464157"],["Tim Reynolds", 8.928314, "Votes: 8.928314", true, 0.000000, "Votes: 8.928314", 0.000000, "Votes: 8.928314"],["Philip Roy", 11.249099, "Votes: 11.249099", true, 0.000000, "Votes: 11.249099", 0.000000, "Votes: 11.249099"],["Henry Sands", 11.784942, "Votes: 12.249099\nReceived: 0.464157", true, 0.464157, "Votes: 12.249099\nReceived: 0.464157", 0.000000, "Votes: 12.249099\nReceived: 0.464157"],["Ryan Sayre", 18.784942, "Votes: 19.249099\nReceived: 0.464157", true, 0.464157, "Votes: 19.249099\nReceived: 0.464157", 0.000000, "Votes: 19.249099\nReceived: 0.464157"],["David Sullivan", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Samantha Thompson", 42.105727, "Votes: 42.569884\nReceived: 0.464157", true, 0.464157, "Votes: 42.569884\nReceived: 0.464157", 0.000000, "Votes: 42.569884\nReceived: 0.464157"],["Jonty Wareing", 50.369242, "Votes: 50.905085\nReceived: 0.535843", true, 0.535843, "Votes: 50.905085\nReceived: 0.535843", 0.000000, "Votes: 50.905085\nReceived: 0.535843"],["Tom Wyatt", 14.105727, "Votes: 14.105727", true, 0.000000, "Votes: 14.105727", 0.000000, "Votes: 14.105727"],["NO FURTHER PLACES", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Exhausted", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Threshold", 49.833334, "Threshold: 49.833334", false, 0, null, 0, null]]);
+var formatter = new google.visualization.NumberFormat({fractionDigits:6});
+formatter.format(data, 1);
+formatter.format(data, 3);
+formatter.format(data, 5);
+var options = {
+width:760,
+height:550,
+legend:{position:"none"},
+chartArea:{left:100,top:0,width:660,height:525},
+hAxis:{maxValue:88},
+isStacked:true,
+colors:["#fcd050", "#87cf32", "#ef3638"],
+};
+var chart = new google.visualization.BarChart(document.getElementById("round-9"));
+chart.draw(data, options);
+</script>
+<p>Count after eliminating Nick Large and transferring votes. All losing candidates are eliminated. </p>
+<hr>
+<h3 style="margin-bottom:0"><a id="anchor-10">Round 10</a></h3>
+<p style="margin-top:0;font-size:small;">(<a href="#anchor-9">prev</a>) (<a href="#anchor-11">next</a>)</p><div id="round-10"></div>
+<script type="text/javascript">
+var data = new google.visualization.DataTable();
+data.addColumn("string", "Candidate");
+data.addColumn("number", "Votes");
+data.addColumn({type:"string", role:"tooltip"});
+data.addColumn({type: "boolean", role:"certainty"});
+data.addColumn("number", "Received");
+data.addColumn({type:"string", role:"tooltip"});
+data.addColumn("number", "Transferred");
+data.addColumn({type:"string", role:"tooltip"});
+data.addRows([["Martin Clarke", 9.320785, "Votes: 9.377190\nReceived: 0.056405", true, 0.056405, "Votes: 9.377190\nReceived: 0.056405", 0.000000, "Votes: 9.377190\nReceived: 0.056405"],["Sam Cook", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Thomas Greer", 17.784942, "Votes: 17.852628\nReceived: 0.067686", true, 0.067686, "Votes: 17.852628\nReceived: 0.067686", 0.000000, "Votes: 17.852628\nReceived: 0.067686"],["Matthew Israelsohn", 27.034041, "Votes: 27.180694\nReceived: 0.146653", true, 0.146653, "Votes: 27.180694\nReceived: 0.146653", 0.000000, "Votes: 27.180694\nReceived: 0.146653"],["Nick Large", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Ruben Martin", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Eugene Nadyrshin", 44.569884, "Votes: 44.705256\nReceived: 0.135372", true, 0.135372, "Votes: 44.705256\nReceived: 0.135372", 0.000000, "Votes: 44.705256\nReceived: 0.135372"],["Lucia Naidu", 26.641570, "Votes: 26.754380\nReceived: 0.112810", true, 0.112810, "Votes: 26.754380\nReceived: 0.112810", 0.000000, "Votes: 26.754380\nReceived: 0.112810"],["Blanca Regina", 14.392471, "Votes: 14.426314\nReceived: 0.033843", true, 0.033843, "Votes: 14.426314\nReceived: 0.033843", 0.000000, "Votes: 14.426314\nReceived: 0.033843"],["Tim Reynolds", 8.928314, "Votes: 8.950876\nReceived: 0.022562", true, 0.022562, "Votes: 8.950876\nReceived: 0.022562", 0.000000, "Votes: 8.950876\nReceived: 0.022562"],["Philip Roy", 11.249099, "Votes: 11.328066\nReceived: 0.078967", true, 0.078967, "Votes: 11.328066\nReceived: 0.078967", 0.000000, "Votes: 11.328066\nReceived: 0.078967"],["Henry Sands", 12.249099, "Votes: 12.328066\nReceived: 0.078967", true, 0.078967, "Votes: 12.328066\nReceived: 0.078967", 0.000000, "Votes: 12.328066\nReceived: 0.078967"],["Ryan Sayre", 19.249099, "Votes: 19.328066\nReceived: 0.078967", true, 0.078967, "Votes: 19.328066\nReceived: 0.078967", 0.000000, "Votes: 19.328066\nReceived: 0.078967"],["David Sullivan", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Samantha Thompson", 42.569884, "Votes: 42.705256\nReceived: 0.135372", true, 0.135372, "Votes: 42.705256\nReceived: 0.135372", 0.000000, "Votes: 42.705256\nReceived: 0.135372"],["Jonty Wareing", 49.833390, "Votes: 49.833390\nTransferred: 1.071695", true, 0.000000, "Votes: 49.833390\nTransferred: 1.071695", 1.071695, "Votes: 49.833390\nTransferred: 1.071695"],["Tom Wyatt", 14.105727, "Votes: 14.229818\nReceived: 0.124091", true, 0.124091, "Votes: 14.229818\nReceived: 0.124091", 0.000000, "Votes: 14.229818\nReceived: 0.124091"],["NO FURTHER PLACES", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Exhausted", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Threshold", 49.833334, "Threshold: 49.833334", false, 0, null, 0, null]]);
+var formatter = new google.visualization.NumberFormat({fractionDigits:6});
+formatter.format(data, 1);
+formatter.format(data, 3);
+formatter.format(data, 5);
+var options = {
+width:760,
+height:550,
+legend:{position:"none"},
+chartArea:{left:100,top:0,width:660,height:525},
+hAxis:{maxValue:88},
+isStacked:true,
+colors:["#fcd050", "#87cf32", "#ef3638"],
+};
+var chart = new google.visualization.BarChart(document.getElementById("round-10"));
+chart.draw(data, options);
+</script>
+<p>Count after transferring surplus votes. Keep factors of candidates who have exceeded the threshold: Jonty Wareing, 0.524562. </p>
+<hr>
+<h3 style="margin-bottom:0"><a id="anchor-11">Round 11</a></h3>
+<p style="margin-top:0;font-size:small;">(<a href="#anchor-10">prev</a>) (<a href="#anchor-12">next</a>)</p><div id="round-11"></div>
+<script type="text/javascript">
+var data = new google.visualization.DataTable();
+data.addColumn("string", "Candidate");
+data.addColumn("number", "Votes");
+data.addColumn({type:"string", role:"tooltip"});
+data.addColumn({type: "boolean", role:"certainty"});
+data.addColumn("number", "Received");
+data.addColumn({type:"string", role:"tooltip"});
+data.addColumn("number", "Transferred");
+data.addColumn({type:"string", role:"tooltip"});
+data.addRows([["Martin Clarke", 9.377190, "Votes: 9.377190", true, 0.000000, "Votes: 9.377190", 0.000000, "Votes: 9.377190"],["Sam Cook", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Thomas Greer", 17.852628, "Votes: 18.852628\nReceived: 1.000000", true, 1.000000, "Votes: 18.852628\nReceived: 1.000000", 0.000000, "Votes: 18.852628\nReceived: 1.000000"],["Matthew Israelsohn", 27.180694, "Votes: 29.180694\nReceived: 2.000000", true, 2.000000, "Votes: 29.180694\nReceived: 2.000000", 0.000000, "Votes: 29.180694\nReceived: 2.000000"],["Nick Large", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Ruben Martin", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Eugene Nadyrshin", 44.705256, "Votes: 45.180694\nReceived: 0.475438", true, 0.475438, "Votes: 45.180694\nReceived: 0.475438", 0.000000, "Votes: 45.180694\nReceived: 0.475438"],["Lucia Naidu", 26.754380, "Votes: 27.229818\nReceived: 0.475438", true, 0.475438, "Votes: 27.229818\nReceived: 0.475438", 0.000000, "Votes: 27.229818\nReceived: 0.475438"],["Blanca Regina", 14.426314, "Votes: 14.426314", true, 0.000000, "Votes: 14.426314", 0.000000, "Votes: 14.426314"],["Tim Reynolds", 0.000000, "Votes: 0.000000\nTransferred: 8.950876", true, 0.000000, "Votes: 0.000000\nTransferred: 8.950876", 8.950876, "Votes: 0.000000\nTransferred: 8.950876"],["Philip Roy", 11.328066, "Votes: 11.328066", true, 0.000000, "Votes: 11.328066", 0.000000, "Votes: 11.328066"],["Henry Sands", 12.328066, "Votes: 14.328066\nReceived: 2.000000", true, 2.000000, "Votes: 14.328066\nReceived: 2.000000", 0.000000, "Votes: 14.328066\nReceived: 2.000000"],["Ryan Sayre", 19.328066, "Votes: 19.328066", true, 0.000000, "Votes: 19.328066", 0.000000, "Votes: 19.328066"],["David Sullivan", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Samantha Thompson", 42.705256, "Votes: 42.705256", true, 0.000000, "Votes: 42.705256", 0.000000, "Votes: 42.705256"],["Jonty Wareing", 49.833390, "Votes: 50.357952\nReceived: 0.524562", true, 0.524562, "Votes: 50.357952\nReceived: 0.524562", 0.000000, "Votes: 50.357952\nReceived: 0.524562"],["Tom Wyatt", 14.229818, "Votes: 16.705256\nReceived: 2.475438", true, 2.475438, "Votes: 16.705256\nReceived: 2.475438", 0.000000, "Votes: 16.705256\nReceived: 2.475438"],["NO FURTHER PLACES", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Exhausted", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Threshold", 49.833334, "Threshold: 49.833334", false, 0, null, 0, null]]);
+var formatter = new google.visualization.NumberFormat({fractionDigits:6});
+formatter.format(data, 1);
+formatter.format(data, 3);
+formatter.format(data, 5);
+var options = {
+width:760,
+height:550,
+legend:{position:"none"},
+chartArea:{left:100,top:0,width:660,height:525},
+hAxis:{maxValue:88},
+isStacked:true,
+colors:["#fcd050", "#87cf32", "#ef3638"],
+};
+var chart = new google.visualization.BarChart(document.getElementById("round-11"));
+chart.draw(data, options);
+</script>
+<p>Count after eliminating Tim Reynolds and transferring votes. All losing candidates are eliminated. </p>
+<hr>
+<h3 style="margin-bottom:0"><a id="anchor-12">Round 12</a></h3>
+<p style="margin-top:0;font-size:small;">(<a href="#anchor-11">prev</a>) (<a href="#anchor-13">next</a>)</p><div id="round-12"></div>
+<script type="text/javascript">
+var data = new google.visualization.DataTable();
+data.addColumn("string", "Candidate");
+data.addColumn("number", "Votes");
+data.addColumn({type:"string", role:"tooltip"});
+data.addColumn({type: "boolean", role:"certainty"});
+data.addColumn("number", "Received");
+data.addColumn({type:"string", role:"tooltip"});
+data.addColumn("number", "Transferred");
+data.addColumn({type:"string", role:"tooltip"});
+data.addRows([["Martin Clarke", 0.000000, "Votes: 0.000000\nTransferred: 9.377190", true, 0.000000, "Votes: 0.000000\nTransferred: 9.377190", 9.377190, "Votes: 0.000000\nTransferred: 9.377190"],["Sam Cook", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Thomas Greer", 18.852628, "Votes: 19.328066\nReceived: 0.475438", true, 0.475438, "Votes: 19.328066\nReceived: 0.475438", 0.000000, "Votes: 19.328066\nReceived: 0.475438"],["Matthew Israelsohn", 29.180694, "Votes: 31.131570\nReceived: 1.950876", true, 1.950876, "Votes: 31.131570\nReceived: 1.950876", 0.000000, "Votes: 31.131570\nReceived: 1.950876"],["Nick Large", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Ruben Martin", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Eugene Nadyrshin", 45.180694, "Votes: 46.607008\nReceived: 1.426314", true, 1.426314, "Votes: 46.607008\nReceived: 1.426314", 0.000000, "Votes: 46.607008\nReceived: 1.426314"],["Lucia Naidu", 27.229818, "Votes: 28.229818\nReceived: 1.000000", true, 1.000000, "Votes: 28.229818\nReceived: 1.000000", 0.000000, "Votes: 28.229818\nReceived: 1.000000"],["Blanca Regina", 14.426314, "Votes: 14.426314", true, 0.000000, "Votes: 14.426314", 0.000000, "Votes: 14.426314"],["Tim Reynolds", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Philip Roy", 11.328066, "Votes: 12.328066\nReceived: 1.000000", true, 1.000000, "Votes: 12.328066\nReceived: 1.000000", 0.000000, "Votes: 12.328066\nReceived: 1.000000"],["Henry Sands", 14.328066, "Votes: 14.803504\nReceived: 0.475438", true, 0.475438, "Votes: 14.803504\nReceived: 0.475438", 0.000000, "Votes: 14.803504\nReceived: 0.475438"],["Ryan Sayre", 19.328066, "Votes: 19.328066", true, 0.000000, "Votes: 19.328066", 0.000000, "Votes: 19.328066"],["David Sullivan", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Samantha Thompson", 42.705256, "Votes: 43.705256\nReceived: 1.000000", true, 1.000000, "Votes: 43.705256\nReceived: 1.000000", 0.000000, "Votes: 43.705256\nReceived: 1.000000"],["Jonty Wareing", 50.357952, "Votes: 51.931638\nReceived: 1.573686", true, 1.573686, "Votes: 51.931638\nReceived: 1.573686", 0.000000, "Votes: 51.931638\nReceived: 1.573686"],["Tom Wyatt", 16.705256, "Votes: 17.180694\nReceived: 0.475438", true, 0.475438, "Votes: 17.180694\nReceived: 0.475438", 0.000000, "Votes: 17.180694\nReceived: 0.475438"],["NO FURTHER PLACES", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Exhausted", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Threshold", 49.833334, "Threshold: 49.833334", false, 0, null, 0, null]]);
+var formatter = new google.visualization.NumberFormat({fractionDigits:6});
+formatter.format(data, 1);
+formatter.format(data, 3);
+formatter.format(data, 5);
+var options = {
+width:760,
+height:550,
+legend:{position:"none"},
+chartArea:{left:100,top:0,width:660,height:525},
+hAxis:{maxValue:88},
+isStacked:true,
+colors:["#fcd050", "#87cf32", "#ef3638"],
+};
+var chart = new google.visualization.BarChart(document.getElementById("round-12"));
+chart.draw(data, options);
+</script>
+<p>Count after eliminating Martin Clarke and transferring votes. All losing candidates are eliminated. </p>
+<hr>
+<h3 style="margin-bottom:0"><a id="anchor-13">Round 13</a></h3>
+<p style="margin-top:0;font-size:small;">(<a href="#anchor-12">prev</a>) (<a href="#anchor-14">next</a>)</p><div id="round-13"></div>
+<script type="text/javascript">
+var data = new google.visualization.DataTable();
+data.addColumn("string", "Candidate");
+data.addColumn("number", "Votes");
+data.addColumn({type:"string", role:"tooltip"});
+data.addColumn({type: "boolean", role:"certainty"});
+data.addColumn("number", "Received");
+data.addColumn({type:"string", role:"tooltip"});
+data.addColumn("number", "Transferred");
+data.addColumn({type:"string", role:"tooltip"});
+data.addRows([["Martin Clarke", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Sam Cook", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Thomas Greer", 19.328066, "Votes: 19.476424\nReceived: 0.148358", true, 0.148358, "Votes: 19.476424\nReceived: 0.148358", 0.000000, "Votes: 19.476424\nReceived: 0.148358"],["Matthew Israelsohn", 31.131570, "Votes: 31.449480\nReceived: 0.317910", true, 0.317910, "Votes: 31.449480\nReceived: 0.317910", 0.000000, "Votes: 31.449480\nReceived: 0.317910"],["Nick Large", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Ruben Martin", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Eugene Nadyrshin", 46.607008, "Votes: 46.946112\nReceived: 0.339104", true, 0.339104, "Votes: 46.946112\nReceived: 0.339104", 0.000000, "Votes: 46.946112\nReceived: 0.339104"],["Lucia Naidu", 28.229818, "Votes: 28.462952\nReceived: 0.233134", true, 0.233134, "Votes: 28.462952\nReceived: 0.233134", 0.000000, "Votes: 28.462952\nReceived: 0.233134"],["Blanca Regina", 14.426314, "Votes: 14.489896\nReceived: 0.063582", true, 0.063582, "Votes: 14.489896\nReceived: 0.063582", 0.000000, "Votes: 14.489896\nReceived: 0.063582"],["Tim Reynolds", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Philip Roy", 12.328066, "Votes: 12.476424\nReceived: 0.148358", true, 0.148358, "Votes: 12.476424\nReceived: 0.148358", 0.000000, "Votes: 12.476424\nReceived: 0.148358"],["Henry Sands", 14.803504, "Votes: 14.973056\nReceived: 0.169552", true, 0.169552, "Votes: 14.973056\nReceived: 0.169552", 0.000000, "Votes: 14.973056\nReceived: 0.169552"],["Ryan Sayre", 19.328066, "Votes: 19.476424\nReceived: 0.148358", true, 0.148358, "Votes: 19.476424\nReceived: 0.148358", 0.000000, "Votes: 19.476424\nReceived: 0.148358"],["David Sullivan", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Samantha Thompson", 43.705256, "Votes: 43.959584\nReceived: 0.254328", true, 0.254328, "Votes: 43.959584\nReceived: 0.254328", 0.000000, "Votes: 43.959584\nReceived: 0.254328"],["Jonty Wareing", 49.833432, "Votes: 49.833432\nTransferred: 2.098206", true, 0.000000, "Votes: 49.833432\nTransferred: 2.098206", 2.098206, "Votes: 49.833432\nTransferred: 2.098206"],["Tom Wyatt", 17.180694, "Votes: 17.456216\nReceived: 0.275522", true, 0.275522, "Votes: 17.456216\nReceived: 0.275522", 0.000000, "Votes: 17.456216\nReceived: 0.275522"],["NO FURTHER PLACES", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Exhausted", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Threshold", 49.833334, "Threshold: 49.833334", false, 0, null, 0, null]]);
+var formatter = new google.visualization.NumberFormat({fractionDigits:6});
+formatter.format(data, 1);
+formatter.format(data, 3);
+formatter.format(data, 5);
+var options = {
+width:760,
+height:550,
+legend:{position:"none"},
+chartArea:{left:100,top:0,width:660,height:525},
+hAxis:{maxValue:88},
+isStacked:true,
+colors:["#fcd050", "#87cf32", "#ef3638"],
+};
+var chart = new google.visualization.BarChart(document.getElementById("round-13"));
+chart.draw(data, options);
+</script>
+<p>Count after transferring surplus votes. Keep factors of candidates who have exceeded the threshold: Jonty Wareing, 0.503368. </p>
+<hr>
+<h3 style="margin-bottom:0"><a id="anchor-14">Round 14</a></h3>
+<p style="margin-top:0;font-size:small;">(<a href="#anchor-13">prev</a>) (<a href="#anchor-15">next</a>)</p><div id="round-14"></div>
+<script type="text/javascript">
+var data = new google.visualization.DataTable();
+data.addColumn("string", "Candidate");
+data.addColumn("number", "Votes");
+data.addColumn({type:"string", role:"tooltip"});
+data.addColumn({type: "boolean", role:"certainty"});
+data.addColumn("number", "Received");
+data.addColumn({type:"string", role:"tooltip"});
+data.addColumn("number", "Transferred");
+data.addColumn({type:"string", role:"tooltip"});
+data.addRows([["Martin Clarke", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Sam Cook", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Thomas Greer", 19.476424, "Votes: 19.476424", true, 0.000000, "Votes: 19.476424", 0.000000, "Votes: 19.476424"],["Matthew Israelsohn", 31.449480, "Votes: 32.946112\nReceived: 1.496632", true, 1.496632, "Votes: 32.946112\nReceived: 1.496632", 0.000000, "Votes: 32.946112\nReceived: 1.496632"],["Nick Large", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Ruben Martin", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Eugene Nadyrshin", 46.946112, "Votes: 50.939376\nReceived: 3.993264", true, 3.993264, "Votes: 50.939376\nReceived: 3.993264", 0.000000, "Votes: 50.939376\nReceived: 3.993264"],["Lucia Naidu", 28.462952, "Votes: 29.462952\nReceived: 1.000000", true, 1.000000, "Votes: 29.462952\nReceived: 1.000000", 0.000000, "Votes: 29.462952\nReceived: 1.000000"],["Blanca Regina", 14.489896, "Votes: 15.489896\nReceived: 1.000000", true, 1.000000, "Votes: 15.489896\nReceived: 1.000000", 0.000000, "Votes: 15.489896\nReceived: 1.000000"],["Tim Reynolds", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Philip Roy", 0.000000, "Votes: 0.000000\nTransferred: 12.476424", true, 0.000000, "Votes: 0.000000\nTransferred: 12.476424", 12.476424, "Votes: 0.000000\nTransferred: 12.476424"],["Henry Sands", 14.973056, "Votes: 17.966320\nReceived: 2.993264", true, 2.993264, "Votes: 17.966320\nReceived: 2.993264", 0.000000, "Votes: 17.966320\nReceived: 2.993264"],["Ryan Sayre", 19.476424, "Votes: 19.476424", true, 0.000000, "Votes: 19.476424", 0.000000, "Votes: 19.476424"],["David Sullivan", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Samantha Thompson", 43.959584, "Votes: 45.456216\nReceived: 1.496632", true, 1.496632, "Votes: 45.456216\nReceived: 1.496632", 0.000000, "Votes: 45.456216\nReceived: 1.496632"],["Jonty Wareing", 49.833432, "Votes: 49.833432", true, 0.000000, "Votes: 49.833432", 0.000000, "Votes: 49.833432"],["Tom Wyatt", 17.456216, "Votes: 17.952848\nReceived: 0.496632", true, 0.496632, "Votes: 17.952848\nReceived: 0.496632", 0.000000, "Votes: 17.952848\nReceived: 0.496632"],["NO FURTHER PLACES", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Exhausted", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Threshold", 49.833334, "Threshold: 49.833334", false, 0, null, 0, null]]);
+var formatter = new google.visualization.NumberFormat({fractionDigits:6});
+formatter.format(data, 1);
+formatter.format(data, 3);
+formatter.format(data, 5);
+var options = {
+width:760,
+height:550,
+legend:{position:"none"},
+chartArea:{left:100,top:0,width:660,height:525},
+hAxis:{maxValue:88},
+isStacked:true,
+colors:["#fcd050", "#87cf32", "#ef3638"],
+};
+var chart = new google.visualization.BarChart(document.getElementById("round-14"));
+chart.draw(data, options);
+</script>
+<p>Count after eliminating Philip Roy and transferring votes. All losing candidates are eliminated. Candidate Eugene Nadyrshin has reached the threshold and is elected. </p>
+<hr>
+<h3 style="margin-bottom:0"><a id="anchor-15">Round 15</a></h3>
+<p style="margin-top:0;font-size:small;">(<a href="#anchor-14">prev</a>) (<a href="#anchor-16">next</a>)</p><div id="round-15"></div>
+<script type="text/javascript">
+var data = new google.visualization.DataTable();
+data.addColumn("string", "Candidate");
+data.addColumn("number", "Votes");
+data.addColumn({type:"string", role:"tooltip"});
+data.addColumn({type: "boolean", role:"certainty"});
+data.addColumn("number", "Received");
+data.addColumn({type:"string", role:"tooltip"});
+data.addColumn("number", "Transferred");
+data.addColumn({type:"string", role:"tooltip"});
+data.addRows([["Martin Clarke", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Sam Cook", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Thomas Greer", 19.476424, "Votes: 21.476424\nReceived: 2.000000", true, 2.000000, "Votes: 21.476424\nReceived: 2.000000", 0.000000, "Votes: 21.476424\nReceived: 2.000000"],["Matthew Israelsohn", 32.946112, "Votes: 35.442744\nReceived: 2.496632", true, 2.496632, "Votes: 35.442744\nReceived: 2.496632", 0.000000, "Votes: 35.442744\nReceived: 2.496632"],["Nick Large", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Ruben Martin", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Eugene Nadyrshin", 50.939376, "Votes: 51.939376\nReceived: 1.000000", true, 1.000000, "Votes: 51.939376\nReceived: 1.000000", 0.000000, "Votes: 51.939376\nReceived: 1.000000"],["Lucia Naidu", 29.462952, "Votes: 33.456216\nReceived: 3.993264", true, 3.993264, "Votes: 33.456216\nReceived: 3.993264", 0.000000, "Votes: 33.456216\nReceived: 3.993264"],["Blanca Regina", 0.000000, "Votes: 0.000000\nTransferred: 15.489896", true, 0.000000, "Votes: 0.000000\nTransferred: 15.489896", 15.489896, "Votes: 0.000000\nTransferred: 15.489896"],["Tim Reynolds", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Philip Roy", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Henry Sands", 17.966320, "Votes: 19.966320\nReceived: 2.000000", true, 2.000000, "Votes: 19.966320\nReceived: 2.000000", 0.000000, "Votes: 19.966320\nReceived: 2.000000"],["Ryan Sayre", 19.476424, "Votes: 20.476424\nReceived: 1.000000", true, 1.000000, "Votes: 20.476424\nReceived: 1.000000", 0.000000, "Votes: 20.476424\nReceived: 1.000000"],["David Sullivan", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Samantha Thompson", 45.456216, "Votes: 46.952848\nReceived: 1.496632", true, 1.496632, "Votes: 46.952848\nReceived: 1.496632", 0.000000, "Votes: 46.952848\nReceived: 1.496632"],["Jonty Wareing", 49.833432, "Votes: 50.336800\nReceived: 0.503368", true, 0.503368, "Votes: 50.336800\nReceived: 0.503368", 0.000000, "Votes: 50.336800\nReceived: 0.503368"],["Tom Wyatt", 17.952848, "Votes: 18.952848\nReceived: 1.000000", true, 1.000000, "Votes: 18.952848\nReceived: 1.000000", 0.000000, "Votes: 18.952848\nReceived: 1.000000"],["NO FURTHER PLACES", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Exhausted", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Threshold", 49.833334, "Threshold: 49.833334", false, 0, null, 0, null]]);
+var formatter = new google.visualization.NumberFormat({fractionDigits:6});
+formatter.format(data, 1);
+formatter.format(data, 3);
+formatter.format(data, 5);
+var options = {
+width:760,
+height:550,
+legend:{position:"none"},
+chartArea:{left:100,top:0,width:660,height:525},
+hAxis:{maxValue:88},
+isStacked:true,
+colors:["#fcd050", "#87cf32", "#ef3638"],
+};
+var chart = new google.visualization.BarChart(document.getElementById("round-15"));
+chart.draw(data, options);
+</script>
+<p>Count after eliminating Blanca Regina and transferring votes. All losing candidates are eliminated. </p>
+<hr>
+<h3 style="margin-bottom:0"><a id="anchor-16">Round 16</a></h3>
+<p style="margin-top:0;font-size:small;">(<a href="#anchor-15">prev</a>) (<a href="#anchor-17">next</a>)</p><div id="round-16"></div>
+<script type="text/javascript">
+var data = new google.visualization.DataTable();
+data.addColumn("string", "Candidate");
+data.addColumn("number", "Votes");
+data.addColumn({type:"string", role:"tooltip"});
+data.addColumn({type: "boolean", role:"certainty"});
+data.addColumn("number", "Received");
+data.addColumn({type:"string", role:"tooltip"});
+data.addColumn("number", "Transferred");
+data.addColumn({type:"string", role:"tooltip"});
+data.addRows([["Martin Clarke", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Sam Cook", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Thomas Greer", 21.476424, "Votes: 21.876728\nReceived: 0.400304", true, 0.400304, "Votes: 21.876728\nReceived: 0.400304", 0.000000, "Votes: 21.876728\nReceived: 0.400304"],["Matthew Israelsohn", 35.442744, "Votes: 35.792219\nReceived: 0.349475", true, 0.349475, "Votes: 35.792219\nReceived: 0.349475", 0.000000, "Votes: 35.792219\nReceived: 0.349475"],["Nick Large", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Ruben Martin", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Eugene Nadyrshin", 49.920276, "Votes: 49.920276\nTransferred: 2.019100", true, 0.000000, "Votes: 49.920276\nTransferred: 2.019100", 2.019100, "Votes: 49.920276\nTransferred: 2.019100"],["Lucia Naidu", 33.456216, "Votes: 33.846444\nReceived: 0.390228", true, 0.390228, "Votes: 33.846444\nReceived: 0.390228", 0.000000, "Votes: 33.846444\nReceived: 0.390228"],["Blanca Regina", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Tim Reynolds", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Philip Roy", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Henry Sands", 19.966320, "Votes: 20.240009\nReceived: 0.273689", true, 0.273689, "Votes: 20.240009\nReceived: 0.273689", 0.000000, "Votes: 20.240009\nReceived: 0.273689"],["Ryan Sayre", 20.476424, "Votes: 20.653915\nReceived: 0.177491", true, 0.177491, "Votes: 20.653915\nReceived: 0.177491", 0.000000, "Votes: 20.653915\nReceived: 0.177491"],["David Sullivan", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Samantha Thompson", 46.952848, "Votes: 47.368183\nReceived: 0.415335", true, 0.415335, "Votes: 47.368183\nReceived: 0.415335", 0.000000, "Votes: 47.368183\nReceived: 0.415335"],["Jonty Wareing", 50.116290, "Votes: 50.116290\nTransferred: 0.220510", true, 0.000000, "Votes: 50.116290\nTransferred: 0.220510", 0.220510, "Votes: 50.116290\nTransferred: 0.220510"],["Tom Wyatt", 18.952848, "Votes: 19.185918\nReceived: 0.233070", true, 0.233070, "Votes: 19.185918\nReceived: 0.233070", 0.000000, "Votes: 19.185918\nReceived: 0.233070"],["NO FURTHER PLACES", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Exhausted", 0.000000, "Votes: 0.000018\nReceived: 0.000018", true, 0.000018, "Votes: 0.000018\nReceived: 0.000018", 0.000000, "Votes: 0.000018\nReceived: 0.000018"],["Threshold", 49.833331, "Threshold: 49.833331", false, 0, null, 0, null]]);
+var formatter = new google.visualization.NumberFormat({fractionDigits:6});
+formatter.format(data, 1);
+formatter.format(data, 3);
+formatter.format(data, 5);
+var options = {
+width:760,
+height:550,
+legend:{position:"none"},
+chartArea:{left:100,top:0,width:660,height:525},
+hAxis:{maxValue:88},
+isStacked:true,
+colors:["#fcd050", "#87cf32", "#ef3638"],
+};
+var chart = new google.visualization.BarChart(document.getElementById("round-16"));
+chart.draw(data, options);
+</script>
+<p>Count after transferring surplus votes. Keep factors of candidates who have exceeded the threshold: Eugene Nadyrshin, 0.959452 and Jonty Wareing, 0.498334. </p>
+<hr>
+<h3 style="margin-bottom:0"><a id="anchor-17">Round 17</a></h3>
+<p style="margin-top:0;font-size:small;">(<a href="#anchor-16">prev</a>) (<a href="#anchor-18">next</a>)</p><div id="round-17"></div>
+<script type="text/javascript">
+var data = new google.visualization.DataTable();
+data.addColumn("string", "Candidate");
+data.addColumn("number", "Votes");
+data.addColumn({type:"string", role:"tooltip"});
+data.addColumn({type: "boolean", role:"certainty"});
+data.addColumn("number", "Received");
+data.addColumn({type:"string", role:"tooltip"});
+data.addColumn("number", "Transferred");
+data.addColumn({type:"string", role:"tooltip"});
+data.addRows([["Martin Clarke", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Sam Cook", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Thomas Greer", 21.876728, "Votes: 26.422408\nReceived: 4.545680", true, 4.545680, "Votes: 26.422408\nReceived: 4.545680", 0.000000, "Votes: 26.422408\nReceived: 4.545680"],["Matthew Israelsohn", 35.792219, "Votes: 40.297217\nReceived: 4.504998", true, 4.504998, "Votes: 40.297217\nReceived: 4.504998", 0.000000, "Votes: 40.297217\nReceived: 4.504998"],["Nick Large", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Ruben Martin", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Eugene Nadyrshin", 49.920276, "Votes: 51.845573\nReceived: 1.925297", true, 1.925297, "Votes: 51.845573\nReceived: 1.925297", 0.000000, "Votes: 51.845573\nReceived: 1.925297"],["Lucia Naidu", 33.846444, "Votes: 37.412465\nReceived: 3.566021", true, 3.566021, "Votes: 37.412465\nReceived: 3.566021", 0.000000, "Votes: 37.412465\nReceived: 3.566021"],["Blanca Regina", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Tim Reynolds", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Philip Roy", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Henry Sands", 20.240009, "Votes: 20.822905\nReceived: 0.582896", true, 0.582896, "Votes: 20.822905\nReceived: 0.582896", 0.000000, "Votes: 20.822905\nReceived: 0.582896"],["Ryan Sayre", 20.653915, "Votes: 20.674256\nReceived: 0.020341", true, 0.020341, "Votes: 20.674256\nReceived: 0.020341", 0.000000, "Votes: 20.674256\nReceived: 0.020341"],["David Sullivan", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Samantha Thompson", 47.368183, "Votes: 49.415529\nReceived: 2.047346", true, 2.047346, "Votes: 49.415529\nReceived: 2.047346", 0.000000, "Votes: 49.415529\nReceived: 2.047346"],["Jonty Wareing", 50.116290, "Votes: 52.109626\nReceived: 1.993336", true, 1.993336, "Votes: 52.109626\nReceived: 1.993336", 0.000000, "Votes: 52.109626\nReceived: 1.993336"],["Tom Wyatt", 0.000000, "Votes: 0.000000\nTransferred: 19.185918", true, 0.000000, "Votes: 0.000000\nTransferred: 19.185918", 19.185918, "Votes: 0.000000\nTransferred: 19.185918"],["NO FURTHER PLACES", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Exhausted", 0.000018, "Votes: 0.000021\nReceived: 0.000003", true, 0.000003, "Votes: 0.000021\nReceived: 0.000003", 0.000000, "Votes: 0.000021\nReceived: 0.000003"],["Threshold", 49.833330, "Threshold: 49.833330", false, 0, null, 0, null]]);
+var formatter = new google.visualization.NumberFormat({fractionDigits:6});
+formatter.format(data, 1);
+formatter.format(data, 3);
+formatter.format(data, 5);
+var options = {
+width:760,
+height:550,
+legend:{position:"none"},
+chartArea:{left:100,top:0,width:660,height:525},
+hAxis:{maxValue:88},
+isStacked:true,
+colors:["#fcd050", "#87cf32", "#ef3638"],
+};
+var chart = new google.visualization.BarChart(document.getElementById("round-17"));
+chart.draw(data, options);
+</script>
+<p>Count after eliminating Tom Wyatt and transferring votes. All losing candidates are eliminated. </p>
+<hr>
+<h3 style="margin-bottom:0"><a id="anchor-18">Round 18</a></h3>
+<p style="margin-top:0;font-size:small;">(<a href="#anchor-17">prev</a>) (<a href="#anchor-19">next</a>)</p><div id="round-18"></div>
+<script type="text/javascript">
+var data = new google.visualization.DataTable();
+data.addColumn("string", "Candidate");
+data.addColumn("number", "Votes");
+data.addColumn({type:"string", role:"tooltip"});
+data.addColumn({type: "boolean", role:"certainty"});
+data.addColumn("number", "Received");
+data.addColumn({type:"string", role:"tooltip"});
+data.addColumn("number", "Transferred");
+data.addColumn({type:"string", role:"tooltip"});
+data.addRows([["Martin Clarke", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Sam Cook", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Thomas Greer", 26.422408, "Votes: 27.019488\nReceived: 0.597080", true, 0.597080, "Votes: 27.019488\nReceived: 0.597080", 0.000000, "Votes: 27.019488\nReceived: 0.597080"],["Matthew Israelsohn", 40.297217, "Votes: 40.983399\nReceived: 0.686182", true, 0.686182, "Votes: 40.983399\nReceived: 0.686182", 0.000000, "Votes: 40.983399\nReceived: 0.686182"],["Nick Large", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Ruben Martin", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Eugene Nadyrshin", 50.275001, "Votes: 50.275001\nTransferred: 1.570572", true, 0.000000, "Votes: 50.275001\nTransferred: 1.570572", 1.570572, "Votes: 50.275001\nTransferred: 1.570572"],["Lucia Naidu", 37.412465, "Votes: 38.130309\nReceived: 0.717844", true, 0.717844, "Votes: 38.130309\nReceived: 0.717844", 0.000000, "Votes: 38.130309\nReceived: 0.717844"],["Blanca Regina", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Tim Reynolds", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Philip Roy", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Henry Sands", 20.822905, "Votes: 21.353923\nReceived: 0.531018", true, 0.531018, "Votes: 21.353923\nReceived: 0.531018", 0.000000, "Votes: 21.353923\nReceived: 0.531018"],["Ryan Sayre", 20.674256, "Votes: 20.986114\nReceived: 0.311858", true, 0.311858, "Votes: 20.986114\nReceived: 0.311858", 0.000000, "Votes: 20.986114\nReceived: 0.311858"],["David Sullivan", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Samantha Thompson", 49.415529, "Votes: 50.169889\nReceived: 0.754360", true, 0.754360, "Votes: 50.169889\nReceived: 0.754360", 0.000000, "Votes: 50.169889\nReceived: 0.754360"],["Jonty Wareing", 50.081846, "Votes: 50.081846\nTransferred: 2.027780", true, 0.000000, "Votes: 50.081846\nTransferred: 2.027780", 2.027780, "Votes: 50.081846\nTransferred: 2.027780"],["Tom Wyatt", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["NO FURTHER PLACES", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Exhausted", 0.000021, "Votes: 0.000031\nReceived: 0.000010", true, 0.000010, "Votes: 0.000031\nReceived: 0.000010", 0.000000, "Votes: 0.000031\nReceived: 0.000010"],["Threshold", 49.833329, "Threshold: 49.833329", false, 0, null, 0, null]]);
+var formatter = new google.visualization.NumberFormat({fractionDigits:6});
+formatter.format(data, 1);
+formatter.format(data, 3);
+formatter.format(data, 5);
+var options = {
+width:760,
+height:550,
+legend:{position:"none"},
+chartArea:{left:100,top:0,width:660,height:525},
+hAxis:{maxValue:88},
+isStacked:true,
+colors:["#fcd050", "#87cf32", "#ef3638"],
+};
+var chart = new google.visualization.BarChart(document.getElementById("round-18"));
+chart.draw(data, options);
+</script>
+<p>Count after transferring surplus votes. Keep factors of candidates who have exceeded the threshold: Eugene Nadyrshin, 0.922214 and Jonty Wareing, 0.476566. Candidate Samantha Thompson has reached the threshold and is elected. </p>
+<hr>
+<h3 style="margin-bottom:0"><a id="anchor-19">Round 19</a></h3>
+<p style="margin-top:0;font-size:small;">(<a href="#anchor-18">prev</a>) (<a href="#anchor-20">next</a>)</p><div id="round-19"></div>
+<script type="text/javascript">
+var data = new google.visualization.DataTable();
+data.addColumn("string", "Candidate");
+data.addColumn("number", "Votes");
+data.addColumn({type:"string", role:"tooltip"});
+data.addColumn({type: "boolean", role:"certainty"});
+data.addColumn("number", "Received");
+data.addColumn({type:"string", role:"tooltip"});
+data.addColumn("number", "Transferred");
+data.addColumn({type:"string", role:"tooltip"});
+data.addRows([["Martin Clarke", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Sam Cook", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Thomas Greer", 27.019488, "Votes: 27.176038\nReceived: 0.156550", true, 0.156550, "Votes: 27.176038\nReceived: 0.156550", 0.000000, "Votes: 27.176038\nReceived: 0.156550"],["Matthew Israelsohn", 40.983399, "Votes: 41.134389\nReceived: 0.150990", true, 0.150990, "Votes: 41.134389\nReceived: 0.150990", 0.000000, "Votes: 41.134389\nReceived: 0.150990"],["Nick Large", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Ruben Martin", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Eugene Nadyrshin", 49.949310, "Votes: 49.949310\nTransferred: 0.325691", true, 0.000000, "Votes: 49.949310\nTransferred: 0.325691", 0.325691, "Votes: 49.949310\nTransferred: 0.325691"],["Lucia Naidu", 38.130309, "Votes: 38.333422\nReceived: 0.203113", true, 0.203113, "Votes: 38.333422\nReceived: 0.203113", 0.000000, "Votes: 38.333422\nReceived: 0.203113"],["Blanca Regina", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Tim Reynolds", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Philip Roy", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Henry Sands", 21.353923, "Votes: 21.470170\nReceived: 0.116247", true, 0.116247, "Votes: 21.470170\nReceived: 0.116247", 0.000000, "Votes: 21.470170\nReceived: 0.116247"],["Ryan Sayre", 20.986114, "Votes: 21.052715\nReceived: 0.066601", true, 0.066601, "Votes: 21.052715\nReceived: 0.066601", 0.000000, "Votes: 21.052715\nReceived: 0.066601"],["David Sullivan", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Samantha Thompson", 49.954013, "Votes: 49.954013\nTransferred: 0.215876", true, 0.000000, "Votes: 49.954013\nTransferred: 0.215876", 0.215876, "Votes: 49.954013\nTransferred: 0.215876"],["Jonty Wareing", 49.929914, "Votes: 49.929914\nTransferred: 0.151932", true, 0.000000, "Votes: 49.929914\nTransferred: 0.151932", 0.151932, "Votes: 49.929914\nTransferred: 0.151932"],["Tom Wyatt", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["NO FURTHER PLACES", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Exhausted", 0.000029, "Votes: 0.000029\nTransferred: 0.000002", true, 0.000000, "Votes: 0.000029\nTransferred: 0.000002", 0.000000, "Votes: 0.000029\nTransferred: 0.000002"],["Threshold", 49.833329, "Threshold: 49.833329", false, 0, null, 0, null]]);
+var formatter = new google.visualization.NumberFormat({fractionDigits:6});
+formatter.format(data, 1);
+formatter.format(data, 3);
+formatter.format(data, 5);
+var options = {
+width:760,
+height:550,
+legend:{position:"none"},
+chartArea:{left:100,top:0,width:660,height:525},
+hAxis:{maxValue:88},
+isStacked:true,
+colors:["#fcd050", "#87cf32", "#ef3638"],
+};
+var chart = new google.visualization.BarChart(document.getElementById("round-19"));
+chart.draw(data, options);
+</script>
+<p>Count after transferring surplus votes. Keep factors of candidates who have exceeded the threshold: Eugene Nadyrshin, 0.914113; Samantha Thompson, 0.993292; and Jonty Wareing, 0.474202. </p>
+<hr>
+<h3 style="margin-bottom:0"><a id="anchor-20">Round 20</a></h3>
+<p style="margin-top:0;font-size:small;">(<a href="#anchor-19">prev</a>) (<a href="#anchor-21">next</a>)</p><div id="round-20"></div>
+<script type="text/javascript">
+var data = new google.visualization.DataTable();
+data.addColumn("string", "Candidate");
+data.addColumn("number", "Votes");
+data.addColumn({type:"string", role:"tooltip"});
+data.addColumn({type: "boolean", role:"certainty"});
+data.addColumn("number", "Received");
+data.addColumn({type:"string", role:"tooltip"});
+data.addColumn("number", "Transferred");
+data.addColumn({type:"string", role:"tooltip"});
+data.addRows([["Martin Clarke", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Sam Cook", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Thomas Greer", 27.176038, "Votes: 30.795983\nReceived: 3.619945", true, 3.619945, "Votes: 30.795983\nReceived: 3.619945", 0.000000, "Votes: 30.795983\nReceived: 3.619945"],["Matthew Israelsohn", 41.134389, "Votes: 42.844324\nReceived: 1.709935", true, 1.709935, "Votes: 42.844324\nReceived: 1.709935", 0.000000, "Votes: 42.844324\nReceived: 1.709935"],["Nick Large", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Ruben Martin", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Eugene Nadyrshin", 49.949310, "Votes: 54.136789\nReceived: 4.187479", true, 4.187479, "Votes: 54.136789\nReceived: 4.187479", 0.000000, "Votes: 54.136789\nReceived: 4.187479"],["Lucia Naidu", 38.333422, "Votes: 41.389451\nReceived: 3.056029", true, 3.056029, "Votes: 41.389451\nReceived: 3.056029", 0.000000, "Votes: 41.389451\nReceived: 3.056029"],["Blanca Regina", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Tim Reynolds", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Philip Roy", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Henry Sands", 21.470170, "Votes: 24.843081\nReceived: 3.372911", true, 3.372911, "Votes: 24.843081\nReceived: 3.372911", 0.000000, "Votes: 24.843081\nReceived: 3.372911"],["Ryan Sayre", 0.000000, "Votes: 0.000000\nTransferred: 21.052715", true, 0.000000, "Votes: 0.000000\nTransferred: 21.052715", 21.052715, "Votes: 0.000000\nTransferred: 21.052715"],["David Sullivan", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Samantha Thompson", 49.954013, "Votes: 52.648685\nReceived: 2.694672", true, 2.694672, "Votes: 52.648685\nReceived: 2.694672", 0.000000, "Votes: 52.648685\nReceived: 2.694672"],["Jonty Wareing", 49.929914, "Votes: 52.341651\nReceived: 2.411737", true, 2.411737, "Votes: 52.341651\nReceived: 2.411737", 0.000000, "Votes: 52.341651\nReceived: 2.411737"],["Tom Wyatt", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["NO FURTHER PLACES", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Exhausted", 0.000029, "Votes: 0.000036\nReceived: 0.000007", true, 0.000007, "Votes: 0.000036\nReceived: 0.000007", 0.000000, "Votes: 0.000036\nReceived: 0.000007"],["Threshold", 49.833328, "Threshold: 49.833328", false, 0, null, 0, null]]);
+var formatter = new google.visualization.NumberFormat({fractionDigits:6});
+formatter.format(data, 1);
+formatter.format(data, 3);
+formatter.format(data, 5);
+var options = {
+width:760,
+height:550,
+legend:{position:"none"},
+chartArea:{left:100,top:0,width:660,height:525},
+hAxis:{maxValue:88},
+isStacked:true,
+colors:["#fcd050", "#87cf32", "#ef3638"],
+};
+var chart = new google.visualization.BarChart(document.getElementById("round-20"));
+chart.draw(data, options);
+</script>
+<p>Count after eliminating Ryan Sayre and transferring votes. All losing candidates are eliminated. </p>
+<hr>
+<h3 style="margin-bottom:0"><a id="anchor-21">Round 21</a></h3>
+<p style="margin-top:0;font-size:small;">(<a href="#anchor-20">prev</a>) (<a href="#anchor-22">next</a>)</p><div id="round-21"></div>
+<script type="text/javascript">
+var data = new google.visualization.DataTable();
+data.addColumn("string", "Candidate");
+data.addColumn("number", "Votes");
+data.addColumn({type:"string", role:"tooltip"});
+data.addColumn({type: "boolean", role:"certainty"});
+data.addColumn("number", "Received");
+data.addColumn({type:"string", role:"tooltip"});
+data.addColumn("number", "Transferred");
+data.addColumn({type:"string", role:"tooltip"});
+data.addRows([["Martin Clarke", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Sam Cook", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Thomas Greer", 30.795983, "Votes: 32.337006\nReceived: 1.541023", true, 1.541023, "Votes: 32.337006\nReceived: 1.541023", 0.000000, "Votes: 32.337006\nReceived: 1.541023"],["Matthew Israelsohn", 42.844324, "Votes: 44.455665\nReceived: 1.611341", true, 1.611341, "Votes: 44.455665\nReceived: 1.611341", 0.000000, "Votes: 44.455665\nReceived: 1.611341"],["Nick Large", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Ruben Martin", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Eugene Nadyrshin", 50.841468, "Votes: 50.841468\nTransferred: 3.295321", true, 0.000000, "Votes: 50.841468\nTransferred: 3.295321", 3.295321, "Votes: 50.841468\nTransferred: 3.295321"],["Lucia Naidu", 41.389451, "Votes: 43.286719\nReceived: 1.897268", true, 1.897268, "Votes: 43.286719\nReceived: 1.897268", 0.000000, "Votes: 43.286719\nReceived: 1.897268"],["Blanca Regina", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Tim Reynolds", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Philip Roy", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Henry Sands", 24.843081, "Votes: 26.347014\nReceived: 1.503933", true, 1.503933, "Votes: 26.347014\nReceived: 1.503933", 0.000000, "Votes: 26.347014\nReceived: 1.503933"],["Ryan Sayre", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["David Sullivan", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Samantha Thompson", 51.074703, "Votes: 51.074703\nTransferred: 1.573982", true, 0.000000, "Votes: 51.074703\nTransferred: 1.573982", 1.573982, "Votes: 51.074703\nTransferred: 1.573982"],["Jonty Wareing", 50.657357, "Votes: 50.657357\nTransferred: 1.684294", true, 0.000000, "Votes: 50.657357\nTransferred: 1.684294", 1.684294, "Votes: 50.657357\nTransferred: 1.684294"],["Tom Wyatt", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["NO FURTHER PLACES", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Exhausted", 0.000036, "Votes: 0.000068\nReceived: 0.000032", true, 0.000032, "Votes: 0.000068\nReceived: 0.000032", 0.000000, "Votes: 0.000068\nReceived: 0.000032"],["Threshold", 49.833323, "Threshold: 49.833323", false, 0, null, 0, null]]);
+var formatter = new google.visualization.NumberFormat({fractionDigits:6});
+formatter.format(data, 1);
+formatter.format(data, 3);
+formatter.format(data, 5);
+var options = {
+width:760,
+height:550,
+legend:{position:"none"},
+chartArea:{left:100,top:0,width:660,height:525},
+hAxis:{maxValue:88},
+isStacked:true,
+colors:["#fcd050", "#87cf32", "#ef3638"],
+};
+var chart = new google.visualization.BarChart(document.getElementById("round-21"));
+chart.draw(data, options);
+</script>
+<p>Count after transferring surplus votes. Keep factors of candidates who have exceeded the threshold: Eugene Nadyrshin, 0.841449; Samantha Thompson, 0.940177; and Jonty Wareing, 0.451478. </p>
+<hr>
+<h3 style="margin-bottom:0"><a id="anchor-22">Round 22</a></h3>
+<p style="margin-top:0;font-size:small;">(<a href="#anchor-21">prev</a>) (<a href="#anchor-23">next</a>)</p><div id="round-22"></div>
+<script type="text/javascript">
+var data = new google.visualization.DataTable();
+data.addColumn("string", "Candidate");
+data.addColumn("number", "Votes");
+data.addColumn({type:"string", role:"tooltip"});
+data.addColumn({type: "boolean", role:"certainty"});
+data.addColumn("number", "Received");
+data.addColumn({type:"string", role:"tooltip"});
+data.addColumn("number", "Transferred");
+data.addColumn({type:"string", role:"tooltip"});
+data.addRows([["Martin Clarke", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Sam Cook", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Thomas Greer", 32.337006, "Votes: 38.374129\nReceived: 6.037123", true, 6.037123, "Votes: 38.374129\nReceived: 6.037123", 0.000000, "Votes: 38.374129\nReceived: 6.037123"],["Matthew Israelsohn", 44.455665, "Votes: 52.127639\nReceived: 7.671974", true, 7.671974, "Votes: 52.127639\nReceived: 7.671974", 0.000000, "Votes: 52.127639\nReceived: 7.671974"],["Nick Large", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Ruben Martin", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Eugene Nadyrshin", 50.841468, "Votes: 54.042198\nReceived: 3.200730", true, 3.200730, "Votes: 54.042198\nReceived: 3.200730", 0.000000, "Votes: 54.042198\nReceived: 3.200730"],["Lucia Naidu", 43.286719, "Votes: 49.144717\nReceived: 5.857998", true, 5.857998, "Votes: 49.144717\nReceived: 5.857998", 0.000000, "Votes: 49.144717\nReceived: 5.857998"],["Blanca Regina", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Tim Reynolds", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Philip Roy", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Henry Sands", 0.000000, "Votes: 0.000000\nTransferred: 26.347014", true, 0.000000, "Votes: 0.000000\nTransferred: 26.347014", 26.347014, "Votes: 0.000000\nTransferred: 26.347014"],["Ryan Sayre", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["David Sullivan", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Samantha Thompson", 51.074703, "Votes: 53.599197\nReceived: 2.524494", true, 2.524494, "Votes: 53.599197\nReceived: 2.524494", 0.000000, "Votes: 53.599197\nReceived: 2.524494"],["Jonty Wareing", 50.657357, "Votes: 51.712041\nReceived: 1.054684", true, 1.054684, "Votes: 51.712041\nReceived: 1.054684", 0.000000, "Votes: 51.712041\nReceived: 1.054684"],["Tom Wyatt", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["NO FURTHER PLACES", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Exhausted", 0.000068, "Votes: 0.000079\nReceived: 0.000011", true, 0.000011, "Votes: 0.000079\nReceived: 0.000011", 0.000000, "Votes: 0.000079\nReceived: 0.000011"],["Threshold", 49.833321, "Threshold: 49.833321", false, 0, null, 0, null]]);
+var formatter = new google.visualization.NumberFormat({fractionDigits:6});
+formatter.format(data, 1);
+formatter.format(data, 3);
+formatter.format(data, 5);
+var options = {
+width:760,
+height:550,
+legend:{position:"none"},
+chartArea:{left:100,top:0,width:660,height:525},
+hAxis:{maxValue:88},
+isStacked:true,
+colors:["#fcd050", "#87cf32", "#ef3638"],
+};
+var chart = new google.visualization.BarChart(document.getElementById("round-22"));
+chart.draw(data, options);
+</script>
+<p>Count after eliminating Henry Sands and transferring votes. All losing candidates are eliminated. Candidate Matthew Israelsohn has reached the threshold and is elected. </p>
+<hr>
+<h3 style="margin-bottom:0"><a id="anchor-23">Round 23</a></h3>
+<p style="margin-top:0;font-size:small;">(<a href="#anchor-22">prev</a>) </p><div id="round-23"></div>
+<script type="text/javascript">
+var data = new google.visualization.DataTable();
+data.addColumn("string", "Candidate");
+data.addColumn("number", "Votes");
+data.addColumn({type:"string", role:"tooltip"});
+data.addColumn({type: "boolean", role:"certainty"});
+data.addColumn("number", "Received");
+data.addColumn({type:"string", role:"tooltip"});
+data.addColumn("number", "Transferred");
+data.addColumn({type:"string", role:"tooltip"});
+data.addRows([["Martin Clarke", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Sam Cook", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Thomas Greer", 38.374129, "Votes: 40.736914\nReceived: 2.362785", true, 2.362785, "Votes: 40.736914\nReceived: 2.362785", 0.000000, "Votes: 40.736914\nReceived: 2.362785"],["Matthew Israelsohn", 51.957777, "Votes: 51.957777\nTransferred: 0.169862", true, 0.000000, "Votes: 51.957777\nTransferred: 0.169862", 0.169862, "Votes: 51.957777\nTransferred: 0.169862"],["Nick Large", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Ruben Martin", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Eugene Nadyrshin", 51.483806, "Votes: 51.483806\nTransferred: 2.558392", true, 0.000000, "Votes: 51.483806\nTransferred: 2.558392", 2.558392, "Votes: 51.483806\nTransferred: 2.558392"],["Lucia Naidu", 49.144717, "Votes: 52.354607\nReceived: 3.209890", true, 3.209890, "Votes: 52.354607\nReceived: 3.209890", 0.000000, "Votes: 52.354607\nReceived: 3.209890"],["Blanca Regina", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Tim Reynolds", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Philip Roy", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Henry Sands", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Ryan Sayre", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["David Sullivan", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Samantha Thompson", 51.564307, "Votes: 51.564307\nTransferred: 2.034890", true, 0.000000, "Votes: 51.564307\nTransferred: 2.034890", 2.034890, "Votes: 51.564307\nTransferred: 2.034890"],["Jonty Wareing", 50.902465, "Votes: 50.902465\nTransferred: 0.809576", true, 0.000000, "Votes: 50.902465\nTransferred: 0.809576", 0.809576, "Votes: 50.902465\nTransferred: 0.809576"],["Tom Wyatt", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["NO FURTHER PLACES", 0.000000, "Votes: 0.000000", true, 0.000000, "Votes: 0.000000", 0.000000, "Votes: 0.000000"],["Exhausted", 0.000079, "Votes: 0.000124\nReceived: 0.000045", true, 0.000045, "Votes: 0.000124\nReceived: 0.000045", 0.000000, "Votes: 0.000124\nReceived: 0.000045"],["Threshold", 49.833313, "Threshold: 49.833313", false, 0, null, 0, null]]);
+var formatter = new google.visualization.NumberFormat({fractionDigits:6});
+formatter.format(data, 1);
+formatter.format(data, 3);
+formatter.format(data, 5);
+var options = {
+width:760,
+height:550,
+legend:{position:"none"},
+chartArea:{left:100,top:0,width:660,height:525},
+hAxis:{maxValue:88},
+isStacked:true,
+colors:["#fcd050", "#87cf32", "#ef3638"],
+};
+var chart = new google.visualization.BarChart(document.getElementById("round-23"));
+chart.draw(data, options);
+</script>
+<p>Count after transferring surplus votes. Keep factors of candidates who have exceeded the threshold: Matthew Israelsohn, 0.955987; Eugene Nadyrshin, 0.775916; Samantha Thompson, 0.874121; and Jonty Wareing, 0.435076. Candidate Lucia Naidu has reached the threshold and is elected. </p>
+<hr>
+<h3>Winners</h3>
+<p>Winners are Matthew Israelsohn, Eugene Nadyrshin, Lucia Naidu, Samantha Thompson, and Jonty Wareing.</p>
+</body>
+</html>

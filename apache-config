@@ -5,3 +5,8 @@ RewriteEngine On
 RewriteRule ^/members/profile/(\d+)$            /members/profile.php?id=$1 [L]
 RewriteRule ^/members/profile/(\d+)/admin$      /members/member.php?id=$1 [L]
 RewriteRule ^/members/photo/([0-9A-Za-z_]+)_([a-z]+).png$            /members/photo.php?name=$1&size=$2 [L]
+RewriteRule ^/storage/(\d+)$            /storage/details.php?id=$1 [L]
+RewriteRule ^/storage/edit/(\d+)$            /storage/edit.php?id=$1 [L]
+RewriteRule ^/storage/print/(\d+)$            /storage/print.php?id=$1 [L]
+
+RewriteRule ^/spaceapi$                      /spaceapi.php [L]

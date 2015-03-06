@@ -1,14 +1,21 @@
 <?php
 ob_start();
-require_once('config.php');
-require_once('user.php');
-require_once('transaction.php');
-require_once('card.php');
-require_once('usersprofile.php');
-require_once('learning.php');
-require_once('alias.php');
-require_once('interest.php');
-require_once('calendar.php');
+$root = dirname(__FILE__);
+
+require_once("$root/../etc/config.php");
+require_once("$root/config.php");
+require_once("$root/user.php");
+require_once("$root/transaction.php");
+require_once("$root/card.php");
+require_once("$root/usersprofile.php");
+require_once("$root/learning.php");
+require_once("$root/alias.php");
+require_once("$root/interest.php");
+require_once("$root/calendar.php");
+require_once("$root/project.php");
+
+require_once("$root/gocardless-php/lib/GoCardless.php");
+
 
 $db = new fDatabase('sqlite', dirname(__FILE__) . '/../var/database.db');
 
@@ -16,6 +23,10 @@ fORMDatabase::attach($db);
 
 fSession::setLength('30 minutes', '10 weeks');
 fSession::setPath(dirname(__FILE__) . '/../var/session');
+
+if (isset($GOCARDLESS_CREDENTIALS)) {
+    GoCardless::set_account_details($GOCARDLESS_CREDENTIALS);
+}
 
 if ($uid = fSession::get('user')) {
     $user = new User($uid);
@@ -28,6 +39,15 @@ function ensureLogin() {
   if (!isset($user)) {
         fURL::redirect("/login.php?forward={$_SERVER['REQUEST_URI']}");
   }
+}
+
+function ensureMember() {
+    global $user;
+    ensureLogin();
+    if (!$user->isMember()) {
+        echo "<p>Only subscribed members may access this area.</p>";
+        exit;
+   }
 }
 
 function send404($message) {

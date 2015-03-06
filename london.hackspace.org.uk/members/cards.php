@@ -62,25 +62,25 @@ if (isset($_POST['update_details'])) {
 <form method="POST">
     <input type="hidden" name="token" value="<?=fRequest::generateCSRFToken()?>" />
     <input type="hidden" name="update_card" value="" />
-    <table>
+    <table class="card-management">
         <thead>
         <tr>
             <th>Date added</th>
             <th style="text-align: center">Card ID</th>
-            <th>Active</th>
+            <th>Permission</th>
             <th>Delete</th>
         </tr>
         </thead>
         <tbody>
         <? foreach($user->buildCards() as $card): ?>
-        <tr>
+        <tr class="<?=$card->getActive() ? 'allowed' : 'blocked' ?>">
             <td><?=$card->getAddedDate()?></td>
             <td><?=$card->getUid()?></td>
             <td style="text-align: center">
                 <? if ($card->getActive()): ?>
-                <input class="btn btn-default" type="submit" name="disable_<?=$card->getUid()?>" value="Disable" title="This card is currently enabled. Click to disable it." />
+                <input class="btn btn-default" type="submit" name="disable_<?=$card->getUid()?>" value="Block" title="This card is currently allowed. Click to block it." />
                 <? else: ?>
-                <input class="btn btn-default" type="submit" name="enable_<?=$card->getUid()?>" value="Enable" title="This card is currently disabled. Click to enable it." />
+                <input class="btn btn-default" type="submit" name="enable_<?=$card->getUid()?>" value="Allow" title="This card is currently blocked. Click to allow it." />
                 <? endif; ?>
             </td>
             <td style="text-align: center">

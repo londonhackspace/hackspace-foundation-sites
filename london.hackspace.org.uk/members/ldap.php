@@ -260,11 +260,11 @@ if($user->isMember()) {
 ?>
     <p>As a member of London Hackspace you can have an entry in our <a href="https://wiki.london.hackspace.org.uk/view/LDAP">LDAP database</a></a>.</p>
 
-    <p>This will allow you to log into our vairous servers and use a <a href="https://spacefed.net/wiki/index.php/SpaceFED">federated wifi system</a> thats linked to multiple hackspaces accross the globe.</p>
+    <p>This will allow you to log into our various servers and use a <a href="https://spacefed.net/wiki/index.php/SpaceFED">federated wifi system</a> that's linked to multiple hackspaces across the globe.</p>
 
-    <p>There are many systems that can talk to an ldap database, we may expand this to include many other services in the future.</p>
+    <p>There are many systems that can talk to an LDAP database, we may expand this to include many other services in the future.</p>
 
-    <p>There are 2 password fields below beacause the NTPassword hash is very weak. Unfortunatly you have to use it for spacefed. Note that it will only be used for spacefed!</p>
+    <p>There are 2 password fields below beacause the NTPassword hash is very weak. Unfortunately you have to use it for spacefed. Note that it will only be used for spacefed!</p>
     
     <p>It's probably a good idea for the passwords here to be different from the password for this website.</p>
 

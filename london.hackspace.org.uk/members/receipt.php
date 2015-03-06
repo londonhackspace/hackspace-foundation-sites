@@ -5,6 +5,10 @@ if (!$user) {
     fURL::redirect('/login.php?forward=/members/receipt.php');
 }
 
+if (isset($_GET['userid']) && $user->isAdmin()) {
+    $user = new User($_GET['userid']);
+}
+
 $hide_copyright = true;
 
 $from = new fDate('now - 1 year');
@@ -22,17 +26,9 @@ $transactions = $user->buildTransactions($from, $to);
 
 $minimum = 5;
 
-$membership = 0;
-$donations = 0;
+$total_membership = 0;
+$total_donations = 0;
 $count = 0;
-
-foreach($transactions as $transaction) {
-  $amount = $transaction->getAmount();
-  $mem_amount = min($amount, $minimum);
-  $membership += $mem_amount;
-  $donations += max($amount - $mem_amount, 0);
-  $count++;
-}
 
 ?>
 <div id="bd">
@@ -55,15 +51,35 @@ foreach($transactions as $transaction) {
     <label>To:</label>  <input class="input-small" type="text" name="to" value="<?=$to?>">
     <button class="btn">Generate</button>
   </form>
-
-  <p class="visible-print">Covering <?=$count?> payments over the period <?=$from?> to <?=$to?>.</p>
 </div>
 
 <table style="margin:2em;">
+<thead>
+    <tr><th>Date</th><th>Membership Payment</th><th>Donation</th><th>Total</th></tr>
+</thead>
+<? foreach($transactions as $transaction) {
+  $amount = $transaction->getAmount();
+  $mem_amount = min($amount, $minimum);
+  $total_membership += $mem_amount;
+  $donation = max($amount - $mem_amount, 0);
+  $total_donations += $donation;
+  $count++;
+?>
+    <tr><td><?=$transaction->getTimestamp()?></td>
+        <td>£<?=number_format($mem_amount, 2)?></td>
+        <td>£<?=number_format($donation, 2)?></td>
+        <td>£<?=number_format($mem_amount + $donation, 2)?></td>
+    </tr>
+<?
+}
+?>
+</table>
+<h3>Total</h3>
+<table style="margin:2em;">
 <tr>
-  <th>Membership subscriptions (up to £<?=number_format($minimum, 2)?> per month):</th><td>£<?=number_format($membership, 2)?></td></tr>
-  <th>Donations (payments above minimum):</th><td>£<?=number_format($donations, 2)?></td></tr>
-  <th>Total paid:</th><td>£<?=number_format($membership + $donations, 2)?></td>
+  <th>Membership subscriptions (up to £<?=number_format($minimum, 2)?> per month):</th><td>£<?=number_format($total_membership, 2)?></td></tr>
+  <th>Donations (payments above minimum):</th><td>£<?=number_format($total_donations, 2)?></td></tr>
+  <th>Total paid:</th><td>£<?=number_format($total_membership + $total_donations, 2)?></td>
 </table>
 
 <footer>London Hackspace Ltd is a company limited by guarantee in England and Wales with number 06807563.<br>
