@@ -205,7 +205,7 @@ if($user->isMember()) {
                 "admin" => 1
             );
             
-            if (array_key_exists(strlower($_POST['ldapuser']), $not_allowed_names)) {
+            if (array_key_exists(strtolower($_POST['ldapuser']), $not_allowed_names)) {
                 throw new fValidationException( '<p>You are not allowed to use '.htmlspecialchars($_POST['ldapuser']).' as a username.</p>' );
             }
 
