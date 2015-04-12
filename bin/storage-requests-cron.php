@@ -123,7 +123,7 @@ foreach($projects as $project) {
 
     // standard message
     $message = "Dear ".htmlspecialchars($user->getFullName()).",<br/><br/>". 
-        "This is a friendly reminder that you had committed to remove your project <a href=\"https://london.hackspace.org.uk/storage/".$project->getId()."\">".$project->getName()."</a> from the London Hackspace on ".$from->format('jS M Y').".<br/><br/>";
+        "This is a friendly reminder that you had committed to remove your project <a href=\"https://london.hackspace.org.uk/storage/".$project->getId()."\">".$project->getName()."</a> from the London Hackspace by ".$to->format('jS M Y').".<br/><br/>";
 
     if(!$project->hasExtension()) {
         $message .= "We know life and other commitments can get in the way of hackspace projects. To help you finish up and organise your belongings you can extend your deadline once for ".$project->getExtensionDuration()." days <a href=\"https://london.hackspace.org.uk/storage/".$project->getId()."\">the request page</a>.<br/><br/>";
