@@ -41,6 +41,11 @@ db = SQLite3::Database.new("../var/database.db")
 db.results_as_hash = true
 
 ofx.bank_account.statement.transactions.each do |transaction|
+    if transaction.fit_id.to_i < '+200000000000000'
+      # Barclays now returns non_unique fit_ids in a low range for uncleared transactions.
+      # As we rely on fit_ids being unique, we have to ignore these.
+      next
+    end
     c = db.get_first_value("SELECT count(*) FROM transactions WHERE fit_id = ?", transaction.fit_id)
     if c.to_i > 0
       next
