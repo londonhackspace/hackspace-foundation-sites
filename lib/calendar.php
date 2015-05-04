@@ -27,6 +27,7 @@ class Calendar {
 		$this->key_file_location = '../../var/876cb3fbc7ebd130f2eb7528ad3d46c066d46f23-privatekey.p12';
 		$this->google_cache_file_directory = $_SERVER['DOCUMENT_ROOT'] . '/../var/Google_Client';
 		$this->cache_timeout = 10800; // 3hrs in seconds
+		$this->cid = 'gc1bopmh3c5n0ogvlo6ceujlkc@group.calendar.google.com'; // london hackspace google calendar ID
 	}
 
 	/*
@@ -72,13 +73,6 @@ class Calendar {
 	 */
 	private function getCalendar() {
 		$this->service = new Google_Service_Calendar($this->client);
-		$this->calendarList = $this->service->calendarList->listCalendarList();
-
-		$this->cid = null;
-		foreach ($this->calendarList->getItems() as $calendarListEntry) {
-			$this->cid = $calendarListEntry->getId();
-			break;
-		}		
 	}
 
 	/*
