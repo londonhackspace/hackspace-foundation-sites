@@ -25,6 +25,10 @@
           case 'IRC': echo '<a target="_blank" href="http://webchat.freenode.net/?channels=london-hack-space">' . $alias->getUsername() . '</a>'; break;
           case 'Callsign': echo '<a target="_blank" href="https://wiki.london.hackspace.org.uk/view/Amateur_Radio_Callsigns">' . $alias->getUsername() . '</a>'; break;
           case 'Hackspace Wiki': echo '<a target="_blank" href="https://wiki.london.hackspace.org.uk/view/User:' . $alias->getUsername() . '">' . $alias->getUsername() . '</a>'; break;
+          case 'XMPP/Jabber': echo '<a target="_blank" href="xmpp:' . $alias->getUsername() . '">' . $alias->getUsername() . '</a>'; break;
+          case 'RSS': echo '<a target="_blank" href="' . $alias->getUsername() . '">RSS Feed</a>'; break;
+          case 'Ello': echo '<a target="_blank" href="https://ello.co/' . $alias->getUsername() . '">' . $alias->getUsername() . '</a>'; break;
+          // we don't do anything with 'Minecraft' atm
           default: echo $alias->getUsername();
         }?>
       </li>
