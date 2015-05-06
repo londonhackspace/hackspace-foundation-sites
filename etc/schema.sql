@@ -22,7 +22,8 @@ CREATE TABLE "users" (
     ldapuser VARCHAR(32) UNIQUE,
     ldapnthash VARCHAR(32),
     ldapsshahash VARCHAR(38),
-    ldapshell VARCHAR(32)
+    ldapshell VARCHAR(32),
+    ldapemail VARCHAR(255) NOT NULL
 );
 
 CREATE TABLE transactions (
