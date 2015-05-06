@@ -23,7 +23,7 @@ CREATE TABLE "users" (
     ldapnthash VARCHAR(32),
     ldapsshahash VARCHAR(38),
     ldapshell VARCHAR(32),
-    ldapemail VARCHAR(255) NOT NULL
+    ldapemail VARCHAR(255)
 );
 
 CREATE TABLE transactions (
