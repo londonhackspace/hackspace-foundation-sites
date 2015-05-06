@@ -154,7 +154,7 @@ if($user->isMember()) {
                 "postgres" => 1,
                 "bitlbee" => 1,
                 "smokeping" => 1,
-                "Debian-exim" => 1,
+                "debian-exim" => 1,
                 "snmp" => 1,                
                 "asterisk" => 1,
                 "debian-tor" => 1,
@@ -200,10 +200,12 @@ if($user->isMember()) {
                 "membership" => 1,
                 "sysadmin" => 1,
                 "anonymous" => 1,
-                "anon" => 1
+                "anon" => 1,
+                "administrator" => 1,
+                "admin" => 1
             );
             
-            if (array_key_exists($_POST['ldapuser'], $not_allowed_names)) {
+            if (array_key_exists(strtolower($_POST['ldapuser']), $not_allowed_names)) {
                 throw new fValidationException( '<p>You are not allowed to use '.htmlspecialchars($_POST['ldapuser']).' as a username.</p>' );
             }
 
