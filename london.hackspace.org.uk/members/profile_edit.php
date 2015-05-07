@@ -1,5 +1,5 @@
 <? 
-$page = 'edit';
+$page = 'profile_edit';
 $title = "Edit your profile";
 $desc = '';
 require('../header.php');
