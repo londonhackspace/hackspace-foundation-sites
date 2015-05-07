@@ -5,14 +5,14 @@
 #
 #
 
-/usr/sbin/smbldap-usershow $1 > /dev/null
+/usr/sbin/smbldap-usershow "$1" > /dev/null
 
 if [ $? -ne 0 ] ; then
 	echo "User not found"
 	exit 1
 fi
 
-/usr/sbin/smbldap-userdel $1
+/usr/sbin/smbldap-userdel "$1"
 
 if [ $? -eq 0 ] ; then
 	echo "User deleted ok"
@@ -21,7 +21,7 @@ else
 	exit 1
 fi
 
-/usr/sbin/smbldap-groupdel $1
+/usr/sbin/smbldap-groupdel "$1"
 
 if [ $? -eq 0 ] ; then
 	echo "Group deleted ok"

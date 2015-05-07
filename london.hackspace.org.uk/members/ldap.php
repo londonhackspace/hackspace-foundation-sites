@@ -80,6 +80,8 @@ function calculateHashes()
 
 	document.getElementById("ldapshell").value = document.getElementById("shell").value;
 
+	document.getElementById("ldapemail").value = document.getElementById("email").value;
+
 	var form = document.getElementById("ldapform");
 	form.submit();
 }
@@ -101,7 +103,13 @@ function all_ok(message) {
 $shells = array('/bin/bash', '/bin/sh', '/bin/zsh');
 
 if($user->isMember()) {
-    $email = $user->getEmail();
+
+    $user_profile = $user->createUsersProfile();
+    if ($user_profile->getAllowEmail() && $user->getLdapemail() == '') {
+        $email = $user->getEmail();
+    } else {
+        $email = $user->getLdapemail();
+    }
 
     // Link or unlink a user.
     if( array_key_exists( 'create', $_POST ) && array_key_exists( 'token', $_POST )) {
@@ -109,7 +117,8 @@ if($user->isMember()) {
         try {
             fRequest::validateCSRFToken($_POST['token']);
             $validator = new fValidation();
-            $validator->addRequiredFields( 'ldapuser', 'ldapnthash', 'ldapsshahash', 'ldapshell');
+            $validator->addRequiredFields( 'ldapuser', 'ldapnthash', 'ldapsshahash', 'ldapshell', 'ldapemail');
+            $validator->addEmailFields('ldapemail');
             $validator->validate();
 
             // Attempt account creation and promotion.
@@ -233,12 +242,13 @@ if($user->isMember()) {
             $nthash = escapeshellarg( $_POST['ldapnthash'] );
             $sshahash = escapeshellarg( $_POST['ldapsshahash'] );
             $shell = escapeshellarg( $_POST['ldapshell'] );
+            $ldapemail = escapeshellarg( $_POST['ldapemail'] );
 
             $uid = $user->getId();
             $uid += 100000;
             $uid = escapeshellarg( $uid );
 
-            $success = trim( shell_exec( "sudo -g ldapadmin /var/www/hackspace-foundation-sites/bin/ldap-add.sh $username $uid $nthash $sshahash $shell 2>&1" ) );
+            $success = trim( shell_exec( "sudo -g ldapadmin /var/www/hackspace-foundation-sites/bin/ldap-add.sh $username $uid $nthash $sshahash $shell $ldapemail 2>&1" ) );
             $ok = true;
             if( $success !== 'User added ok' ) {
                 throw new fValidationException( '<p>An unknown error ocurred while creating the LDAP account, please contact IRC.'. htmlspecialchars($success) .'</p>' );
@@ -247,6 +257,7 @@ if($user->isMember()) {
                 $user->setLdapnthash($_POST['ldapnthash']);
                 $user->setLdapsshahash($_POST['ldapsshahash']);
                 $user->setLdapshell($_POST['ldapshell']);
+                $user->setLdapemail($_POST['ldapemail']);
                 $user->store();
             }
         } catch (fValidationException $e) {
@@ -269,6 +280,10 @@ if($user->isMember()) {
     <p>There are 2 password fields below beacause the NTPassword hash is very weak. Unfortunately you have to use it for spacefed. Note that it will only be used for spacefed!</p>
     
     <p>It's probably a good idea for the passwords here to be different from the password for this website.</p>
+
+    <p>We also include an email address in the LDAP database, it does not have to be the same as your main hackspace one.</p>
+
+    <p>If you allow other members to see your main email address then LDAP will use that.</p>
 
     <!--
         irc_nick is null for all users and has no ui to edit 
@@ -295,6 +310,7 @@ if($user->isMember()) {
     }
      ?>
     </select><label for="shell">Login shell</label><br />
+    <input id="email"      type=text     size=32 value="<? echo htmlspecialchars($email); ?>"><label for="username">LDAP Email address</label><br />
 
     <button onclick="calculateHashes()">Update LDAP account</button>
 
@@ -304,6 +320,7 @@ if($user->isMember()) {
     <input type="hidden" name="ldapnthash"   id="ldapnthash" value="" />
     <input type="hidden" name="ldapsshahash" id="ldapsshahash" value="" />
     <input type="hidden" name="ldapshell"    id="ldapshell" value="" />
+    <input type="hidden" name="ldapemail"    id="ldapemail" value="" />
     <input type="hidden" name="create"       id="create" value="create" />
     </form>
 <? } else { ?>

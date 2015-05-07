@@ -91,7 +91,7 @@ ofx.bank_account.statement.transactions.each do |transaction|
         # check for ldap infos, enable if they exist.
         if user['ldapuser']
           puts "enabling LDAP account: #{user['ldapuser']} (with uid #{user['id'] + 100000})"
-          system("/var/www/hackspace-foundation-sites/bin/ldap-add.sh", user['ldapuser'], (user['id'] + 100000).to_s, user['ldapnthash'], user['ldapsshahash'], user['ldapshell'])
+          system("/var/www/hackspace-foundation-sites/bin/ldap-add.sh", user['ldapuser'], (user['id'] + 100000).to_s, user['ldapnthash'], user['ldapsshahash'], user['ldapshell'], user['ldapemail'])
         end
       end
     end
