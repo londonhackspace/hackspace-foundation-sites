@@ -18,7 +18,7 @@ if ($user->isMember()) {
             'timestamp>' => new fDate('2009-01-01'),
             'timestamp<' => new fDate('now')
         ),
-        array('timestamp' => 'asc')
+        array('timestamp' => 'desc')
         );
 
         $expires = strtotime($result[0]->getTimestamp());
