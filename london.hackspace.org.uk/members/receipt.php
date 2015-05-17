@@ -53,7 +53,7 @@ $count = 0;
   </form>
 </div>
 
-<table style="margin:2em;">
+<table class="table" style="margin:2em;">
 <thead>
     <tr><th>Date</th><th>Membership Payment</th><th>Donation</th><th>Total</th></tr>
 </thead>
@@ -75,7 +75,7 @@ $count = 0;
 ?>
 </table>
 <h3>Total</h3>
-<table style="margin:2em;">
+<table class="table" style="margin:2em;">
 <tr>
   <th>Membership subscriptions (up to £<?=number_format($minimum, 2)?> per month):</th><td>£<?=number_format($total_membership, 2)?></td></tr>
   <th>Donations (payments above minimum):</th><td>£<?=number_format($total_donations, 2)?></td></tr>

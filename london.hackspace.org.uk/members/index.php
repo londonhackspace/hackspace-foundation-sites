@@ -19,9 +19,9 @@ if (!$user) {
     <p>You're currently a member of London Hackspace, thanks for your support!</p>
     <h3>Reference Number</h3>
     <p>Your standing order reference number is: <strong><?=$user->getMemberNumber()?></strong></p>
-    
+
 <h3>Your Recent Payments</h3>
-<table>
+<table class="table">
     <thead>
     <tr>
         <th>Date</th>
@@ -53,7 +53,7 @@ if (!$user) {
        reference field of your payment</strong>. Your payment is processed automatically,
         and that can't happen without the correct reference.</p>
 
-<table>
+<table class="table">
     <tr>
         <th>Bank</th>
         <td>Barclays</td>

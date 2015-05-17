@@ -242,20 +242,6 @@ h3 {
 
 /* General Typography and spacing */
 
-td, th {
-	padding: 0.5em;
-	border: 1px solid #AAA;
-}
-
-th {
-	text-align:right;
-	font-weight: bold;
-}
-
-thead th {
-	text-align: center;
-}
-
 
 /* Home Page */
 /* On the homepage, and in the section headers only, change h3 to white */

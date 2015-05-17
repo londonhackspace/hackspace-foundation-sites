@@ -1,5 +1,6 @@
 <?
 $page = 'memberslist';
+$title = "Members";
 require( '../header.php' );
 
 ensureLogin();
@@ -35,7 +36,7 @@ $include_unsubscribed = ($user->isAdmin() && isset($_GET['unsubscribed']) && $_G
 	<? } ?>
 
 	<p><strong>Total:</strong> <span class="search-total"></span></p>
-    <table class="search tablesorter">
+    <table class="table table-condensed table-hover search tablesorter">
         <thead>
             <tr>
                 <th class="member-id">ID</th>
