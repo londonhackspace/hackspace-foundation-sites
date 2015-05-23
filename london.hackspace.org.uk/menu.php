@@ -22,8 +22,6 @@
                         <?=menulink('/members/cards.php', 'cards', 'Access Cards')?>    
                         <?if (isset($user) && $user->isMember()) {?>
                         <?=menulink('/members/code.php', 'code', 'Gate Code')?>
-                        <?=menulink('/members/tools.php', 'tools', 'Tools')?>
-                        <?=menulink('/members/wiki.php', 'wiki', 'Edit Wiki Privileges')?>
                         <?=menulink('/members/ldap.php', 'LDAP', 'Edit LDAP Account')?>
                         <? } ?>
                     </ul>
