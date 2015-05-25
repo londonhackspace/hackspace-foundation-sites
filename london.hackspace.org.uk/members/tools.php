@@ -1,10 +1,13 @@
 <?php
 if ($_GET['summary']!=NULL){
+    
+    
     require_once( $_SERVER['DOCUMENT_ROOT'] . '/../lib/init.php');
+    
+    ensureMember();
+    
     header('Content-Type: application/json');
-    
-    $user_id = $_GET['summary'];
-    
+   
     $opts = array(
       'http'=>array(
         'method'=>"GET",
@@ -13,8 +16,7 @@ if ($_GET['summary']!=NULL){
     );
 
     $context = stream_context_create($opts);
-
-    $result = file_get_contents($ACSERVER_ADDRESS . "/api/get_tools_summary_for_user/".$user_id,false,$context);
+    $result = file_get_contents($ACSERVER_ADDRESS . "/api/get_tools_summary_for_user/".$user->getId(),false,$context);
 
     if($result === FALSE) {
         echo "\nFailed to fetch data:";
@@ -34,10 +36,7 @@ global $ACSERVER_ADDRESS;
 global $ACSERVER_KEY;
 
 
-
-if (!isset($user)) {
-    fURL::redirect('/login.php?forward=/members/signup.php');
-}
+ensureMember();
 
 
 ?>
@@ -53,7 +52,7 @@ if (!isset($user)) {
         <thead>
           <tr>
             <th>Tool</th>
-            <th>Status<small>Status and availibility</small></th>
+            <th>Status<small>Status and availability</small></th>
             <th>Status message <small>Any extra info</small></th>
             <th>Access? <small>Access level, if any</small></th>
             

@@ -1,7 +1,7 @@
 var toolApp = angular.module('toolApp', []);
 console.log("Stated");
 toolApp.controller('ToolController', function ($scope, $http) {
-  $http.get('/members/tools.php?summary=1388').success(function(data) {
+  $http.get('/members/tools.php?summary=1').success(function(data) {
     $scope.contents = data;
     console.log($scope.contents);
     console.log("Done");
