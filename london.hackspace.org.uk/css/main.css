@@ -1095,3 +1095,43 @@ form .read-only {
   background-color: #a44;
   color: #fff;
 }
+
+/* Tool access */
+
+//need this to avoid funkiness while the ng libs are being loaded
+[ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
+  display: none !important;
+}
+
+.tool-entry {
+  min-height: 50px;
+}
+
+.tool-summary th small {
+  display: block;
+  font-weight: normal;
+  color: #999;
+}
+.tool-summary tbody th {
+  font-weight: normal;
+}
+.tool-summary td {
+  text-align: center;
+}
+.tool-summary td.is-visible {
+  color: #468847;
+  background-color: #dff0d8 !important;
+}
+.tool-summary td.is-hidden {
+  color: #ccc;
+  background-color: #f9f9f9 !important;
+}
+
+.tool-summary td.is-bad {
+  color: #ccc;
+  background-color: #a94b4b !important;;
+}
+.tool-summary td.is-special {
+  //color: #ccc;
+  background-color: #FF9933 !important;;
+}
