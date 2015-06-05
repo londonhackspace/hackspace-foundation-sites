@@ -54,7 +54,7 @@ ensureMember();
             <th>Tool</th>
             <th>Status<small>Status and availability</small></th>
             <th>Status message <small>Any extra info</small></th>
-            <th>Access? <small>Access level, if any</small></th>
+            <th>Access? <small>Your access level</small></th>
             
           </tr>
         </thead>
