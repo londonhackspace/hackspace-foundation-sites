@@ -69,7 +69,7 @@ ensureMember();
                 <td ng-class="{'is-hidden': tool.status_message=='OK',
                     'is-bad': tool.status_message!='OK'}">{{tool.status_message}}</td>
                 <td ng-class="{'is-visible': tool.permission=='user',
-                    'is-bad': tool.permission=='un-authorised',
+                    'is-bad': tool.permission=='unauthorised',
                     'is-special': tool.permission=='maintainer'}">{{tool.permission}}</td>
             </tr>
         </tbody>
