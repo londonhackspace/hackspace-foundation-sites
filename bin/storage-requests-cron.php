@@ -11,6 +11,13 @@ function __autoload($class_name)
     }
     throw new Exception('The class ' . $class_name . ' could not be loaded');
 }
+
+function addDays($dt, $days) {
+    $dt_new = clone $dt;
+    $dt_new->modify("+$days days");
+    return $dt_new;
+}
+
 require_once(dirname(__FILE__) . '/../lib/user.php');
 require_once(dirname(__FILE__) . '/../lib/project.php');
 $db = new fDatabase('sqlite', dirname(__FILE__) . '/../var/database.db');
@@ -30,8 +37,7 @@ foreach($projects as $project) {
     $from = new DateTime($project->getFromDate());
     $to = new DateTime($project->getToDate());
     $user = new User($project->getUserId());
-    $extension = $to->modify('+'.$project->getExtensionDuration().' days');
-    $to->modify('-'.$project->getExtensionDuration().' days');
+    $extension = addDays($to, $project->getExtensionDuration());
     $logs = fRecordSet::build('ProjectsLog',array('project_id=' => $project->getId()));
     if(count($logs) > 0)
         $postedTime = new DateTime(date("c", $logs[0]->getTimestamp()));
@@ -89,7 +95,7 @@ foreach($projects as $project) {
     }
 
     // automatically approve projects with no ML posts
-    if($user->isMember() && $nowTime > $postedTime->modify('+'.$project->automaticApprovalDuration().' days') && $project->noActivity() && $project->getState() == 'Pending Approval') {
+    if($user->isMember() && $nowTime > addDays($postedTime, $project->automaticApprovalDuration()) && $project->noActivity() && $project->getState() == 'Pending Approval') {
         // ML post count?
         $out = array();
         $pathToPhatomJs = '/usr/local/bin/phantomjs';
@@ -141,20 +147,18 @@ foreach($projects as $project) {
         'X-Mailer: PHP/' . phpversion();
 
     // reminder email 3 days before removal
-    if($from < $now && $now == $to->modify('-3 days') && $project->getState() != 'Pending Approval') {
+    if($from < $now && $now == addDays($to, -3) && $project->getState() != 'Pending Approval') {
         echo("3 days until deadline, sending reminder\n");
         mail($user->getEmail(), $subject, $message, $headers);
         $project->submitLog('Three days before removal, reminder email sent to owner',false);
     }
-    $to->modify('+3 days');
 
     // reminder email a day after removal
-    if($now == $to->modify('+1 day') && $project->getState() != 'Pending Approval') {
+    if($now == addDays($to, 1) && $project->getState() != 'Pending Approval') {
         echo("Day after deadline, sending reminder\n");
         mail($user->getEmail(), $subject, $message, $headers);
         $project->submitLog('Day after removal, reminder email sent to owner',false);
     }
-    $to->modify('-1 day');
 
     // reminder email every 7 days after removal
     if($now > $to && $now->format('w') == $to->format('w') && $project->getState() != 'Pending Approval') {
@@ -167,7 +171,7 @@ foreach($projects as $project) {
     }
 
     // a day after removal update the status to 'Passed Deadline'
-    if($now >= $to->modify('+1 day') && $project->getState() != 'Pending Approval' && $project->getState() != 'Passed Deadline') {
+    if($now >= addDays($to, 1) && $project->getState() != 'Pending Approval' && $project->getState() != 'Passed Deadline') {
         echo("Setting status to Passed Deadline and updating Mailing List\n");
         $project->setState('Passed Deadline');
         $project->store();
@@ -176,10 +180,9 @@ foreach($projects as $project) {
         $project->submitLog($logmsg,false);
         $project->submitMailingList($logmsg);
     }
-    $to->modify('-1 day');
 
     // if it was never approved (manually or automatically) three weeks after it was meant to start update the status to 'Archived'
-    if($now >= $from->modify('+21 days') && $project->getState() == 'Pending Approval') {
+    if($now >= addDays($from, 21) && $project->getState() == 'Pending Approval') {
         echo("Old request detected, setting status to Archived\n");
         $project->setState('Archived');
         $project->store();
