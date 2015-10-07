@@ -166,7 +166,6 @@ if (isset($_GET['saved'])) {
 				<div class="remove-img"><img src="/images/trained-<?=strtolower(str_replace(' ','',$training->getName()));?>.png"/><input type="hidden" name="learnings[<?=$training->getLearningId()?>]" value="<?=$training->getName()?>" /></div>
             <? } ?>
 			</div>
-			<p><small><a href="https://wiki.london.hackspace.org.uk/view/Training">More information about training</a></small></p>
         </div>
 	</div>
 	<div class="col-md-9">
