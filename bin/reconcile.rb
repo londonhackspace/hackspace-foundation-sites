@@ -39,6 +39,7 @@ ofx = OfxParser::OfxParser.parse(open(ARGV[0]))
 
 db = SQLite3::Database.new("../var/database.db")
 db.results_as_hash = true
+db.busy_timeout = 10000
 
 ofx.bank_account.statement.transactions.each do |transaction|
     if transaction.fit_id.to_i < 200000000000000
