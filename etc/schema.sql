@@ -1,22 +1,24 @@
+BEGIN;
+
 CREATE TABLE "users" (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    id SERIAL PRIMARY KEY,
     email VARCHAR(255) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
     full_name VARCHAR(255) NOT NULL,
-    subscribed BOOLEAN NOT NULL DEFAULT 0,
+    subscribed BOOLEAN NOT NULL DEFAULT false,
     bankhash TEXT,
     creationdate TEXT,
     address TEXT,
-    hackney BOOLEAN NOT NULL DEFAULT 0,
-    subscription_period INTEGER NOT NULL DEFAULT 1,
+    hackney BOOLEAN NOT NULL DEFAULT false,
+    subscription_period INTEGER NOT NULL DEFAULT 0,
     nickname VARCHAR(255) UNIQUE,
     irc_nick VARCHAR(255) UNIQUE,
     gladosfile VARCHAR(255),
-    terminated BOOLEAN NOT NULL DEFAULT 0,
-    admin BOOLEAN NOT NULL DEFAULT 0,
-    has_profile BOOLEAN NOT NULL DEFAULT 0,
-    disabled_profile BOOLEAN NOT NULL DEFAULT 0,
-    doorbot_timestamp DATETIME,
+    terminated BOOLEAN NOT NULL DEFAULT false,
+    admin BOOLEAN NOT NULL DEFAULT false,
+    has_profile BOOLEAN NOT NULL DEFAULT false,
+    disabled_profile BOOLEAN NOT NULL DEFAULT false,
+    doorbot_timestamp TIMESTAMP WITHOUT TIME ZONE,
     emergency_name VARCHAR(255),
     emergency_phone VARCHAR(40),
     ldapuser VARCHAR(32) UNIQUE,
@@ -27,11 +29,11 @@ CREATE TABLE "users" (
 );
 
 CREATE TABLE transactions (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    id SERIAL PRIMARY KEY,
     fit_id TEXT NOT NULL UNIQUE,
-    timestamp DATETIME NOT NULL,
+    timestamp TIMESTAMP WITHOUT TIME ZONE NOT NULL,
     user_id INTEGER NOT NULL REFERENCES users(id),
-    amount TEXT NOT NULL
+    amount NUMERIC(6, 2) NOT NULL
 );
 
 create index transactions_timestamp on transactions (timestamp);
@@ -40,26 +42,26 @@ create index transactions_user_id on transactions (user_id);
 CREATE TABLE password_resets (
     key TEXT PRIMARY KEY,
     user_id INTEGER NOT NULL REFERENCES users(id),
-    expires DATETIME NOT NULL
+    expires TIMESTAMP WITHOUT TIME ZONE NOT NULL
 );
 
 CREATE TABLE subscriptions (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    id SERIAL PRIMARY KEY,
     user_id INTEGER NOT NULL REFERENCES users(id),
     transaction_id INTEGER NOT NULL REFERENCES transactions,
-    start_date DATETIME NOT NULL,
-    end_date DATETIME NOT NULL
+    start_date TIMESTAMP WITHOUT TIME ZONE NOT NULL,
+    end_date TIMESTAMP WITHOUT TIME ZONE NOT NULL
 );
 
 CREATE TABLE cards (
     uid VARCHAR(255) PRIMARY KEY,
     user_id INTEGER NOT NULL REFERENCES users(id),
-    added_date DATETIME NOT NULL,
-    active BOOLEAN NOT NULL DEFAULT 1
+    added_date TIMESTAMP WITHOUT TIME ZONE NOT NULL,
+    active BOOLEAN NOT NULL DEFAULT true
 );
 
 CREATE TABLE perms (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    id SERIAL PRIMARY KEY,
     perm_name VARCHAR(255) NOT NULL
 );
 
@@ -69,7 +71,7 @@ CREATE TABLE userperms (
 );
 
 CREATE TABLE locations (
-    id INTEGER PRIMARY KEY AUTOINCREMENT, 
+    id SERIAL PRIMARY KEY, 
     name VARCHAR(255) NOT NULL
 );
 INSERT INTO locations (name) VALUES ('Ground floor');
@@ -77,7 +79,7 @@ INSERT INTO locations (name) VALUES ('Basement');
 INSERT INTO locations (name) VALUES ('Yard');
 
 CREATE TABLE project_states (
-    id INTEGER PRIMARY KEY AUTOINCREMENT, 
+    id SERIAL PRIMARY KEY, 
     name VARCHAR(255) NOT NULL
 );
 INSERT INTO project_states (name) VALUES ('Pending Approval');
@@ -89,22 +91,21 @@ INSERT INTO project_states (name) VALUES ('Removed');
 INSERT INTO project_states (name) VALUES ('Archived');
 
 CREATE TABLE projects (
-    id INTEGER PRIMARY KEY AUTOINCREMENT, 
+    id SERIAL PRIMARY KEY, 
     user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE, 
     name VARCHAR(255) NOT NULL,
     description VARCHAR(500) NOT NULL,
-    contact VARCHAR(255),
     state_id INTEGER NOT NULL REFERENCES project_states(id) ON DELETE CASCADE, 
     location_id INTEGER NOT NULL REFERENCES locations(id) ON DELETE CASCADE, 
     location VARCHAR(255),
-        updated_date DATETIME NOT NULL,
-        from_date DATETIME NOT NULL,
-        to_date DATETIME NOT NULL,
+        updated_date TIMESTAMP WITHOUT TIME ZONE NOT NULL,
+        from_date TIMESTAMP WITHOUT TIME ZONE NOT NULL,
+        to_date TIMESTAMP WITHOUT TIME ZONE NOT NULL,
     FOREIGN KEY(user_id) REFERENCES users(id)
 );
 
 CREATE TABLE projects_logs (
-    id INTEGER PRIMARY KEY AUTOINCREMENT, 
+    id SERIAL PRIMARY KEY, 
         timestamp INTEGER NOT NULL,
     project_id INTEGER NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
     user_id INTEGER REFERENCES users(id),
@@ -113,8 +114,8 @@ CREATE TABLE projects_logs (
 
 CREATE TABLE users_profiles (
     user_id INTEGER PRIMARY KEY NOT NULL REFERENCES users(id) ON DELETE CASCADE, 
-    allow_email BOOLEAN NOT NULL DEFAULT 0,
-    allow_doorbot BOOLEAN NOT NULL DEFAULT 0, 
+    allow_email BOOLEAN NOT NULL DEFAULT false,
+    allow_doorbot BOOLEAN NOT NULL DEFAULT false, 
     photo VARCHAR(255), 
     website VARCHAR(255), 
     description VARCHAR(500), 
@@ -122,7 +123,7 @@ CREATE TABLE users_profiles (
 );
 
 CREATE TABLE learnings (
-    learning_id INTEGER PRIMARY KEY AUTOINCREMENT, 
+    learning_id SERIAL PRIMARY KEY, 
     name VARCHAR(255) NOT NULL, 
     description VARCHAR(255) NOT NULL,
     url VARCHAR(255)
@@ -170,9 +171,9 @@ CREATE TABLE interests_categories (
 );
 
 CREATE TABLE interests (
-    interest_id INTEGER PRIMARY KEY AUTOINCREMENT, 
+    interest_id SERIAL PRIMARY KEY, 
     category VARCHAR(255) NOT NULL REFERENCES interests_categories(id) ON DELETE CASCADE,
-    suggested BOOLEAN NOT NULL DEFAULT 0,
+    suggested BOOLEAN NOT NULL DEFAULT false,
     name VARCHAR(255) NOT NULL, 
     url VARCHAR(255)
 );
@@ -188,32 +189,34 @@ INSERT INTO interests_categories (id) VALUES ('Fabrication');
 INSERT INTO interests_categories (id) VALUES ('Crafts');
 INSERT INTO interests_categories (id) VALUES ('Special interests');
 INSERT INTO interests_categories (id) VALUES ('Other');
-INSERT INTO interests (category,suggested,name,url) VALUES ('Computing',1,'Robotics','https://wiki.london.hackspace.org.uk/view/Robotics');
-INSERT INTO interests (category,suggested,name,url) VALUES ('Computing',1,'Arduino','https://wiki.london.hackspace.org.uk/view/Not_Just_Arduino');
-INSERT INTO interests (category,suggested,name,url) VALUES ('Computing',1,'Raspberry Pi','https://wiki.london.hackspace.org.uk/view/Not_Just_Arduino');
-INSERT INTO interests (category,suggested,name,url) VALUES ('Computing',1,'Soldering','https://wiki.london.hackspace.org.uk/view/Electronics_Area');
-INSERT INTO interests (category,suggested,name,url) VALUES ('Computing',1,'Hardware','https://wiki.london.hackspace.org.uk/view/Not_Just_Arduino');
-INSERT INTO interests (category,suggested,name,url) VALUES ('Computing',1,'Software','https://wiki.london.hackspace.org.uk/w/index.php?title=Special%3ASearch&search=software');
-INSERT INTO interests (category,suggested,name,url) VALUES ('Computing',1,'Programming','https://wiki.london.hackspace.org.uk/w/index.php?title=Special%3ASearch&search=programming&go=Go');
-INSERT INTO interests (category,suggested,name,url) VALUES ('Fabrication',1,'3D printing','https://wiki.london.hackspace.org.uk/view/Equipment/Lulzbot_a0_101');
-INSERT INTO interests (category,suggested,name,url) VALUES ('Fabrication',1,'Laser cutting','https://wiki.london.hackspace.org.uk/view/Laser_Cutter');
-INSERT INTO interests (category,suggested,name,url) VALUES ('Fabrication',1,'CNC routing','https://wiki.london.hackspace.org.uk/view/Pledge:_CNC_Mill');
-INSERT INTO interests (category,suggested,name,url) VALUES ('Fabrication',1,'Woodworking','https://wiki.london.hackspace.org.uk/view/Dusty_Wood_Shop');
-INSERT INTO interests (category,suggested,name,url) VALUES ('Fabrication',1,'Metalworking','https://wiki.london.hackspace.org.uk/view/Dirty_Metal_Shop');
-INSERT INTO interests (category,suggested,name,url) VALUES ('Fabrication',1,'Welding','https://wiki.london.hackspace.org.uk/view/Welding_Training');
-INSERT INTO interests (category,suggested,name,url) VALUES ('Crafts',1,'Sewing','https://wiki.london.hackspace.org.uk/view/Sewing_Machines');
-INSERT INTO interests (category,suggested,name,url) VALUES ('Crafts',1,'Knitting','https://wiki.london.hackspace.org.uk/view/Equipment/Knitting_Machine');
-INSERT INTO interests (category,suggested,name,url) VALUES ('Crafts',1,'Painting','https://wiki.london.hackspace.org.uk/view/Hackspace_Art');
-INSERT INTO interests (category,suggested,name,url) VALUES ('Crafts',1,'Sculpting','https://wiki.london.hackspace.org.uk/view/Hackspace_Art');
-INSERT INTO interests (category,suggested,name,url) VALUES ('Crafts',1,'Vinyl cutting','https://wiki.london.hackspace.org.uk/view/Vinyl_cutter');
-INSERT INTO interests (category,suggested,name,url) VALUES ('Special interests',1,'Amateur radio','https://wiki.london.hackspace.org.uk/view/Amateur_Radio');
-INSERT INTO interests (category,suggested,name,url) VALUES ('Special interests',1,'Lock picking','https://wiki.london.hackspace.org.uk/view/Project:Lockpicking');
-INSERT INTO interests (category,suggested,name,url) VALUES ('Special interests',1,'Music hacking','https://wiki.london.hackspace.org.uk/view/Music_Hack_Space');
-INSERT INTO interests (category,suggested,name,url) VALUES ('Special interests',1,'Photography','https://wiki.london.hackspace.org.uk/view/Project:Darkroom');
-INSERT INTO interests (category,suggested,name,url) VALUES ('Special interests',1,'Biohacking','https://wiki.london.hackspace.org.uk/view/Biohacking');
-INSERT INTO interests (category,suggested,name,url) VALUES ('Special interests',1,'LAN gaming','https://wiki.london.hackspace.org.uk/view/London_FRAGspace');
-INSERT INTO interests (category,suggested,name,url) VALUES ('Special interests',1,'PL(A)YWOOD','https://wiki.london.hackspace.org.uk/view/Playwood');
-INSERT INTO interests (category,suggested,name,url) VALUES ('Special interests',1,'Brewing','https://wiki.london.hackspace.org.uk/view/Brewing');
-INSERT INTO interests (category,suggested,name,url) VALUES ('Special interests',1,'Gardening','https://wiki.london.hackspace.org.uk/view/Garden');
-INSERT INTO interests (category,suggested,name,url) VALUES ('Special interests',1,'Cycling','https://wiki.london.hackspace.org.uk/w/index.php?title=Special%3ASearch&search=cycling&go=Go');
-INSERT INTO interests (category,suggested,name,url) VALUES ('Special interests',1,'Aerospace','https://wiki.london.hackspace.org.uk/view/LondonAerospace');
+INSERT INTO interests (category,suggested,name,url) VALUES ('Computing',true,'Robotics','https://wiki.london.hackspace.org.uk/view/Robotics');
+INSERT INTO interests (category,suggested,name,url) VALUES ('Computing',true,'Arduino','https://wiki.london.hackspace.org.uk/view/Not_Just_Arduino');
+INSERT INTO interests (category,suggested,name,url) VALUES ('Computing',true,'Raspberry Pi','https://wiki.london.hackspace.org.uk/view/Not_Just_Arduino');
+INSERT INTO interests (category,suggested,name,url) VALUES ('Computing',true,'Soldering','https://wiki.london.hackspace.org.uk/view/Electronics_Area');
+INSERT INTO interests (category,suggested,name,url) VALUES ('Computing',true,'Hardware','https://wiki.london.hackspace.org.uk/view/Not_Just_Arduino');
+INSERT INTO interests (category,suggested,name,url) VALUES ('Computing',true,'Software','https://wiki.london.hackspace.org.uk/w/index.php?title=Special%3ASearch&search=software');
+INSERT INTO interests (category,suggested,name,url) VALUES ('Computing',true,'Programming','https://wiki.london.hackspace.org.uk/w/index.php?title=Special%3ASearch&search=programming&go=Go');
+INSERT INTO interests (category,suggested,name,url) VALUES ('Fabrication',true,'3D printing','https://wiki.london.hackspace.org.uk/view/Equipment/Lulzbot_a0_101');
+INSERT INTO interests (category,suggested,name,url) VALUES ('Fabrication',true,'Laser cutting','https://wiki.london.hackspace.org.uk/view/Laser_Cutter');
+INSERT INTO interests (category,suggested,name,url) VALUES ('Fabrication',true,'CNC routing','https://wiki.london.hackspace.org.uk/view/Pledge:_CNC_Mill');
+INSERT INTO interests (category,suggested,name,url) VALUES ('Fabrication',true,'Woodworking','https://wiki.london.hackspace.org.uk/view/Dusty_Wood_Shop');
+INSERT INTO interests (category,suggested,name,url) VALUES ('Fabrication',true,'Metalworking','https://wiki.london.hackspace.org.uk/view/Dirty_Metal_Shop');
+INSERT INTO interests (category,suggested,name,url) VALUES ('Fabrication',true,'Welding','https://wiki.london.hackspace.org.uk/view/Welding_Training');
+INSERT INTO interests (category,suggested,name,url) VALUES ('Crafts',true,'Sewing','https://wiki.london.hackspace.org.uk/view/Sewing_Machines');
+INSERT INTO interests (category,suggested,name,url) VALUES ('Crafts',true,'Knitting','https://wiki.london.hackspace.org.uk/view/Equipment/Knitting_Machine');
+INSERT INTO interests (category,suggested,name,url) VALUES ('Crafts',true,'Painting','https://wiki.london.hackspace.org.uk/view/Hackspace_Art');
+INSERT INTO interests (category,suggested,name,url) VALUES ('Crafts',true,'Sculpting','https://wiki.london.hackspace.org.uk/view/Hackspace_Art');
+INSERT INTO interests (category,suggested,name,url) VALUES ('Crafts',true,'Vinyl cutting','https://wiki.london.hackspace.org.uk/view/Vinyl_cutter');
+INSERT INTO interests (category,suggested,name,url) VALUES ('Special interests',true,'Amateur radio','https://wiki.london.hackspace.org.uk/view/Amateur_Radio');
+INSERT INTO interests (category,suggested,name,url) VALUES ('Special interests',true,'Lock picking','https://wiki.london.hackspace.org.uk/view/Project:Lockpicking');
+INSERT INTO interests (category,suggested,name,url) VALUES ('Special interests',true,'Music hacking','https://wiki.london.hackspace.org.uk/view/Music_Hack_Space');
+INSERT INTO interests (category,suggested,name,url) VALUES ('Special interests',true,'Photography','https://wiki.london.hackspace.org.uk/view/Project:Darkroom');
+INSERT INTO interests (category,suggested,name,url) VALUES ('Special interests',true,'Biohacking','https://wiki.london.hackspace.org.uk/view/Biohacking');
+INSERT INTO interests (category,suggested,name,url) VALUES ('Special interests',true,'LAN gaming','https://wiki.london.hackspace.org.uk/view/London_FRAGspace');
+INSERT INTO interests (category,suggested,name,url) VALUES ('Special interests',true,'PL(A)YWOOD','https://wiki.london.hackspace.org.uk/view/Playwood');
+INSERT INTO interests (category,suggested,name,url) VALUES ('Special interests',true,'Brewing','https://wiki.london.hackspace.org.uk/view/Brewing');
+INSERT INTO interests (category,suggested,name,url) VALUES ('Special interests',true,'Gardening','https://wiki.london.hackspace.org.uk/view/Garden');
+INSERT INTO interests (category,suggested,name,url) VALUES ('Special interests',true,'Cycling','https://wiki.london.hackspace.org.uk/w/index.php?title=Special%3ASearch&search=cycling&go=Go');
+INSERT INTO interests (category,suggested,name,url) VALUES ('Special interests',true,'Aerospace','https://wiki.london.hackspace.org.uk/view/LondonAerospace');
+
+COMMIT;
