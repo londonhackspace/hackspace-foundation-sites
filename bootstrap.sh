@@ -18,6 +18,8 @@ EOF
 
 service postgresql reload
 
+psql -U hackspace-web hackspace < /var/www/hackspace-foundation-sites/etc/schema.sql
+
 # Configure php
 sed -i~ "s/short_open_tag = Off/short_open_tag = On/g" /etc/php5/apache2/php.ini
 sed -i~ "s/display_errors = Off/display_errors = On/g" /etc/php5/apache2/php.ini
