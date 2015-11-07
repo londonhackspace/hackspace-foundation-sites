@@ -18,6 +18,8 @@ cd ..
 
 # Configure php
 sed -i~ "s/short_open_tag = Off/short_open_tag = On/g" /etc/php5/apache2/php.ini
+sed -i~ "s/display_errors = Off/display_errors = On/g" /etc/php5/apache2/php.ini
+sed -i~ "s/display_startup_errors = Off/display_startup_errors = On/g" /etc/php5/apache2/php.ini
 
 # Configure apache
 a2enmod rewrite
