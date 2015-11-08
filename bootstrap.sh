@@ -4,6 +4,7 @@ export DEBIAN_FRONTEND=noninteractive
 # Install required packages
 apt-get update
 apt-get install -y php5 php5-curl php-apc git postgresql-9.4 php5-pgsql
+apt-get install -y ruby-erubis ruby-pg ruby-hpricot ruby-mail
 
 su postgres -c 'createuser hackspace'
 su postgres -c 'createdb -O hackspace hackspace'

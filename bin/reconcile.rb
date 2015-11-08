@@ -3,9 +3,10 @@
 
 require 'rubygems'
 require '../ruby-lib/ofx-parser.rb'
-require 'sqlite3'
+require 'pg'
 require 'erubis'
 require 'mail'
+require 'time'
 
 def firstname(full_name)
   full_name.gsub(/^(Mr|Mrs|Miss|Ms)\.?\s+/, '').split(' ')[0]
@@ -37,17 +38,14 @@ end
 
 ofx = OfxParser::OfxParser.parse(open(ARGV[0]))
 
-db = SQLite3::Database.new("../var/database.db")
-db.results_as_hash = true
-db.busy_timeout = 10000
-
+db = PG.connect(dbname: 'hackspace', user: 'hackspace')
 ofx.bank_account.statement.transactions.each do |transaction|
     if transaction.fit_id.to_i < 200000000000000
       # Barclays now returns non_unique fit_ids in a low range for uncleared transactions.
       # As we rely on fit_ids being unique, we have to ignore these.
       next
     end
-    c = db.get_first_value("SELECT count(*) FROM transactions WHERE fit_id = ?", transaction.fit_id)
+    c = db.exec_params("SELECT count(*) FROM transactions WHERE fit_id = $1", [transaction.fit_id])[0]['count']
     if c.to_i > 0
       next
     end
@@ -59,13 +57,14 @@ ofx.bank_account.statement.transactions.each do |transaction|
 
     reference = match[1].gsub(/O/, '0')
 
-    user = db.get_first_row("SELECT * FROM users WHERE id = ?", reference.to_i)
-    if !user
+    res = db.exec_params("SELECT * FROM users WHERE id = $1", [reference.to_i])
+    if res.ntuples == 0
       puts "Payment for invalid user ID #{reference.to_i}!"
       next
     end
+    user = res[0]
 
-    if user['terminated'] == 1
+    if user['terminated'] == "t"
       puts "User #{user['full_name']} is paying but their membership is terminated."
       next
     end
@@ -76,16 +75,16 @@ ofx.bank_account.statement.transactions.each do |transaction|
     end
 
     if transaction.amount.to_i < 5
-      #puts "User #{user['full_name']} is paying less than £5 (£#{transaction.amount}), not subscribing."
+      puts "User #{user['full_name']} is paying less than £5 (£#{transaction.amount}), not subscribing."
       next
     end
 
     db.transaction do |db|
-      db.execute("INSERT INTO transactions (fit_id, timestamp, user_id, amount) VALUES (?, ?, ?, ?)",
-                      transaction.fit_id, transaction.date.iso8601(), user['id'], transaction.amount)
-      db.execute("UPDATE users SET subscribed = 1 WHERE id = ?", user['id'])
+      db.exec_params("INSERT INTO transactions (fit_id, timestamp, user_id, amount) VALUES ($1, $2, $3, $4)",
+                      [transaction.fit_id, transaction.date.iso8601(), user['id'], transaction.amount])
+      db.exec_params("UPDATE users SET subscribed = true WHERE id = $1", [user['id']])
 
-      if user['subscribed'] == 0
+      if user['subscribed'] == 'f'
         # User is a new subscriber
         puts "User #{user['full_name']} now subscribed."
         send_subscribe_email(user['email'], user['full_name'])
@@ -98,15 +97,21 @@ ofx.bank_account.statement.transactions.each do |transaction|
     end
 end
 
-db.execute("SELECT users.*, (SELECT max(timestamp) FROM transactions WHERE user_id = users.id) AS lastsubscription
-        FROM users WHERE users.subscribed = 1 AND lastsubscription < date('now', '-1 month', '-14 days')") do |user|
+db.exec("SELECT users.*, (SELECT max(timestamp) FROM transactions WHERE user_id = users.id) AS lastsubscription
+            FROM users
+            WHERE users.subscribed = true
+            AND (SELECT max(timestamp) FROM transactions WHERE user_id = users.id) < now() - interval '1 month' - interval '14 days'"
+            ) do |result|
 
-    puts "Unsubscribing #{user['full_name']}."
-    db.execute("UPDATE users SET subscribed = 0 WHERE id = ?", user['id'])
-    send_unsubscribe_email(user['email'], user['full_name'], Time.iso8601(user['lastsubscription']))
-    # check for ldap infos, delete if they exist
-    if user['ldapuser']
-    	puts "deleting LDAP account: #{user['ldapuser']}"
-      	system("/var/www/hackspace-foundation-sites/bin/ldap-delete.sh", user['ldapuser'])
+    result.each do |user|
+      puts "Unsubscribing #{user['full_name']}."
+      db.exec_params("UPDATE users SET subscribed = false WHERE id = $1", [user['id']])
+      p user['lastsubscription']
+      send_unsubscribe_email(user['email'], user['full_name'], Time.parse(user['lastsubscription']))
+      # check for ldap infos, delete if they exist
+      if user['ldapuser']
+        puts "deleting LDAP account: #{user['ldapuser']}"
+          system("/var/www/hackspace-foundation-sites/bin/ldap-delete.sh", user['ldapuser'])
+      end
     end
 end
