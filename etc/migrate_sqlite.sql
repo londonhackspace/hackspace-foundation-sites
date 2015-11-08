@@ -151,7 +151,8 @@ CREATE FOREIGN TABLE sqlite.projects (
         location VARCHAR(255),
         updated_date TIMESTAMP WITHOUT TIME ZONE,
         from_date TIMESTAMP WITHOUT TIME ZONE,
-        to_date TIMESTAMP WITHOUT TIME ZONE
+        to_date TIMESTAMP WITHOUT TIME ZONE,
+        contact VARCHAR(255)
 ) SERVER sqlite_server OPTIONS(table 'projects');
 
 
