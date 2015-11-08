@@ -3,18 +3,26 @@ export DEBIAN_FRONTEND=noninteractive
 
 # Install required packages
 apt-get update
-apt-get install -y php5 sqlite php5-sqlite php5-curl php-apc sqlite3 ruby-sqlite3 ruby-erubis rubygems ruby-hpricot ruby-mail git
+apt-get install -y php5 php5-curl php-apc git postgresql-9.4 php5-pgsql
+apt-get install -y ruby-erubis ruby-pg ruby-hpricot ruby-mail
 
+su postgres -c 'createuser hackspace'
+su postgres -c 'createdb -O hackspace hackspace'
 
-# Create config file
-cd /var/www/hackspace-foundation-sites
-cp etc/config.php.example etc/config.php
+cat > /etc/postgresql/9.4/main/pg_hba.conf <<EOF
+local   hackspace       hackspace                               trust
+host    hackspace       hackspace       127.0.0.1/32            trust
+host    hackspace       hackspace       ::1/128                 trust
 
-# Configure database
-sqlite3 ./var/database.db < ./etc/schema.sql
-cd var
-echo "update users set subscribed=1; update users set admin=1;" | sqlite3 database.db
-cd ..
+local   all             postgres                                peer
+local   all             all                                     peer
+host    all             all             127.0.0.1/32            md5
+host    all             all             ::1/128                 md5
+EOF
+
+service postgresql reload
+
+psql -U hackspace hackspace < /var/www/hackspace-foundation-sites/etc/schema.sql
 
 # Configure php
 sed -i~ "s/short_open_tag = Off/short_open_tag = On/g" /etc/php5/apache2/php.ini
