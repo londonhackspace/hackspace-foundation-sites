@@ -16,7 +16,7 @@ require_once("$root/project.php");
 
 require_once("$root/gocardless-php/lib/GoCardless.php");
 
-$db = new fDatabase('postgresql', 'hackspace', 'hackspace', '');
+$db = new fDatabase('postgresql', $DB_NAME, $DB_USER, $DB_PASSWORD);
 
 fORMDatabase::attach($db);
 
