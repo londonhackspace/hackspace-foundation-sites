@@ -68,7 +68,7 @@ $include_unsubscribed = ($user->isAdmin() && isset($_GET['unsubscribed']) && $_G
 	                <td><? if($row['subscribed']) { ?><span class="glyphicon glyphicon-ok"></span><? } ?><p class="hidden"><?=($row['subscribed'] == 0) ? 'unsubscribed' : 'subscribed'; ?></p></td>
 				<? } ?>
                 <td>
-					<? if(!$user->isAdmin() && $row['has_profile'] == 1 && $row['disabled_profile'] == 0) { ?>
+					<? if(!$user->isAdmin() && $row['has_profile'] == 't' && $row['disabled_profile'] == 'f') { ?>
 	                	<a href="/members/profile/<?=$row['id']?>" title=""><?= htmlspecialchars( $row['full_name'] ) ?></a>
                 	<? } else if(!$user->isAdmin()) { ?>
 	               		<?= htmlspecialchars( $row['full_name'] ) ?>
@@ -78,7 +78,7 @@ $include_unsubscribed = ($user->isAdmin() && isset($_GET['unsubscribed']) && $_G
                 </td>
 				<? if($user->isAdmin()) { ?>
 	                <td>
-					<? if($row['has_profile'] == 1 && $row['disabled_profile'] == 0) { ?>
+					<? if($row['has_profile'] == 't' && $row['disabled_profile'] == 'f') { ?>
 	                	<p class="hidden">profile</p><a href="/members/profile/<?=$row['id']?>" title="visit member's profile"><span class="glyphicon glyphicon-user"></span></a>
 					<? } ?>
 	                </td>
