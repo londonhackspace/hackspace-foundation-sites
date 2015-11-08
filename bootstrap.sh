@@ -5,11 +5,14 @@ export DEBIAN_FRONTEND=noninteractive
 apt-get update
 apt-get install -y php5 php5-curl php-apc git postgresql-9.4 php5-pgsql
 
-su postgres -c 'createuser hackspace-web'
-su postgres -c 'createdb -O hackspace-web hackspace'
+su postgres -c 'createuser hackspace'
+su postgres -c 'createdb -O hackspace hackspace'
 
 cat > /etc/postgresql/9.4/main/pg_hba.conf <<EOF
-local   hackspace       hackspace-web                           trust
+local   hackspace       hackspace                               trust
+host    hackspace       hackspace       127.0.0.1/32            trust
+host    hackspace       hackspace       ::1/128                 trust
+
 local   all             postgres                                peer
 local   all             all                                     peer
 host    all             all             127.0.0.1/32            md5
@@ -18,7 +21,7 @@ EOF
 
 service postgresql reload
 
-psql -U hackspace-web hackspace < /var/www/hackspace-foundation-sites/etc/schema.sql
+psql -U hackspace hackspace < /var/www/hackspace-foundation-sites/etc/schema.sql
 
 # Configure php
 sed -i~ "s/short_open_tag = Off/short_open_tag = On/g" /etc/php5/apache2/php.ini

@@ -2,7 +2,7 @@
 
 
 CREATE EXTENSION sqlite_fdw;
-CREATE SERVER sqlite_server foreign data wrapper sqlite_fdw options (database '/Users/russ/hackspace/hackspace-foundation-sites/var/database.db');
+CREATE SERVER sqlite_server foreign data wrapper sqlite_fdw options (database '/var/www/hackspace-foundation-sites/var/database.db');
 
 BEGIN;
 
@@ -201,7 +201,7 @@ SELECT setval('locations_id_seq', (SELECT MAX(id) FROM locations));
 SELECT setval('project_states_id_seq', (SELECT MAX(id) FROM project_states));
 SELECT setval('projects_id_seq', (SELECT MAX(id) FROM projects));
 SELECT setval('projects_logs_id_seq', (SELECT MAX(id) FROM projects_logs));
-SELECT setval('learnings_id_seq', (SELECT MAX(id) FROM learnings));
-SELECT setval('interests_id_seq', (SELECT MAX(id) FROM interests));
+SELECT setval('learnings_learning_id_seq', (SELECT MAX(learning_id) FROM learnings));
+SELECT setval('interests_interest_id_seq', (SELECT MAX(interest_id) FROM interests));
 
 COMMIT;

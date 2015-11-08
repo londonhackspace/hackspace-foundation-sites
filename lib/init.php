@@ -16,8 +16,7 @@ require_once("$root/project.php");
 
 require_once("$root/gocardless-php/lib/GoCardless.php");
 
-
-$db = new fDatabase('sqlite', dirname(__FILE__) . '/../var/database.db');
+$db = new fDatabase('postgresql', 'hackspace', 'hackspace', '');
 
 fORMDatabase::attach($db);
 
