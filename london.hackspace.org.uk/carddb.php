@@ -5,7 +5,7 @@ $subscribers = $db->translatedQuery( "
   select
     u.id,
     u.subscribed,
-    ifnull(u.nickname, u.full_name) nick,
+    coalesce(u.nickname, u.full_name) nick,
     u.gladosfile,
     c.uid
   from
@@ -13,7 +13,7 @@ $subscribers = $db->translatedQuery( "
     users u
   where
     c.user_id = u.id
-    and c.active = 1
+    and c.active = true
   order by
     u.id
 " );
