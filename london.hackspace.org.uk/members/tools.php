@@ -1,13 +1,9 @@
 <?php
-if ($_GET['summary']!=NULL){
-    
-    
+if (isset($_GET['summary'])){
     require_once( $_SERVER['DOCUMENT_ROOT'] . '/../lib/init.php');
-    
     ensureMember();
-    
     header('Content-Type: application/json');
-   
+
     $opts = array(
       'http'=>array(
         'method'=>"GET",
