@@ -27,7 +27,7 @@ foreach( $subscribers as $row ) {
     $sub = array(
       'id' => $row['id'],
       'nick' => $row['nick'],
-      'subscribed' => $row['subscribed'] == 1,
+      'subscribed' => $row['subscribed'] == 't',
       'gladosfile' => $row['gladosfile'],
       'perms' => array(),
       'cards' => array()
