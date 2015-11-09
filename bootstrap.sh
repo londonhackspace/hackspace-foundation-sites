@@ -6,6 +6,7 @@ apt-get update
 apt-get install -y php5 php5-curl php-apc git postgresql-9.4 php5-pgsql
 apt-get install -y ruby-erubis ruby-pg ruby-hpricot ruby-mail
 
+su postgres -c 'createuser -s vagrant'
 su postgres -c 'createuser hackspace'
 su postgres -c 'createdb -O hackspace hackspace'
 
@@ -13,6 +14,7 @@ cat > /etc/postgresql/9.4/main/pg_hba.conf <<EOF
 local   hackspace       hackspace                               trust
 host    hackspace       hackspace       127.0.0.1/32            trust
 host    hackspace       hackspace       ::1/128                 trust
+local   all             vagrant                                 trust
 
 local   all             postgres                                peer
 local   all             all                                     peer
