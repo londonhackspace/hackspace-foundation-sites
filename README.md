@@ -7,10 +7,8 @@ your development environment set up:
 
 * Install [Vagrant](https://www.vagrantup.com/downloads.html) and [Virtualbox](https://www.virtualbox.org/)
 * Run `vagrant up` in this directory. This will create and configure a virtual machine.
-* Create config file (the defaults are fine)
-    cp etc/config.php.example etc/config.php
-* Fetch libraries
-    git submodule update --init
+* Create config file (the defaults are fine): `cp etc/config.php.example etc/config.php`
+* Fetch libraries: `git submodule update --init`
 
 You should now be able to connect to http://localhost:8000 to view your
 development site. Changes you make on your machine will be reflected
