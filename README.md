@@ -1,59 +1,34 @@
-This is the source code for the [London Hackspace web
-site](http://london.hackspace.org.uk)
+This is the source code for the [London Hackspace web site](https://london.hackspace.org.uk)
 
-(It used to also support http://hackspace.org.uk, but this is now just MediaWiki)
+## Getting Started
 
-## Packages needed
+We use Vagrant to deploy a consistent development environment. To get
+your development environment set up:
 
-php5 sqlite php5-sqlite php5-curl php-apc sqlite3
-ruby-sqlite3 ruby-erubis rubygems ruby-hpricot ruby-mail
-
-## Setting up Apache
-Make sure you have mod_rewrite and expires enabled. (a2enmod rewrite, a2enmod expires)
-
-You'll need to include the /apache-config file in your apache host config. Example:
-
-    <VirtualHost *:80>
-    ...
-    Include /path/to/root/dir/apache-config
-    </VirtualHost>
-
-### Create config file
-
+* Install [Vagrant](https://www.vagrantup.com/downloads.html) and [Virtualbox](https://www.virtualbox.org/)
+* Run `vagrant up` in this directory. This will create and configure a virtual machine.
+* Create config file (the defaults are fine)
     cp etc/config.php.example etc/config.php
-
-### Fetch libraries
-
+* Fetch libraries
     git submodule update --init
 
-### session dir
+You should now be able to connect to http://localhost:8000 to view your
+development site. Changes you make on your machine will be reflected
+on the VM.
 
-    cd /var/www/hackspace-foundation-sites/var
-    chown www-data:www-data session
+If you need to log into the VM for any reason, you can just run
+`vagrant ssh`. To access the postgres database, run `psql
+hackspace` from the SSH shell.
 
-## Creating the DB
-You can create the database from the schema located in ./etc:
+## Making yourself an admin
+In the postgres shell:
 
-    sqlite3 ./var/database.db < ./etc/schema.sql
-    cd var
-    chown www-data:adm database.db ; chmod 0660 database.db
-
-Note that SQLite needs write access to the directory containing the .db file to do its journaling:
-
-    chgrp www-data ./var
-    chmod 0775 ./var
-
-Now create an accout on the site ("Join"), and then:
-
-    cd /var/www/hackspace-foundation-sites/var/
-    sqlite3 database.db
-    sqlite> update users set subscribed=1;
-    sqlite> update users set admin=1;
+    hackspace=# update users set subscribed=1;
+    hackspace=# update users set admin=1;
 
 to make yourself a member and an admin
 
 ## letting apache add ldap users (!)
-
 use visudo to add this:
 
     www-data ALL=(www-data:ldapadmin) NOPASSWD:NOSETENV: /var/www/hackspace-foundation-sites/bin/ldap-add.sh, /var/www/hackspace-foundation-sites/bin/ldap-delete.sh
@@ -63,12 +38,6 @@ and then:
     groupadd ldapadmin
     chgrp ldapadmin /etc/smbldap-tools/smbldap_bind.conf
     chmod 0640 /etc/smbldap-tools/smbldap_bind.conf
-
-## Configuring MediaWiki users panel
-Create a file in ./var/mediawiki.php with the $type, $server, $username,
-$password, $database, and $path variables set (where $type is a string
-describing the database type, and $path is a complete path including trailing
-slash to the MediaWiki instance).
 
 ## Enabling Calendar management
 1. Enable the Calendar API at https://console.developers.google.com/.../apiui/api
