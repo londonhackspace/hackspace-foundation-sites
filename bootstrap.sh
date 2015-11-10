@@ -3,6 +3,7 @@ export DEBIAN_FRONTEND=noninteractive
 
 # Install required packages
 apt-get update
+apt-get install -y vim python3-virtualenv virtualenv python3-dev libpq-dev
 apt-get install -y php5 php5-curl php-apc git postgresql-9.4 php5-pgsql
 apt-get install -y ruby-erubis ruby-pg ruby-hpricot ruby-mail
 

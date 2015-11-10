@@ -4,3 +4,8 @@ london.hackspace.org.uk/flickr.html
 var
 etc/config.php
 .vagrant
+
+__pycache__/
+*.py[cod]
+*$py.class
+env/
