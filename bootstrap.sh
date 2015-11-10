@@ -38,3 +38,7 @@ a2enmod expires
 cp /var/www/hackspace-foundation-sites/apache-config-drop-in /etc/apache2/sites-available/000-default.conf
 service apache2 restart
 
+cat > /home/vagrant/.bash_profile <<EOF
+cd /var/www/hackspace-foundation-sites/
+. ./env/bin/activate
+EOF
