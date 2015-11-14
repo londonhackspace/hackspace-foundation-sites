@@ -109,10 +109,10 @@ class User extends fActiveRecord {
 
     public function getResetPasswordToken() {
         global $db;
-        $db->execute("DELETE FROM password_resets WHERE expires < datetime('now')");
+        $db->execute("DELETE FROM password_resets WHERE expires < now()");
         $token = fCryptography::randomString(15);
         $db->execute("INSERT INTO password_resets (key, user_id, expires)
-                                    VALUES (%s, %s, datetime('now', '+1 day'))",
+                                    VALUES (%s, %s, now() + INTERVAL '1 day')",
                                     $token, $this->getId());
         return $token;
     }
@@ -120,7 +120,7 @@ class User extends fActiveRecord {
     public static function checkPasswordResetToken($token) {
         global $db;
         $result = $db->query("SELECT * FROM password_resets
-            WHERE key = %s AND expires > datetime('now')", $token);
+            WHERE key = %s AND expires > now()", $token);
         if ($result->countReturnedRows() > 0) {
             $res = $result->fetchRow();
             $result = $db->execute('DELETE FROM password_resets WHERE key = %s', $token);
