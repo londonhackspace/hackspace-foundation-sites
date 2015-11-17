@@ -2,6 +2,16 @@
 
 # username uid nthash sshahash shell email
 
+uid=$2
+
+#
+# LHS uid's start at 100000
+#
+if [ $uid -lt 100000 ]  ; then
+	logger -p auth.crit attempt to add low uid: "$uid" : "$1" "$6"
+	exit 1
+fi
+
 /usr/sbin/smbldap-usershow "$1" > /dev/null
 
 if [ $? -ne 0 ] ; then
