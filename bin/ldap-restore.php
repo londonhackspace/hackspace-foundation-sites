@@ -5,6 +5,11 @@
 # n.b. does not restore Admins, since we don't track that anywhere :/
 
 <?php
+echo "If you're running this, something's gone wrong.";
+echo "Please make sure you sanitise everything in the database before running this script. Then remove these lines from the code.";
+
+exit;
+
 function __autoload($class_name)
 {
     $flourish_root =  dirname(__FILE__) . '/../lib/flourish/';

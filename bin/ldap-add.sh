@@ -1,14 +1,22 @@
 #!/bin/sh
 
 # username uid nthash sshahash shell email
+for i in "$@"; do
+  if printf "%s" "$i"|grep -q '^-'; then
+    echo "Unsafe argument $i"
+    exit
+  fi
+done
 
 uid=$2
 
 #
 # LHS uid's start at 100000
+# smbldapp-useradd calls getgrgid, which only accepts decimal ints
 #
-if [ $uid -lt 100000 ]  ; then
-	logger -p auth.crit attempt to add low uid: "$uid" : "$1" "$6"
+if [ "$uid" -lt 100000 ]  ; then
+	#logger -p auth.crit "attempt to add low uid: $uid: $1 $6"
+	echo blah
 	exit 1
 fi
 

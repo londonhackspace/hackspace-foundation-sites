@@ -5,6 +5,13 @@
 #
 #
 
+for i in "$@"; do
+  if printf "%s" "$i"|grep -q '^-'; then
+    echo "Unsafe argument $i"
+    exit
+  fi
+done
+
 /usr/sbin/smbldap-usershow "$1" > /dev/null
 
 if [ $? -ne 0 ] ; then
