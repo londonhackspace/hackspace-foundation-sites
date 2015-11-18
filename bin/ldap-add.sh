@@ -4,7 +4,7 @@
 for i in "$@"; do
   if printf "%s" "$i"|grep -q '^-'; then
     echo "Unsafe argument $i"
-    exit
+    exit 1
   fi
 done
 
@@ -15,8 +15,7 @@ uid=$2
 # smbldapp-useradd calls getgrgid, which only accepts decimal ints
 #
 if [ "$uid" -lt 100000 ]  ; then
-	#logger -p auth.crit "attempt to add low uid: $uid: $1 $6"
-	echo blah
+	logger -p auth.crit "attempt to add low uid: $uid: $1 $6"
 	exit 1
 fi
 

@@ -8,7 +8,7 @@
 for i in "$@"; do
   if printf "%s" "$i"|grep -q '^-'; then
     echo "Unsafe argument $i"
-    exit
+    exit 1
   fi
 done
 
