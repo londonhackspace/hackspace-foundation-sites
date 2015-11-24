@@ -4,6 +4,7 @@ if (isset($_GET['summary'])){
 
     if (isset($_GET['anonymous'])) {
         $url = "/api/get_tools_status";
+        header("Access-Control-Allow-Origin: *"); // Ensure we can use this API from anywhere
     } else {
         ensureMember();
         $url = "/api/get_tools_summary_for_user/" . $user->getId();
