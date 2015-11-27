@@ -21,7 +21,12 @@ if (isset($_GET['summary'])){
     $result = file_get_contents($ACSERVER_ADDRESS . $url, false, $context);
 
     header('Content-Type: application/json');
-    echo $result;
+
+    if ($result === FALSE) {
+        echo '{"error": "Failed to fetch data"}';
+    } else {
+        echo $result;
+    }
 
     //print_r();
     //echo "\nJSON status: " . json_last_error();
