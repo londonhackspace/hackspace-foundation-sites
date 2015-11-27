@@ -1,8 +1,14 @@
 <?php
 if (isset($_GET['summary'])){
     require_once( $_SERVER['DOCUMENT_ROOT'] . '/../lib/init.php');
-    ensureMember();
-    header('Content-Type: application/json');
+
+    if (isset($_GET['anonymous'])) {
+        $url = "/api/get_tools_status";
+        header("Access-Control-Allow-Origin: *"); // Ensure we can use this API from anywhere
+    } else {
+        ensureMember();
+        $url = "/api/get_tools_summary_for_user/" . $user->getId();
+    }
 
     $opts = array(
       'http'=>array(
@@ -10,14 +16,13 @@ if (isset($_GET['summary'])){
         'header'=>"API-KEY: ".$ACSERVER_KEY."\r\n"
       )
     );
-
     $context = stream_context_create($opts);
-    $result = file_get_contents($ACSERVER_ADDRESS . "/api/get_tools_summary_for_user/".$user->getId(),false,$context);
 
-    if($result === FALSE) {
-        echo "\nFailed to fetch data:";
-    }
+    $result = file_get_contents($ACSERVER_ADDRESS . $url, false, $context);
+
+    header('Content-Type: application/json');
     echo $result;
+
     //print_r();
     //echo "\nJSON status: " . json_last_error();
     die();
