@@ -28,6 +28,12 @@ if (isset($_POST['submit'])) {
             throw new fValidationException('Non-unique UID. This card cannot be added to the system.');
         }
 
+        // Random IDs are 4 bytes long and start with 0x08
+        // http://www.nxp.com/documents/application_note/AN10927.pdf
+        if(strlen($uid) === 8 && substr($uid,0,2) === "08") {
+            throw new fValidationException('ID is randomly generated.');
+        }
+
         $users = fRecordSet::build('User', array('email=' => strtolower($_POST['email'])));
         if ($users->count() == 0) {
             throw new fValidationException('Invalid username or password.');
@@ -84,14 +90,7 @@ if (isset($_GET['added']) && !isset($_POST['submit'])) {
             </tr>
             <tr>
                 <td><label for="uid">Card to add</label></td>
-                <td>
-                <? if (isset($_POST['uid'])) { ?>
-                    <?=htmlentities($_POST['uid'])?>
-                    <input type="hidden" name="uid" value="<?=htmlentities($_POST['uid'])?>" />
-                <? } else { ?>
-                    <input type="text" name="uid"/>
-                <? } ?>
-                </td>
+                <td><input type="text" name="uid" value="<?=htmlentities($_POST['uid'])?>"/></td>
             </tr>
             <tr>
                 <td colspan="2"><input type="submit" name="submit" value="Add card" /></td>
