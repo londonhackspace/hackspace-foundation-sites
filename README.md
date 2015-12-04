@@ -21,8 +21,8 @@ hackspace` from the SSH shell.
 ## Making yourself an admin
 In the postgres shell:
 
-    hackspace=# update users set subscribed=1;
-    hackspace=# update users set admin=1;
+    hackspace=# update users set subscribed=True;
+    hackspace=# update users set admin=True;
 
 to make yourself a member and an admin
 
