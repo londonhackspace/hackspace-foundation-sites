@@ -31,7 +31,15 @@ if (isset($_POST['submit'])) {
         // Random IDs are 4 bytes long and start with 0x08
         // http://www.nxp.com/documents/application_note/AN10927.pdf
         if(strlen($uid) === 8 && substr($uid,0,2) === "08") {
-            throw new fValidationException('ID is randomly generated.');
+            throw new fValidationException('ID is randomly generated and will change every time the card is used!');
+        }
+
+        if(strlen($uid) === 8 && substr($uid,0,2) === "88") {
+            throw new fValidationException('Card UID\'s can\'t start with 88');
+        }
+
+        if(strlen($uid) > 8 && substr($uid,6,8) === "88") {
+            throw new fValidationException('Can\'t have cards with long uid\'s and UID3 == 88');
         }
 
         $users = fRecordSet::build('User', array('email=' => strtolower($_POST['email'])));
