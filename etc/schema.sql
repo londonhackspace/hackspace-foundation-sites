@@ -179,6 +179,7 @@ CREATE TABLE interests (
     url VARCHAR(255)
 );
 
+
 CREATE TABLE users_interests (
     user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE, 
     interest_id INTEGER NOT NULL REFERENCES interests(interest_id) ON DELETE CASCADE,
@@ -219,5 +220,10 @@ INSERT INTO interests (category,suggested,name,url) VALUES ('Special interests',
 INSERT INTO interests (category,suggested,name,url) VALUES ('Special interests',true,'Gardening','https://wiki.london.hackspace.org.uk/view/Garden');
 INSERT INTO interests (category,suggested,name,url) VALUES ('Special interests',true,'Cycling','https://wiki.london.hackspace.org.uk/w/index.php?title=Special%3ASearch&search=cycling&go=Go');
 INSERT INTO interests (category,suggested,name,url) VALUES ('Special interests',true,'Aerospace','https://wiki.london.hackspace.org.uk/view/LondonAerospace');
+
+CREATE TABLE proxy_votes (
+    user_id INTEGER NOT NULL PRIMARY KEY REFERENCES users(id),
+    election TEXT NOT NULL
+);
 
 COMMIT;
