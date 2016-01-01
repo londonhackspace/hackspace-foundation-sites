@@ -15,10 +15,10 @@ $election = 'egmjan2016';
 <a href="https://wiki.london.hackspace.org.uk/view/Organisation/2016_EGM">London Hackspace
 January 2016 EGM</a>.</p>
 
-<p>You will receive a link by email to vote for these resolutions on Wednesday January 20th 2016.</p>
+<p>You will receive a link by email to vote online for these resolutions on Wednesday January 20th 2016.</p>
 
 <p>If you wish to submit a proxy vote for any other resolutions, you must apply <a href="https://wiki.london.hackspace.org.uk/view/Organisation/2016_EGM#Proxy_Votes">by email as detailed here</a>.
-If you have already done this, you don't need to submit this form.</p>
+If you have already done this, or you are attending the meeting, you don't need to submit this form.</p>
 
 <?
 
