@@ -11,7 +11,7 @@ $election = 'egmjan2016';
 <h2>Proxy Vote</h2>
 
 <p>This form allows you to apply for a proxy vote for the <strong>delayed voting resolutions</strong>
-(resolutions 1, 2, and 3) in the
+(resolutions 1, 2, and 3, as well as any other resolutions where a poll is demanded) in the
 <a href="https://wiki.london.hackspace.org.uk/view/Organisation/2016_EGM">London Hackspace
 January 2016 EGM</a>.</p>
 
