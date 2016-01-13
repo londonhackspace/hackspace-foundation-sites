@@ -21,11 +21,18 @@ if ($user->isMember()) {
         array('timestamp' => 'desc')
         );
 
+    if (sizeof($result) > 1) {
         $expires = strtotime($result[0]->getTimestamp());
         # 30 days ~= a month
         # we don't include the 14 days grace period here.
         $expires += 30 * 24 * 60 * 60;
         $expires = date('d F Y', $expires);
+    } else {
+        # This is a special case for Russ, whose payments don't get
+        # automatically recognised due to issues with payments between
+        # barclays accounts on the same login
+        $expires = null;
+    }
 }
 
 ?>
@@ -35,7 +42,7 @@ if ($user->isMember()) {
 <tr><th>Card ID</th><td> <?=$card->prepareUid()?></td></tr>
 <tr><th>Subscribed</th><td> <?=$user->isMember() ? "Yes":"No"?></td></tr>
 <? if ($user->isMember()) { ?>
-<tr><th>Subscription Expirey</th><td> <?=$expires ?></td></tr>
+<tr><th>Subscription Expiry</th><td> <?=$expires ?></td></tr>
 <? } ?>
 </table>
 
