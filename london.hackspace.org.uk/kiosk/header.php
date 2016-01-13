@@ -12,7 +12,7 @@ header("Content-Type: text/html; charset=utf-8");
     <link rel="stylesheet" type="text/css" href="/css/kiosk.css" />
   </head>
 <body>
-<? if (isset($suppress_card_input)) { ?>
+<? if (!isset($suppress_card_input)) { ?>
     <form action="card.php" style="position:absolute; left:-9999px;">
         <input type="text" name="cardid" id="cardid" accesskey="i"/>
     </form>
