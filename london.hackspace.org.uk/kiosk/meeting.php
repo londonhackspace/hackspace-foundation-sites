@@ -36,10 +36,10 @@ if (isset($_POST['attendance_card'])) {
     <div class="alert alert-danger" role="alert">You are not a London Hackspace member</div>
 <?
         } else {
-            $res = $db->translatedQuery("SELECT 1 FROM meeting_attendance WHERE user_id = %s AND meeting = %s",
+            $res = $db->translatedQuery("SELECT 1 FROM meeting_attendees WHERE user_id = %s AND meeting = %s",
                                         $attending_user->getId(), $meeting);
             if ($res->countReturnedRows() == 0) {
-                $db->execute("INSERT INTO meeting_attendance (user_id, meeting) VALUES (%s, %s)",
+                $db->execute("INSERT INTO meeting_attendees (user_id, meeting) VALUES (%s, %s)",
                     $attending_user->getId(), $meeting);
                 ?>
         <div class="alert alert-success" role="alert">Welcome, <?=$attending_user->prepareFullName() ?>.
