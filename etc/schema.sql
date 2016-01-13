@@ -226,4 +226,9 @@ CREATE TABLE proxy_votes (
     election TEXT NOT NULL
 );
 
+CREATE TABLE meeting_attendance (
+    user_id INTEGER NOT NULL REFERENCES users(id),
+    meeting TEXT NOT NULL
+);
+
 COMMIT;

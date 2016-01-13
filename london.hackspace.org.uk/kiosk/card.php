@@ -60,6 +60,11 @@ if ($user->isMember()) {
 <a href="/kiosk/nod.php?cardid=<?=$cardid?>" class="btn btn-default">Notice of Disposal</a>
 </div>
 
+<? if ($user->getId() == 1) { ?>
+<div class="btn-group">
+    <a href="/kiosk/meeting.php?cardid=<?=$cardid?>" class="btn btn-default">Meeting Attendance</a>
+</div>
+<? } ?>
 
 <?require('./footer.php')?>
 </body>
