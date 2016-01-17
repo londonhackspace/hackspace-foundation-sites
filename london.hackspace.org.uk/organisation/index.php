@@ -22,7 +22,7 @@ require('../header.php');
 <h3>Trustees</h3>
 
 <p>The trustees of London Hackspace ensure the long-term health of the space as an organisation and are elected by the members yearly.
-   The current list of trustees is available <a href="http://wiki.hackspace.org.uk/wiki/Trustees">on the wiki</a>.</p>
+   The current list of trustees is available <a href="http://wiki.london.hackspace.org.uk/view/Trustees">on the wiki</a>.</p>
 
 <p>You can contact the trustees by emailing <i>trustees (at) london.hackspace.org.uk</i>.</p>
 
