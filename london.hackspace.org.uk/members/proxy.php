@@ -8,17 +8,15 @@ ensureMember();
 $election = 'egmjan2016';
 
 ?>
-<h2>Proxy Vote</h2>
+<h2>January 2016 EGM: Online Vote</h2>
 
-<p>This form allows you to apply for a proxy vote for the <strong>delayed voting resolutions</strong>
-(resolutions 1, 2, and 3, as well as any other resolutions where a poll is demanded) in the
+<p>This form allows you to apply for an online proxy vote for resolutions 1, 2, and 3 in the
 <a href="https://wiki.london.hackspace.org.uk/view/Organisation/2016_EGM">London Hackspace
 January 2016 EGM</a>.</p>
 
 <p>You will receive a link by email to vote online for these resolutions on Wednesday January 20th 2016.</p>
 
-<p>If you wish to submit a proxy vote for any other resolutions, you must apply <a href="https://wiki.london.hackspace.org.uk/view/Organisation/2016_EGM#Proxy_Votes">by email as detailed here</a>.
-If you have already done this, or you are attending the meeting, you don't need to submit this form.</p>
+<p>If you have already applied for a proxy vote, or you attended the meeting, you don't need to submit this form.</p>
 
 <?
 
@@ -32,11 +30,11 @@ if ($res->countReturnedRows() == 0) {
 ?>
 
 <form method="post">
-<button name="proxy">Apply for proxy vote</button>
+<button name="proxy">Apply for a vote</button>
 </form>
 
 <? } else { ?>
-<p><strong>Thanks! You have applied for a proxy vote.</strong></p>
+<p><strong>Thanks! You have applied for an online vote. You will receive an email when voting opens.</strong></p>
 <? } ?>
 
 <? require('../footer.php'); ?>
