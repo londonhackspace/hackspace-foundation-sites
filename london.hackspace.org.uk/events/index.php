@@ -19,7 +19,7 @@ $timestamp = mktime(0,0,0,$month,$day,$year);
 
 <h2>Events</h2>
 <p>You can <a href="http://www.google.com/calendar/ical/gc1bopmh3c5n0ogvlo6ceujlkc%40group.calendar.google.com/public/basic.ics">add the iCal feed to your calendar</a>.</p>
-
+<p><a href="https://wiki.london.hackspace.org.uk/view/Guides/Planning_an_event">Guide for submitting new events.</a></p>
 <div class="row">
 <div class="col-md-8 calendar-alldays-container">
 
