@@ -29,9 +29,13 @@ $res = $db->translatedQuery("SELECT 1 FROM proxy_votes WHERE user_id = %s AND el
 if ($res->countReturnedRows() == 0) {
 ?>
 
-<form method="post">
+<? /*<form method="post">
 <button name="proxy">Apply for a vote</button>
 </form>
+
+ */ ?>
+
+Online vote applications are now closed.
 
 <? } else { ?>
 <p><strong>Thanks! You have applied for an online vote. You will receive an email when voting opens.</strong></p>
