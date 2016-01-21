@@ -10,13 +10,11 @@ $election = 'egmjan2016';
 ?>
 <h2>January 2016 EGM: Online Vote</h2>
 
-<p>This form allows you to apply for an online proxy vote for resolutions 1, 2, and 3 in the
+<p>This form allows you to apply for an online vote for resolutions 1, 2, and 3 in the
 <a href="https://wiki.london.hackspace.org.uk/view/Organisation/2016_EGM">London Hackspace
 January 2016 EGM</a>.</p>
 
-<p>You will receive a link by email to vote online for these resolutions on Wednesday January 20th 2016.</p>
-
-<p>If you have already applied for a proxy vote, or you attended the meeting, you don't need to submit this form.</p>
+<p>This form will remain open until 12:00 midday on Tuesday January 26th, 2016.</p>
 
 <?
 
@@ -29,16 +27,15 @@ $res = $db->translatedQuery("SELECT 1 FROM proxy_votes WHERE user_id = %s AND el
 if ($res->countReturnedRows() == 0) {
 ?>
 
-<? /*<form method="post">
+<form method="post">
 <button name="proxy">Apply for a vote</button>
 </form>
 
- */ ?>
-
-Online vote applications are now closed.
-
 <? } else { ?>
-<p><strong>Thanks! You have applied for an online vote. You will receive an email when voting opens.</strong></p>
+<p><strong>Thanks! You have applied for an online vote. If you have not already received an email telling you how to vote, you will receive one no later than 20:00 on Tuesday January 26th.</strong></p>
+
+<p>If you haven't received an email by this time, please email russ@london.hackspace.org.uk</p>
+
 <? } ?>
 
 <? require('../footer.php'); ?>
