@@ -14,8 +14,6 @@ $election = 'egmjan2016';
 <a href="https://wiki.london.hackspace.org.uk/view/Organisation/2016_EGM">London Hackspace
 January 2016 EGM</a>.</p>
 
-<p>This form will remain open until 12:00 midday on Tuesday January 26th, 2016.</p>
-
 <?
 
 if (isset($_POST['proxy'])) {
@@ -27,9 +25,7 @@ $res = $db->translatedQuery("SELECT 1 FROM proxy_votes WHERE user_id = %s AND el
 if ($res->countReturnedRows() == 0) {
 ?>
 
-<form method="post">
-<button name="proxy">Apply for a vote</button>
-</form>
+<p>Applications for an online vote are now closed.</p>
 
 <? } else { ?>
 <p><strong>Thanks! You have applied for an online vote. If you have not already received an email telling you how to vote, you will receive one no later than 20:00 on Tuesday January 26th.</strong></p>
