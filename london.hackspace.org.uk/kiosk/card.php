@@ -60,6 +60,7 @@ if ($user->isMember()) {
 <div class="btn-group">
 <a href="/kiosk/storage.php?cardid=<?=$cardid?>" class="btn btn-default">Storage Request</a>
 <a href="/kiosk/box.php?cardid=<?=$cardid?>" class="btn btn-default">Member Box</a>
+<a href="/kiosk/badge.php?cardid=<?=$cardid?>" class="btn btn-default">Name Badge</a>
 </div>
 
 <h2>Other Stickers</h2>
