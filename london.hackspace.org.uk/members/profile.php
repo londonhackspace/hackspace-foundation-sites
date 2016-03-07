@@ -13,7 +13,7 @@ if (!isset($_GET['id'])) {
 }
 
 $title = "Member Profile: {$this_user->getFullName()}";
-if ($user->getMemberNumber() == $this_user->getMemberNumber()) {
+if ($user && $user->getMemberNumber() == $this_user->getMemberNumber()) {
   $page = 'profile';
 } else {
   $page = 'memberslist';
