@@ -20,7 +20,7 @@ if (isset($_POST['print'])) {
         'storage_id' => $project->getId(),
         'name' => $project->getName(),
         'ownername' => $user->getFullName(),
-        'more_info' => $project->getDescription(),
+        'more_info' => html_entity_decode($project->getDescription(), ENT_QUOTES),
         'completion_date' => $project->getToDate()->format('Y/m/d'),
         'max_extention' => "14"
     );
