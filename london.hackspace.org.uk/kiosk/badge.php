@@ -84,7 +84,6 @@ if (isset($_POST['print']) && $user->isMember()) {
     <? } ?>
     <? } ?>
 
-    <tr><td colspan="2">... and a qr code with a link to your profile page.</td></tr>
     <tr><td><button name="print" value="<?=$user->getId()?>" class="btn btn-primary">Print Sticker</button></td></tr>
 </tbody>
 </table>
