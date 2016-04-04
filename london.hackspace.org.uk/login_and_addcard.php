@@ -23,10 +23,7 @@ if (isset($_POST['submit'])) {
         $validator->validate();
 
         $uid = strtoupper($_POST['uid']);
-        if ($uid == '21222324') {
-            /* New Visa cards return this, presumably for privacy */
-            throw new fValidationException('Non-unique UID. This card cannot be added to the system.');
-        }
+        validateCardUID($uid);
 
         // Random IDs are 4 bytes long and start with 0x08
         // http://www.nxp.com/documents/application_note/AN10927.pdf

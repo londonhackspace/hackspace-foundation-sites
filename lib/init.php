@@ -58,7 +58,7 @@ function send404($message) {
 // Throw an exception if the card UID is invalid
 function validateCardUID($uid) {
     if ($uid == '21222324' || $uid == '01020304') {
-        /* New Visa cards return 21222324, presumably for privacy.
+        /* Some Visa cards issued around 2013 return 21222324, presumably for privacy.
          * Android phones always return 01020304. */
         throw new fValidationException('Non-unique UID. This card cannot be added to the system.');
     }
