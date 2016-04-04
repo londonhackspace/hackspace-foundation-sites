@@ -54,3 +54,26 @@ function send404($message) {
   echo $message;
   exit;
 }
+
+// Throw an exception if the card UID is invalid
+function validateCardUID($uid) {
+    if ($uid == '21222324' || $uid == '01020304') {
+        /* New Visa cards return 21222324, presumably for privacy.
+         * Android phones always return 01020304. */
+        throw new fValidationException('Non-unique UID. This card cannot be added to the system.');
+    }
+
+    // Random IDs are 4 bytes long and start with 0x08
+    // http://www.nxp.com/documents/application_note/AN10927.pdf
+    if(strlen($uid) === 8 && substr($uid,0,2) === "08") {
+        throw new fValidationException('ID is randomly generated and will change every time the card is used!');
+    }
+
+    if(strlen($uid) === 8 && substr($uid,0,2) === "88") {
+        throw new fValidationException('Card UID\'s can\'t start with 88');
+    }
+
+    if(strlen($uid) > 8 && substr($uid,6,8) === "88") {
+        throw new fValidationException('Can\'t have cards with long uid\'s and UID3 == 88');
+    }
+}
