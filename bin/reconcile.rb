@@ -23,6 +23,13 @@ def send_email(address, subject, text)
   mail.deliver
 end
 
+def send_lapse_warning_email(email, full_name, last_payment)
+  vars = {'name' => firstname(full_name),
+          'date' => last_payment.strftime('%Y-%m-%d')}
+  template = Erubis::Eruby.new(File.read('../emails/lapse_warning.erb'))
+  send_email(email, "Your London Hackspace membership will lapse in 7 days", template.result(vars))
+end
+
 def send_unsubscribe_email(email, full_name, last_payment)
   vars = {'name' => firstname(full_name),
           'date' => last_payment.strftime('%Y-%m-%d')}
@@ -94,6 +101,19 @@ ofx.bank_account.statement.transactions.each do |transaction|
           system("/var/www/hackspace-foundation-sites/bin/ldap-add.sh", user['ldapuser'], (user['id'] + 100000).to_s, user['ldapnthash'], user['ldapsshahash'], user['ldapshell'], user['ldapemail'])
         end
       end
+    end
+end
+
+db.exec("SELECT users.*, (SELECT max(timestamp) FROM transactions WHERE user_id = users.id) AS lastsubscription
+            FROM users
+            WHERE users.subscribed = true
+            AND (SELECT max(timestamp) FROM transactions WHERE user_id = users.id) < now() - interval '1 month' - interval '7 days'
+            AND (SELECT max(timestamp) FROM transactions WHERE user_id = users.id) > now() - interval '1 month' - interval '8 days'"
+            ) do |result|
+
+    result.each do |user|
+      puts "Warning #{user['full_name']} of membership soon to lapse"
+      send_lapse_warning_email(user['email'], user['full_name'], Time.parse(user['lastsubscription']))
     end
 end
 
