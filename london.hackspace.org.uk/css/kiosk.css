@@ -42,3 +42,11 @@ table .btn {
     font-size:25px;
     height:42px;
 }
+
+input[type=checkbox]
+{
+  /* Double-sized Checkboxes */
+  -webkit-transform: scale(2); /* Safari and Chrome */
+  transform: scale(2); /* everyone else */
+  padding: 20px;
+}
