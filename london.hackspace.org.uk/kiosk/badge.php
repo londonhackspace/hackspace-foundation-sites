@@ -1,5 +1,5 @@
 <?
-$title = 'Name Bdge Sticker';
+$title = 'Name Badge Sticker';
 require('./header.php');
 $cards = fRecordSet::build('Card', array('uid=' => $_GET['cardid']));
 if($cards->count() == 0) {
@@ -26,20 +26,22 @@ if (isset($_POST['print']) && $user->isMember()) {
         'items' => array(),
     );
 
-    if($user_profile->getAllowEmail()) { 
+    if($user_profile->getAllowEmail() && isset($_POST['email'])) {
         $data['items']['email'] = $user->getEmail();
     }
 
-    if($user_profile->getWebsite() != '') {
+    if($user_profile->getWebsite() != '' && isset($_POST['website'])) {
         $data['items']['website'] = $user_profile->getWebsite();
     }
     if($user->hasUsersAliases()) {
         foreach($user->buildUsersAliases() as $alias) {
-            $data['items'][$alias->getAliasId()] = $alias->getUsername();
-            // fix up twitter handles
-            if ($alias->getAliasId() == 'Twitter') {
-                if ($alias->getUsername()[0] != '@') {
-                    $data['items'][$alias->getAliasId()] = '@' . $alias->getUsername();
+            if (isset($_POST[$alias->getAliasId()])) {
+                $data['items'][$alias->getAliasId()] = $alias->getUsername();
+                // fix up twitter handles
+                if ($alias->getAliasId() == 'Twitter') {
+                    if ($alias->getUsername()[0] != '@') {
+                        $data['items'][$alias->getAliasId()] = '@' . $alias->getUsername();
+                    }
                 }
             }
         }
@@ -58,6 +60,17 @@ if (isset($_POST['print']) && $user->isMember()) {
     echo("<p>Your sticker is being printed now.</p>");
 }
 
+function is_checked($thing)
+{
+    if (isset($_POST['print'])) {
+        if (isset($_POST[$thing])) {
+            return "checked";
+        }
+        return "";
+    }
+    return "checked";
+}
+
 ?>
 
 <? if($user->isMember()) { ?>
@@ -72,15 +85,15 @@ if (isset($_POST['print']) && $user->isMember()) {
     <tr><th>Your name:</th><td><?=$user->getFull_Name()?></td></tr>
 
     <? if($user_profile->getAllowEmail()) { ?>
-    <tr><th>Your email:</th><td><?=$user->getEmail()?></td></tr>
+    <tr><th><label><input type="checkbox" <?=is_checked("email")?> name="email"> Your email:</label></th><td><?=$user->getEmail()?></td></tr>
     <? } ?>
 
     <? if($user_profile->getWebsite() != '') { ?>
-    <tr><th>Your website:</th><td><?=$user_profile->getWebsite() ?></td></tr>
+    <tr><th><label><input type="checkbox" <?=is_checked("website")?> name="website"> Your website:</label></th><td><?=$user_profile->getWebsite() ?></td></tr>
     <? } ?>
     <? if($user->hasUsersAliases()) {?>
     <? foreach($user->buildUsersAliases() as $alias) {?>
-        <tr><th><?=$alias->getAliasId()?>:</th><td><?=$alias->getUsername()?></td></tr>
+        <tr><th><label><input type="checkbox" <?=is_checked($alias->getAliasId())?> name="<?=$alias->getAliasId()?>" id="<?=$alias->getAliasId()?>"> <?=$alias->getAliasId()?>:</label></th><td><?=$alias->getUsername()?></td></tr>
     <? } ?>
     <? } ?>
 
