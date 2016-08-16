@@ -1,7 +1,7 @@
 <?php
 /* A temporary bridge (in the style of Eitaibashi) to allow for migration to Python */
 
-$root = $_SERVER['DOCUMENT_ROOT'] . '../';
+$root = $_SERVER['DOCUMENT_ROOT'] . '/../';
 
 // Load flourish
 require_once($root . 'lib/config.php');
