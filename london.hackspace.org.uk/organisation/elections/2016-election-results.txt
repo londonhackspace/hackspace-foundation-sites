@@ -1,0 +1,70 @@
+OpenSTV version 1.6.1 (http://www.OpenSTV.org/)
+
+Suggested donation for using OpenSTV for an election is $50.  Please go to 
+http://www.OpenSTV.org/donate to donate via PayPal, Google Checkout, or
+Amazon Payments.  
+
+Certified election reports are also available.  Please go to 
+http://www.openstv.org/certified-reports for more information.
+
+Loading ballots from file 2016-election-ballots.blt.
+Ballot file contains 11 candidates and 318 ballots.
+Removed withdrawn candidate 0 from the ballots.
+Ballot file contains 318 non-empty ballots.
+
+Counting votes for Trustee using Meek STV.
+10 candidates running for 3 seats.
+
+ R|Brian Cox    |Timour Chomil|Thomas Greer |Blanca Regina|Philip Roy   |Henry Sands  |Mat Stace    
+  |             |ier          |             |             |             |             |             
+  |-------------+-------------+-------------+-------------+-------------+-------------+-------------
+  |Jan Szumiec  |Simon Vans-Co|NO FURTHER PL|Exhausted    |Surplus      |Threshold    
+  |             |lina         |ACES         |             |             |             
+====================================================================================================
+ 1|    41.000000|    28.000000|    30.000000|    71.000000|    59.000000|    39.000000|    13.000000
+  |    19.000000|    14.000000|     4.000000|     0.000000|     0.000000|    79.500001
+  |-------------------------------------------------------------------------------------------------
+  | Count of first choices.
+====================================================================================================
+ 2|    41.000000|    28.000000|    30.000000|    73.000000|    60.000000|    40.000000|    13.000000
+  |    19.000000|    14.000000|             |     0.000000|     0.000000|    79.500001
+  |-------------------------------------------------------------------------------------------------
+  | Count after eliminating NO FURTHER PLACES and transferring votes. All losing candidates are
+  | eliminated.
+====================================================================================================
+ 3|    42.000000|    31.000000|    30.000000|    75.000000|    63.000000|    43.000000|             
+  |    20.000000|    14.000000|             |     0.000000|     0.000000|    79.500001
+  |-------------------------------------------------------------------------------------------------
+  | Count after eliminating Mat Stace and transferring votes. All losing candidates are eliminated.
+====================================================================================================
+ 4|    42.000000|    34.000000|    31.000000|    79.000000|    65.000000|    45.000000|             
+  |    22.000000|             |             |     0.000000|     0.000000|    79.500001
+  |-------------------------------------------------------------------------------------------------
+  | Count after eliminating Simon Vans-Colina and transferring votes. All losing candidates are
+  | eliminated.
+====================================================================================================
+ 5|    43.000000|    36.000000|    33.000000|    84.000000|    71.000000|    51.000000|             
+  |             |             |             |     0.000000|     4.499999|    79.500001
+  |-------------------------------------------------------------------------------------------------
+  | Count after eliminating Jan Szumiec and transferring votes. All losing candidates are
+  | eliminated. Candidate Blanca Regina has reached the threshold and is elected.
+====================================================================================================
+ 6|    43.589281|    36.910707|    33.214284|    79.500036|    72.499988|    52.285704|             
+  |             |             |             |     0.000000|     0.000035|    79.500001
+  |-------------------------------------------------------------------------------------------------
+  | Count after transferring surplus votes. Keep factors of candidates who have exceeded the
+  | threshold: Blanca Regina, 0.946429.
+====================================================================================================
+ 7|    48.642852|    44.910707|             |    80.446465|    78.607130|    65.392846|             
+  |             |             |             |     0.000000|     0.946464|    79.500001
+  |-------------------------------------------------------------------------------------------------
+  | Count after eliminating Thomas Greer and transferring votes. All losing candidates are
+  | eliminated.
+====================================================================================================
+ 8|    50.964278|             |             |    92.750042|    92.142840|    82.142840|             
+  |             |             |             |     0.000000|    28.535719|    79.500001
+  |-------------------------------------------------------------------------------------------------
+  | Count after eliminating Timour Chomilier and transferring votes. All losing candidates are
+  | eliminated. Candidates Philip Roy and Henry Sands have reached the threshold and are elected.
+
+Winners are Blanca Regina, Philip Roy, and Henry Sands.
