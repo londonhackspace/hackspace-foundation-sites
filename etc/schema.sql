@@ -226,7 +226,7 @@ CREATE TABLE proxy_votes (
     election TEXT NOT NULL
 );
 
-CREATE TABLE meeting_attendance (
+CREATE TABLE meeting_attendees (
     user_id INTEGER NOT NULL REFERENCES users(id),
     meeting TEXT NOT NULL
 );
