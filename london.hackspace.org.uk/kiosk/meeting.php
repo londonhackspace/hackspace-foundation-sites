@@ -3,16 +3,11 @@ $title = 'Meeting Attendance';
 $meeting = 'egm2016';
 $suppress_card_input = true;
 require('./header.php');
-$cards = fRecordSet::build('Card', array('uid=' => $_GET['cardid']));
-if($cards->count() == 0) {
-    fURL::redirect("/kiosk/addcard.php?cardid=" . $_GET['cardid']);
-}
-$card = $cards->getRecord(0);
-$user = new User($card->getUserId());
-$user->load();
+
+ensureKioskUser();
 
 if($user->getId() != 1) {
-    fURL::redirect("/kiosk/index.php");
+    fURL::redirect("/kiosk/");
 }
 
 ?>

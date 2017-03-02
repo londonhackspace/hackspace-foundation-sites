@@ -1,12 +1,12 @@
 </div></div>
 
-<? if (isset($_GET['cardid'])) { ?>
-
+<? if (isset($cardid)) { ?>
 <div class="footer">
   <div class="container-fluid btn-group">
+    <? /* Navigation is disabled so this doesn't leak data */ ?>
     <a href="/kiosk/" class="btn btn-warning">Log Out</a>
     <? if(!isset($page) || $page != 'main') { ?>
-        <a href="/kiosk/card.php?cardid=<?=$_GET['cardid']?>" class="btn btn-default">Back</a>
+        <a href="/kiosk/card.php?cardid=<?=$cardid?>" class="btn btn-default">Back</a>
     <? } ?>
   </div>
 </div>
@@ -23,7 +23,7 @@
     $(document).idle({
         onIdle: function() {
             console.log("Idle");
-            window.location = "/kiosk";
+            window.location = "/kiosk/";
         },
         timeout: 30000
     });

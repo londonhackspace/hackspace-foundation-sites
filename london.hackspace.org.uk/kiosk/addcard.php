@@ -11,22 +11,8 @@ if (isset($_POST['submit'])) {
 
         $validator->validate();
 
-        $uid = strtoupper($_POST['uid']);
-        validateCardUID($uid);
-
-        // Random IDs are 4 bytes long and start with 0x08
-        // http://www.nxp.com/documents/application_note/AN10927.pdf
-        if(strlen($uid) === 8 && substr($uid,0,2) === "08") {
-            throw new fValidationException('ID is randomly generated and will change every time the card is used!');
-        }
-
-        if(strlen($uid) === 8 && substr($uid,0,2) === "88") {
-            throw new fValidationException('Card UID\'s can\'t start with 88');
-        }
-
-        if(strlen($uid) > 8 && substr($uid,6,8) === "88") {
-            throw new fValidationException('Can\'t have cards with long uid\'s and UID3 == 88');
-        }
+        $uid = sanitiseCardUID($_POST['uid']);
+        validateCardUIDUsable($uid);
 
         $users = fRecordSet::build('User', array('email=' => strtolower($_POST['email'])));
         if ($users->count() == 0) {
@@ -73,6 +59,7 @@ if (isset($_POST['submit'])) {
     <div class="form-group">
         <input type="submit" name="submit" class="btn btn-default" value="Add card">
     </div>
+    <?php /* This is a landing page so cardid isn't validated at this point */ ?>
     <input type="hidden" name="uid" value="<?=htmlentities($_GET['cardid'])?>">
 </form>
 

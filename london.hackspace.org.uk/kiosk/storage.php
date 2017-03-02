@@ -1,13 +1,8 @@
 <?
 $title = 'Project Storage';
 require('./header.php');
-$cards = fRecordSet::build('Card', array('uid=' => $_GET['cardid']));
-if($cards->count() == 0) {
-    fURL::redirect("/kiosk/addcard.php?cardid=" . $_GET['cardid']);
-}
-$card = $cards->getRecord(0);
-$user = new User($card->getUserId());
-$user->load();
+
+ensureKioskUser();
 
 if (isset($_POST['print'])) {
     $project = new Project($_POST['print']);

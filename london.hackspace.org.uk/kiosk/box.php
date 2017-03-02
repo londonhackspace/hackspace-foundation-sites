@@ -1,13 +1,8 @@
 <?
 $title = 'Member Box Sticker';
 require('./header.php');
-$cards = fRecordSet::build('Card', array('uid=' => $_GET['cardid']));
-if($cards->count() == 0) {
-    fURL::redirect("/kiosk/addcard.php?cardid=" . $_GET['cardid']);
-}
-$card = $cards->getRecord(0);
-$user = new User($card->getUserId());
-$user->load();
+
+ensureKioskUser();
 
 if (isset($_POST['print']) && $user->isMember()) {
     $data = array(
@@ -40,7 +35,7 @@ if (isset($_POST['print']) && $user->isMember()) {
 <tbody>
     <tr><th>Your membership ID:</th><td><?=$user->getId()?></td></tr>
     <tr><th>Your name:</th><td><?=$user->getFull_Name()?></td></tr>
-    <tr><td colspan="2">... and a qr code with a link to your profile page.</td></tr>
+    <tr><td colspan="2">... and a QR code with a link to your profile page.</td></tr>
     <tr><td><button name="print" value="<?=$user->getId()?>" class="btn btn-primary">Print Sticker</button></td></tr>
 </tbody>
 </table>

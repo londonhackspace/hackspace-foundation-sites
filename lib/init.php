@@ -55,8 +55,35 @@ function send404($message) {
   exit;
 }
 
+function ensureKioskUser() {
+    global $user;
+    global $cardid;
+
+    if (!isset($_GET['cardid'])) {
+        fURL::redirect("/kiosk/");
+    }
+    $cardid = sanitiseCardUID($_GET['cardid']);
+    $cards = fRecordSet::build('Card', array('uid=' => $cardid));
+    if ($cards->count() == 0) {
+        # $cardid has not been validated at this point
+        fURL::redirect("/kiosk/addcard.php?cardid=" . $cardid);
+    }
+    $card = $cards->getRecord(0);
+    if (!$card->getActive()) {
+        fURL::redirect("/kiosk/inactive.php");
+    }
+    $user = new User($card->getUserId());
+    $user->load();
+}
+
+function sanitiseCardUID($uid) {
+    $uid = strtoupper($uid);
+    $uid = preg_replace('/[^0-9A-Z]+/', '', $uid);
+    return $uid;
+}
+
 // Throw an exception if the card UID is invalid
-function validateCardUID($uid) {
+function validateCardUIDUsable($uid) {
     if ($uid == '21222324' || $uid == '01020304') {
         /* Some Visa cards issued around 2013 return 21222324, presumably for privacy.
          * Android phones always return 01020304. */

@@ -2,14 +2,8 @@
 $title = 'Membership Management';
 $page = 'main';
 require('./header.php');
-$cardid = strtoupper($_GET['cardid']);
-$cards = fRecordSet::build('Card', array('uid=' => $cardid));
-if($cards->count() == 0) {
-    fURL::redirect("/kiosk/addcard.php?cardid=" . $cardid);
-}
-$card = $cards->getRecord(0);
-$user = new User($card->getUserId());
-$user->load();
+
+ensureKioskUser();
 
 if ($user->isMember()) {
     $result = fRecordSet::build(

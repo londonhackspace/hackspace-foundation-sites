@@ -19,7 +19,7 @@ if (isset($_POST['submit'])) {
         $validator->validate();
 
         $uid = strtoupper($_POST['uid']);
-        validateCardUID($uid);
+        validateCardUIDUsable($uid);
 
         $card = new Card();
         $card->setUserId($user->getId());
