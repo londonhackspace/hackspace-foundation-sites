@@ -78,7 +78,7 @@ function ensureKioskUser() {
 
 function sanitiseCardUID($uid) {
     $uid = strtoupper($uid);
-    $uid = preg_replace('/[^0-9A-Z]+/', '', $uid);
+    $uid = preg_replace('/[^0-9A-F]+/', '', $uid);
     return $uid;
 }
 
