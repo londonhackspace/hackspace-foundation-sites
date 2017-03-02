@@ -13,11 +13,10 @@ irc:
 email:
 the web:
 
-
 */
 if (isset($_POST['print']) && $user->isMember()) {
     $data = array(
-        'name' => $user->getFull_Name(),
+        'name' => $user->getFullName(),
         'items' => array(),
     );
 
@@ -77,19 +76,19 @@ function is_checked($thing)
 <form method="post">
 <table class="table">
 <tbody>
-    <tr><th>Your name:</th><td><?=$user->getFull_Name()?></td></tr>
+    <tr><th>Your name:</th><td><?=htmlspecialchars($user->getFullName())?></td></tr>
 
     <? if($user_profile->getAllowEmail()) { ?>
     <!-- <input type="checkbox" id="checkbox-2-1" class="regular-checkbox big-checkbox" /><label for="checkbox-2-1"></label> -->
-    <tr><th><input type="checkbox" <?=is_checked("email")?> name="email" id="email" class="regular-checkbox big-checkbox" /><label for="email"></label> Your email:</th><td><?=$user->getEmail()?></td></tr>
+    <tr><th><input type="checkbox" <?=is_checked("email")?> name="email" id="email" class="regular-checkbox big-checkbox" /><label for="email"></label> Your email:</th><td><?=htmlspecialchars($user->getEmail()) ?></td></tr>
     <? } ?>
 
     <? if($user_profile->getWebsite() != '') { ?>
-    <tr><th><input type="checkbox" <?=is_checked("website")?> name="website" id="website" class="regular-checkbox big-checkbox" /><label for="website"></label> Your website:</th><td><?=$user_profile->getWebsite() ?></td></tr>
+    <tr><th><input type="checkbox" <?=is_checked("website")?> name="website" id="website" class="regular-checkbox big-checkbox" /><label for="website"></label> Your website:</th><td><?=htmlspecialchars($user_profile->getWebsite()) ?></td></tr>
     <? } ?>
     <? if($user->hasUsersAliases()) {?>
     <? foreach($user->buildUsersAliases() as $alias) {?>
-        <tr><th><input type="checkbox" <?=is_checked($alias->getAliasId())?> name="<?=$alias->getAliasId()?>" id="<?=$alias->getAliasId()?>" class="regular-checkbox big-checkbox" /><label for="<?=$alias->getAliasId()?>"></label> <?=$alias->getAliasId()?>:</th><td><?=$alias->getUsername()?></td></tr>
+        <tr><th><input type="checkbox" <?=is_checked($alias->getAliasId())?> name="<?=$alias->getAliasId()?>" id="<?=$alias->getAliasId()?>" class="regular-checkbox big-checkbox" /><label for="<?=$alias->getAliasId()?>"></label> <?=$alias->getAliasId()?>:</th><td><?=htmlspecialchars($alias->getUsername()) ?></td></tr>
     <? } ?>
     <? } ?>
 

@@ -48,7 +48,7 @@ $projects = fRecordSet::build('Project', array('state_id!='=>array('6','7'), 'us
 <tbody>
 <? foreach($projects as $project) { ?>
     <tr>
-    <th><?=$project->prepareName() ?></th>
+    <th><?=htmlspecialchars($project->getName()) ?></th>
     <td><?=$project->getState()?></td>
     <td><? if ($project->getStateId() == 2 or $project->getStateId() == 4) {?>
             <button name="print" value="<?=$project->getId()?>" class="btn btn-primary">

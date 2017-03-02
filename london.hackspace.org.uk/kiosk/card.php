@@ -34,12 +34,12 @@ if ($user->isMember()) {
 <? if ($user->isMember()) {
 ?>
 <div class="alert alert-success" role="alert">
-    <strong>Welcome, <?=$user->prepareFullName()?></strong>.
+    <strong>Welcome, <?=htmlspecialchars($user->getFullName())?></strong>.
     You are a member of London Hackspace.
 </div>
 <? } else { ?>
 <div class="alert alert-warning" role="alert">
-    Hi, <?=$user->prepareFullName()?>.
+    Hi, <?=htmlspecialchars($user->getFullName())?>.
     <strong>You are not currently a member of London Hackspace</strong>.
 </div>
 <? } ?>

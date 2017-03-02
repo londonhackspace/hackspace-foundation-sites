@@ -18,7 +18,7 @@ if (isset($_POST['print']) && $user->isMember()) {
 
         $data = array(
             'donor_id' => $user->getId(),
-            'donor_name' => $user->getFull_Name(),
+            'donor_name' => $user->getFullName(),
             'donor_email' => $user->getEmail(),
             'dispose_date' => date('Y-m-d', strtotime("+2 weeks")),
             'more_info' => $_POST['more_info']
@@ -51,10 +51,10 @@ if (isset($_POST['print']) && $user->isMember()) {
 <form method="post" class="form-horizontal" role="form">
 <input type="hidden" name="token" value="<?=fRequest::generateCSRFToken()?>" />
 <div class="form-group">
-    <label class="col-sm-3 control-label">Your name:</label><div class="col-sm-9"><p class="help-block"><?=$user->getFull_Name()?></p></div>
+    <label class="col-sm-3 control-label">Your name:</label><div class="col-sm-9"><p class="help-block"><?=htmlspecialchars($user->getFullName())?></p></div>
 </div>
 <div class="form-group">
-    <label class="col-sm-3 control-label">Your email:</label><div class="col-sm-9"><p class="help-block"><?=$user->getEmail()?></p></div>
+    <label class="col-sm-3 control-label">Your email:</label><div class="col-sm-9"><p class="help-block"><?=htmlspecialchars($user->getEmail())?></p></div>
 </div>
 <div class="form-group">
     <label class="col-sm-3 control-label">Disposal date</label>

@@ -10,7 +10,7 @@ if (isset($_POST['print']) && $user->isMember()) {
     fRequest::validateCSRFToken($_POST['token']);
     $data = array(
         'id' => $user->getId(),
-        'name' => $user->getFull_Name(),
+        'name' => $user->getFullName(),
         'email' => $user->getEmail()
     );
     $data_string = json_encode($data);
@@ -38,10 +38,10 @@ if (isset($_POST['print']) && $user->isMember()) {
 <form method="post" class="form-horizontal" role="form">
 <input type="hidden" name="token" value="<?=fRequest::generateCSRFToken()?>" />
 <div class="form-group">
-    <label class="col-sm-3 control-label">Your name:</label><div class="col-sm-9"><p class="help-block"><?=$user->getFull_Name()?></p></div>
+    <label class="col-sm-3 control-label">Your name:</label><div class="col-sm-9"><p class="help-block"><?=htmlspecialchars($user->getFullName())?></p></div>
 </div>
 <div class="form-group">
-    <label class="col-sm-3 control-label">Your email:</label><div class="col-sm-9"><p class="help-block"><?=$user->getEmail()?></p></div>
+    <label class="col-sm-3 control-label">Your email:</label><div class="col-sm-9"><p class="help-block"><?=htmlspecialchars($user->getEmail())?></p></div>
 </div>
 <div class="form-group">
     <label class="col-sm-3 control-label">The date the sticker was printed:</label>

@@ -37,7 +37,7 @@ if (isset($_POST['attendance_card'])) {
                 $db->execute("INSERT INTO meeting_attendees (user_id, meeting) VALUES (%s, %s)",
                     $attending_user->getId(), $meeting);
                 ?>
-        <div class="alert alert-success" role="alert">Welcome, <?=$attending_user->prepareFullName() ?>.
+        <div class="alert alert-success" role="alert">Welcome, <?=htmlspecialchars($attending_user->getFullName()) ?>.
           Your attendance has been registered.</div>
     <?
             } else {

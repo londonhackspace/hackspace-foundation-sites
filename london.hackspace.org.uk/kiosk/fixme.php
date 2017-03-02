@@ -16,7 +16,7 @@ if (isset($_POST['print']) && $user->isMember()) {
         $data = array(
             'name' => $_POST['name'],
             'reporter_id' => $user->getId(),
-            'reporter_name' => $user->getFull_Name(),
+            'reporter_name' => $user->getFullName(),
             'reporter_email' => $user->getEmail(),
             'more_info' => $_POST['more_info']
         );
@@ -48,10 +48,10 @@ if (isset($_POST['print']) && $user->isMember()) {
 <form method="post" class="form-horizontal" role="form">
 <input type="hidden" name="token" value="<?=fRequest::generateCSRFToken()?>" />
 <div class="form-group">
-    <label class="col-sm-3 control-label">Your name:</label><div class="col-sm-9"><p class="help-block"><?=$user->getFull_Name()?></p></div>
+    <label class="col-sm-3 control-label">Your name:</label><div class="col-sm-9"><p class="help-block"><?=htmlspecialchars($user->getFullName())?></p></div>
 </div>
 <div class="form-group">
-    <label class="col-sm-3 control-label">Your email:</label><div class="col-sm-9"><p class="help-block"><?=$user->getEmail()?></p></div>
+    <label class="col-sm-3 control-label">Your email:</label><div class="col-sm-9"><p class="help-block"><?=htmlspecialchars($user->getEmail())?></p></div>
 </div>
 <div class="form-group">
     <label for="name" class="col-sm-3 control-label">Name</label>
