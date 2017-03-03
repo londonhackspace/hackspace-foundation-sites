@@ -274,7 +274,7 @@ if (isset($_GET['saved'])) {
 		        		<h5><?=$interest->getCategory() ?></h5>
 				    <? } ?>
 						<div class="checkbox restyle">
-							<label <? if($selected) { echo 'class="selected"'; } ?>><input type="checkbox" <? if($selected) { echo 'checked="checked"'; } ?> name="interests[<?=$interest->getInterestId() ?>]" id="trained[<?=$interest->getInterestId() ?>]"> <?=$interest->getName() ?></label>
+							<label <? if($selected) { echo 'class="selected"'; } ?>><input type="checkbox" <? if($selected) { echo 'checked="checked"'; } ?> name="interests[<?=$interest->getInterestId() ?>]" id="trained[<?=$interest->getInterestId() ?>]"> <?=htmlspecialchars($interest->getName()) ?></label>
 						</div>
 					<? $interest_count++; ?>
 		        <? } ?>
@@ -283,7 +283,7 @@ if (isset($_GET['saved'])) {
       		<strong>Other interests</strong><br/>
       		<small>Comma separated list</small><br/>
       		<div class="other-interests-container">
-	        <input type="text" id="other_interests" name="other_interests" class="form-control" value="<? foreach($my_interests as $interest) { if($interest->getCategory() == 'Other') { echo $interest->getName().','; } } ?>" />
+	        <input type="text" id="other_interests" name="other_interests" class="form-control" value="<? foreach($my_interests as $interest) { if($interest->getCategory() == 'Other') { echo htmlspecialchars($interest->getName()).','; } } ?>" />
 			</div>
 	    </div>	
 	    <div class="form-group">
@@ -348,7 +348,8 @@ var other_interests = [<?
 		if($count != 0)
 			echo ',';
 
-		echo "\n'".$other->getName()."'";
+    # FIXME: use JSON. We're currently relying on there being no close-script tags in the DB.
+    echo "\n'".str_replace("'", "\\'", stripslashes($other->getName()))."'";
 		$count++;
 	}
 ?>];

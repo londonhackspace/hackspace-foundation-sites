@@ -66,7 +66,7 @@ foreach( $query as $interest ) {
 		if(is_numeric($td))
 			echo "<td class=\"number\">$td</td>";
 		else
-			echo "<td>$td</td>";
+			echo "<td>" . htmlspecialchars($td) . "</td>";
 	}
 	echo '</tr>';
 }
@@ -85,7 +85,8 @@ foreach( $query as $interest ) {
 <?
 foreach( $query as $interest ) {
 	echo "\t[";
-	echo '\''.$interest['name'].'\','.((int)$interest['total']/(int)$total*100);
+  # FIXME: use JSON. We're currently relying on there being no close-script tags in the DB.
+	echo '\''.str_replace("'", "\\'", stripslashes($interest['name'])).'\','.((int)$interest['total']/(int)$total*100);
 	echo "],\n";
 }
 ?>
