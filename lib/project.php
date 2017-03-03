@@ -45,7 +45,7 @@ class Project extends fActiveRecord {
 	public function outputLocation() {
 		$location = new Location($this->getLocationId());
 		$output = 'in the '.strtolower($location->getName());
-		$output .= ' ('.$this->getLocation().')';
+		$output .= ' ('.htmlspecialchars($this->getLocation()).')';
 		return $output;
 	}
 
@@ -63,7 +63,7 @@ class Project extends fActiveRecord {
 		$projectUser = new User($this->getUserId());
 		$from = new DateTime($this->getFromDate());
 		$toEmail = $PROJECT_MAILING_LIST . '@googlegroups.com';
-		$subject = 'Storage Request #'.$this->getId().': '.$this->getName().' by '.htmlspecialchars($projectUser->getFullName());
+		$subject = 'Storage Request #'.$this->getId().': '.$this->getName().' by '.$projectUser->getFullName();
 		$headers = 'From: no-reply@london.hackspace.org.uk' . "\r\n" .
 			'Reply-To: no-reply@london.hackspace.org.uk' . "\r\n" .
 			'Content-Type:text/html;charset=utf-8' . "\r\n" .

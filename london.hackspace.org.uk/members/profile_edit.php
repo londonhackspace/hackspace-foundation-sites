@@ -43,11 +43,11 @@ if (isset($_POST['submit'])) {
 		if(isset($_POST['website'])) {
 			if($_POST['website'] == 'http://')
 				$_POST['website'] = '';
-			$user_profile->setWebsite(filter_var($_POST['website'], FILTER_SANITIZE_STRING));
+			$user_profile->setWebsite(filter_var($_POST['website'], FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES));
 		}
 
 		if(isset($_POST['description']))
-			$user_profile->setDescription(filter_var($_POST['description'], FILTER_SANITIZE_STRING));
+			$user_profile->setDescription(filter_var($_POST['description'], FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES));
 
 		if(isset($_POST['photo-upload']) && $_POST['photo-upload'] != '' && $_POST['photo-upload'] != null) {
 			$filename = $user->getId() . '_' . str_replace(' ', '_', $user->getFullName());
@@ -78,7 +78,7 @@ if (isset($_POST['submit'])) {
 		if(isset($_POST['aliases'])) {
 			foreach($_POST['aliases'] as $key=>$val) {
 				if($val && $val != null && $val != '')
-					$list[filter_var($key, FILTER_SANITIZE_STRING)] = filter_var($val, FILTER_SANITIZE_STRING);
+					$list[filter_var($key, FILTER_SANITIZE_STRING)] = filter_var($val, FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES);
 			}
 		}
 		$user->setAliases($list);
@@ -97,7 +97,7 @@ if (isset($_POST['submit'])) {
         );
 		if(isset($_POST['other_interests'])) {
 			foreach(explode(',',$_POST['other_interests']) as $val) {
-				$search = filter_var(trim($val), FILTER_SANITIZE_STRING);
+				$search = filter_var(trim($val), FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES);
 				if($search != '') {
 					$key = null;
 					foreach($all_interests as $check) {
@@ -196,7 +196,7 @@ if (isset($_GET['saved'])) {
 		</div>
 	    <div class="form-group personal-site">
 	        <label for="website">Website</label>
-	        <input type="text" id="website" name="website" class="form-control" value="<? if($user_profile->getWebsite()) { echo $user_profile->getWebsite(); } else { echo 'http://'; } ?>" />
+	        <input type="text" id="website" name="website" class="form-control" value="<? if($user_profile->getWebsite()) { echo htmlspecialchars($user_profile->getWebsite()); } else { echo 'http://'; } ?>" />
 	    </div>    
 
 
@@ -208,7 +208,7 @@ if (isset($_GET['saved'])) {
 			foreach($my_aliases as $my_alias) { 
 			?>
 				<div class="input-group alias-field">
-					<input type="text" class="form-control" name="aliases[<?=$my_alias->getAliasId();?>]" value="<?=$my_alias->getUsername();?>">
+					<input type="text" class="form-control" name="aliases[<?=$my_alias->getAliasId();?>]" value="<?=htmlspecialchars($my_alias->getUsername());?>">
 					<div class="input-group-btn">
 				        <? if (ctype_digit($my_alias->getAliasId())) { ?>
 				        <button type="button" class="btn btn-default dropdown-toggle no-icon" data-toggle="dropdown">Other <span class="caret"></span></button>
@@ -251,7 +251,7 @@ if (isset($_GET['saved'])) {
 	    <div class="form-group">
 	        <strong>Projects I'm working on</strong><br/>
 	        <small>The most commonly asked question in the hackspace. What are you doing? Keep it short and sweet.</small>
-	        <textarea id="description" name="description" class="form-control" rows="3"><?=stripslashes($user_profile->getDescription())?></textarea>
+	        <textarea id="description" name="description" class="form-control" rows="3"><?=htmlspecialchars($user_profile->getDescription())?></textarea>
 	    </div>
 
 	    <div class="form-group interests">

@@ -22,7 +22,7 @@ $projects = fRecordSet::build('Project',array('state_id!='=>array('6','7')), arr
         }
         ?>
         <div class="status list small <?= strtolower($project->getState()); ?>"><?= $project->getState(); ?> <?if($project->getState() == 'Extended') { ?>(<?=$project->getExtensionDuration()?> days)<? } ?></div>
-        <a href="/storage/<?=$project->getId()?>"><?=$project->getName()?></a><br/>
+        <a href="/storage/<?=$project->getId()?>"><?=htmlspecialchars($project->getName())?></a><br/>
         <?
     }
 
@@ -33,7 +33,7 @@ $projects = fRecordSet::build('Project',array('state_id='=>array('6','7')), arra
 
 <? foreach($projects as $project) { ?>
         <div class="status list small <?= strtolower($project->getState()); ?>"><?= $project->getState(); ?></div>
-        <a href="/storage/<?=$project->getId()?>"><?=$project->getName()?></a><br/>
+        <a href="/storage/<?=$project->getId()?>"><?=htmlspecialchars($project->getName())?></a><br/>
 <? }
 
 require('../footer.php'); ?>
