@@ -143,7 +143,7 @@ if (isset($_POST['token'])) {
             <div class="form-group location-fields">
                 <label class="col-sm-3 control-label">Contact</label>
                 <div class="col-sm-9">
-                    <input type="email" id="contact" name="contact" placeholder="Email address" class="form-control" value="<? if($_POST && $_POST['contact']) { echo htmlspecialchars($_POST['contact']; } else if($project->getContact()) { echo $project->getContact(); }?>"/> or <?=$user->getEmail();?> (if left blank)
+                    <input type="email" id="contact" name="contact" placeholder="Email address" class="form-control" value="<? if($_POST && $_POST['contact']) { echo htmlspecialchars($_POST['contact']); } else if($project->getContact()) { echo $project->getContact(); }?>"/> or <?=$user->getEmail();?> (if left blank)
                     <p class="help-block">Your email address (above) will be made available to all members in case there's a problem with your project while it's being stored in the space.</p>
                 </div>
             </div>
