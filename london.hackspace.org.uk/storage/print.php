@@ -38,7 +38,7 @@ if($project->getState() != 'Approved') {
 <div class="print">
 	<div id="qrcode"></div>
 	<h1>DO NOT HACK</h1>
-	<h1><?=htmlspecialchars($project->getName()?>)</h1>
+	<h1><?=htmlspecialchars($project->getName())?></h1>
 	<h3><?=htmlspecialchars($projectUser->getFullName())?></h3>
 	<h3><? if($project->getContact()) echo $project->getContact(); else echo $projectUser->getEmail()?></h3>
 	<br/>
