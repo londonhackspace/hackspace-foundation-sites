@@ -88,6 +88,9 @@ function validateCardUIDUsable($uid) {
         /* Some Visa cards issued around 2013 return 21222324, presumably for privacy.
          * Android phones always return 01020304. */
         throw new fValidationException('Non-unique UID. This card cannot be added to the system.');
+    } else if (preg_match('/^0+$/', $uid)) {
+        /* Some AMEX cards return only zeroes. */
+        throw new fValidationException('Non-unique UID. This card cannot be added to the system.');
     }
 
     // Random IDs are 4 bytes long and start with 0x08
