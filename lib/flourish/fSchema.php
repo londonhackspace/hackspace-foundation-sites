@@ -2795,7 +2795,7 @@ class fSchema
 						FROM
 							 pg_tables
 						WHERE
-							 tablename !~ '^(pg|sql)_'
+							 tablename in (select tablename from flourish_tables)
 						ORDER BY
 							LOWER(tablename)";
 				break;
