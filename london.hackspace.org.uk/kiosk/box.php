@@ -1,18 +1,13 @@
 <?
 $title = 'Member Box Sticker';
 require('./header.php');
-$cards = fRecordSet::build('Card', array('uid=' => $_GET['cardid']));
-if($cards->count() == 0) {
-    fURL::redirect("/kiosk/addcard.php?cardid=" . $_GET['cardid']);
-}
-$card = $cards->getRecord(0);
-$user = new User($card->getUserId());
-$user->load();
+
+ensureKioskUser();
 
 if (isset($_POST['print']) && $user->isMember()) {
     $data = array(
         'owner_id' => $user->getId(),
-        'owner_name' => $user->getFull_Name(),
+        'owner_name' => $user->getFullName(),
     );
     $data_string = json_encode($data);
     $ch = curl_init('http://kiosk.london.hackspace.org.uk:12345/print/box');
@@ -39,8 +34,8 @@ if (isset($_POST['print']) && $user->isMember()) {
 <table class="table">
 <tbody>
     <tr><th>Your membership ID:</th><td><?=$user->getId()?></td></tr>
-    <tr><th>Your name:</th><td><?=$user->getFull_Name()?></td></tr>
-    <tr><td colspan="2">... and a qr code with a link to your profile page.</td></tr>
+    <tr><th>Your name:</th><td><?=htmlspecialchars($user->getFullName())?></td></tr>
+    <tr><td colspan="2">... and a QR code with a link to your profile page.</td></tr>
     <tr><td><button name="print" value="<?=$user->getId()?>" class="btn btn-primary">Print Sticker</button></td></tr>
 </tbody>
 </table>

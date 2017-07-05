@@ -1,6 +1,27 @@
 #!/bin/sh
 
 # username uid nthash sshahash shell email
+for i in "$@"; do
+  if printf "%s" "$i"|grep -q '^-'; then
+    echo "Unsafe argument $i"
+    exit 1
+  fi
+done
+
+uid=$2
+
+#
+# LHS uid's start at 100000
+#
+if [ "$uid" -eq "$uid" ]; then
+  if [ "$uid" -lt 100000 ]; then
+    logger -p auth.crit "attempt to add low uid: $uid: $1 $6"
+    exit 1
+  fi
+else
+  echo "Not a number: $uid"
+  exit 1
+fi
 
 /usr/sbin/smbldap-usershow "$1" > /dev/null
 

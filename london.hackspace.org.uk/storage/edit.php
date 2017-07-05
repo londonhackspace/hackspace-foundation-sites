@@ -6,7 +6,7 @@ require( '../header.php' );
 ensureMember();
 
 if(isset($_GET['id'])) {
-    $project = new Project(filter_var($_GET['id'], FILTER_SANITIZE_STRING));
+    $project = new Project(filter_var($_GET['id'], FILTER_SANITIZE_NUMBER_INT));
 
     if($user->getId() != $project->getUserId() || ($project->getState() != 'Unapproved' && $project->getState() != 'Pending Approval'))
         fURL::redirect("/storage/{$project->getId()}");
@@ -25,7 +25,7 @@ $maxStorageMonths = 6;
 if (isset($_POST['token'])) {
     try {
         fRequest::validateCSRFToken($_POST['token']);
-        $identicalNames = fRecordSet::build('Project',array('user_id='=>$user->getId(),'name='=>array(filter_var($_POST['name'], FILTER_SANITIZE_STRING))), array('name' => 'asc'));
+        $identicalNames = fRecordSet::build('Project',array('user_id='=>$user->getId(),'name='=>array(filter_var($_POST['name'], FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES))), array('name' => 'asc'));
 
         if(!isset($_POST['name']) || $_POST['name'] == '')
             throw new fValidationException('Name field is required.');
@@ -62,15 +62,15 @@ if (isset($_POST['token'])) {
         if(strtotime($_POST['to_date']) > strtotime("+$maxStorageMonths months", strtotime($_POST['from_date'])))
             throw new fValidationException('Removal date must be 6 months after arrival.');
 
-        $project->setName(filter_var($_POST['name'], FILTER_SANITIZE_STRING));
-        $project->setDescription(filter_var($_POST['description'], FILTER_SANITIZE_STRING));
+        $project->setName(filter_var($_POST['name'], FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES));
+        $project->setDescription(filter_var($_POST['description'], FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES));
         if($_POST['contact'] && $_POST['contact'] != '')
             $project->setContact(filter_var($_POST['contact'], FILTER_SANITIZE_EMAIL));
         else
             $project->setContact(null);
 
-        $project->setLocationId(filter_var($_POST['location_id'], FILTER_SANITIZE_STRING));
-        $project->setLocation(filter_var($_POST['location'], FILTER_SANITIZE_STRING));
+        $project->setLocationId(filter_var($_POST['location_id'], FILTER_SANITIZE_NUMBER_INT));
+        $project->setLocation(filter_var($_POST['location'], FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES));
         $project->setFromDate(filter_var($_POST['from_date'], FILTER_SANITIZE_STRING));
         $project->setToDate(filter_var($_POST['to_date'], FILTER_SANITIZE_STRING));
         if(!$project->getId()) {
@@ -92,13 +92,13 @@ if (isset($_POST['token'])) {
         // post to Google Groups
         $projectUser = new User($project->getUserId());
         $message = 
-            '<strong>' . $project->getName() . "</strong><br>\n" .
+            '<strong>' . htmlspecialchars($project->getName()) . "</strong><br>\n" .
             "https://london.hackspace.org.uk/storage/" . $project->getId() . "<br>\n" .
             "by <a href=\"https://london.hackspace.org.uk/members/member.php?id=".$project->getUserId()."\">" . htmlspecialchars($projectUser->getFullName()) . "</a><br>\n" .
             $project->outputDates() . "<br>\n" .
             $project->outputDuration() . ' ' .
             $project->outputLocation() . "<br>\n<br>\n" .
-            nl2br(stripslashes($project->getDescription())) . "<br>\n<br>\n";
+            nl2br(htmlspecialchars($project->getDescription())) . "<br>\n<br>\n";
 
         if($auto && !$project->isShortTerm())
             $message .= "<strong>***If no one replies to this topic the request will be automatically approved within ".$project->automaticApprovalDuration()." days.***</strong>";
@@ -131,19 +131,19 @@ if (isset($_POST['token'])) {
             <div class="form-group">
                 <label for="name" class="col-sm-3 control-label">Name of Item</label>
                 <div class="col-sm-9">
-                    <input type="text" class="form-control" id="name" name="name" placeholder="What are you storing?" value="<? if($_POST && $_POST['name']) { echo $_POST['name']; } else if($project->getName()) { echo $project->getName(); } ?>">
+                    <input type="text" class="form-control" id="name" name="name" placeholder="What are you storing?" value="<? if($_POST && $_POST['name']) { echo htmlspecialchars($_POST['name']); } else if($project->getName()) { echo htmlspecialchars($project->getName()); } ?>">
                 </div>
             </div>
             <div class="form-group">
                 <label for="description" class="col-sm-3 control-label">Description</label>
                 <div class="col-sm-9">
-                    <textarea id="description" name="description" class="form-control" placeholder="What will you be doing? What tools do you need and how often do you plan to work on it?" rows="3"><? if($_POST && $_POST['description']) { echo $_POST['description']; } else if($project->getDescription()) { echo $project->getDescription(); } ?></textarea>
+                    <textarea id="description" name="description" class="form-control" placeholder="What will you be doing? What tools do you need and how often do you plan to work on it?" rows="3"><? if($_POST && htmlspecialchars($_POST['description'])) { echo htmlspecialchars($_POST['description']); } else if($project->getDescription()) { echo htmlspecialchars($project->getDescription()); } ?></textarea>
                 </div>
             </div>
             <div class="form-group location-fields">
                 <label class="col-sm-3 control-label">Contact</label>
                 <div class="col-sm-9">
-                    <input type="email" id="contact" name="contact" placeholder="Email address" class="form-control" value="<? if($_POST && $_POST['contact']) { echo $_POST['contact']; } else if($project->getContact()) { echo $project->getContact(); }?>"/> or <?=$user->getEmail();?> (if left blank)
+                    <input type="email" id="contact" name="contact" placeholder="Email address" class="form-control" value="<? if($_POST && $_POST['contact']) { echo htmlspecialchars($_POST['contact']); } else if($project->getContact()) { echo $project->getContact(); }?>"/> or <?=$user->getEmail();?> (if left blank)
                     <p class="help-block">Your email address (above) will be made available to all members in case there's a problem with your project while it's being stored in the space.</p>
                 </div>
             </div>
@@ -162,15 +162,15 @@ if (isset($_POST['token'])) {
                                 echo '>'.$location->getName().'</option>';
                             } ?>
                     </select>
-                    <input type="text" id="location" name="location" class="form-control" placeholder="Where abouts exactly?" value="<? if($_POST && $_POST['location']) { echo $_POST['location']; } else if($project->getLocation()) { echo $project->getLocation(); }?>"/>
+                    <input type="text" id="location" name="location" class="form-control" placeholder="Where abouts exactly?" value="<? if($_POST && $_POST['location']) { echo htmlspecialchars($_POST['location']); } else if($project->getLocation()) { echo htmlspecialchars($project->getLocation()); }?>"/>
                     <p class="alert alert-warning tip-loading-bay hide" role="alert"><span class="glyphicon glyphicon-star"></span> The loading bay must be kept clear at all times.</p>
                 </div>
             </div>
             <div class="form-group">
                 <label for="from_date" class="col-sm-3 control-label">Storage Dates</label>
                 <div class="col-sm-9">
-                    arrival <input type="date" placeholder="yyyy-mm-dd" value="<? if($_POST && $_POST['from_date']) { echo $_POST['from_date']; } else if($project->getFromDate()) { echo $project->getFromDate(); } ?>" min="<?=date('Y-m-d') ?>" max="<?=date('Y-m-d', strtotime("+$maxStorageMonths months"))?>" id="from_date" name="from_date" class="form-control" />
-                    &nbsp;&nbsp; <div style="display:inline;white-space:nowrap;">removal&nbsp;<input type="date" placeholder="yyyy-mm-dd" value="<? if($_POST && $_POST['to_date']) { echo $_POST['to_date']; } else if($project->getToDate()) { echo $project->getToDate(); } ?>" min="<?=date('Y-m-d') ?>" max="<?=date('Y-m-d', strtotime("+$maxStorageMonths months"))?>" id="to_date" name="to_date" class="form-control" /></div>
+                    arrival <input type="date" placeholder="yyyy-mm-dd" value="<? if($_POST && $_POST['from_date']) { echo htmlspecialchars($_POST['from_date']); } else if($project->getFromDate()) { echo $project->getFromDate(); } ?>" min="<?=date('Y-m-d') ?>" max="<?=date('Y-m-d', strtotime("+$maxStorageMonths months"))?>" id="from_date" name="from_date" class="form-control" />
+                    &nbsp;&nbsp; <div style="display:inline;white-space:nowrap;">removal&nbsp;<input type="date" placeholder="yyyy-mm-dd" value="<? if($_POST && $_POST['to_date']) { echo htmlspecialchars($_POST['to_date']); } else if($project->getToDate()) { echo $project->getToDate(); } ?>" min="<?=date('Y-m-d') ?>" max="<?=date('Y-m-d', strtotime("+$maxStorageMonths months"))?>" id="to_date" name="to_date" class="form-control" /></div>
                     <p class="alert alert-info tip-short-term-storage hide" role="alert"><span class="glyphicon glyphicon-star"></span> It's okay to store your project short term to let paint dry, give yourself a break, etc. But short term storage requests can <strong> only be extended 2 days</strong> at most. If it takes longer you'll need to submit a new storage request and leave enough time for other members to review.</p>
                     <p class="alert alert-warning tip-indoor-review hide" role="alert"><span class="glyphicon glyphicon-star"></span> We need <strong>2 days to review</strong> indoor storage requests unless it's a matter of urgency.</p>
                     <p class="alert alert-warning tip-yard-review hide" role="alert"><span class="glyphicon glyphicon-star"></span> We need <strong>7 days to review</strong> yard storage requests unless it's a matter of urgency.</p>

@@ -12,9 +12,11 @@ header("Content-Type: text/html; charset=utf-8");
     <link rel="stylesheet" type="text/css" href="/css/kiosk.css" />
   </head>
 <body>
-<form action="card.php" style="position:absolute; left:-9999px;">
-<input type="text" name="cardid" id="cardid" accesskey="i"/>
-</form>
+<? if (!isset($suppress_card_input)) { ?>
+    <form action="card.php" style="position:absolute; left:-9999px;">
+        <input type="text" name="cardid" id="cardid" accesskey="i"/>
+    </form>
+<? } ?>
 <div class="page-container container">
     <div class="page-header">
         <h1><img alt="logo" src="/images/london.png" width="60" height="60"/>&nbsp;<?=$title?></h1>

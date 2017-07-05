@@ -1,13 +1,8 @@
 <?
 $title = 'Project Storage';
 require('./header.php');
-$cards = fRecordSet::build('Card', array('uid=' => $_GET['cardid']));
-if($cards->count() == 0) {
-    fURL::redirect("/kiosk/addcard.php?cardid=" . $_GET['cardid']);
-}
-$card = $cards->getRecord(0);
-$user = new User($card->getUserId());
-$user->load();
+
+ensureKioskUser();
 
 if (isset($_POST['print'])) {
     $project = new Project($_POST['print']);
@@ -53,7 +48,7 @@ $projects = fRecordSet::build('Project', array('state_id!='=>array('6','7'), 'us
 <tbody>
 <? foreach($projects as $project) { ?>
     <tr>
-    <th><?=$project->prepareName() ?></th>
+    <th><?=htmlspecialchars($project->getName()) ?></th>
     <td><?=$project->getState()?></td>
     <td><? if ($project->getStateId() == 2 or $project->getStateId() == 4) {?>
             <button name="print" value="<?=$project->getId()?>" class="btn btn-primary">

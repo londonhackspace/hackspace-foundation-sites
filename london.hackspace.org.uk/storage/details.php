@@ -5,7 +5,7 @@ require( '../header.php' );
 
 ensureMember();
 
-$project = new Project(filter_var($_GET['id'], FILTER_SANITIZE_STRING));
+$project = new Project(filter_var($_GET['id'], FILTER_SANITIZE_NUMBER_INT));
 $projectslogs = fRecordSet::build('ProjectsLog',array('project_id=' => $project->getId()), array('id' => 'asc'));
 $states = fRecordSet::build('ProjectState',array(), array('id' => 'asc'));
 $projectUser = new User($project->getUserId());
@@ -37,8 +37,8 @@ if (isset($_POST['submit']) && ($user->getId() != $project->getUserId() || $user
 		if(!isset($_POST['state']) || $_POST['state'] == '')
 			throw new fValidationException('Status field is required.');
 
-		$newStatus = filter_var($_POST['state'], FILTER_SANITIZE_STRING);
-		$reason = filter_var($_POST['reason'], FILTER_SANITIZE_STRING);
+		$newStatus = filter_var($_POST['state'], FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES);
+		$reason = filter_var($_POST['reason'], FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES);
 
 		if($newStatus != $project->getState() && $project->canTransitionStates($project->getState(),$newStatus)) {
 			$project->setState($newStatus);
@@ -56,8 +56,8 @@ if (isset($_POST['submit']) && ($user->getId() != $project->getUserId() || $user
 
 				// inform the owner
 				$project->submitEmailToOwner(
-					"Dear {$projectUser->getFullName()},<br/><br/>".
-					"This is an automatic email to let you know your project {$project->getName()} has been updated with status {$project->getState()}{$reason}.<br/><br/>".
+					"Dear " . htmlspecialchars($projectUser->getFullName()) . ",<br/><br/>".
+					"This is an automatic email to let you know your project " . htmlspecialchars($project->getName()) . " has been updated with status {$project->getState()}{$reason}.<br/><br/>".
 					"If you have any questions or concerns regarding this change you can discuss this with members on the <a href=\"{$project->getMailingListURL()}\">Mailing List</a>.<br/><br/>".
 					"Best,<br/>Monkeys in the machine"
 				);
@@ -90,7 +90,7 @@ if (isset($_POST['submit']) && ($user->getId() != $project->getUserId() || $user
 	</small>
 <? } ?>
 <h2>Storage Request</h2>
-<h3><?=$project->getName(); ?>
+<h3><?=htmlspecialchars($project->getName()); ?>
 	<div class="status <?= strtolower($project->getState()); ?>"><?= $project->getState(); ?> <?if($project->getState() == 'Extended') { ?>(<?=$project->getExtensionDuration()?> days)<? } ?></div>
 <p><small>
 	By <a href="/members/member.php?id=<?=$project->getUserId()?>"><?=htmlspecialchars($projectUser->getFullName())?></a> (incase of emergency contact <? if($project->getContact()) { ?><a href="mailto:<?=$project->getContact()?>"><span class="glyphicon glyphicon-envelope" style="margin-left:5px;margin-right:4px;" aria-hidden="true"></span><?=$project->getContact()?></a><? } else { ?><a href="mailto:<?=$projectUser->getEmail()?>"><span class="glyphicon glyphicon-envelope" style="margin-left:5px;margin-right:4px;" aria-hidden="true"></span><?=$projectUser->getEmail()?></a><? } ?>)<br/>
@@ -112,7 +112,7 @@ if (isset($_POST['submit']) && ($user->getId() != $project->getUserId() || $user
 <? } ?>
 <br/>
 	<?if($project->hasExtension()) { ?><strong>Extended for <?=$project->getExtensionDuration()?> days</strong><br/><br/><? } ?>
-<p><?=nl2br(stripslashes($project->getDescription())); ?></p>
+<p><?=nl2br(htmlspecialchars($project->getDescription())); ?></p>
 <br/>
 <hr/>
 <strong>Activity log</strong><br/><br/>
@@ -123,7 +123,7 @@ if (isset($_POST['submit']) && ($user->getId() != $project->getUserId() || $user
 		$logUser = new User($log->getUserId());
 		$userURL = ' by <a href="/members/member.php?id='.$log->getUserId().'">'.htmlspecialchars($logUser->getFullName()).'</a>';
 	}
-	echo '<li><span class="light-color">'.date('g:ia jS M',$log->getTimestamp()).'</span> | '.str_replace('Mailing List','<a target="_blank" href="'.$project->getMailingListURL().'">Mailing List</a>',$log->getDetails()).$userURL.'</li>';
+	echo '<li><span class="light-color">'.date('g:ia jS M',$log->getTimestamp()).'</span> | '.str_replace('Mailing List','<a target="_blank" href="'.$project->getMailingListURL().'">Mailing List</a>',htmlspecialchars($log->getDetails())).$userURL.'</li>';
 } ?>
 </ul>
 <? if($user->getId() != $project->getUserId() || $user->isAdmin()) { ?>

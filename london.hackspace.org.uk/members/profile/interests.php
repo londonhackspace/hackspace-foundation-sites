@@ -17,9 +17,9 @@
       <? } ?>
             <li>
               <? if($interest->getUrl() != null && $interest->getUrl() != '') { ?>
-                <a href="<?=htmlentities($interest->getUrl())?>" target="_blank"><?=$interest->getName() ?></a>
+                <a href="<?=htmlentities($interest->getUrl())?>" target="_blank"><?=htmlspecialchars($interest->getName()) ?></a>
               <? } else { ?>
-                <?=$interest->getName() ?>
+                <?=htmlspecialchars($interest->getName()) ?>
               <? } ?>
             </li>
     <? $interest_count++;

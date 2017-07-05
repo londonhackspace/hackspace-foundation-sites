@@ -1,10 +1,20 @@
 <?
 require('../../lib/init.php');
-if (!isset($_GET['id'])) {
+
+$id = NULL;
+
+if ( array_key_exists('PATH_INFO', $_SERVER) ) {
+    $id = substr($_SERVER['PATH_INFO'], 1);
+}
+
+if (!isset($_GET['id']) && is_null($id) ) {
   fURL::redirect('/members/');
 } else {
+    if (is_null($id)) {
+        $id = $_GET['id'];
+    }
 	try {
-	  $this_user = new User(filter_var($_GET['id'], FILTER_SANITIZE_NUMBER_INT));
+	  $this_user = new User(filter_var($id, FILTER_SANITIZE_NUMBER_INT));
 	} catch(fNotFoundException $e) {
     header('HTTP/1.1 404 Not Found');
     echo "Profile not found";
@@ -12,8 +22,12 @@ if (!isset($_GET['id'])) {
 	}
 }
 
-$title = "Member Profile: {$this_user->getFullName()}";
-if ($user->getMemberNumber() == $this_user->getMemberNumber()) {
+if (is_null($user)) {
+    $title = "Please login";
+} else {
+    $title = "Member Profile: {$this_user->getFullName()}";
+}
+if ($user && $user->getMemberNumber() == $this_user->getMemberNumber()) {
   $page = 'profile';
 } else {
   $page = 'memberslist';
@@ -76,7 +90,7 @@ if(
         <? require('profile/aliases.php'); ?>
         <? if($user_profile->getDescription() != '') { ?>
           <h4>Projects I'm working on</h4>
-          <p><?=nl2br(stripslashes($user_profile->getDescription())) ?></p>
+          <p><?=nl2br(htmlspecialchars($user_profile->getDescription())) ?></p>
         <? }
            if($this_user->hasInterests()) {
             require('profile/interests.php');

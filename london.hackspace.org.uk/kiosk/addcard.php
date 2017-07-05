@@ -11,11 +11,8 @@ if (isset($_POST['submit'])) {
 
         $validator->validate();
 
-        $uid = strtoupper($_POST['uid']);
-        if ($uid == '21222324') {
-            /* New Visa cards return this, presumably for privacy */
-            throw new fValidationException('Non-unique UID. This card cannot be added to the system.');
-        }
+        $uid = sanitiseCardUID($_POST['uid']);
+        validateCardUIDUsable($uid);
 
         $users = fRecordSet::build('User', array('email=' => strtolower($_POST['email'])));
         if ($users->count() == 0) {
@@ -62,6 +59,7 @@ if (isset($_POST['submit'])) {
     <div class="form-group">
         <input type="submit" name="submit" class="btn btn-default" value="Add card">
     </div>
+    <?php /* This is a landing page so cardid isn't validated at this point */ ?>
     <input type="hidden" name="uid" value="<?=htmlentities($_GET['cardid'])?>">
 </form>
 

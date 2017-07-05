@@ -60,7 +60,7 @@ Cheers,
 
 The London Hackspace email monkey
 ");
-        $smtp = new fSMTP('localhost');
+        $smtp = new fSMTP('turing.hackspace.org.uk');
         $email->send($smtp);
         echo "<p>An email has been sent to you with further instructions.</p>";
     } catch(fNotFoundException $e) {?>

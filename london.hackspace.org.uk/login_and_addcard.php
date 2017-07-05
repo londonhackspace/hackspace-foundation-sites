@@ -11,6 +11,10 @@ if (isset($_POST['submit'])) {
     try {
         fRequest::validateCSRFToken($_POST['token']);
 
+        // Strip colons from uid (easier to copy paste from some NFC
+        // reader apps).
+        fRequest::set('uid', str_replace(':','',fRequest::get('uid')) );
+
         $validator = new fValidation();
         $validator->addRequiredFields('password', 'email', 'uid');
         $validator->addEmailFields('email');
@@ -19,10 +23,7 @@ if (isset($_POST['submit'])) {
         $validator->validate();
 
         $uid = strtoupper($_POST['uid']);
-        if ($uid == '21222324') {
-            /* New Visa cards return this, presumably for privacy */
-            throw new fValidationException('Non-unique UID. This card cannot be added to the system.');
-        }
+        validateCardUIDUsable($uid);
 
         $users = fRecordSet::build('User', array('email=' => strtolower($_POST['email'])));
         if ($users->count() == 0) {
@@ -80,14 +81,7 @@ if (isset($_GET['added']) && !isset($_POST['submit'])) {
             </tr>
             <tr>
                 <td><label for="uid">Card to add</label></td>
-                <td>
-                <? if (isset($_POST['uid'])) { ?>
-                    <?=htmlentities($_POST['uid'])?>
-                    <input type="hidden" name="uid" value="<?=htmlentities($_POST['uid'])?>" />
-                <? } else { ?>
-                    <input type="text" name="uid"/>
-                <? } ?>
-                </td>
+                <td><input type="text" name="uid" value="<?=htmlentities($_POST['uid'])?>"/></td>
             </tr>
             <tr>
                 <td colspan="2"><input type="submit" name="submit" value="Add card" /></td>

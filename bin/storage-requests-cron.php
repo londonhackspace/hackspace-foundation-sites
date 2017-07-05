@@ -53,7 +53,7 @@ foreach($projects as $project) {
 
         // email the owner
         $message = "Dear ".htmlspecialchars($user->getFullName()).",<br/><br/>". 
-            "Just to let you know our records show you're no longer a paying member at London Hackspace. Your outstanding storage request <a href=\"https://london.hackspace.org.uk/storage/".$project->getId()."\">".$project->getName()."</a> has been automatically unapproved. If you're having trouble with your membership payment please <a href=\"mailto:contact@london.hackspace.org.uk\">get in touch</a>.<br/><br/>".
+            "Just to let you know our records show you're no longer a paying member at London Hackspace. Your outstanding storage request <a href=\"https://london.hackspace.org.uk/storage/".$project->getId()."\">".htmlspecialchars($project->getName())."</a> has been automatically unapproved. If you're having trouble with your membership payment please <a href=\"mailto:contact@london.hackspace.org.uk\">get in touch</a>.<br/><br/>".
             "Best,<br/>".
             "Monkeys in the machine";
         $subject = 'London Hackspace Storage Request #'.$project->getId().': '.$project->getName();
@@ -77,7 +77,7 @@ foreach($projects as $project) {
 
         // email the owner
         $message = "Dear ".htmlspecialchars($user->getFullName()).",<br/><br/>". 
-            "Just to let you know our records show you're no longer a paying member at London Hackspace. Your project <a href=\"https://london.hackspace.org.uk/storage/".$project->getId()."\">".$project->getName()."</a> currently approved for storage at London Hackspace has been automatically set to passed deadline. You'll need to remove it from the space ASAP. If you're having trouble with your membership payment please <a href=\"mailto:contact@london.hackspace.org.uk\">get in touch</a>.<br/><br/>".
+            "Just to let you know our records show you're no longer a paying member at London Hackspace. Your project <a href=\"https://london.hackspace.org.uk/storage/".$project->getId()."\">".htmlspecialchars($project->getName())."</a> currently approved for storage at London Hackspace has been automatically set to passed deadline. You'll need to remove it from the space ASAP. If you're having trouble with your membership payment please <a href=\"mailto:contact@london.hackspace.org.uk\">get in touch</a>.<br/><br/>".
             "Best,<br/>".
             "Monkeys in the machine";
         $subject = 'London Hackspace Storage Request #'.$project->getId().': '.$project->getName();
@@ -110,7 +110,7 @@ foreach($projects as $project) {
 
             // email the owner
             $message = "Dear ".htmlspecialchars($user->getFullName()).",<br/><br/>". 
-                "Just to let you know your project <a href=\"https://london.hackspace.org.uk/storage/".$project->getId()."\">".$project->getName()."</a> has been automatically approved for storage at London Hackspace.<br/><br/>".
+                "Just to let you know your project <a href=\"https://london.hackspace.org.uk/storage/".$project->getId()."\">".htmlspecialchars($project->getName())."</a> has been automatically approved for storage at London Hackspace.<br/><br/>".
                 "Best,<br/>".
                 "Monkeys in the machine";
             $subject = 'London Hackspace Storage Request #'.$project->getId().': '.$project->getName();
@@ -129,7 +129,7 @@ foreach($projects as $project) {
 
     // standard message
     $message = "Dear ".htmlspecialchars($user->getFullName()).",<br/><br/>". 
-        "This is a friendly reminder that you had committed to remove your project <a href=\"https://london.hackspace.org.uk/storage/".$project->getId()."\">".$project->getName()."</a> from the London Hackspace by ".$to->format('jS M Y').".<br/><br/>";
+        "This is a friendly reminder that you had committed to remove your project <a href=\"https://london.hackspace.org.uk/storage/".$project->getId()."\">".htmlspecialchars($project->getName())."</a> from the London Hackspace by ".$to->format('jS M Y').".<br/><br/>";
 
     if(!$project->hasExtension()) {
         $message .= "We know life and other commitments can get in the way of hackspace projects. To help you finish up and organise your belongings you can extend your deadline once for ".$project->getExtensionDuration()." days <a href=\"https://london.hackspace.org.uk/storage/".$project->getId()."\">the request page</a>.<br/><br/>";

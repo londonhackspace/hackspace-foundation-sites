@@ -6,6 +6,10 @@ $DB_NAME = 'hackspace';
 $DB_USER = 'hackspace';
 $DB_PASSWORD = '';
 
+#Access Control server details for the members/tools.php stuff
+$ACSERVER_ADDRESS = "http://localhost:1234";
+$ACSERVER_KEY = "KEY GOES HERE";
+
 # These are our sandbox details, fear not.
 $GOCARDLESS_CREDENTIALS = array(
   'app_id'        => 'TXF4N17MQRTA2NVTYFNMEC9PG79QEVT89H3C170C532ZDDQQ3NS1J8SE37RA6Q2Z',
