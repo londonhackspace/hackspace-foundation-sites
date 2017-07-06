@@ -44,7 +44,7 @@ if (isset($_POST['reset'])) {
         $token = $user->getResetPasswordToken();
         $email = new fEmail();
         $email->addRecipient($user->getEmail());
-        $email->setFromEmail('contact@hackspace.org.uk', 'London Hackspace');
+        $email->setFromEmail('contact@london.hackspace.org.uk', 'London Hackspace');
         $email->setSubject('London Hackspace Password Reset');
         $name = $user->getFullName();
         $email->setBody("Hi $name,
