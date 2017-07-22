@@ -40,6 +40,10 @@ INSTALLED_APPS = [
     'main'
 ]
 
+MIGRATION_MODULES = {
+    'auth': None,
+}
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -49,6 +53,8 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+AUTH_USER_MODEL = 'main.User'
 
 ROOT_URLCONF = 'lhs.urls'
 

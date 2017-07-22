@@ -1,6 +1,7 @@
 from __future__ import unicode_literals
 
 from django.db import models
+from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
 
 
 class Alias(models.Model):
@@ -133,9 +134,30 @@ class UserPermission(models.Model):
         db_table = 'userperms'
 
 
-class User(models.Model):
+class UserManager(BaseUserManager):
+    def create_user(self, email, full_name, hackney, password):
+        user = self.model(
+            email=self.normalize_email(email),
+            full_name=full_name,
+            hackney=hackney,
+        )
+
+        user.set_password(password)
+        user.save(using=self._db)
+        return user
+
+
+
+class User(AbstractBaseUser):
+    USERNAME_FIELD = 'email'
+    EMAIL_FIELD = 'email'
+    REQUIRED_FIELDS = ['full_name', 'hackney']
+
+    objects = UserManager()
+
     email = models.CharField(unique=True, max_length=255)
-    password = models.CharField(max_length=255)
+    password = models.CharField(max_length=255)  # shadows AbstractBaseUser
+    last_login = models.DateTimeField(blank=True, null=True)  # shadows AbstractBaseUser
     full_name = models.CharField(max_length=255)
     subscribed = models.BooleanField()
     bankhash = models.TextField(blank=True, null=True)
@@ -161,6 +183,29 @@ class User(models.Model):
 
     class Meta:
         db_table = 'users'
+
+    def __str__(self):
+        return self.email
+
+    @property
+    def is_active(self):
+        return not self.terminated
+
+    @property
+    def is_staff(self):
+        return self.admin
+
+    def get_full_name(self):
+        return self.full_name
+
+    def get_short_name(self):
+        return self.full_name
+
+    def has_perm(self, perm, obj=None):
+        return obj.admin
+
+    def has_module_perms(self, app_label):
+        return obj.admin
 
 
 class UserAlias(models.Model):
