@@ -50,8 +50,13 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'main.FlourishAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+]
+
+AUTHENTICATION_BACKENDS = [
+    'main.FlourishSessionBackend',
 ]
 
 AUTH_USER_MODEL = 'main.User'
@@ -126,3 +131,9 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 
 STATIC_URL = '/static/'
+
+FLOURISH_LOOPBACK_URLS = {
+    'authenticate': 'http://localhost:9000/session.php',
+    'destroy': 'http://localhost:9000/session.php?destroy',
+}
+

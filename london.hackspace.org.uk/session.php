@@ -19,6 +19,9 @@ if (isset($uid)) {
       'expires' => fSession::get('fSession::expires'),
       'suppress_profile_notification' => fSession::get('suppress_profile_notification'),
   );
+  if (isset($_GET['destroy'])) {
+      fSession::destroy();
+  }
   die(json_encode($data));
 } else {
   die('{}');
