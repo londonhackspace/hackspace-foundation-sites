@@ -1,2 +1,4 @@
 Django==1.11.3
 psycopg2==2.7.1
+requests==2.18.1
+msgpack-python==0.4.8

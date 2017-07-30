@@ -40,23 +40,19 @@ INSTALLED_APPS = [
     'main'
 ]
 
-MIGRATION_MODULES = {
-    'auth': None,
-}
-
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'main.FlourishAuthenticationMiddleware',
+    'main.middleware.FlourishAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
 AUTHENTICATION_BACKENDS = [
-    'main.FlourishSessionBackend',
+    'main.backends.FlourishSessionBackend',
 ]
 
 AUTH_USER_MODEL = 'main.User'
@@ -112,6 +108,9 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+SESSION_SERIALIZER = 'lhs.lib.MsgPackSerializer.MsgPackSerializer'
+
+SESSION_COOKIE_AGE = 30*60  # to match Flourish for non-persistent sessions
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.11/topics/i18n/
@@ -133,7 +132,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 FLOURISH_LOOPBACK_URLS = {
-    'authenticate': 'http://localhost:9000/session.php',
-    'destroy': 'http://localhost:9000/session.php?destroy',
+    'authenticate': 'https://london.hackspace.org.uk/session.php',
+    'destroy': 'https://london.hackspace.org.uk/session.php?destroy',
 }
 

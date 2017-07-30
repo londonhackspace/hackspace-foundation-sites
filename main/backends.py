@@ -1,9 +1,11 @@
 from django.conf import settings
 from django.contrib.auth import get_user_model, load_backend, BACKEND_SESSION_KEY
 from django.core.exceptions import PermissionDenied
-from django.core.signals import user_logged_out
+from django.contrib.auth.signals import user_logged_out
 from django.dispatch import receiver
+from django.utils import timezone
 
+import re
 import requests
 from datetime import datetime
 
@@ -55,16 +57,22 @@ class FlourishSessionBackend(object):
         assert isinstance(user_id, int)
 
         user = UserModel.objects.get(pk=user_id)
-        if not user.is_active():
+        if not user.is_active:
             # Stop all authentication attempts - no more backends
             raise PermissionDenied
 
+        # Even non-persistent sessions have an expiry, so check it
         if session['expires'] < 1500000000:
             raise ValueError('Flourish session expiry timestamp is invalid')
 
-        expires = datetime.fromtimestamp(session['expires'])
-        if expires < datetime.utcnow():
+        expires = datetime.fromtimestamp(session['expires'], tz=timezone.utc)
+        if expires < timezone.now():
             return None
+
+        if session['type'] != 'persistent':
+            # End the session when the browser closes, or 30 mins, whichever is first
+            # We allow for a window of risk here to avoid always checking the session
+            expires = 0
 
         # Flourish bumps its session expiry on every request, but
         # we'll just reauthenticate if the Django session expires.
@@ -93,12 +101,12 @@ def destroy_session(sender, **kwargs):
     except KeyError:
         return
 
-    usser = kwargs.get('user')
+    user = kwargs.get('user')
     if not user:
         return
 
     backend = load_backend(request.session[BACKEND_SESSION_KEY])
-    if not isinstance(stored_backend, FlourishSessionBackend):
+    if not isinstance(backend, FlourishSessionBackend):
         return
 
     cookies = {'PHPSESSID': request.session['PHPSESSID']}

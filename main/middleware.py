@@ -1,4 +1,5 @@
 from django.contrib import auth
+from django.utils.crypto import constant_time_compare
 
 from .backends import FlourishSessionBackend
 
