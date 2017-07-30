@@ -15,7 +15,7 @@
             <?=menulink("/members/profile/{$user->getId()}", 'profile', 'View My Profile')?>
             <?=menulink('/members/edit.php', 'edit', 'Edit Account')?>
             <li class="divider"></li>
-            <li><a href="/logout.php">Logout</a></li>
+            <li><a href="/logout">Logout</a></li>
           </ul>
         <? } else { ?>
         <a class="btn btn-default" href="/login.php">Log In</a>

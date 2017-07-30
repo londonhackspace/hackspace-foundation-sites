@@ -1,6 +1,7 @@
 from django.contrib.auth.hashers import BasePasswordHasher, mask_hash
 from django.utils.crypto import constant_time_compare, get_random_string
 from django.utils.encoding import force_bytes
+from django.utils.translation import ugettext_lazy as _
 
 from collections import OrderedDict
 import hashlib

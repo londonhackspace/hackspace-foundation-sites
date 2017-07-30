@@ -1,11 +1,21 @@
 from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse, HttpResponseRedirect
-from django.contrib.auth import logout as auth_logout
+from django.contrib import auth
+from django.contrib.auth.views import LoginView
 from django.urls import reverse
+from django.utils.http import urlencode
+
+from urllib.parse import urljoin
+
 
 def index(request):
-    # This should never be reached, but we keep it for redirecting to
+    # This should never be reached - we use it to calculate the base PHP URL
     return HttpResponse('Django app index')
+
+def flourish_url(path):
+    base_url = reverse('main:index')
+    return urljoin(base_url, path)
+
 
 def session(request):
     data = {}
@@ -33,6 +43,18 @@ def logout(request):
     # The Flourish session can also be destroyed in other pages, such
     # as kiosk/addcard.php, but those flows don't hit Django.
 
-    auth_logout(request)
-    return HttpResponseRedirect(reverse('main:index'))
+    auth.logout(request)
+    return HttpResponseRedirect(flourish_url('/'))
+
+class RedirectLoginView(LoginView):
+    def dispatch(self, request, *args, **kwargs):
+        redirect_to = self.get_success_url()
+        if redirect_to in [self.request.path, flourish_url('/login.php')]:
+            redirect_to = ''
+
+        url = flourish_url('/login.php')
+        if redirect_to:
+            url += '?%s' % urlencode({'forward': redirect_to})
+
+        return HttpResponseRedirect(url)
 

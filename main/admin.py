@@ -5,21 +5,13 @@ from django.utils.translation import ugettext_lazy as _
 
 from .models import User
 
-#class LHSUserChangeForm(UserChangeForm):
-#    class Meta(UserChangeForm.Meta):
-#        model = User
-
-#class LHSUserCreationForm(UserCreationForm):
-#    class Meta(UserCreationForm.Meta):
-#        model = User
-
 
 class LHSUserAdmin(UserAdmin):
     fieldsets = (
         (None, {'fields': ('email', 'password')}),
         (_('Personal info'), {'fields': ('full_name', 'address')}),
-        (_('Attributes'), {'fields': ('terminated', 'hackney', 'admin')}),
-        (_('Contact'), {'fields': ('nickname', 'irc_nick', 'ldap_user',
+        (_('Attributes'), {'fields': ('hackney', 'terminated', 'admin')}),
+        (_('Contact'), {'fields': ('nickname', 'irc_nick', 'ldapuser',
                         'emergency_name', 'emergency_phone')}),
     )
     add_fieldsets = (
@@ -28,9 +20,6 @@ class LHSUserAdmin(UserAdmin):
             'fields': ('email', 'password1', 'password2'),
         }),
     )
-#    form = UserChangeForm
-#    add_form = UserCreationForm
-#    change_password_form = AdminPasswordChangeForm
     list_display = ('email', 'full_name', 'admin')
     list_filter = ('admin', 'terminated')
     search_fields = ('email', 'full_name')

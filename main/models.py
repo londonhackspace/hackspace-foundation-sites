@@ -147,6 +147,35 @@ class UserManager(BaseUserManager):
         return user
 
 
+class FlourishPasswordField(models.CharField):
+    def flourish_to_django(self, value):
+        if value.startswith('fCryptography::password_hash'):
+            _, salt, hash = value.split('#', 2)
+            value = '%s$%s$%s' % ('flourish_sha1', salt, hash)
+        return value
+
+    def django_to_flourish(self, value):
+        algo, salt, hash = value.split('$', 2)
+        if algo == 'flourish_sha1':
+            value = 'fCryptography::password_hash#%s#%s' % (salt, hash)
+        return value
+
+    def to_python(self, value):
+        if value is None:
+            return None
+
+        value = self.flourish_to_django(value)
+        return super(FlourishPasswordField, self).to_python(value)
+
+    def from_db_value(self, value, expression, connection, context):
+        return self.flourish_to_django(value)
+
+    def get_prep_value(self, value):
+        value = super(FlourishPasswordField, self).get_prep_value(value)
+        if value is None:
+            return value
+        return self.django_to_flourish(value)
+
 
 class User(AbstractBaseUser):
     USERNAME_FIELD = 'email'
@@ -156,22 +185,22 @@ class User(AbstractBaseUser):
     objects = UserManager()
 
     email = models.CharField(unique=True, max_length=255)
-    db_password = models.CharField(max_length=255, db_column='password')
+    password = FlourishPasswordField(max_length=255)  # shadows AbstractBaseUser
     last_login = models.DateTimeField(blank=True, null=True)  # shadows AbstractBaseUser
     full_name = models.CharField(max_length=255)
-    subscribed = models.BooleanField()
+    subscribed = models.BooleanField(default=False)
     bankhash = models.TextField(blank=True, null=True)
     creationdate = models.TextField(blank=True, null=True)
     address = models.TextField(blank=True, null=True)
-    hackney = models.BooleanField()
-    subscription_period = models.IntegerField()
+    hackney = models.BooleanField(default=False)
+    subscription_period = models.IntegerField(default=0)
     nickname = models.CharField(unique=True, max_length=255, blank=True, null=True)
     irc_nick = models.CharField(unique=True, max_length=255, blank=True, null=True)
     gladosfile = models.CharField(max_length=255, blank=True, null=True)
-    terminated = models.BooleanField()
-    admin = models.BooleanField()
-    has_profile = models.BooleanField()
-    disabled_profile = models.BooleanField()
+    terminated = models.BooleanField(default=False)
+    admin = models.BooleanField(default=False)
+    has_profile = models.BooleanField(default=False)
+    disabled_profile = models.BooleanField(default=False)
     doorbot_timestamp = models.DateTimeField(blank=True, null=True)
     emergency_name = models.CharField(max_length=255, blank=True, null=True)
     emergency_phone = models.CharField(max_length=40, blank=True, null=True)
@@ -194,21 +223,6 @@ class User(AbstractBaseUser):
     @property
     def is_staff(self):
         return self.admin
-
-    @property
-    def password(self):  # shadows AbstractBaseUser
-        password = self.db_password
-        if password.startswith('fCryptography::password_hash'):
-            _, salt, hash = password.split('#', 2)
-            password = '%s$%s$%s' % ('flourish_sha1', salt, hash)
-        return password
-
-    @password.setter
-    def password(self, value):
-        algo, salt, hash = value.split('$', 2)
-        if algo == 'flourish_sha1':
-            value = 'fCryptography::password_hash#%s#%s' % (salt, hash)
-        self.db_password = value
 
     def get_full_name(self):
         return self.full_name

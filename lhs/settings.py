@@ -140,3 +140,5 @@ FLOURISH_LOOPBACK_URLS = {
     'destroy': 'https://london.hackspace.org.uk/session.php?destroy',
 }
 
+LOGIN_REDIRECT_URL = '/members'
+
