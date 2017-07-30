@@ -156,7 +156,7 @@ class User(AbstractBaseUser):
     objects = UserManager()
 
     email = models.CharField(unique=True, max_length=255)
-    password = models.CharField(max_length=255)  # shadows AbstractBaseUser
+    db_password = models.CharField(max_length=255, db_column='password')
     last_login = models.DateTimeField(blank=True, null=True)  # shadows AbstractBaseUser
     full_name = models.CharField(max_length=255)
     subscribed = models.BooleanField()
@@ -194,6 +194,21 @@ class User(AbstractBaseUser):
     @property
     def is_staff(self):
         return self.admin
+
+    @property
+    def password(self):  # shadows AbstractBaseUser
+        password = self.db_password
+        if password.startswith('fCryptography::password_hash'):
+            _, salt, hash = password.split('#', 2)
+            password = '%s$%s$%s' % ('flourish_sha1', salt, hash)
+        return password
+
+    @password.setter
+    def password(self, value):
+        algo, salt, hash = value.split('$', 2)
+        if algo == 'flourish_sha1':
+            value = 'fCryptography::password_hash#%s#%s' % (salt, hash)
+        self.db_password = value
 
     def get_full_name(self):
         return self.full_name

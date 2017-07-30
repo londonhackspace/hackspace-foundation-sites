@@ -108,6 +108,10 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+PASSWORD_HASHERS = [
+    'lhs.lib.FlourishSHA1PasswordHasher.FlourishSHA1PasswordHasher'
+]
+
 SESSION_SERIALIZER = 'lhs.lib.MsgPackSerializer.MsgPackSerializer'
 
 SESSION_COOKIE_AGE = 30*60  # to match Flourish for non-persistent sessions

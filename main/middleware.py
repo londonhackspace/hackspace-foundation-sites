@@ -18,7 +18,7 @@ class FlourishAuthenticationMiddleware(object):
 
                 # The user has changed session or logged out without us knowing.
                 # This should not happen. Clean up the both sessions just in case.
-                auth.logout()
+                auth.logout(request)
 
             return
 
