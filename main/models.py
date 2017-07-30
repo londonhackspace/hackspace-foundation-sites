@@ -202,10 +202,11 @@ class User(AbstractBaseUser):
         return self.full_name
 
     def has_perm(self, perm, obj=None):
-        return obj.admin
+        return self.admin
 
     def has_module_perms(self, app_label):
-        return obj.admin
+        return self.admin
+
 
 
 class UserAlias(models.Model):
