@@ -136,8 +136,8 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 FLOURISH_LOOPBACK_URLS = {
-    'authenticate': 'https://london.hackspace.org.uk/session.php',
-    'destroy': 'https://london.hackspace.org.uk/session.php?destroy',
+    'authenticate': 'http://127.0.0.1/session.php',
+    'destroy': 'http://127.0.0.1/session.php?destroy',
 }
 
 LOGIN_REDIRECT_URL = '/members'
