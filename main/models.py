@@ -135,16 +135,29 @@ class UserPermission(models.Model):
 
 
 class UserManager(BaseUserManager):
-    def create_user(self, email, full_name, hackney, password):
+    def create_user(self, email, full_name, hackney, password, **extra):
         user = self.model(
             email=self.normalize_email(email),
             full_name=full_name,
             hackney=hackney,
+            **extra
         )
 
         user.set_password(password)
         user.save(using=self._db)
         return user
+
+    def create_superuser(self, email, full_name, hackney, password, **extra):
+        extra.setdefault('subscribed', True)
+        extra.setdefault('admin', True)
+
+        if extra.get('subscribed') is not True:
+            raise ValueError('Superuser must have subscribed=True.')
+        if extra.get('admin') is not True:
+            raise ValueError('Superuser must have admin=True.')
+
+        return self.create_user(email, full_name, hackney, password, **extra)
+
 
 
 class FlourishPasswordField(models.CharField):
