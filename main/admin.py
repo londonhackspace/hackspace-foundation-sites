@@ -21,7 +21,7 @@ class LHSUserAdmin(UserAdmin):
         }),
     )
     list_display = ('email', 'full_name', 'admin')
-    list_filter = ('admin', 'terminated')
+    list_filter = ('admin', 'terminated', 'subscribed', 'hackney')
     search_fields = ('email', 'full_name')
     ordering = ('full_name',)
     filter_horizontal = ()
