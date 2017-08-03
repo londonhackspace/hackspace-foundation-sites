@@ -1,0 +1,33 @@
+server {
+  listen 80 default_server;
+
+  access_log  /var/log/nginx/london.hackspace.org.uk.access.log;
+  error_log  /var/log/nginx/london.hackspace.org.uk.error.log;
+
+  location / {
+    alias /var/www/hackspace-foundation-sites/london.hackspace.org.uk/;
+    index index.php;
+
+    rewrite ^/members/profile/(\d+)$        /members/profile.php?id=$1;
+    rewrite ^/members/profile/(\d+)/admin$  /members/member.php?id=$1;
+    rewrite ^/members/photo/([0-9A-Za-z_]+)_([a-z]+).png$  /members/photo.php?name=$1&size=$2;
+    rewrite ^/storage/(\d+)$                /storage/details.php?id=$1;
+    rewrite ^/storage/edit/(\d+)$           /storage/edit.php?id=$1;
+    rewrite ^/storage/print/(\d+)$          /storage/print.php?id=$1;
+
+    rewrite ^/spaceapi$                     /spaceapi.php;
+
+    location ~ \.php$ {
+      fastcgi_pass   127.0.0.1:9000;
+      fastcgi_param  SCRIPT_FILENAME  $request_filename;
+      include fastcgi_params;
+    }
+
+    location ~ /(session|logout|login|admin|static) {
+      proxy_pass http://127.0.0.1:9001;
+      proxy_set_header Host $host;
+    }
+
+  }
+
+}

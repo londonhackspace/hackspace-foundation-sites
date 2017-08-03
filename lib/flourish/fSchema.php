@@ -1854,6 +1854,7 @@ class fSchema
 					(con.contype = 'p' OR
 					con.contype = 'f' OR
 					con.contype = 'u')
+					AND t.relname in (select tablename from flourish_tables)
 				) UNION (
 				SELECT
 					LOWER(n.nspname) AS \"schema\",
@@ -1888,6 +1889,7 @@ class fSchema
 					indisprimary = FALSE AND
 					con.oid IS NULL AND
 					0 != ALL ((ind.indkey)::int[])
+					AND t.relname in (select tablename from flourish_tables)
 			) ORDER BY 1, 2, 4, 3, 11";
 		
 		$result = $this->database->query($sql);
@@ -2795,7 +2797,7 @@ class fSchema
 						FROM
 							 pg_tables
 						WHERE
-							 tablename !~ '^(pg|sql)_'
+							 tablename in (select tablename from flourish_tables)
 						ORDER BY
 							LOWER(tablename)";
 				break;

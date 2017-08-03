@@ -44,3 +44,18 @@ and then:
 4. Go to the Hackspace calendar on Google and share it with the same service_account_name address
 
 API documentation https://developers.google.com/api-client-library/php/
+
+
+## Upgrading from PHP
+
+Add to cron:
+
+    manage.py clearsessions daily in cron
+
+And run the following to upgrade the DB without breaking column types:
+
+    env/bin/python manage.py migrate main 0001 --fake-initial
+    env/bin/python manage.py migrate main 0002
+    env/bin/python manage.py migrate main 0003 --fake
+
+
