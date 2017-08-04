@@ -63,4 +63,9 @@ And then run in the following SQL files:
  - etc/restore-column-defaults.sql
  - etc/restore-multicolumn-pks.sql
 
+And don't forget to run:
+
+    env/bin/python manage.py collectstatic
+
+after each deployment.
 
