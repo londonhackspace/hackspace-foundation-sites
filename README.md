@@ -50,12 +50,17 @@ API documentation https://developers.google.com/api-client-library/php/
 
 Add to cron:
 
-    manage.py clearsessions daily in cron
+    0 4 * * *  www-data  /var/www/hackspace-foundation-sites/manage.sh clearsessions
 
-And run the following to upgrade the DB without breaking column types:
+After setting the credentials appropriately and taking a backup, run:
 
     env/bin/python manage.py migrate main 0001 --fake-initial
-    env/bin/python manage.py migrate main 0002
-    env/bin/python manage.py migrate main 0003 --fake
+    env/bin/python manage.py migrate
+
+And then run in the following SQL files:
+
+ - etc/create-flourish-tables.sql
+ - etc/restore-column-defaults.sql
+ - etc/restore-multicolumn-pks.sql
 
 
