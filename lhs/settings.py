@@ -37,7 +37,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'main'
+    'lhsauth',
+    'main',
 ]
 
 MIDDLEWARE = [
@@ -46,16 +47,16 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'main.middleware.FlourishAuthenticationMiddleware',
+    'lhsauth.middleware.FlourishAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
 AUTHENTICATION_BACKENDS = [
-    'main.backends.FlourishSessionBackend',
+    'lhsauth.backends.FlourishSessionBackend',
 ]
 
-AUTH_USER_MODEL = 'main.User'
+AUTH_USER_MODEL = 'lhsauth.User'
 
 ROOT_URLCONF = 'lhs.urls'
 
@@ -109,7 +110,7 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 PASSWORD_HASHERS = [
-    'lhs.lib.FlourishSHA1PasswordHasher.FlourishSHA1PasswordHasher'
+    'lhsauth.lib.FlourishSHA1PasswordHasher.FlourishSHA1PasswordHasher'
 ]
 
 SESSION_SERIALIZER = 'lhs.lib.MsgPackSerializer.MsgPackSerializer'

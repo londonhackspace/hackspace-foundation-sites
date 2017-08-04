@@ -7,6 +7,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
+        ('lhsauth', '0001_initial'),
     ]
 
     operations = [
@@ -75,26 +76,6 @@ class Migration(migrations.Migration):
             },
         ),
         migrations.CreateModel(
-            name='PasswordReset',
-            fields=[
-                ('key', models.TextField(primary_key=True, serialize=False)),
-                ('expires', models.DateTimeField()),
-            ],
-            options={
-                'db_table': 'password_resets',
-            },
-        ),
-        migrations.CreateModel(
-            name='Permission',
-            fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('perm_name', models.CharField(max_length=255)),
-            ],
-            options={
-                'db_table': 'perms',
-            },
-        ),
-        migrations.CreateModel(
             name='Project',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
@@ -157,39 +138,6 @@ class Migration(migrations.Migration):
             },
         ),
         migrations.CreateModel(
-            name='User',
-            fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('email', models.CharField(max_length=255, unique=True)),
-                ('password', models.CharField(max_length=255)),
-                ('full_name', models.CharField(max_length=255)),
-                ('subscribed', models.BooleanField()),
-                ('bankhash', models.TextField(blank=True, null=True)),
-                ('creationdate', models.TextField(blank=True, null=True)),
-                ('address', models.TextField(blank=True, null=True)),
-                ('hackney', models.BooleanField()),
-                ('subscription_period', models.IntegerField()),
-                ('nickname', models.CharField(blank=True, max_length=255, null=True, unique=True)),
-                ('irc_nick', models.CharField(blank=True, max_length=255, null=True, unique=True)),
-                ('gladosfile', models.CharField(blank=True, max_length=255, null=True)),
-                ('terminated', models.BooleanField()),
-                ('admin', models.BooleanField()),
-                ('has_profile', models.BooleanField()),
-                ('disabled_profile', models.BooleanField()),
-                ('doorbot_timestamp', models.DateTimeField(blank=True, null=True)),
-                ('emergency_name', models.CharField(blank=True, max_length=255, null=True)),
-                ('emergency_phone', models.CharField(blank=True, max_length=40, null=True)),
-                ('ldapuser', models.CharField(blank=True, max_length=32, null=True, unique=True)),
-                ('ldapnthash', models.CharField(blank=True, max_length=32, null=True)),
-                ('ldapsshahash', models.CharField(blank=True, max_length=38, null=True)),
-                ('ldapshell', models.CharField(blank=True, max_length=32, null=True)),
-                ('ldapemail', models.CharField(blank=True, max_length=255, null=True)),
-            ],
-            options={
-                'db_table': 'users',
-            },
-        ),
-        migrations.CreateModel(
             name='UserAlias',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
@@ -221,19 +169,9 @@ class Migration(migrations.Migration):
             },
         ),
         migrations.CreateModel(
-            name='UserPermission',
-            fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('perm', models.ForeignKey(to='main.Permission')),
-            ],
-            options={
-                'db_table': 'userperms',
-            },
-        ),
-        migrations.CreateModel(
             name='UserProfile',
             fields=[
-                ('user', models.OneToOneField(to='main.User', primary_key=True, serialize=False)),
+                ('user', models.OneToOneField(to='lhsauth.User', primary_key=True, serialize=False)),
                 ('allow_email', models.BooleanField()),
                 ('allow_doorbot', models.BooleanField()),
                 ('photo', models.CharField(blank=True, max_length=255, null=True)),
@@ -245,29 +183,24 @@ class Migration(migrations.Migration):
             },
         ),
         migrations.AddField(
-            model_name='userpermission',
-            name='user',
-            field=models.ForeignKey(to='main.User'),
-        ),
-        migrations.AddField(
             model_name='userlearning',
             name='user',
-            field=models.ForeignKey(to='main.User'),
+            field=models.ForeignKey(to='lhsauth.User'),
         ),
         migrations.AddField(
             model_name='userinterest',
             name='user',
-            field=models.ForeignKey(to='main.User'),
+            field=models.ForeignKey(to='lhsauth.User'),
         ),
         migrations.AddField(
             model_name='useralias',
             name='user',
-            field=models.ForeignKey(to='main.User'),
+            field=models.ForeignKey(to='lhsauth.User'),
         ),
         migrations.AddField(
             model_name='transaction',
             name='user',
-            field=models.ForeignKey(to='main.User'),
+            field=models.ForeignKey(to='lhsauth.User'),
         ),
         migrations.AddField(
             model_name='subscription',
@@ -277,12 +210,12 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='subscription',
             name='user',
-            field=models.ForeignKey(to='main.User'),
+            field=models.ForeignKey(to='lhsauth.User'),
         ),
         migrations.AddField(
             model_name='projectlog',
             name='user',
-            field=models.ForeignKey(to='main.User', blank=True, null=True),
+            field=models.ForeignKey(to='lhsauth.User', blank=True, null=True),
         ),
         migrations.AddField(
             model_name='project',
@@ -292,12 +225,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='project',
             name='user',
-            field=models.ForeignKey(to='main.User'),
-        ),
-        migrations.AddField(
-            model_name='passwordreset',
-            name='user',
-            field=models.ForeignKey(to='main.User'),
+            field=models.ForeignKey(to='lhsauth.User'),
         ),
         migrations.AddField(
             model_name='interest',
@@ -307,7 +235,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='card',
             name='user',
-            field=models.ForeignKey(to='main.User'),
+            field=models.ForeignKey(to='lhsauth.User'),
         ),
         migrations.AlterUniqueTogether(
             name='userlearning',
