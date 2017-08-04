@@ -10,7 +10,7 @@ from urllib.parse import urljoin
 
 def index(request):
     # This should never be reached - we use it to calculate the base PHP URL
-    return HttpResponse('Django app index')
+    return HttpResponse('Django auth index')
 
 def flourish_url(path):
     base_url = reverse('lhsauth:index')
