@@ -1,0 +1,9 @@
+- model: main.location
+  pk: 1
+  fields: {name: Ground floor}
+- model: main.location
+  pk: 2
+  fields: {name: Basement}
+- model: main.location
+  pk: 3
+  fields: {name: Yard}

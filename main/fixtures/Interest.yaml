@@ -1,0 +1,87 @@
+- model: main.interest
+  pk: 1
+  fields: {category: Computing, suggested: true, name: Robotics, url: 'https://wiki.london.hackspace.org.uk/view/Robotics'}
+- model: main.interest
+  pk: 2
+  fields: {category: Computing, suggested: true, name: Arduino, url: 'https://wiki.london.hackspace.org.uk/view/Not_Just_Arduino'}
+- model: main.interest
+  pk: 3
+  fields: {category: Computing, suggested: true, name: Raspberry Pi, url: 'https://wiki.london.hackspace.org.uk/view/Not_Just_Arduino'}
+- model: main.interest
+  pk: 4
+  fields: {category: Computing, suggested: true, name: Soldering, url: 'https://wiki.london.hackspace.org.uk/view/Electronics_Area'}
+- model: main.interest
+  pk: 5
+  fields: {category: Computing, suggested: true, name: Hardware, url: 'https://wiki.london.hackspace.org.uk/view/Not_Just_Arduino'}
+- model: main.interest
+  pk: 6
+  fields: {category: Computing, suggested: true, name: Software, url: 'https://wiki.london.hackspace.org.uk/w/index.php?title=Special%3ASearch&search=software'}
+- model: main.interest
+  pk: 7
+  fields: {category: Computing, suggested: true, name: Programming, url: 'https://wiki.london.hackspace.org.uk/w/index.php?title=Special%3ASearch&search=programming&go=Go'}
+- model: main.interest
+  pk: 8
+  fields: {category: Fabrication, suggested: true, name: 3D printing, url: 'https://wiki.london.hackspace.org.uk/view/Equipment/Lulzbot_a0_101'}
+- model: main.interest
+  pk: 9
+  fields: {category: Fabrication, suggested: true, name: Laser cutting, url: 'https://wiki.london.hackspace.org.uk/view/Laser_Cutter'}
+- model: main.interest
+  pk: 10
+  fields: {category: Fabrication, suggested: true, name: CNC routing, url: 'https://wiki.london.hackspace.org.uk/view/Pledge:_CNC_Mill'}
+- model: main.interest
+  pk: 11
+  fields: {category: Fabrication, suggested: true, name: Woodworking, url: 'https://wiki.london.hackspace.org.uk/view/Dusty_Wood_Shop'}
+- model: main.interest
+  pk: 12
+  fields: {category: Fabrication, suggested: true, name: Metalworking, url: 'https://wiki.london.hackspace.org.uk/view/Dirty_Metal_Shop'}
+- model: main.interest
+  pk: 13
+  fields: {category: Fabrication, suggested: true, name: Welding, url: 'https://wiki.london.hackspace.org.uk/view/Welding_Training'}
+- model: main.interest
+  pk: 14
+  fields: {category: Crafts, suggested: true, name: Sewing, url: 'https://wiki.london.hackspace.org.uk/view/Sewing_Machines'}
+- model: main.interest
+  pk: 15
+  fields: {category: Crafts, suggested: true, name: Knitting, url: 'https://wiki.london.hackspace.org.uk/view/Equipment/Knitting_Machine'}
+- model: main.interest
+  pk: 16
+  fields: {category: Crafts, suggested: true, name: Painting, url: 'https://wiki.london.hackspace.org.uk/view/Hackspace_Art'}
+- model: main.interest
+  pk: 17
+  fields: {category: Crafts, suggested: true, name: Sculpting, url: 'https://wiki.london.hackspace.org.uk/view/Hackspace_Art'}
+- model: main.interest
+  pk: 18
+  fields: {category: Crafts, suggested: true, name: Vinyl cutting, url: 'https://wiki.london.hackspace.org.uk/view/Vinyl_cutter'}
+- model: main.interest
+  pk: 19
+  fields: {category: Special interests, suggested: true, name: Amateur radio, url: 'https://wiki.london.hackspace.org.uk/view/Amateur_Radio'}
+- model: main.interest
+  pk: 20
+  fields: {category: Special interests, suggested: true, name: Lock picking, url: 'https://wiki.london.hackspace.org.uk/view/Project:Lockpicking'}
+- model: main.interest
+  pk: 21
+  fields: {category: Special interests, suggested: true, name: Music hacking, url: 'https://wiki.london.hackspace.org.uk/view/Music_Hack_Space'}
+- model: main.interest
+  pk: 22
+  fields: {category: Special interests, suggested: true, name: Photography, url: 'https://wiki.london.hackspace.org.uk/view/Project:Darkroom'}
+- model: main.interest
+  pk: 23
+  fields: {category: Special interests, suggested: true, name: Biohacking, url: 'https://wiki.london.hackspace.org.uk/view/Biohacking'}
+- model: main.interest
+  pk: 24
+  fields: {category: Special interests, suggested: true, name: LAN gaming, url: 'https://wiki.london.hackspace.org.uk/view/London_FRAGspace'}
+- model: main.interest
+  pk: 25
+  fields: {category: Special interests, suggested: true, name: PL(A)YWOOD, url: 'https://wiki.london.hackspace.org.uk/view/Playwood'}
+- model: main.interest
+  pk: 26
+  fields: {category: Special interests, suggested: true, name: Brewing, url: 'https://wiki.london.hackspace.org.uk/view/Brewing'}
+- model: main.interest
+  pk: 27
+  fields: {category: Special interests, suggested: true, name: Gardening, url: 'https://wiki.london.hackspace.org.uk/view/Garden'}
+- model: main.interest
+  pk: 28
+  fields: {category: Special interests, suggested: true, name: Cycling, url: 'https://wiki.london.hackspace.org.uk/w/index.php?title=Special%3ASearch&search=cycling&go=Go'}
+- model: main.interest
+  pk: 29
+  fields: {category: Special interests, suggested: true, name: Aerospace, url: 'https://wiki.london.hackspace.org.uk/view/LondonAerospace'}

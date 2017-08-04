@@ -1,0 +1,9 @@
+- model: main.learning
+  pk: 1
+  fields: {name: Laser cutting, description: Laser cutter trained, url: 'https://wiki.london.hackspace.org.uk/view/Lasercutter_Training'}
+- model: main.learning
+  pk: 2
+  fields: {name: Vinyl cutting, description: Vinyl cutter trained, url: 'https://wiki.london.hackspace.org.uk/view/Equipment/VinylCutter'}
+- model: main.learning
+  pk: 3
+  fields: {name: 3D printing, description: 3D printer trained, url: 'https://wiki.london.hackspace.org.uk/view/3dprinter_training'}

@@ -1,0 +1,15 @@
+- model: main.interestcategory
+  pk: Computing
+  fields: {}
+- model: main.interestcategory
+  pk: Crafts
+  fields: {}
+- model: main.interestcategory
+  pk: Fabrication
+  fields: {}
+- model: main.interestcategory
+  pk: Other
+  fields: {}
+- model: main.interestcategory
+  pk: Special interests
+  fields: {}

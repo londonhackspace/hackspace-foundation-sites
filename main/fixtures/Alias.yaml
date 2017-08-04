@@ -1,0 +1,42 @@
+- model: main.alias
+  pk: Callsign
+  fields: {type: 2}
+- model: main.alias
+  pk: Ello
+  fields: {type: 2}
+- model: main.alias
+  pk: Facebook
+  fields: {type: 2}
+- model: main.alias
+  pk: Flickr
+  fields: {type: 2}
+- model: main.alias
+  pk: GitHub
+  fields: {type: 2}
+- model: main.alias
+  pk: Google+
+  fields: {type: 2}
+- model: main.alias
+  pk: Hackspace Wiki
+  fields: {type: 1}
+- model: main.alias
+  pk: IRC
+  fields: {type: 1}
+- model: main.alias
+  pk: LinkedIn
+  fields: {type: 2}
+- model: main.alias
+  pk: Minecraft
+  fields: {type: 2}
+- model: main.alias
+  pk: RSS
+  fields: {type: 2}
+- model: main.alias
+  pk: Twitter
+  fields: {type: 2}
+- model: main.alias
+  pk: XMPP/Jabber
+  fields: {type: 2}
+- model: main.alias
+  pk: YouTube
+  fields: {type: 2}

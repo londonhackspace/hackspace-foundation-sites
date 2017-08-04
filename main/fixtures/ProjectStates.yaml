@@ -1,0 +1,21 @@
+- model: main.projectstates
+  pk: 1
+  fields: {name: Pending Approval}
+- model: main.projectstates
+  pk: 2
+  fields: {name: Approved}
+- model: main.projectstates
+  pk: 3
+  fields: {name: Unapproved}
+- model: main.projectstates
+  pk: 4
+  fields: {name: Extended}
+- model: main.projectstates
+  pk: 5
+  fields: {name: Passed Deadline}
+- model: main.projectstates
+  pk: 6
+  fields: {name: Removed}
+- model: main.projectstates
+  pk: 7
+  fields: {name: Archived}

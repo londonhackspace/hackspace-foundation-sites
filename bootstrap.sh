@@ -34,9 +34,6 @@ EOF
 
 service postgresql reload
 
-psql -U hackspace hackspace < /var/www/hackspace-foundation-sites/etc/schema.sql
-psql -U hackspace hackspace < /var/www/hackspace-foundation-sites/etc/create-flourish-tables.sql
-
 # Configure php
 sed -i~ -e "s/short_open_tag = Off/short_open_tag = On/" \
         -e "s/display_errors = Off/display_errors = On/" \
@@ -62,10 +59,12 @@ cd /var/www/hackspace-foundation-sites
 su vagrant -c 'virtualenv -p python3 --always-copy vagrant-env'
 su vagrant -c 'vagrant-env/bin/pip install -r requirements.txt'
 
-su vagrant -c 'vagrant-env/bin/python manage.py migrate main 0001 --fake-initial'
-su vagrant -c 'vagrant-env/bin/python manage.py migrate main 0002'
-su vagrant -c 'vagrant-env/bin/python manage.py migrate main 0003 --fake'
 su vagrant -c 'vagrant-env/bin/python manage.py migrate'
+su vagrant -c 'vagrant-env/bin/python manage.py loaddata main/fixtures/*'
+
+psql -U hackspace hackspace < /var/www/hackspace-foundation-sites/etc/create-flourish-tables.sql
+psql -U hackspace hackspace < /var/www/hackspace-foundation-sites/etc/restore-column-defaults.sql
+psql -U hackspace hackspace < /var/www/hackspace-foundation-sites/etc/restore-multicolumn-pks.sql
 
 
 cat > /home/vagrant/.bash_profile <<EOF
