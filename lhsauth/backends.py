@@ -23,6 +23,10 @@ and returns JSON with the `user_id` and `fSession::expires` timestamp.
 Also requires an unadvertised URL which destroys a Flourish session if
 it exists. It's possible to use one script with arguments for both.
 
+This sets a datetime expiry on sessions, so you must also change your
+default session serialisation from JSONSerializer to PickleSerializer
+or MsgPackSerializer.
+
 Provide these URLs in your settings.py, e.g.:
 
 FLOURISH_LOOPBACK_URLS = {
