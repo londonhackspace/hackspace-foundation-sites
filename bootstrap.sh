@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 export DEBIAN_FRONTEND=noninteractive
 
-curl -s http://nginx.org/keys/nginx_signing.key | apt-key add -
+curl -s https://nginx.org/keys/nginx_signing.key | apt-key add -
 
-grep nginx.org /etc/apt/sources.list || cat >>/etc/apt/sources.list <<EOF
+[[ -f /etc/apt/sources.list.d/nginx.list ]] || cat >/etc/apt/sources.list.d/nginx.list <<EOF
 deb http://nginx.org/packages/debian/ jessie nginx
 deb-src http://nginx.org/packages/debian/ jessie nginx
 EOF
