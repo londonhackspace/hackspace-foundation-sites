@@ -19,6 +19,9 @@ class Permission(models.Model):
     class Meta:
         db_table = 'perms'
 
+    def __str__(self):
+        return self.perm_name
+
 
 class UserPermission(models.Model):
     perm = models.ForeignKey(Permission)
@@ -26,6 +29,9 @@ class UserPermission(models.Model):
 
     class Meta:
         db_table = 'userperms'
+
+    def __str__(self):
+        return self.perm.perm_name
 
 
 class UserManager(BaseUserManager):

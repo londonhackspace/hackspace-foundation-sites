@@ -13,6 +13,9 @@ class Alias(models.Model):
     class Meta:
         db_table = 'aliases'
 
+    def __str__(self):
+        return self.id
+
 
 class Card(models.Model):
     uid = models.CharField(primary_key=True, max_length=255)
@@ -22,6 +25,9 @@ class Card(models.Model):
 
     class Meta:
         db_table = 'cards'
+
+    def __str__(self):
+        return self.uid
 
 
 class Interest(models.Model):
@@ -34,12 +40,18 @@ class Interest(models.Model):
     class Meta:
         db_table = 'interests'
 
+    def __str__(self):
+        return self.name
+
 
 class InterestCategory(models.Model):
     id = models.CharField(primary_key=True, max_length=255)
 
     class Meta:
         db_table = 'interests_categories'
+
+    def __str__(self):
+        return self.id
 
 
 class Learning(models.Model):
@@ -51,6 +63,9 @@ class Learning(models.Model):
     class Meta:
         db_table = 'learnings'
 
+    def __str__(self):
+        return self.name
+
 
 class Location(models.Model):
     name = models.CharField(max_length=255)
@@ -58,12 +73,18 @@ class Location(models.Model):
     class Meta:
         db_table = 'locations'
 
+    def __str__(self):
+        return self.name
+
 
 class ProjectStates(models.Model):
     name = models.CharField(max_length=255)
 
     class Meta:
         db_table = 'project_states'
+
+    def __str__(self):
+        return self.name
 
 
 class Project(models.Model):
@@ -81,6 +102,9 @@ class Project(models.Model):
     class Meta:
         db_table = 'projects'
 
+    def __str__(self):
+        return self.name
+
 
 class ProjectLog(models.Model):
     timestamp = models.IntegerField()
@@ -90,6 +114,9 @@ class ProjectLog(models.Model):
 
     class Meta:
         db_table = 'projects_logs'
+
+    def __str__(self):
+        return self.timestamp.strftime('%Y-%m-%d %H:%M:%S')
 
 
 class Subscription(models.Model):
@@ -111,6 +138,9 @@ class Transaction(models.Model):
     class Meta:
         db_table = 'transactions'
 
+    def __str__(self):
+        return self.fit_id
+
 
 class UserAlias(models.Model):
     user = models.ForeignKey(User)
@@ -121,6 +151,9 @@ class UserAlias(models.Model):
         db_table = 'users_aliases'
         unique_together = (('user', 'alias'),)
 
+    def __str__(self):
+        return self.alias.id
+
 
 class UserInterest(models.Model):
     user = models.ForeignKey(User)
@@ -130,6 +163,9 @@ class UserInterest(models.Model):
         db_table = 'users_interests'
         unique_together = (('user', 'interest'),)
 
+    def __str__(self):
+        return self.interest
+
 
 class UserLearning(models.Model):
     user = models.ForeignKey(User)
@@ -138,6 +174,9 @@ class UserLearning(models.Model):
     class Meta:
         db_table = 'users_learnings'
         unique_together = (('user', 'learning'),)
+
+    def __str__(self):
+        return self.learning
 
 
 class UserProfile(models.Model):
