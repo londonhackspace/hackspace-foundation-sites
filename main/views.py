@@ -9,5 +9,11 @@ from urllib.parse import urljoin
 
 
 def index(request):
-    return HttpResponse('Django app index')
+    return HttpResponse('Django app index. This should be processed by PHP.')
+
+def project(request, id):
+    return HttpResponse('Project details page. This should be processed by PHP.')
+
+def new_project(request):
+    return HttpResponse('New project page. This should be processed by PHP.')
 

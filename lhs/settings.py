@@ -25,7 +25,14 @@ SECRET_KEY = '9vy^#gb*ec6q#!%^xsvth$$_)by-7^*i=qe27s_^vlhvo)rt5&'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+SITE_ID = 1
+DOMAIN_NAME = 'localhost'
+ABSOLUTEURI_PROTOCOL = 'https'
+
+ALLOWED_HOSTS = [DOMAIN_NAME]
+
+# Change this to django.core.mail.backends.smtp.EmailBackend in production
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 
 # Application definition
@@ -36,7 +43,9 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
+    'django.contrib.sites',
     'django.contrib.staticfiles',
+    'absoluteuri',
     'lhsauth',
     'main',
 ]
@@ -49,6 +58,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'lhsauth.middleware.FlourishAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
+    'django.contrib.sites.middleware.CurrentSiteMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
@@ -71,6 +81,9 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+            ],
+            'builtins': [
+                'absoluteuri.templatetags.absoluteuri',
             ],
         },
     },
@@ -142,4 +155,9 @@ FLOURISH_LOOPBACK_URLS = {
 }
 
 LOGIN_REDIRECT_URL = '/members'
+
+PROJECT_MAILING_LIST = 'london-hack-space-test'
+
+CONTACT_EMAIL = 'contact@' + DOMAIN_NAME
+NOREPLY_EMAIL = 'no-reply@' + DOMAIN_NAME
 

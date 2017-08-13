@@ -1,0 +1,54 @@
+Dear {{ project.user.full_name }},
+<br/><br/>
+
+{% if not subscribed %}
+  Just to let you know our records show you're no longer a paying member at London Hackspace.
+
+  {% if new_state != project.state and new_state == ProjectState.Unapproved %}
+    Your outstanding storage request <a href="{% absoluteuri 'main:project' project.id %}">{{ project.name }}</a>
+    has been automatically unapproved.
+
+  {% elif new_state != project.state and new_state == ProjectState.PassedDeadline %}
+    Your project <a href="{% absoluteuri 'main:project' project.id %}">{{ project.name }}</a> currently
+    approved for storage at London Hackspace has been automatically set to passed deadline.
+    You'll need to remove it from the space ASAP.
+
+  {% else %}
+    Your project <a href="{% absoluteuri 'main:project' project.id %}">{{ project.name }}</a>
+    is already past its deadline. You'll need to remove it from the space ASAP.
+  {% endif %}
+
+  If you're having trouble with your membership payment please
+  <a href="mailto:{{ CONTACT_EMAIL }}">get in touch</a>.
+
+{% else %}
+  {% if new_state != project.state and new_state == ProjectState.Approved %}
+    Just to let you know your project <a href="{% absoluteuri 'main:project' project.id %}">{{ project.name }}</a>
+    has been automatically approved for storage at London Hackspace.
+
+  {% elif new_state == ProjectState.PassedDeadline %}
+    This is a friendly reminder that you had committed to remove your project
+    <a href="{% absoluteuri 'main:project' project.id %}">{{ project.name }}</a>
+    from the London Hackspace by {{ project.to | date:'%d %B %Y' }}.
+    <br/><br/>
+
+    {% if not project.hasExtension %}
+      We know life and other commitments can get in the way of hackspace projects. To help you finish up and
+      organise your belongings you can extend your deadline once for {{ project.extension_duration }} days
+      <a href="{% absoluteuri 'main:project' project.id %}">the request page</a>.
+      <br/><br/>
+    {% endif %}
+
+    If you've already removed your project from the space, you can disable these alerts by marking your project
+    as 'Removed' on <a href="{% absoluteuri 'main:project' project.id %}">the request page</a>.
+    <br/><br/>
+
+    If you need more time please <a href="{% absoluteuri 'main:new_project' %}">submit a new storage request</a>.
+  {% endif %}
+
+{% endif %}
+
+<br/><br/>
+Best,<br/>
+Monkeys in the machine
+

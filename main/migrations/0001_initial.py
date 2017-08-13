@@ -105,7 +105,7 @@ class Migration(migrations.Migration):
             },
         ),
         migrations.CreateModel(
-            name='ProjectStates',
+            name='ProjectState',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('name', models.CharField(max_length=255)),
@@ -220,7 +220,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='project',
             name='state',
-            field=models.ForeignKey(to='main.ProjectStates'),
+            field=models.ForeignKey(to='main.ProjectState'),
         ),
         migrations.AddField(
             model_name='project',
