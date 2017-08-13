@@ -10,3 +10,5 @@ __pycache__/
 *.py[cod]
 *$py.class
 env/
+lhs/local_settings.py
+lhs/production_settings.py

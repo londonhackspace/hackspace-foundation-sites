@@ -150,8 +150,8 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 FLOURISH_LOOPBACK_URLS = {
-    'authenticate': 'http://127.0.0.1/session.php',
-    'destroy': 'http://127.0.0.1/session.php?destroy',
+    'authenticate': 'https://%s/session.php' % DOMAIN_NAME,
+    'destroy': 'https://%s?destroy' % DOMAIN_NAME,
 }
 
 LOGIN_REDIRECT_URL = '/members'
