@@ -19,10 +19,8 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.11/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = '9vy^#gb*ec6q#!%^xsvth$$_)by-7^*i=qe27s_^vlhvo)rt5&'
 
-# SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
 SITE_ID = 1
@@ -31,7 +29,6 @@ ABSOLUTEURI_PROTOCOL = 'https'
 
 ALLOWED_HOSTS = [DOMAIN_NAME]
 
-# Change this to django.core.mail.backends.smtp.EmailBackend in production
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 

@@ -1,7 +1,9 @@
 from .settings import *
 
+# SECURITY WARNING: create your own key, and keep it secret!
 SECRET_KEY = ')(umc97y$zy@=_4y1ca3(rrxr1n=9#27ikx#$67@95!j-p^zfy'
 
+# SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
 SITE_ID = 1
@@ -18,6 +20,7 @@ DATABASES = {
         'HOST': 'localhost',
         'NAME': 'hackspace',
         'USER': 'hackspace',
+        # SECURITY WARNING: create your own password and keep it secret!
         'PASSWORD': 'P0oVqZn49DR3',
     }
 }
