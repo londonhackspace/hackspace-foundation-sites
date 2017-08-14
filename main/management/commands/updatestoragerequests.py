@@ -94,7 +94,7 @@ class Command(BaseCommand):
 
         elif new_state == ProjectState.Approved:
             log_msg = '%s days passed and no comments on the Mailing List, status automatically changed to %s' % (
-                      project.approve_after, new_state)
+                      project.approve_after.days, new_state)
 
         elif new_state == ProjectState.PassedDeadline:
             log_msg = 'Status automatically changed to %s' % new_state
