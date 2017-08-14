@@ -59,6 +59,7 @@ cd /var/www/hackspace-foundation-sites
 su vagrant -c 'virtualenv -p python3 --always-copy vagrant-env'
 su vagrant -c 'vagrant-env/bin/pip install -r requirements.txt'
 
+su vagrant -c 'vagrant-env/bin/python manage.py migrate sites'
 su vagrant -c 'vagrant-env/bin/python manage.py migrate'
 su vagrant -c 'vagrant-env/bin/python manage.py loaddata main/fixtures/*'
 

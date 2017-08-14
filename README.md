@@ -55,6 +55,7 @@ Add to cron:
 After setting the credentials appropriately and taking a backup, run:
 
     env/bin/python manage.py migrate main 0001 --fake-initial
+    env/bin/python manage.py migrate sites
     env/bin/python manage.py migrate
 
 And then run in the following SQL files:
