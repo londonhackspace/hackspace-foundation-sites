@@ -122,7 +122,6 @@ class Command(BaseCommand):
                 'bin/storage-requests-phantomjs-ml-scrape.js',
                 str(project.id),
             ])
-            output = 'Posts found 1\n'
 
             match = re.match('^Posts found ([0-9]+)\n', output)
             if not match:
