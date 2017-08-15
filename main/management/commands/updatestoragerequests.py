@@ -71,20 +71,26 @@ class Command(BaseCommand):
         email = True
 
         if new_state == project.state:
+            days_late = (today - project.to_date).days
+
             if new_state not in [ProjectState.Approved, ProjectState.Extended, ProjectState.PassedDeadline]:
                 log_msg = None
 
-            elif today == project.to_date - timedelta(days=3):
-                log_msg = 'Three days before removal, reminder email sent to owner'
+            elif days_late > 0 and days_late % 28 == 0:
+                log_msg = '28-day anniversary of Passed Deadline, reminder email sent to owner'
+                mailing_list = True
+
+            elif days_late > 0 and days_late % 7 == 0:
+                log_msg = 'Week anniversary of Passed Deadline, reminder email sent to owner'
                 mailing_list = False
 
-            elif today == project.to_date + timedelta(days=1):
+            elif days_late == 1:
                 log_msg = 'Day after removal, reminder email sent to owner'
                 mailing_list = False
 
-            elif today > project.to_date and today.weekday() == project.to_date.weekday():
-                log_msg = 'Week anniversary of Passed Deadline, reminder email sent to owner'
-                mailing_list = True
+            elif days_late == -3:
+                log_msg = 'Three days before removal, reminder email sent to owner'
+                mailing_list = False
 
             else:
                 log_msg = None
