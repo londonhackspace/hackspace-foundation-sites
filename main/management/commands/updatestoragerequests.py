@@ -151,8 +151,8 @@ class Command(BaseCommand):
         project.add_log(log_msg)
         project.save()
 
-        if send_updates:
-            if email:
+        if email:
+            if send_updates:
                 body_html = render_to_string('main/email/project_update.html', {
                     'project': project,
                     'new_state': new_state,
@@ -163,7 +163,11 @@ class Command(BaseCommand):
                 project.email_owner(body_html)
                 self.stdout.write('Emailed the owner')
 
-            if mailing_list:
+            else:
+                self.stdout.write('Would email the owner')
+
+        if mailing_list:
+            if send_updates:
                 body_html = render_to_string('main/email/project_log.html', {
                     'project': project,
                     'log_msg': log_msg,
@@ -171,6 +175,9 @@ class Command(BaseCommand):
                 project.email_mailing_list(body_html)
                 project.add_log('Posted to the Mailing List');
                 self.stdout.write('Emailed the list')
+
+            else:
+                self.stdout.write('Would email the list')
 
         self.stdout.write(self.style.SUCCESS('Successfully updated'))
 
