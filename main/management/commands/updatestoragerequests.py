@@ -88,7 +88,8 @@ class Command(BaseCommand):
                 log_msg = 'Day after removal, reminder email sent to owner'
                 mailing_list = False
 
-            elif days_late == -3:
+            elif days_late == -3 and today > project.from_date + timedelta(days=1):
+                # Only send this if the project's been there a clear day
                 log_msg = 'Three days before removal, reminder email sent to owner'
                 mailing_list = False
 
