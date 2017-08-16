@@ -26,7 +26,7 @@ Dear {{ project.user.full_name }},
     Just to let you know your project <a href="{% absoluteuri 'main:project' project.id %}">{{ project.name }}</a>
     has been automatically approved for storage at London Hackspace.
 
-  {% elif new_state == ProjectState.PassedDeadline %}
+  {% elif new_state == project.state or new_state == ProjectState.PassedDeadline %}
     This is a friendly reminder that you had committed to remove your project
     <a href="{% absoluteuri 'main:project' project.id %}">{{ project.name }}</a>
     from the London Hackspace by {{ project.to | date:'%d %B %Y' }}.
