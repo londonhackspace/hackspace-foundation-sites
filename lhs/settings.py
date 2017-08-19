@@ -148,7 +148,7 @@ STATIC_URL = '/static/'
 
 FLOURISH_LOOPBACK_URLS = {
     'authenticate': 'https://%s/session.php' % DOMAIN_NAME,
-    'destroy': 'https://%s?destroy' % DOMAIN_NAME,
+    'destroy': 'https://%s/session.php?destroy' % DOMAIN_NAME,
 }
 
 LOGIN_REDIRECT_URL = '/members'

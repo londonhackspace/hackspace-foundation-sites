@@ -29,7 +29,7 @@ PROJECT_MAILING_LIST = 'london-hack-space'
 
 FLOURISH_LOOPBACK_URLS = {
     'authenticate': 'https://%s/session.php' % DOMAIN_NAME,
-    'destroy': 'https://%s?destroy' % DOMAIN_NAME,
+    'destroy': 'https://%s/session.php?destroy' % DOMAIN_NAME,
 }
 
 CONTACT_EMAIL = 'contact@' + DOMAIN_NAME
