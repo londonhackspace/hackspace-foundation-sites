@@ -1,8 +1,9 @@
 from django.shortcuts import render
-from django.http import HttpResponse, JsonResponse, HttpResponseRedirect
+from django.http import HttpResponse, JsonResponse, HttpResponseNotFound, HttpResponseRedirect
 from django.contrib import auth
 from django.contrib.auth.views import LoginView
 from django.urls import reverse
+from django.utils.html import escape
 from django.utils.http import urlencode
 
 from urllib.parse import urljoin
@@ -16,4 +17,14 @@ def project(request, id):
 
 def new_project(request):
     return HttpResponse('New project page. This should be processed by PHP.')
+
+def profile(request, id):
+    return HttpResponse(escape('Profile page for %r. This should be processed by PHP.' % id))
+
+def fallback(request, url):
+    return HttpResponseNotFound(escape('Fallback page for %r. This should be processed by PHP.' % url))
+
+
+def report(request):
+    return render(request, 'main/report.html')
 

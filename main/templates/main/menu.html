@@ -1,0 +1,35 @@
+{% load menulink %}
+<div class="collapsed navbar-collapse" data-toggle="collapse" data-target=".navbar">Menu</div>
+<nav class="navbar navbar-default collapse" role="navigation">
+    <ul class="nav navbar-nav">
+        {% menulink 'about' 'Home' 'main:index' %}
+        <li><a href="https://wiki.london.hackspace.org.uk">Wiki</a></li>
+        {% if not user.is_authenticated %}
+            {% menulink 'membership' 'join' 'main:fallback' 'signup.php' %}
+        {% endif  %}
+        {% menulink 'events' 'Events' 'main:fallback' 'events/' %}
+        {% menulink 'organisation' 'Organisation' 'main:fallback' 'organisation/' %}
+        {% menulink 'donate' 'Donate' 'main:fallback' 'donate.php' %}
+        {% if user.is_authenticated and user.subscribed %}
+            {% menulink 'memberslist' 'Members List' 'main:fallback' 'members/members.php' %}
+            {% menulink 'webcams' 'Webcams' 'main:fallback' 'members/webcams.php' %}
+            {% menulink 'storagelist' 'Storage Requests' 'main:fallback' 'storage/list.php' %}
+        {% endif %}
+        {% if user.is_authenticated %}
+        <li class="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
+                aria-expanded="false">Access <span class="caret"></span></a>
+            <ul class="dropdown-menu" role="menu">
+                {% menulink 'cards' 'Access Cards' 'main:fallback' 'members/cards.php' %}
+                {% if user.is_authenticated and user.subscribed %}
+                {% menulink 'code' 'Gate Code' 'main:fallback' 'members/code.php' %}
+                {% menulink 'tools' 'Tools' 'main:fallback' 'members/tools.php' %}
+                {% menulink 'LDAP' 'Edit LDAP Account' 'main:fallback' 'members/ldap.php' %}
+                {% endif %}
+            </ul>
+        </li>
+
+        {% endif %}
+    </ul>
+</nav>
+

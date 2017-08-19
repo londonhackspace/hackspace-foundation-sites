@@ -1,0 +1,179 @@
+{% load static menulink %}<!DOCTYPE html>
+<html lang="en-gb">
+<head>
+    <meta charset="UTF-8">
+    {% if noindex %}
+    <meta name="robots" content="noindex" />
+    {% endif %}
+    {% if description %}
+    <meta name="description" content="{{ description }}" />
+    {% endif %}
+    <title>
+    {% block title %}
+    {% if title %}
+    {{ title }} &mdash; London Hackspace
+    {% else %}
+    London Hackspace
+    {% endif %}
+    {% endblock %}
+    </title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <meta name="apple-mobile-web-app-status-bar-style" content="black"/>
+
+    {% block stylesheet %}
+    <link rel="stylesheet" type="text/css" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" href="/css/jquery-ui-1.9.2.custom.min.css" />
+    <link rel="stylesheet" type="text/css" href="/css/main.css?10" />
+    {% endblock %}
+    <link rel="icon" href="/favicon.ico" />
+
+    <script type="text/javascript">
+        WebFontConfig = {
+            google: { families: [ 'Open+Sans:400,700:latin' ] }
+        };
+        (function() {
+            var wf = document.createElement('script');
+            wf.src = ('https:' == document.location.protocol ? 'https' : 'http') +
+                      '://ajax.googleapis.com/ajax/libs/webfont/1/webfont.js';
+            wf.type = 'text/javascript';
+            wf.async = 'true';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(wf, s);
+        })();
+    </script>
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    {% block extra_head %}{% endblock %}
+</head>
+
+<body class="{% block body_class %}{% endblock %}">
+{% block page %}
+<div class="page-container container">
+
+    {% block user_menu %}
+    <div id="login-logout-container">
+        <div class="btn-group">
+
+        {% if user.is_authenticated %}
+        <a class="btn btn-default dropdown-toggle" data-toggle="dropdown" href="/members/">
+            {{ user.full_name }} <span class="caret"></span>
+        </a>
+        <ul class="dropdown-menu pull-right" role="menu">
+            {% menulink 'members' 'Membership Status' 'main:fallback' 'members/' %}
+            <li class="divider"></li>
+            {% if user.is_authenticated and user.member %}
+                {% menulink 'code' 'Back Gate Code' 'main:fallback' 'members/code.php' %}
+                {% menulink 'cards' 'Manage Access Cards' 'main:fallback' 'members/cards.php' %}
+            {% endif %}
+            {% menulink 'profile' 'View My Profile' 'main:profile' user.id %}
+            {% menulink 'edit' 'Edit Account' 'main:fallback' 'members/edit.php' %}
+            <li class="divider"></li>
+            <li><a href="{% url 'lhsauth:logout' %}">Logout</a></li>
+        </ul>
+        {% else %}
+        <a class="btn btn-default" href="{% url 'lhsauth:login' %}">Log In</a>
+        <a class="btn btn-default" href="/signup.php">Join</a>
+        {% endif %}
+        </div>
+    </div>
+    {% endblock user_menu %}
+
+    {% block branding %}
+    {% if large_page_heading %}
+    <div id="hd" class="row large-page-heading">
+        <div class="container col-md-4">
+              <a id="logo" href="/"><img alt="logo" src="/images/london.png" width="60" height="60"/></a>
+              <h1>London<br/>Hackspace</h1>
+        </div>
+        <? if (isset($blurb)) { ?>
+        <div class="blurb col-md-8">
+            <p>
+                <?= $blurb ?>
+            </p>
+        </div>
+        <? } ?>
+    </div>
+    {% else %}
+    <div id="hd" class="row small-page-heading">
+        <div class="col-md-12">
+              <a id="logo" href="/"><img alt="logo" src="/images/london.png" width="60" height="60"/></a>
+              <h1>London<br/>Hackspace</h1>
+        </div>
+    </div>
+    {% endif %}
+    {% endblock branding %}
+
+    {% block page_body %}
+    <div id="bd">
+        {% block menu %}
+        {% include 'main/menu.html' %}
+        {% endblock menu %}
+
+        <div id="non-menu-content" class="grid_10">
+        {% if user.is_authenticated and not session.suppress_profile_notification %}
+          {% if not user.has_profile and page_name != 'edit' %}
+            <div class="profile-alert alert alert-info alert-dismissable">
+                <button type="button" class="close" data-dismiss="alert" data-persist="suppress_profile_notification"
+                    aria-hidden="true">&times;</button>
+                You haven't filled in your member profile details yet.
+                <a href="/members/profile_edit.php" class="alert-link">Complete your profile</a>
+                to let other members know more about you.
+            </div>
+          {% endif %}
+        {% endif %}
+
+        {% block content %}{% endblock %}
+
+        </div>
+    </div>
+    {% endblock page_body %}
+
+    {% block page_footer %}
+    <footer id="ft">
+        <p>Copyright &copy; {% now 'Y' %} London Hackspace Ltd. Site kindly hosted by <a href="http://www.bitfolk.com">Bitfolk</a>.<br/></p>
+    </footer>
+    {% endblock page_footer %}
+
+</div>
+{% endblock page %}
+
+{% block scripts %}
+{% if show_twitter_feed %}
+<script>
+!function(d,s,id){
+    var js,fjs=d.getElementsByTagName(s)[0];
+    if(!d.getElementById(id)){
+        js=d.createElement(s);
+        js.id=id;
+        js.src="//platform.twitter.com/widgets.js";
+        fjs.parentNode.insertBefore(js,fjs);
+    }
+}(document,"script","twitter-wjs");
+</script>
+{% endif %}
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script type="text/javascript" src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="/javascript/main.js"></script>
+<script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-7698227-2']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+</script>
+{% endblock scripts %}
+{% block extra_scripts %}{% endblock %}
+</body>
+</html>
+
