@@ -1,0 +1,60 @@
+OpaVote Election Results (https://www.OpaVote.com/)
+
+London Hackspace 2017 Trustees Election
+
+There are 6 candidates competing for 4 seats. The number of voters is 306 and
+there were 299 valid votes and 7 empty votes.
+
+Method Options:
+    Precision -- 6
+    Threshold Formula -- Droop
+    Dynamic Threshold -- Dynamic
+    Fractional Threshold -- Fractional
+    Weak Tie Breaking -- Backward
+    Remove Overvotes -- Skip
+    Remove Undervotes -- Skip
+
+Counting votes using Meek STV.
+
+ R|Sevan Janiyan |Mat Stace     |Jose Vidal    |Lex Robinson  |Samantha Thomp
+  |              |              |              |              |son           
+  |--------------------------------------------------------------------------
+  |Paddy Duncan  |Exhausted     |Surplus       |Threshold     
+  |              |              |              |              
+=============================================================================
+ 1|      9.000000|     19.000000|     32.000000|     19.000000|     85.000000
+  |    135.000000|      0.000000|    100.399998|     59.800001
+  |--------------------------------------------------------------------------
+  | Count of first choices. Candidates Samantha Thompson and Paddy Duncan
+  | have reached the threshold and are elected.
+=============================================================================
+ 2|     15.772482|     37.592622|     45.296459|     36.442138|     89.191968
+  |     66.628917|      8.075414|     39.451049|     58.184918
+  |--------------------------------------------------------------------------
+  | Count after transferring surplus votes. Keep factors of candidates who
+  | have exceeded the threshold: Samantha Thompson, 0.703530 and Paddy
+  | Duncan, 0.442963.
+=============================================================================
+ 3|     19.242876|     48.832317|     53.667659|     43.431513|     60.117358
+  |     63.104644|     10.603633|      7.863454|     57.679274
+  |--------------------------------------------------------------------------
+  | Count after transferring surplus votes. Keep factors of candidates who
+  | have exceeded the threshold: Samantha Thompson, 0.458953 and Paddy
+  | Duncan, 0.386826.
+=============================================================================
+ 4|              |     56.893949|     57.557517|     46.631335|     61.420565
+  |     65.279821|     11.216813|     11.587989|     57.556638
+  |--------------------------------------------------------------------------
+  | Count after eliminating Sevan Janiyan and transferring votes. All losing
+  | candidates are eliminated. Candidate Jose Vidal has reached the threshold
+  | and is elected.
+=============================================================================
+ 5|              |     60.662740|     59.896165|     49.017727|     59.092028
+  |     58.098492|     12.232848|      8.335701|     57.353431
+  |--------------------------------------------------------------------------
+  | Count after transferring surplus votes. Keep factors of candidates who
+  | have exceeded the threshold: Jose Vidal, 0.999985; Samantha Thompson,
+  | 0.430081; and Paddy Duncan, 0.341062. Candidate Mat Stace has reached the
+  | threshold and is elected.
+
+Winners are Mat Stace, Jose Vidal, Samantha Thompson, and Paddy Duncan.
