@@ -181,8 +181,8 @@ class Project(models.Model):
     def has_activity(self):
         # FIXME: this should be a column too
         if self.short_term:
-            return self.projectlog_set.count() <= 4
-        return self.projectlog_set.count() <= 2
+            return self.projectlog_set.count() > 4
+        return self.projectlog_set.count() > 2
 
     def add_log(self, msg, user=None):
         self.projectlog_set.create(details=msg, user=user, timestamp=system_time())
