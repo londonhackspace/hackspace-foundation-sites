@@ -120,7 +120,6 @@ class Command(BaseCommand):
         subscribed = project.user.subscribed
         today = timezone.now().date()
         new_state = self.calculate_state(project, subscribed, today)
-        self.stdout.write('New state for (%s, %s, %s) before checking posts is %s' % (project, subscribed, today, new_state))
 
         if project.state == ProjectState.PendingApproval and new_state == ProjectState.Approved:
             # Do a final activity check. This is relatively fragile and slow.
