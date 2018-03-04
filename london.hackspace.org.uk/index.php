@@ -31,10 +31,10 @@ require('header.php'); ?>
             <h3>Currently Offline</h3>
             <p>
               London Hackspace is on the process of temporarily moving all our equipment to storage in
-              preparation to moving to a new location. No events more will be held at Hackney Road.
+              preparation to moving to a new location. No more events will be held at Hackney Road.
             </p>
             <p>
-              We will be running event at other venues around London, watch this space!
+              We will be running events at other venues around London, watch this space!
             </p>
             <p>
               Please note that our website and Wiki will be in a state of flux over the next few weeks as
