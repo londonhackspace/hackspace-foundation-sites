@@ -11,15 +11,15 @@
             <?=menulink('/donate.php', 'donate', 'Donate')?>
             <?if (isset($user) && $user->isMember()) {?>
                 <?=menulink('/members/members.php', 'memberslist', 'Members List')?>
-                <?=menulink('/members/webcams.php', 'webcams', 'Webcams')?>
-                <?=menulink('/storage/list.php', 'storagelist', 'Storage Requests')?>
+                <!-- <?=menulink('/members/webcams.php', 'webcams', 'Webcams')?>
+                <?=menulink('/storage/list.php', 'storagelist', 'Storage Requests')?> -->
             <? } ?>
             <? if (isset($user)) { ?>
             <li class="dropdown">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
                         aria-expanded="false">Access <span class="caret"></span></a>
                     <ul class="dropdown-menu" role="menu">
-                        <?=menulink('/members/cards.php', 'cards', 'Access Cards')?>    
+                        <?=menulink('/members/cards.php', 'cards', 'Access Cards')?>
                         <?if (isset($user) && $user->isMember()) {?>
                         <?=menulink('/members/code.php', 'code', 'Gate Code')?>
                         <?=menulink('/members/tools.php', 'tools', 'Tools')?>
@@ -27,7 +27,7 @@
                         <? } ?>
                     </ul>
                 </li>
-            
+
             <? } ?>
         </ul>
 </nav>

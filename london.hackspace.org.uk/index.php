@@ -1,4 +1,4 @@
-<? 
+<?
 $page = 'about';
 $desc = 'The London Hackspace is a non-profit hackerspace in central London. We\'re a community-run workshop for people to come to share tools and knowledge.';
 $blurb = 'A non-profit hackerspace in London: a community-run workshop where people come to share tools and knowledge.';
@@ -9,11 +9,12 @@ require('header.php'); ?>
 
 <div id="home-page-container" class="row">
     <div class="col-md-4 col-md-push-4">
+      <!--
         <section>
             <h3>Visit us on a Tuesday</h3>
             <p>
-                We hold open evenings <strong>every Tuesday</strong> from <strong>7pm</strong> 
-                where members and non-members hang out, hack on projects, socialise, and collaborate. 
+                We hold open evenings <strong>every Tuesday</strong> from <strong>7pm</strong>
+                where members and non-members hang out, hack on projects, socialise, and collaborate.
                 <a href="http://wiki.london.hackspace.org.uk/view/Weekly_Open_Evenings">Learn more</a>.
             </p>
         </section>
@@ -23,6 +24,20 @@ require('header.php'); ?>
             <p>
                 We host a variety of events covering topics from electronics to brewing and biohacking to lockpicking.
                 For more details, see our <a href='/events/'>events calendar</a>.
+            </p>
+        </section>
+-->
+        <section>
+            <h3>Currently Offline</h3>
+            <p>
+              London Hackspace is on the process of temporarily moving all our equipment to storage in
+              preparation to moving to a new location. No events more will be held at Hackney Road.
+            </p>
+            <p>
+              Hackney road in bring cleaned out in preparation to returning it to our Landlords.
+            </p>
+            <p>
+              We will be running event at other venues around London, watch this space!
             </p>
         </section>
 
@@ -38,35 +53,20 @@ require('header.php'); ?>
             <h3>Donations</h3>
             <p>
               We're a cash-strapped non-profit and the cost of renting a space in London is extortionate.
-              Please help us out by donating <a href="/donate.php">money</a> or 
+              Please help us out by donating <a href="/donate.php">money</a> or
               <a href="http://wiki.london.hackspace.org.uk/view/Guides/Bringing_items_to_the_space">equipment</a>.
             </p>
         </section>
-        
+
     </div>
 
     <div class="col-md-4 col-md-push-4">
         <section>
             <h3>Location</h3>
             <div>
+                </p>
+                  We are currently locating new premises to move to.
                 <p>
-                    We have a <a href="https://wiki.london.hackspace.org.uk/view/447_Hackney_Road">great space</a> on 
-                    Hackney Road, open to our members 24 hours a day.
-                    We hold regular <a href="/events/">events</a> (often free) which are open to everyone.
-                </p>
-                <p>
-                    <a href='http://goo.gl/maps/7BVpY'>
-                      <img id="google-map" src="//maps.googleapis.com/maps/api/staticmap?markers=color:red%7Clabel:A%7C51.532083,-0.060795&zoom=14&size=350x250&visual_refresh=true&key=AIzaSyD1tdIb23oau0tQJrxBxO9umFDQkyzyqAE&sensor=false">
-                      </a>
-                </p>
-                <p itemscope itemtype="http://schema.org/Organization">
-                    <span itemprop="name">London Hackspace</span><br/>
-                    <div itemprop="address" itemscope itemtype="http://schema.org/PostalAddress">
-                      <span itemprop="streetAddress">447 Hackney Road</span><br/>
-                      <span itemprop="addressLocality">London</span><br/>
-                      <span itemprop="postalCode">E2 9DY</span>
-                    </div>
-                </p>
             </div>
         </section>
         <section>
