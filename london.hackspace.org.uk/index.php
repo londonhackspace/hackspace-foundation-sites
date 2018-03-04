@@ -39,6 +39,10 @@ require('header.php'); ?>
             <p>
               We will be running event at other venues around London, watch this space!
             </p>
+            <p>
+              Please note that our website and Wiki will be in a state of flux over the next few weeks as
+              we reorganise things.
+            </p>
         </section>
 
         <section>
