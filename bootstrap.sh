@@ -13,7 +13,7 @@ apt-get update
 apt-get install -y vim python3-virtualenv virtualenv python3-dev libpq-dev \
                    php5 php5-curl php-apc git postgresql-9.4 php5-pgsql \
                    ruby-erubis ruby-pg ruby-hpricot ruby-mail \
-                   php5-fpm nginx \
+                   php5-fpm nginx libyaml-dev \
                    build-essential
 
 su postgres -c 'createuser -s vagrant'
@@ -48,6 +48,7 @@ service php5-fpm restart
 
 # Configure nginx
 rm /etc/nginx/conf.d/default.conf
+rm /etc/nginx/sites-enabled/default
 cp /var/www/hackspace-foundation-sites/nginx-config-drop-in /etc/nginx/conf.d/lhs-www-test.conf
 
 service nginx restart
