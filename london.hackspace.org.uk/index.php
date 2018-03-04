@@ -34,9 +34,6 @@ require('header.php'); ?>
               preparation to moving to a new location. No events more will be held at Hackney Road.
             </p>
             <p>
-              Hackney road in bring cleaned out in preparation to returning it to our Landlords.
-            </p>
-            <p>
               We will be running event at other venues around London, watch this space!
             </p>
             <p>
