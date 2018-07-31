@@ -37,8 +37,8 @@ def get_photos(api_key):
     #
     if 'stat' in data:
         if data['stat']  == 'fail':
-            print "failed to get photos:"
-            print data
+            print("failed to get photos:")
+            print(data)
             exit()
 
     return data['photos']['photo']
@@ -64,7 +64,7 @@ def pick_photos(photo_list, number_needed, tempdir):
                        '-unsharp', '1', '-quality', '90%', temp.name, dest_path]
             ret = subprocess.call(command)
             if ret != 0:
-                print "Call to convert failed with code %s" % ret
+                print("Call to convert failed with code %s" % ret)
                 continue
         photo_data['filename'] = dest_filename
         dest_photos.append(photo_data)
@@ -80,7 +80,7 @@ def render_output(photos, group_id):
 def flickr_fetch():
     source_photos = get_photos(sys.argv[1])
     tempdir = tempfile.mkdtemp()
-    os.chmod(tempdir, 0755)
+    os.chmod(tempdir, 0o755)
     dest_photos = pick_photos(source_photos, 9, tempdir)
     html = render_output(dest_photos, GROUP)
 
