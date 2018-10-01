@@ -5,9 +5,9 @@ $data = array(
     'logo' => 'https://london.hackspace.org.uk/images/london.png',
     'url' => 'https://london.hackspace.org.uk',
     'location' => array(
-        'address' => '447 Hackney Road, London E2 9DY',
-        'lat' => 51.5321,
-        'lon' => -0.0607
+        'address' => '388 High Road, Wembley, HA9 6AR',
+        'lat' => 51.55387,
+        'lon' => -0.29002
     ),
     'spacefed' => array(
         'spacenet' => true,
