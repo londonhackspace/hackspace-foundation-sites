@@ -31,8 +31,10 @@ require('../header.php');
 <p>London Hackspace Ltd. is a company limited by guarantee, registered in England and Wales with company number 06807563. We are not VAT registered.</p>
 
 <p>Registered address:<br />
-   447 Hackney Road<br />
-   London E2 9DY</p>
+388 High Road<br />
+Wembley<br />
+HA9 6AR<br />
+</p>
 
 <? require('../footer.php'); ?>
 </body>

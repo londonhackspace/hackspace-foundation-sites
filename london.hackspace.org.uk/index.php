@@ -9,7 +9,6 @@ require('header.php'); ?>
 
 <div id="home-page-container" class="row">
     <div class="col-md-4 col-md-push-4">
-      <!--
         <section>
             <h3>Visit us on a Tuesday</h3>
             <p>
@@ -26,20 +25,18 @@ require('header.php'); ?>
                 For more details, see our <a href='/events/'>events calendar</a>.
             </p>
         </section>
--->
+
         <section>
-            <h3>Currently Offline</h3>
+            <h3>Back Online!</h3>
             <p>
-              London Hackspace is on the process of temporarily moving all our equipment to storage in
-              preparation to moving to a new location. No more events will be held at Hackney Road.
+              London Hackspace has moved to Wembley!
             </p>
             <p>
-              We will be running events at other venues around London, watch this space!
+              Our new address is:
             </p>
-            <p>
-              Please note that our website and Wiki will be in a state of flux over the next few weeks as
-              we reorganise things.
-            </p>
+            388 High Road<br>
+            Wembley<br>
+            HA9 6AR<br>
         </section>
 
         <section>
