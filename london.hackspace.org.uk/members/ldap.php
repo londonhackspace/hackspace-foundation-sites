@@ -1,4 +1,4 @@
-<? 
+<?
 $page = 'ldap';
 $title = 'LDAP Account Settings';
 $extra_head = '
@@ -38,7 +38,7 @@ function calculateHashes()
         }
 
 	/* this is:
-	
+
 	NThash=MD4(UTF-16-LE(password))
 
 	- or -
@@ -46,7 +46,7 @@ function calculateHashes()
 	echo -n "fish1234" | iconv -t utf-16le | openssl md4
 
 	It does appear that hex_md4 and friends do do utf-16le.
-	
+
 	*/
 	var nt_password = document.getElementById("nt_password").value;
 	var NTLMHash = "";
@@ -55,11 +55,11 @@ function calculateHashes()
 	document.getElementById("ldapnthash").value = NTLMHash;
 
 	/* SSHA infos:
-	
+
 		http://www.openldap.org/faq/data/cache/347.html
-		
+
 		https://code.google.com/p/crypto-js/
-	
+
 	 */
 	var ssha_password = document.getElementById("ssha_password").value;
 
@@ -67,13 +67,13 @@ function calculateHashes()
 	var shahash = CryptoJS.algo.SHA1.create();
 	shahash.update(ssha_password);
 	shahash.update(salt);
-	
+
 	var hash = shahash.finalize();
-	
+
 	hash = hash.concat(salt);
-	
+
 	var out = "{SSHA}" + CryptoJS.enc.Base64.stringify(hash);
-	
+
 	document.getElementById("ldapsshahash").value = out;
 
 	document.getElementById("ldapuser").value = document.getElementById("username").value;
@@ -125,7 +125,7 @@ if($user->isMember()) {
             if (!preg_match('/^[a-z][a-z0-9_-]{0,31}$/', $_POST['ldapuser'])) {
                 throw new fValidationException( '<p>The username must only contain a-z, 0-9 _ and -.</p>' );
             }
-            
+
             $not_allowed_names = array(
                 # system accounts
                 "root" => 1,
@@ -164,7 +164,7 @@ if($user->isMember()) {
                 "bitlbee" => 1,
                 "smokeping" => 1,
                 "debian-exim" => 1,
-                "snmp" => 1,                
+                "snmp" => 1,
                 "asterisk" => 1,
                 "debian-tor" => 1,
                 "privoxy" => 1,
@@ -188,8 +188,8 @@ if($user->isMember()) {
                 "postmaster" => 1,
                 "hostmaster" => 1,
                 "webmaster" => 1,
-                "abuse" => 1,                
-                "spam" => 1,                
+                "abuse" => 1,
+                "spam" => 1,
                 # could be used to troll etc (if we ever do member email accounts),
                 # an infinate number of these :/
                 "billing" => 1,
@@ -213,7 +213,7 @@ if($user->isMember()) {
                 "administrator" => 1,
                 "admin" => 1
             );
-            
+
             if (array_key_exists(strtolower($_POST['ldapuser']), $not_allowed_names)) {
                 throw new fValidationException( '<p>You are not allowed to use '.htmlspecialchars($_POST['ldapuser']).' as a username.</p>' );
             }
@@ -221,7 +221,7 @@ if($user->isMember()) {
             if (!in_array($_POST['ldapshell'], $shells)) {
                 throw new fValidationException( '<p>'.htmlspecialchars($_POST['ldapshell']).' is not a valid shell.</p>' );
             }
-            
+
             if (!preg_match('/^[A-F0-9]{32}$/', $_POST['ldapnthash'])) {
                 throw new fValidationException( '<p>That dosn\'t look like an NT hash</p>' );
             }
@@ -229,7 +229,7 @@ if($user->isMember()) {
             if (!preg_match('/^\{SSHA\}[A-Za-z0-9+\/]{32}$/', $_POST['ldapsshahash'])) {
                 throw new fValidationException( '<p>That dosn\'t look like an SSHA hash</p>' );
             }
-                        
+
             # do they have an existing ldapusername?
             $eluser = $user->getLdapuser();
             if (isset($eluser)) {
@@ -273,20 +273,20 @@ if($user->isMember()) {
 ?>
     <p>As a member of London Hackspace you can have an entry in our <a href="https://wiki.london.hackspace.org.uk/view/LDAP">LDAP database</a></a>.</p>
 
-    <p>This will allow you to log into our various servers and use a <a href="https://spacefed.net/wiki/index.php/SpaceFED">federated wifi system</a> that's linked to multiple hackspaces across the globe.</p>
+    <p>This will allow you to log into our various servers, desktops, CNC workstations, and use a <a href="https://spacefed.net/index.php?title=Spacenet">federated wifi system</a> that's linked to multiple hackspaces across the globe.</p>
 
-    <p>There are many systems that can talk to an LDAP database, we may expand this to include many other services in the future.</p>
+    <p>There are many systems that can talk to an LDAP database, we will expand this to include other services in the future.</p>
 
-    <p>There are 2 password fields below beacause the NTPassword hash is very weak. Unfortunately you have to use it for spacefed. Note that it will only be used for spacefed!</p>
-    
+    <p>There are 2 password fields below beacause the NTPassword hash is very weak. Unfortunately you have to use it for SpaceNet. Note that it will only be used for SpaceNet!</p>
+
     <p>It's probably a good idea for the passwords here to be different from the password for this website.</p>
 
-    <p>We also include an email address in the LDAP database, it does not have to be the same as your main hackspace one.</p>
+    <p>We also include an email address in the LDAP database, it does not have to be the same as your main hackspace one. It's used for things like emails from any cron tasks you set up on a machine you have an account on.</p>
 
     <p>If you allow other members to see your main email address then LDAP will use that.</p>
 
     <!--
-        irc_nick is null for all users and has no ui to edit 
+        irc_nick is null for all users and has no ui to edit
         nickname is for the door announcer.
     -->
 
@@ -300,7 +300,7 @@ if($user->isMember()) {
     <input id="ssha_password" type=password size=32><label for="ssha_password">Password for general use (Will be converted to an SSHA hash).</label><br />
     <input id="nt_password"   type=password size=32><label for="nt_password">Password for spacefed (Will be converted to an NTLMv2 hash).</label><br />
     <select id="shell">
-    <? 
+    <?
     foreach ($shells as $shell) {
         if ($user->getLdapshell() === $shell) {
             echo '<option value="'.$shell.'" selected>'.$shell.'</option>';
@@ -325,7 +325,7 @@ if($user->isMember()) {
     </form>
 <? } else { ?>
     <p>You must be a member to use this page.</p>
-<?php } 
+<?php }
 
 require('../footer.php'); ?>
 </body>
