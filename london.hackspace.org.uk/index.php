@@ -31,12 +31,6 @@ require('header.php'); ?>
             <p>
               London Hackspace has moved to Wembley!
             </p>
-            <p>
-              Our new address is:
-            </p>
-            388 High Road<br>
-            Wembley<br>
-            HA9 6AR<br>
         </section>
 
         <section>
@@ -62,9 +56,14 @@ require('header.php'); ?>
         <section>
             <h3>Location</h3>
             <div>
-                </p>
-                  We are currently locating new premises to move to.
-                <p>
+              <p>
+                Our new address is:
+              </p>
+              <p>
+                388 High Road<br>
+                Wembley<br>
+                HA9 6AR<br>
+              </p>
             </div>
         </section>
         <section>
