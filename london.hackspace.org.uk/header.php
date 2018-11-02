@@ -9,7 +9,7 @@
             <?=menulink('/members/', 'members', 'Membership Status')?>
             <li class="divider"></li>
             <?if (isset($user) && $user->isMember()) {?>
-                <?=menulink('/members/code.php', 'code', 'Back Gate Code')?>
+                <?=menulink('/members/code.php', 'code', 'Car Park Code')?>
                 <?=menulink('/members/cards.php', 'cards', 'Manage Access Cards')?>
             <? } ?>
             <?=menulink("/members/profile/{$user->getId()}", 'profile', 'View My Profile')?>
