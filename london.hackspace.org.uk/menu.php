@@ -21,7 +21,7 @@
                     <ul class="dropdown-menu" role="menu">
                         <?=menulink('/members/cards.php', 'cards', 'Access Cards')?>
                         <?if (isset($user) && $user->isMember()) {?>
-                        <!-- <?=menulink('/members/code.php', 'code', 'Car Park Code')?> -->
+                        <?=menulink('/members/code.php', 'code', 'Car Park Code')?>
                         <?=menulink('/members/tools.php', 'tools', 'Tools')?>
                         <?=menulink('/members/ldap.php', 'LDAP', 'Edit LDAP Account')?>
                         <? } ?>
