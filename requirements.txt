@@ -1,7 +1,7 @@
-Django==1.11.3
+Django>=1.11.0,<1.12.0
 psycopg2==2.7.1
 requests==2.18.1
 msgpack-python==0.4.8
 pytz==2017.2
-PyYAML==3.12
+PyYAML
 django-absoluteuri==1.2.0
