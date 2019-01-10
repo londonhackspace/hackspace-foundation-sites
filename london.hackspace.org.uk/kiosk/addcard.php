@@ -50,7 +50,7 @@ Please allow at least 5 minutes before attempting to use that card on door entry
     <input type="hidden" name="token" value="<?=fRequest::generateCSRFToken()?>" />
     <div class="form-group">
         <label for="email">Email</label>
-        <input class="form-control" type="email" id="email" name="email">
+        <input class="form-control" type="email" id="email" name="email" autocomplete="dont-give-out-emails">
     </div>
     <div class="form-group">
         <label for="password">Password</label>
