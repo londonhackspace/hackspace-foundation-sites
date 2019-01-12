@@ -1,9 +1,13 @@
 <?php
+$page = 'tools';
+$title = 'Tool access';
+$desc = '';
+require '../header.php';
+require '../../etc/config.php';
 
-global $ACSERVER_ADDRESS;
-global $ACSERVER_KEY;
-
-function get_tools_json(url) {
+function get_tools_json($url) {
+  global $ACSERVER_ADDRESS;
+  global $ACSERVER_KEY;
   $opts = array(
     'http'=>array(
       'method'=>"GET",
@@ -14,7 +18,6 @@ function get_tools_json(url) {
 
   $result = file_get_contents($ACSERVER_ADDRESS . $url, false, $context);
   return $result;
-
 }
 
 if (isset($_GET['summary'])){
@@ -43,18 +46,11 @@ if (isset($_GET['summary'])){
     die();
 }
 
-$page = 'tools';
-$title = 'Tool access';
-$desc = '';
-require('../header.php');
-
-
-
 ensureMember();
 
 $url = "/api/get_tools_summary_for_user/" . $user->getId();
 $result = get_tools_json($url);
-$result = json_decode($result, true);
+$result = json_decode($result);
 
 ?>
 
@@ -86,7 +82,9 @@ foreach ($result as $tool)
     continue;
   }
 
-  echo "<th>".$tool->name."<th>";
+  echo $start."\n";
+
+  echo "<th>".$tool->name."</th>";
   $class = "";
 
   if ($tool->status == 'Operational') {
@@ -100,7 +98,7 @@ foreach ($result as $tool)
   if ($tool->status == 'In use') {
     $class = 'is-special';
   }
-  echo .$tool->status."</td>";
+  echo "<td class=\"".$class."\">".$tool->status."</td>";
 
   $class = "";
 
@@ -112,7 +110,7 @@ foreach ($result as $tool)
     $class = 'is-bad';
   }
 
-  echo "<td class=".$class.">".$tool->status_message."</td>";
+  echo "<td class=\"".$class."\">".$tool->status_message."</td>";
   $class = "";
 
   if ($tool->permission =='user') {
@@ -125,8 +123,11 @@ foreach ($result as $tool)
     $class = 'is-special';
   }
 
-  echo "<td class=".$class.">".$tool->permission."</td>";
+  echo "<td class=\"".$class."\">".$tool->permission."</td>";
   echo "<td>".$tool->type."</td>";
+
+  echo "\n".$end."\n";
+
 }
 
 ?>
