@@ -12,3 +12,4 @@ __pycache__/
 env/
 lhs/local_settings.py
 lhs/production_settings.py
+bin/.pgpass
