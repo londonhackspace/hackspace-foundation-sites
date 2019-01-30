@@ -6,12 +6,12 @@ $desc = '';
 require('../header.php');
 
 $cameras = array(
-  3 => "Main Room",
-  6 => "Classroom",
-  5 => "Workshop",
-  1 => "Back Gate",
-  8 => "Back Door",
-  9 => "Quiet Room"
+  5 => "Kitchen",
+  4 => "Classroom",
+  3 => "Open Space",
+  15 => "Metal Workshop",
+  17 => "Wood Workshop",
+  14 => "Middle Workshop"
 );
 
 if (!isset($user) || !$user->isMember()) {
