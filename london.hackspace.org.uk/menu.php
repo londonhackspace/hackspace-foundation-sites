@@ -11,7 +11,7 @@
             <?=menulink('/donate.php', 'donate', 'Donate')?>
             <?if (isset($user) && $user->isMember()) {?>
                 <?=menulink('/members/members.php', 'memberslist', 'Members List')?>
-                <!-- <?=menulink('/members/webcams.php', 'webcams', 'Webcams')?>  -->
+                <?=menulink('/members/webcams.php', 'webcams', 'Webcams')?>
                 <?=menulink('/storage/list.php', 'storagelist', 'Storage Requests')?>
             <? } ?>
             <? if (isset($user)) { ?>
