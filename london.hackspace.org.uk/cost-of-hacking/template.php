@@ -10,9 +10,9 @@
 	<script type="text/javascript">
 	google.load("visualization", "1", {packages:["corechart"]});
 	google.setOnLoadCallback(drawCharts);
-	
+
 	function drawCharts() {
-		
+
 		// ===========
 		// = Balance =
 		// ===========
@@ -65,11 +65,11 @@
 		<header role="banner" class="text">
 			<h1><img src="//london.hackspace.org.uk/images/london.png" width="60" height="60" alt="London Hackspace" /> The Cost of Hacking</h1>
       <p><strong>The London Hackspace is entirely funded by your membership subscriptions &amp; donations.</strong></p>
-      <p>We've taken a massive leap in moving to and fitting out our new space on Hackney Road, and we're currently
-      making a monthly loss and burning through our cash reserves.
-      We can't spend more money on making the space more awesome until we're making a monthly surplus.</p>
+      <p>We've taken a massive leap in moving to and fitting out our new space on High Road, Wembley, and we're currently
+      making a monthly loss and burning through our cash reserves.</p>
+      <p>We can't spend more money on making the space more awesome until we're making a monthly surplus.</p>
 		</header>
-		
+
 		<div id="main" role="main" class="text">
 			<article>
 				<header>

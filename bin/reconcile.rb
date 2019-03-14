@@ -38,7 +38,13 @@ end
 
 ofx = OfxParser::OfxParser.parse(open(ARGV[0]))
 
-db = PG.connect(dbname: 'hackspace', user: 'hackspace')
+f = File.open(".pgpass")
+pgpass = f.gets
+pgpass = pgpass.chomp
+f.close
+
+db = PG.connect(dbname: 'hackspace', user: 'hackspace', password: pgpass)
+
 ofx.bank_account.statement.transactions.each do |transaction|
     if transaction.fit_id.to_i < 200000000000000
       # Barclays now returns non_unique fit_ids in a low range for uncleared transactions.

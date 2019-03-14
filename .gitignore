@@ -2,6 +2,7 @@
 *.swp
 london.hackspace.org.uk/images/photos
 london.hackspace.org.uk/flickr.html
+london.hackspace.org.uk/cam_snapshots
 var
 etc/config.php
 .vagrant
@@ -12,3 +13,5 @@ __pycache__/
 env/
 lhs/local_settings.py
 lhs/production_settings.py
+bin/.pgpass
+static/

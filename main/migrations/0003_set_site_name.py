@@ -8,13 +8,21 @@ from django.conf import settings
 
 def set_site_name(apps, schema_editor):
     Site = apps.get_model('sites', 'Site')
-    site = Site.objects.get(id=settings.SITE_ID)
+    try:
+        site = Site.objects.get(id=settings.SITE_ID)
+    except Exception as e:
+        print(e)
+        site = Site(id=settings.SITE_ID)
     site.domain = site.name = settings.DOMAIN_NAME
     site.save()
 
 def undo_site_name(apps, schema_editor):
     Site = apps.get_model('sites', 'Site')
-    site = Site.objects.get(id=settings.SITE_ID)
+    try:
+        site = Site.objects.get(id=settings.SITE_ID)
+    except Exception as e:
+        print(e)
+        site = Site(id=settings.SITE_ID)
     site.domain = site.name = 'example.com'
     site.save()
 
