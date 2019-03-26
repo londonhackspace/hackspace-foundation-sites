@@ -296,9 +296,9 @@ if($user->isMember()) {
     }
     ?>
 
-    <input id="username"      type=text     size=32 value="<? echo htmlspecialchars($user->getLdapuser()); ?>"><label for="username">LDAP Username</label><br />
-    <input id="ssha_password" type=password size=32><label for="ssha_password">Password for general use (Will be converted to an SSHA hash).</label><br />
-    <input id="nt_password"   type=password size=32><label for="nt_password">Password for spacefed (Will be converted to an NTLMv2 hash).</label><br />
+    * <input id="username"      type=text     size=32 value="<? echo htmlspecialchars($user->getLdapuser()); ?>"><label for="username">LDAP Username</label><br />
+    * <input id="ssha_password" type=password size=32><label for="ssha_password">Password for general use (Will be converted to an SSHA hash).</label><br />
+    * <input id="nt_password"   type=password size=32><label for="nt_password">Password for spacefed wifi (Will be converted to an NTLMv2 hash).</label><br />
     <select id="shell">
     <?
     foreach ($shells as $shell) {
@@ -310,7 +310,7 @@ if($user->isMember()) {
     }
      ?>
     </select><label for="shell">Login shell</label><br />
-    <input id="email"      type=text     size=32 value="<? echo htmlspecialchars($email); ?>"><label for="username">LDAP Email address</label><br />
+    * <input id="email"      type=text     size=32 value="<? echo htmlspecialchars($email); ?>"><label for="username">LDAP Email address</label><br />
 
     <button onclick="calculateHashes()">Update LDAP account</button>
 
