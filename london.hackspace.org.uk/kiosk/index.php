@@ -7,7 +7,7 @@ require('./header.php');
                   or print member's box and other stickers.
 </div>
 
-<p><strong>Swipe your card below to start.</strong></p>
+<p><strong>Tap a card below to the left of the keyboard to start.</strong></p>
 
 
 <? require('./footer.php'); ?>
