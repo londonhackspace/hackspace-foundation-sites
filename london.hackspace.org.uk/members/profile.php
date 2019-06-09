@@ -25,7 +25,13 @@ if (!isset($_GET['id']) && is_null($id) ) {
 if (is_null($user)) {
     $title = "Please login";
 } else {
+  if (($user->isMember() && $this_user->isMember())
+	|| ($user->getMemberNumber() == $this_user->getMemberNumber())
+	|| $user->isAdmin()) {
     $title = "Member Profile: {$this_user->getFullName()}";
+  } else {
+    $title = "Member Profile of non-subscriber";
+  }
 }
 if ($user && $user->getMemberNumber() == $this_user->getMemberNumber()) {
   $page = 'profile';
