@@ -22,7 +22,7 @@ if (!$user) {
 <? } else { ?>
     <p>You're not currently a member of London Hackspace. To become a member, we ask that you pay what you
        think the space is worth to you. Running a place like this isn't cheap, so please be as
-       generous as you can. The Hackspace requires <a href='/cost-of-hacking/'>£15/month</a> per member to run.</p>
+       generous as you can. The Hackspace requires a minimum of <a href='/cost-of-hacking/'>£15/month</a> per member to run.</p>
 
 <h3>Standing Order</h3>
     <p>Set up a monthly standing order with your bank (most banks let you do this online),
