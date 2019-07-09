@@ -9,6 +9,8 @@ require('./header.php');
 
 <p><strong>Tap a card below to the left of the keyboard to start.</strong></p>
 
+<img src="../images/kiosk_reader_art.png">
+
 
 <? require('./footer.php'); ?>
 </body>

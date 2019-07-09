@@ -35,7 +35,7 @@ if (isset($_POST['submit'])) {
         fSession::destroy(); ?>
 
 <h2>Card successfully added</h2>
-Please allow at least 5 minutes before attempting to use that card on door entry or acnode systems.
+Please allow at least 10 minutes before attempting to use that card on door entry or acnode systems.
 <?
         require('./footer.php');
         exit;
