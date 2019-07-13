@@ -74,7 +74,7 @@ require('header.php'); ?>
                 <li><a href="http://webchat.freenode.net/?channels=london-hack-space">Chat to us on IRC</a></li>
                 <li><a href="signup.php">Become a member</a></li>
                 <li><a href="/organisation/">About the organisation</a></li>
-		<li><a href="https://github.com/londonhackspace/hackspace-foundation-sites/blob/b406324/london.hackspace.org.uk/index.php">"Edit" this page (you'll need a github account)</a></li>
+		<li><a href="https://github.com/londonhackspace/hackspace-foundation-sites/blob/master/london.hackspace.org.uk/index.php">"Edit" this page (you'll need a github account)</a></li>
             </ul>
         </section>
     </div>
