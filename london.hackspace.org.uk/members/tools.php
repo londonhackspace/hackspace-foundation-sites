@@ -134,6 +134,12 @@ foreach ($result as $tool)
         </tbody>
  </table>
 </div>
+<div>
+  Note there are
+  <a href="https://wiki.london.hackspace.org.uk/view/Category:Equipment">
+    many, many more non AC node (Access Controlled) tools on the wiki.
+  </a>
+</div>
 
 <?php require('../footer.php'); ?>
 </body>
