@@ -68,6 +68,8 @@ psql -U hackspace hackspace < /var/www/hackspace-foundation-sites/etc/create-flo
 psql -U hackspace hackspace < /var/www/hackspace-foundation-sites/etc/restore-column-defaults.sql
 psql -U hackspace hackspace < /var/www/hackspace-foundation-sites/etc/restore-multicolumn-pks.sql
 
+# Ensure there is a folder for the sessions
+mkdir -p var/session
 
 cat > /home/vagrant/.bash_profile <<EOF
 cd /var/www/hackspace-foundation-sites/
