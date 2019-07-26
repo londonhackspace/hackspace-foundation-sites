@@ -27,6 +27,7 @@ if (isset($_POST['submit'])) {
         $card->setUid($uid);
         $card->store();
         fURL::redirect('/members/cards.php');
+        // Now we could trigger acserver to re-read carddb
         exit;
     } catch (fValidationException $e) {
         echo "<p>" . $e->printMessage() . "</p>";

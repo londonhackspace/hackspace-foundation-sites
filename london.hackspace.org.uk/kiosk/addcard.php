@@ -38,6 +38,7 @@ if (isset($_POST['submit'])) {
 Please allow at least 10 minutes before attempting to use that card on door entry or acnode systems.
 <?
         require('./footer.php');
+        // Now we could trigger acserver to re-read carddb
         exit;
     } catch (fValidationException $e) {
         echo "<p>" . $e->printMessage() . "</p>";
