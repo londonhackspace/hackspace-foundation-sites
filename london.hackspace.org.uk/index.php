@@ -10,14 +10,6 @@ require('header.php'); ?>
 <div id="home-page-container" class="row">
     <div class="col-md-4 col-md-push-4">
         <section>
-            <h3>🌟 Summer Makers Day! 🌟</h3>
-            <p>
-                <strong>This Saturday</strong>, July 27th come along and chat to some of our regular members showing off the <strong>best of the space!</strong>
-                <a href="http://wiki.london.hackspace.org.uk/view/Summer_Makers_Day_July_2019">Learn more</a>.
-            </p>
-        </section>
-
-        <section>
             <h3>Visit us on a Tuesday</h3>
             <p>
                 We hold open evenings <strong>every Tuesday</strong> from <strong>7pm</strong>
