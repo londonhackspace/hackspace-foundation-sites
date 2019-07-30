@@ -1,6 +1,6 @@
 <?
 $page = 'about';
-$desc = 'The London Hackspace is a non-profit hackerspace in central London. We\'re a community-run workshop for people to come to share tools and knowledge.';
+$desc = 'The London Hackspace is a non-profit hackerspace in London. We\'re a community-run workshop for people to come to share tools and knowledge.';
 $blurb = 'A non-profit hackerspace in London: a community-run workshop where people come to share tools and knowledge.';
 $hide_menu = 1;
 $show_twitter_feed = 1;
@@ -27,9 +27,9 @@ require('header.php'); ?>
         </section>
 
         <section>
-            <h3>Back Online!</h3>
+            <h3>Location</h3>
             <p>
-              London Hackspace has moved to Wembley!
+              London Hackspace is now in Wembley with parking and convenient transport links.
             </p>
         </section>
 
@@ -57,7 +57,7 @@ require('header.php'); ?>
             <h3>Location</h3>
             <div>
               <p>
-                Our new address is:
+                Our address is:
               </p>
               <p>
                 388 High Road<br>
