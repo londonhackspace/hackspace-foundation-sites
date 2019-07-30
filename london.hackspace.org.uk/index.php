@@ -26,12 +26,6 @@ require('header.php'); ?>
             </p>
         </section>
 
-        <section>
-            <h3>Location</h3>
-            <p>
-              London Hackspace is now in Wembley with parking and convenient transport links.
-            </p>
-        </section>
 
         <section>
             <h3>Membership</h3>
@@ -63,6 +57,9 @@ require('header.php'); ?>
                 388 High Road<br>
                 Wembley<br>
                 HA9 6AR<br>
+              </p>
+              <p>
+                  Convenient transport links. Parking available to members.
               </p>
             </div>
         </section>
