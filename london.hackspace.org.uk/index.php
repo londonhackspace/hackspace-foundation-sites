@@ -66,12 +66,14 @@ require('header.php'); ?>
         <section>
             <h3>Resources</h3>
             <ul>
+                <li><a href="https://wiki.london.hackspace.org.uk/view/Code_of_Conduct">Code of conduct</a></li>
                 <li><a href="https://wiki.london.hackspace.org.uk/">The wiki</a>, for more about the space</li>
                 <li><a href="https://groups.google.com/forum/#!forum/london-hack-space">Chat to us on the mailing list</a></li>
                 <li><a href="http://webchat.freenode.net/?channels=london-hack-space">Chat to us on IRC</a></li>
                 <li><a href="signup.php">Become a member</a></li>
                 <li><a href="/organisation/">About the organisation</a></li>
-		<li><a href="https://github.com/londonhackspace/hackspace-foundation-sites/blob/master/london.hackspace.org.uk/index.php">"Edit" this page (you'll need a github account)</a></li>
+                <li><a href="https://github.com/londonhackspace/hackspace-foundation-sites/blob/master/london.hackspace.org.uk/index.php">"Edit" this page (you'll need a github account)</a></li>
+                <li><a href="/cost-of-hacking/">Cost of hacking</a></li>
             </ul>
         </section>
     </div>
