@@ -26,4 +26,14 @@ foreach($budget as $line) {
 }
 $expenses = round($expenses);
 
-require_once('template.php');
+if($_GET['format'] == "json") {
+  ?>
+{
+    "income": <?php echo $income; ?>,
+    "budget": <?php echo $expenses; ?>
+}
+  <?php
+}
+else {
+  require_once('template.php');
+}
