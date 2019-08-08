@@ -66,9 +66,7 @@ $include_unsubscribed = ($user->isAdmin() && isset($_GET['unsubscribed']) && $_G
 				<? } ?>
 				<? if($include_unsubscribed) { ?>
 					<td><? if($row['subscribed']) {
-						if ($row['subscribed' !== 'f']) {
-							 ?><span class="glyphicon glyphicon-ok"></span><? 
-						}
+						echo ($row['subscribed'] == 'f') ? '' : '<span class="glyphicon glyphicon-ok"></span>';
 					} ?><p class="hidden"><?=($row['subscribed'] == 'f') ? 'unsubscribed' : 'subscribed'; ?></p></td>
 				<? } ?>
                 <td>
