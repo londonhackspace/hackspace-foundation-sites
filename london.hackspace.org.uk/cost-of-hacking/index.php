@@ -26,7 +26,8 @@ function get_budget() {
       $budget[trim($matches[1])] = $matches[2];
     }
   }
-  */
+   */
+  return $budget;
 }
 
 $budget = get_budget();
