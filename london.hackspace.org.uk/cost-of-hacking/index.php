@@ -6,29 +6,17 @@ $income = $db->translatedQuery("SELECT sum(amount) FROM transactions
 
 function get_budget() {
   $started = false;
-  $budget = Array();
-  $dynamic = "{|
-|Rent + Service Charge
-|£6273
-|-
-|Business Rates
-|£1750
-|-
-|Reserve
-|£500
-|-
-|Supplies
-|£800
-|-
-|Basic Cleaning
-|£200
-|-
-|Rubbish
-|£200
-|}
-";
-  //$dynamic = file_get_contents('http://wiki.london.hackspace.org.uk/view/Budget?action=raw');
-  // commented out while wiki is down
+  $budget = Array(
+    'Rent + Service Charge' => '£6273',
+    'Business Rates' => '£1750',
+    'Reserve' => '£500',
+    'Supplies' => '£800',
+    'Basic Cleaning' => '£200',
+    'Rubbish' => '£200'
+  );
+  //commented out while wiki is down
+  /* 
+  $dynamic = file_get_contents('http://wiki.london.hackspace.org.uk/view/Budget?action=raw');
   foreach(explode("\n", $dynamic) as $row) {
     if ($row == '{|') {
       $started = true;
@@ -38,6 +26,7 @@ function get_budget() {
       $budget[trim($matches[1])] = $matches[2];
     }
   }
+  */
 }
 
 $budget = get_budget();
