@@ -65,7 +65,9 @@ $include_unsubscribed = ($user->isAdmin() && isset($_GET['unsubscribed']) && $_G
 					<td><a href="mailto:<?= htmlspecialchars( $row['email'] ) ?>" title="<?= htmlspecialchars( $row['email'] ) ?>"><span class="glyphicon glyphicon-envelope"></span></a><p class="hidden"><?= htmlspecialchars( $row['email'] ) ?></p></td>
 				<? } ?>
 				<? if($include_unsubscribed) { ?>
-	                <td><? if($row['subscribed']) { ?><span class="glyphicon glyphicon-ok"></span><? } ?><p class="hidden"><?=($row['subscribed'] == 'f') ? 'unsubscribed' : 'subscribed'; ?></p></td>
+					<td><? if($row['subscribed']) {
+						echo ($row['subscribed'] == 'f') ? '' : '<span class="glyphicon glyphicon-ok"></span>';
+					} ?><p class="hidden"><?=($row['subscribed'] == 'f') ? 'unsubscribed' : 'subscribed'; ?></p></td>
 				<? } ?>
                 <td>
 					<? if(!$user->isAdmin() && $row['has_profile'] == 't' && $row['disabled_profile'] == 'f') { ?>

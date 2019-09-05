@@ -6,8 +6,18 @@ $income = $db->translatedQuery("SELECT sum(amount) FROM transactions
 
 function get_budget() {
   $started = false;
-  $budget = Array();
-  foreach(explode("\n", file_get_contents('http://wiki.london.hackspace.org.uk/view/Budget?action=raw')) as $row) {
+  $budget = Array(
+    'Rent + Service Charge' => '6273',
+    'Business Rates' => '1750',
+    'Reserve' => '500',
+    'Supplies' => '800',
+    'Basic Cleaning' => '200',
+    'Rubbish' => '200'
+  );
+  //commented out while wiki is down
+  /* 
+  $dynamic = file_get_contents('http://wiki.london.hackspace.org.uk/view/Budget?action=raw');
+  foreach(explode("\n", $dynamic) as $row) {
     if ($row == '{|') {
       $started = true;
     } else if ($started && $row == '|}') {
@@ -16,6 +26,8 @@ function get_budget() {
       $budget[trim($matches[1])] = $matches[2];
     }
   }
+   */
+  return $budget;
 }
 
 $budget = get_budget();
@@ -26,4 +38,14 @@ foreach($budget as $line) {
 }
 $expenses = round($expenses);
 
-require_once('template.php');
+if($_GET['format'] == "json") {
+  ?>
+{
+    "income": <?php echo $income; ?>,
+    "budget": <?php echo $expenses; ?>
+}
+  <?php
+}
+else {
+  require_once('template.php');
+}
