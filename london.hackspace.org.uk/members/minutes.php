@@ -20,9 +20,9 @@ if($user->isMember()) {
 
 <p><button onclick="toggleElement("080919-minutes")">08/09/19 Minutes</button></p>
 
-<p id="080919-minutes" style="display:none;">
+<div id="080919-minutes">
 <?=nl2br(file_get_contents('../../var/080919-minutes.txt')); ?>
-</p>
+</div>
 
 <? } else { ?>
    <p>You must be a member to use this page.</p>
@@ -30,7 +30,7 @@ if($user->isMember()) {
 
 require('../footer.php'); ?>
 
-<script>
+<script type="text/javascript">
 function toggleElement(name) {
   var x = document.getElementById(name);
   if (x.style.display === "none") {
