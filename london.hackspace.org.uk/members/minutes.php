@@ -18,11 +18,11 @@ if($user->isMember()) {
 
 
 
-<p><button onclick="toggleElement("080919-minutes")">08/09/19 Minutes</button></p>
+<p><button onclick="toggleElement('080919-minutes')">08/09/19 Minutes</button></p>
 
-<div id="080919-minutes">
+<p id="080919-minutes" style="display:none;">
 <?=nl2br(file_get_contents('../../var/080919-minutes.txt')); ?>
-</div>
+</p>
 
 <? } else { ?>
    <p>You must be a member to use this page.</p>
