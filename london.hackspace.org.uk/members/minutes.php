@@ -20,7 +20,7 @@ if($user->isMember()) {
 
 <p><a onclick="document.getElementById('080919-minutes').style.display = 'block';" href='#080919-minutes'>08/09/19 Minutes</a></p>
 
-<p id="080919-minutes" style="display:none;font-weight:bold;font-size:x-large;">
+<p id="080919-minutes" style="display:none;">
 <?=nl2br(file_get_contents('../../var/080919-minutes.txt')); ?>
 </p>
 
