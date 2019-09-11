@@ -20,7 +20,7 @@ if($user->isMember()) {
 
 <p><button onclick="toggleElement('080919-minutes')">08/09/19 Minutes</button></p>
 
-<p id="080919-minutes" style="display:none;">
+<p id="080919-minutes" style="display:none; border:1px; border-style:solid; border-color:#888888; padding: 1em;">
 <?=nl2br(file_get_contents('../../var/080919-minutes.txt')); ?>
 </p>
 
