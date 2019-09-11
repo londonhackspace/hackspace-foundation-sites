@@ -18,7 +18,7 @@ if($user->isMember()) {
 
 
 
-<p><a onclick="document.getElementById('080919-minutes').style.display = 'block';" href='#080919-minutes'>08/09/19 Minutes</a></p>
+<p><button onclick="toggleElement("080919-minutes")">08/09/19 Minutes</button></p>
 
 <p id="080919-minutes" style="display:none;">
 <?=nl2br(file_get_contents('../../var/080919-minutes.txt')); ?>
@@ -29,5 +29,16 @@ if($user->isMember()) {
 <? }
 
 require('../footer.php'); ?>
+
+<script>
+function toggleElement(name) {
+  var x = document.getElementById(name);
+  if (x.style.display === "none") {
+    x.style.display = "block";
+  } else {
+    x.style.display = "none";
+  }
+}
+</script>
 </body>
 </html>
