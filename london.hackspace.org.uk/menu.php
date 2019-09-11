@@ -13,6 +13,7 @@
                 <?=menulink('/members/members.php', 'memberslist', 'Members List')?>
                 <?=menulink('/members/webcams.php', 'webcams', 'Webcams')?>
                 <?=menulink('/storage/list.php', 'storagelist', 'Storage Requests')?>
+                <?=menulink('/members/minutes.php', 'minutes', 'Minutes')?>
             <? } ?>
             <? if (isset($user)) { ?>
             <li class="dropdown">
