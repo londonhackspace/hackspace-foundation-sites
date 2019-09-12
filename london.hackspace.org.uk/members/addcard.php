@@ -55,7 +55,7 @@ if (isset($_POST['submit'])) {
         </tr>
     </table>
 </form>
-
+<p>Note: Cards added to your membership account may take up to 20 minutes to replicate to the access control systems.</p>
 <?php require('../footer.php'); ?>
 </body>
 </html>
