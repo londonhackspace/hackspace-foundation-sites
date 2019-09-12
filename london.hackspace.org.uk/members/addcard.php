@@ -44,7 +44,7 @@ if (isset($_POST['submit'])) {
     <table>
         <tr>
             <td><label for="uid">Card ID: </label></td>
-            <td><input type="text" name="uid" value="" /></td>
+            <td><input type="text" name="uid" value="<?php echo isset($_REQUEST['uid']) ? $_REQUEST['uid'] : '' ?>" /></td>
         </tr>
         <tr>
             <td colspan="2"><input type="submit" name="submit" value="Add" /></td>

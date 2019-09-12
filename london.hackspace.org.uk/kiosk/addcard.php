@@ -63,6 +63,12 @@ Please allow at least 10 minutes before attempting to use that card on door entr
     <?php /* This is a landing page so cardid isn't validated at this point */ ?>
     <input type="hidden" name="uid" value="<?=htmlentities($_GET['cardid'])?>">
 </form>
+<p>Do you use a password manager and your password is too long to type easily? Scan this code and log in with your phone </p>
+<div id="qrcode"></div>
+<script type="text/javascript" src="/javascript/qrcode.min.js"></script>
+<script type="text/javascript">
+new QRCode(document.getElementById("qrcode"), "https://london.hackspace.org.uk/members/addcard.php?uid=<?=$_GET['cardid'] ?>");
+</script>
 
     <?require('./footer.php')?>
 <script type="text/javascript">
