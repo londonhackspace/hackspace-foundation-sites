@@ -5,7 +5,11 @@ $desc = '';
 require('../header.php');
 
 if (!isset($user)) {
-    fURL::redirect('/login.php?forward=/members/addcard.php');
+    $redirect_url = '/login.php?forward=/members/addcard.php';
+    if (isset($_REQUEST['uid'])) {
+        $redirect_url.='?uid='. $_REQUEST['uid'];
+    }
+    fURL::redirect($redirect_url);
 }
 
 if (isset($_POST['submit'])) {
