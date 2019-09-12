@@ -29,6 +29,42 @@ if (isset($_POST['submit'])) {
         $user->setEmergencyPhone(trim($_POST['emergency_phone']));
         $user->store();
 
+        $email = new fEmail();
+        $email->addRecipient($user->getEmail());
+        $email->setFromEmail('contact@london.hackspace.org.uk', 'London Hackspace');
+        $email->setSubject('London Hackspace joining information');
+        $name = $user->getFullName();
+        $email->setBody("Hi $name,
+
+You (or someone who gave us your email address) have set up your London Hackspace membership account:
+
+To actually be able to use the Hackspace, you now would need to become a paying member by setting up a standing order to pay us
+
+Our bank details are:
+
+Barclays Bank plc
+Sort Code: 20-32-06
+Account number: 53413292
+Account Name: London Hackspace Ltd
+Reference: ". sprintf("HS%05u", $user->getId())."
+
+It is vitally important to include your unique reference number above, so that our automated systems can identify the money coming into our
+bank account is from you, to activate your membership.
+
+Your membership will be activated once our bank clears the funds, and our daily script spots it.
+
+Reading material for new members: https://wiki.london.hackspace.org.uk/view/New_members_guide
+
+If you didn't actually sign up for London Hackspace, and someone is pretending to be you, just ignore this email. We won't sent you many more emails.
+If it is troubling you, you can reply to this email.
+
+Cheers,
+
+The London Hackspace membership automated script
+");
+        $smtp = new fSMTP('turing.hackspace.org.uk');
+        $email->send($smtp);
+
         fSession::set('user', $user->getId());
 
         fURL::redirect('/members');
