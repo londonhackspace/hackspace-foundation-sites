@@ -35,8 +35,12 @@ if (isset($_POST['submit'])) {
         fSession::destroy(); ?>
 
 <h2>Card successfully added</h2>
-Please allow at least 10 minutes before attempting to use that card on door entry or acnode systems.
-<?
+<?php
+        if(!$user->isMember() && ($user->getMemberNumber())) {
+            echo 'Please allow at least 10 minutes before attempting to use that card on door entry or acnode systems.';
+        } else {
+            echo 'Your card will be enabled on door entry and acnode systems when your membership payment has been received.';
+        }
         require('./footer.php');
         // Now we could trigger acserver to re-read carddb
         exit;
