@@ -38,7 +38,7 @@ foreach($budget as $line) {
 }
 $expenses = round($expenses);
 
-if($_GET['format'] == "json") {
+if(isset($_GET['format']) && $_GET['format'] == "json") {
   ?>
 {
     "income": <?php echo $income; ?>,
