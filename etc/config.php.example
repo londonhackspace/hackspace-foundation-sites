@@ -5,6 +5,7 @@ $PROJECT_MAILING_LIST = "london-hack-space-test";
 $DB_NAME = 'hackspace';
 $DB_USER = 'hackspace';
 $DB_PASSWORD = '';
+$DB_HOST = NULL;
 
 #Access Control server details for the members/tools.php stuff
 $ACSERVER_ADDRESS = "http://localhost:1234";
