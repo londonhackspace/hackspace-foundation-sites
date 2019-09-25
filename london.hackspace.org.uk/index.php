@@ -9,6 +9,14 @@ require('header.php'); ?>
 
 <div id="home-page-container" class="row">
     <div class="col-md-4 col-md-push-4">
+        <section>	
+            <h3>🌟 Makers Day Oct 19th! 🌟</h3>	
+            <p>	
+                Come along and chat to some of our regular members showing off the <strong>best of the space!</strong>	
+                <a href="https://wiki.london.hackspace.org.uk/view/Makers_Day_Oct_2019">Learn more</a>.	
+            </p>	
+        </section>
+
         <section>
             <h3>Visit us on a Tuesday</h3>
             <p>
