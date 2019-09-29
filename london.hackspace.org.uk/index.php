@@ -85,6 +85,20 @@ require('header.php'); ?>
     </div>
     <div class="col-md-4 col-md-pull-8">
         <section>
+            <h3 class="collapsed" data-toggle="collapse" data-target="#youtube-container">Video tour</h3>
+            <div id="youtube-container" class="collapse">
+            <iframe
+                width="338"
+                height="190"
+                src="https://www.youtube-nocookie.com/embed/s7_7HKSyub8"
+                frameborder="0"
+                allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen
+            ></iframe>
+            </div>
+        </section>
+
+        <section>
             <h3 class="collapsed" data-toggle="collapse" data-target="#flickr-badge-container">Photo stream</h3>
             <div id="flickr-badge-container" class="collapse">
               <? include('flickr.html') ?>
