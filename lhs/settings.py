@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'absoluteuri',
     'lhsauth',
+    'lhsgocardless',
     'main',
 ]
 
@@ -164,6 +165,7 @@ NOREPLY_EMAIL = 'no-reply@' + DOMAIN_NAME
 GOCARDLESS_ENV = 'sandbox'
 # These are our sandbox details, fear not.
 GOCARDLESS_CREDENTIALS = {
-  'access_token':  '0SDNTJADVK'
+  'access_token':  '0SDNTJADVK',
+  'webhool_secret': 'YourSecretHere',
 }
 

@@ -7,6 +7,9 @@
         {% if not user.is_authenticated %}
             {% menulink 'membership' 'join' 'main:fallback' 'signup.php' %}
         {% endif  %}
+        {% if user.is_authenticated and user.gocardless_user %}
+        {% menulink 'gocardless' 'GoCardless' 'gocardless:index' 'gocardless/' %}
+        {% endif %}
         {% menulink 'events' 'Events' 'main:fallback' 'events/' %}
         {% menulink 'organisation' 'Organisation' 'main:fallback' 'organisation/' %}
         {% menulink 'donate' 'Donate' 'main:fallback' 'donate.php' %}

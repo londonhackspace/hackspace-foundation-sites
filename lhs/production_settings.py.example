@@ -35,3 +35,7 @@ FLOURISH_LOOPBACK_URLS = {
 CONTACT_EMAIL = 'contact@' + DOMAIN_NAME
 NOREPLY_EMAIL = 'no-reply@' + DOMAIN_NAME
 
+GOCARDLESS_CREDENTIALS = {
+  'access_token':  'sandbox_Lw1tDIKwxVc1PpGnVsK2puGEuGh-A0d7SbxK-Ylz',
+  'webhook_secret': 'YourSecretHere',
+}
