@@ -10,6 +10,10 @@ class User extends fActiveRecord {
         return $this->getSubscribed() == '1';
     }
 
+    public function isGoCardlessUser() {
+        return $this->getGocardlessUser() == '1';
+    }
+
     public function isAdmin() {
         return $this->getAdmin() == '1';
     }

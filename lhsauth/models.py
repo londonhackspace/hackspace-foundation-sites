@@ -123,6 +123,9 @@ class User(AbstractBaseUser):
     ldapshell = models.CharField(max_length=32, blank=True, null=True)
     ldapemail = models.CharField(max_length=255, blank=True, null=True)
 
+    # This allows us to migrate users over slowly/as needed
+    gocardless_user = models.BooleanField(default=False)
+
     class Meta:
         db_table = 'users'
 

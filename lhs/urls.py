@@ -19,5 +19,6 @@ from django.contrib import admin
 urlpatterns = [
     url(r'', include('lhsauth.urls')),
     url(r'^admin/', admin.site.urls),
+    url(r'^gocardless/', include('lhsgocardless.urls')),
     url(r'', include('main.urls')),
 ]
