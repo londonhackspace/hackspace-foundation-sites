@@ -14,6 +14,7 @@
             {% menulink 'memberslist' 'Members List' 'main:fallback' 'members/members.php' %}
             {% menulink 'webcams' 'Webcams' 'main:fallback' 'members/webcams.php' %}
             {% menulink 'storagelist' 'Storage Requests' 'main:fallback' 'storage/list.php' %}
+            {% menulink 'minutes' 'Minutes' 'main:fallback' 'members/minutes.php' %}
         {% endif %}
         {% if user.is_authenticated %}
         <li class="dropdown">
@@ -22,7 +23,7 @@
             <ul class="dropdown-menu" role="menu">
                 {% menulink 'cards' 'Access Cards' 'main:fallback' 'members/cards.php' %}
                 {% if user.is_authenticated and user.subscribed %}
-                {% menulink 'code' 'Gate Code' 'main:fallback' 'members/code.php' %}
+                {% menulink 'code' 'Car Park Code' 'main:fallback' 'members/code.php' %}
                 {% menulink 'tools' 'Tools' 'main:fallback' 'members/tools.php' %}
                 {% menulink 'LDAP' 'Edit LDAP Account' 'main:fallback' 'members/ldap.php' %}
                 {% endif %}
