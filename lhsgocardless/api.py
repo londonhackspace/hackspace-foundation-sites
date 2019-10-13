@@ -25,8 +25,8 @@ def webhook(request):
             log_event.created_at = event.created_at
             log_event.resource_type = event.resource_type
             log_event.action = event.action
-            log_event.links = json.dumps(event.links)
-            log_event.details = json.dumps(event.details)
+            log_event.links = json.dumps(event.links.attributes)
+            log_event.details = json.dumps(event.details.attributes)
             log_event.save()
 
     except InvalidSignatureError:
