@@ -10,3 +10,6 @@ $DB_HOST = NULL;
 #Access Control server details for the members/tools.php stuff
 $ACSERVER_ADDRESS = "http://localhost:1234";
 $ACSERVER_KEY = "KEY GOES HERE";
+
+# Is this a testing instance?
+$DEV_INSTANCE = true;
