@@ -1,6 +1,3 @@
 [submodule "lib/GoogleAPI"]
 	path = lib/GoogleAPI
 	url = https://github.com/google/google-api-php-client.git
-[submodule "lib/gocardless-php"]
-	path = lib/gocardless-php
-	url = https://github.com/gocardless/gocardless-legacy-php.git
