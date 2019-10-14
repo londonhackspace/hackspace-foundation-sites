@@ -81,7 +81,7 @@ def setup_complete(request):
     # now we have the customer object, we can add a custom field to link it to the LHS user
     params = {
         "metadata": {
-                "HackspaceId": request.user.id
+                "HackspaceId": str(request.user.id)
             }
     }
     gc_client.customers.update(c.customer, params=params)
