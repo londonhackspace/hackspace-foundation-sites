@@ -49,10 +49,7 @@ def setup_user(request):
         "session_token": request.session['PHPSESSID'],
         "success_redirect_url": request.build_absolute_uri(url_reverse('gocardless:setup_redirect')),
         "prefilled_customer": {
-            "email": request.user.email,
-            "metadata": {
-                "HackspaceId": request.user.id
-            }
+            "email": request.user.email
         }
     }
 
@@ -80,6 +77,14 @@ def setup_complete(request):
     c.customer = flow.links.customer
     c.mandate = flow.links.mandate
     c.save()
+
+    # now we have the customer object, we can add a custom field to link it to the LHS user
+    params = {
+        "metadata": {
+                "HackspaceId": request.user.id
+            }
+    }
+    gc_client.customers.update(c.user, params=params)
 
     # now we redirect to the index page, which should now show the user as having a link
     #return redirect('gocardless:index')
