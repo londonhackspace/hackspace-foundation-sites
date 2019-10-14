@@ -87,5 +87,4 @@ def setup_complete(request):
     gc_client.customers.update(c.customer, params=params)
 
     # now we redirect to the index page, which should now show the user as having a link
-    #return redirect('gocardless:index')
-    return redirect(flow.confirmation_url)
+    return redirect('gocardless:index')

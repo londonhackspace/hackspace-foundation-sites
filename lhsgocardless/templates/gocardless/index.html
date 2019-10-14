@@ -8,7 +8,10 @@
 You have not yet set up GoCardless on your account.<br>
 <a href="{% url 'gocardless:setup' %}" role="button" class="btn btn-success">Set Up GoCardless</a>
 {% else %}
-GoCardless is currently linked to your account.
+<div class="alert alert-success" role="alert">
+  You have successfully set up a Direct Debit using GoCardless!
+</div>
+GoCardless Ltd will appear on your bank statement when payments are taken against this Direct Debit.
 {% endif %}
 
 {% endblock %}
