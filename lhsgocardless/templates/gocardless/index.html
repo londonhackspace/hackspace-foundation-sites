@@ -2,5 +2,13 @@
 {% block title %}{% with title='GoCardless' %}{{ block.super }}{% endwith %}{% endblock %}
 {% block page %}{% with page='gocardless' %}{{ block.super }}{% endwith %}{% endblock %}
 {% block content %}
-Hi There. I'd like to talk to you about GoCardless...
+<p>Hi There. I'd like to talk to you about GoCardless...</p>
+<h3>Setup</h3>
+{% if customer_record is None %}
+You have not yet set up GoCardless on your account.<br>
+<a href="{% url 'gocardless:setup' %}" role="button" class="btn btn-success">Set Up GoCardless</a>
+{% else %}
+GoCardless is currently linked to your account.
+{% endif %}
+
 {% endblock %}

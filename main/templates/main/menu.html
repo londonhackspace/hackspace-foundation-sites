@@ -8,7 +8,7 @@
             {% menulink 'membership' 'join' 'main:fallback' 'signup.php' %}
         {% endif  %}
         {% if user.is_authenticated and user.gocardless_user %}
-        {% menulink 'gocardless' 'GoCardless' 'gocardless:index' 'gocardless/' %}
+        {% menulink 'gocardless' 'GoCardless' 'gocardless:index' %}
         {% endif %}
         {% menulink 'events' 'Events' 'main:fallback' 'events/' %}
         {% menulink 'organisation' 'Organisation' 'main:fallback' 'organisation/' %}
