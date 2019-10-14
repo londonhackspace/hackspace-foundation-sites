@@ -47,7 +47,7 @@ def setup_user(request):
     params = {
         "description": "London Hackspace",
         "session_token": request.session['PHPSESSID'],
-        "success_redirect_url": url_reverse('gocardless:setup_redirect'),
+        "success_redirect_url": request.build_absolute_uri(url_reverse('gocardless:setup_redirect')),
         "prefilled_customer": {
             "email": request.user.email,
             "metadata": {
@@ -72,7 +72,7 @@ def setup_complete(request):
         "session_token": request.session['PHPSESSID'],
     }
 
-    flow = gc_client.redirect_flows.complete(flow_id)
+    flow = gc_client.redirect_flows.complete(flow_id, params=params)
 
     # stash the details away
     c = Customer()
@@ -82,4 +82,5 @@ def setup_complete(request):
     c.save()
 
     # now we redirect to the index page, which should now show the user as having a link
-    return redirect('gocardless:index')
+    #return redirect('gocardless:index')
+    return redirect(flow.confirmation_url)
