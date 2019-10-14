@@ -84,7 +84,7 @@ def setup_complete(request):
                 "HackspaceId": request.user.id
             }
     }
-    gc_client.customers.update(c.user, params=params)
+    gc_client.customers.update(c.customer, params=params)
 
     # now we redirect to the index page, which should now show the user as having a link
     #return redirect('gocardless:index')
