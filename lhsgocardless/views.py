@@ -1,4 +1,5 @@
 from functools import wraps
+from datetime import date
 
 from django.shortcuts import render
 from django.shortcuts import redirect
@@ -8,8 +9,9 @@ from django.contrib.auth.decorators import login_required
 from django.urls import reverse as url_reverse
 
 import gocardless_pro as gocardless
+from gocardless_pro.errors import InvalidApiUsageError
 
-from .models import Customer
+from .models import Customer, Subscription
 
 gc_client = gocardless.Client(
     access_token=settings.GOCARDLESS_CREDENTIALS['access_token'],
@@ -31,9 +33,80 @@ def index(request):
     customer_record = Customer.objects.filter(user=request.user).first()
     context = {
         'customer_record': customer_record,
-
     }
+    if customer_record is not None:
+        try:
+            mandate = gc_client.mandates.get(customer_record.mandate)
+            context['mandate_status'] = mandate.status
+            context['subscription'] = Subscription.objects.filter(customer=customer_record).first()
+
+            if context['subscription'] is not None:
+                context['gc_subscription'] = gc_client.subscriptions.get(context['subscription'].subscription)
+                context['amount'] = int(context['gc_subscription'].amount/100)
+        except InvalidApiUsageError:
+            context['mandate_status'] = 'unknown'
     return render(request, 'gocardless/index.html', context=context)
+
+# Handle subscription activities
+@require_gocardless_user
+def subscription(request):
+    customer_record = Customer.objects.filter(user=request.user).first()
+
+    if customer_record is None:
+        return redirect('gocardless:index')
+
+    if not 'subscription-amount' in request.POST:
+        return redirect('gocardless:index')
+
+    # GoCardless expects this in the smallest denomination
+    # of the currency
+    amount = int(request.POST['subscription-amount'])*100
+
+    subscription_record = Subscription.objects.filter(customer=customer_record).first()
+    
+    # is this an update?
+    if subscription_record is not None:
+        params = {
+            "amount": str(amount),
+        }
+        gc_client.subscriptions.update(subscription_record.subscription, params=params)
+        return redirect('gocardless:index')        
+
+    params = {
+        "amount": str(amount),
+        "currency": "GBP",
+        "name": "London Hackspace",
+        "interval_unit": "monthly",
+        "day_of_month": str(date.today().day),
+        "links": {
+        "mandate": customer_record.mandate
+        }
+    }
+
+    sub = gc_client.subscriptions.create(params=params)
+
+    sub_rec = Subscription()
+    sub_rec.customer = customer_record
+    sub_rec.subscription = sub.id
+    sub_rec.save()
+
+    if not request.user.subscribed:
+        # now create an immediate payment for the first month
+        params = {
+            "amount": str(amount),
+            "currency": "GBP",
+            "description": "First month payment",
+            "links": {
+                "mandate": customer_record.mandate
+            }
+        }
+
+        payment = gc_client.payments.create(params=params)
+        # todo: Save payment
+        request.user.subscribed = True
+        request.user.save()
+
+    return redirect('gocardless:index')
 
 # Setup gocardless link for user
 @require_gocardless_user
@@ -81,8 +154,8 @@ def setup_complete(request):
     # now we have the customer object, we can add a custom field to link it to the LHS user
     params = {
         "metadata": {
-                "HackspaceId": str(request.user.id)
-            }
+            "HackspaceId": str(request.user.id)
+        }
     }
     gc_client.customers.update(c.customer, params=params)
 

@@ -166,6 +166,6 @@ GOCARDLESS_ENV = 'sandbox'
 # These are our sandbox details, fear not.
 GOCARDLESS_CREDENTIALS = {
   'access_token':  '0SDNTJADVK',
-  'webhool_secret': 'YourSecretHere',
+  'webhook_secret': 'YourSecretHere',
 }
 
