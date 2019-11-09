@@ -38,6 +38,6 @@ NOREPLY_EMAIL = 'no-reply@' + DOMAIN_NAME
 # set this to live in production
 GOCARDLESS_ENV = 'sandbox'
 GOCARDLESS_CREDENTIALS = {
-  'access_token':  'sandbox_Lw1tDIKwxVc1PpGnVsK2puGEuGh-A0d7SbxK-Ylz',
+  'access_token':  'A0d7SbxK-Ylz',
   'webhook_secret': 'YourSecretHere',
 }

@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'absoluteuri',
     'lhsauth',
     'lhsgocardless',
+    'lhspayments',
     'main',
 ]
 
