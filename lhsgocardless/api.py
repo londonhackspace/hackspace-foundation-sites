@@ -6,8 +6,46 @@ from django.views.decorators.csrf import csrf_exempt
 
 from gocardless_pro import webhooks
 from gocardless_pro.errors import InvalidSignatureError
+import gocardless_pro as gocardless
 
-from .models import EventLog
+from .models import EventLog, Subscription
+
+from lhspayments.models import Payment
+
+gc_client = gocardless.Client(
+    access_token=settings.GOCARDLESS_CREDENTIALS['access_token'],
+    environment=settings.GOCARDLESS_ENV
+)
+
+
+def handle_payment_event(requst, event):
+    gc_payment = gc_client.payments.get(event.links.payment)
+    lhs_payment = Payment.objects.filter(id=event.links.payment).first()
+    
+    if lhs_payment is None:
+        lhs_payment = Payment.create_from_gocardless_payment(gc_payment)
+        lhs_payment.save()
+        return
+
+    lhs_payment.update_from_gocardless_payment(gc_payment)
+
+def handle_mandate_event(request, event):
+    pass
+
+def handle_subscription_event(request, event):
+    gc_subscription = gc_client.subscriptions.get(event.links.subscription)
+    lhs_subscription = Subscription.objects.filter(id=event.links.subscription).first()
+
+    # add records for unknown non-expired subscriptions
+    if lhs_subscription is None and not (gc_subscription.status == 'finished' or gc_subscription.status == 'cancelled'):
+        lhs_subscription = Subscription.create_subscription_from_gocardless_subscription(gc_subscription)
+        lhs_subscription.save()
+
+    # remove old subscriptions
+    if lhs_subscription is not None and (gc_subscription.status == 'finished' or gc_subscription.status == 'cancelled'):
+        lhs_subscription.delete()
+
+    # there isn't really anything we store here that should be updated
 
 @csrf_exempt
 def webhook(request):
@@ -29,6 +67,19 @@ def webhook(request):
             log_event.links = json.dumps(event.links.attributes)
             log_event.details = json.dumps(event.details.attributes)
             log_event.save()
+
+            if event.resource_type == 'payments':
+                handle_payment_event(request, event)
+                log_event.processed = True
+                log_event.save()
+            elif event.resource_type == 'mandates':
+                handle_mandate_event(request, event)
+                log_event.processed = True
+                #log_event.save()
+            elif event.resource_type == 'subscriptions':
+                handle_subscription_event(request, event)
+                log_event.processed = True
+                log_event.save()
 
     except InvalidSignatureError:
         # as per the GoCardless docs, return 498 here

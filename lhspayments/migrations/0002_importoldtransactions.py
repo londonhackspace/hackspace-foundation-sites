@@ -23,6 +23,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('lhspayments', '0001_initial'),
+        ('main', '0003_set_site_name'),
     ]
 
     operations = [

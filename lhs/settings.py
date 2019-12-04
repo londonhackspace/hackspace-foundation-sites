@@ -44,9 +44,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'absoluteuri',
     'lhsauth',
+    'main',
     'lhsgocardless',
     'lhspayments',
-    'main',
 ]
 
 MIDDLEWARE = [

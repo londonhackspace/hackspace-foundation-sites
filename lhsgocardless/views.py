@@ -12,6 +12,7 @@ import gocardless_pro as gocardless
 from gocardless_pro.errors import InvalidApiUsageError
 
 from .models import Customer, Subscription
+from lhspayments.models import Payment
 
 gc_client = gocardless.Client(
     access_token=settings.GOCARDLESS_CREDENTIALS['access_token'],
@@ -85,9 +86,7 @@ def subscription(request):
 
     sub = gc_client.subscriptions.create(params=params)
 
-    sub_rec = Subscription()
-    sub_rec.customer = customer_record
-    sub_rec.subscription = sub.id
+    sub_rec = Subscription.create_subscription_from_gocardless_subscription(sub)
     sub_rec.save()
 
     if not request.user.subscribed:
@@ -102,7 +101,8 @@ def subscription(request):
         }
 
         payment = gc_client.payments.create(params=params)
-        # todo: Save payment
+        payment_rec = Payment.create_from_gocardless_payment(payment, request.user)
+        payment_rec.save()
         request.user.subscribed = True
         request.user.save()
 

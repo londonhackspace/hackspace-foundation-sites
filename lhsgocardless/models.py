@@ -25,3 +25,13 @@ class Customer(models.Model):
 class Subscription(models.Model):
     customer = models.ForeignKey(Customer)
     subscription = models.CharField(max_length=255)
+
+    @staticmethod
+    def create_subscription_from_gocardless_subscription(subscription):
+        s = Subscription()
+        s.subscription = subscription.id
+        gc_mandate = subscription.links.mandate
+        # if customer ends up being None, this is kinda bad.
+        # TODO: handle this case
+        s.customer = Customer.objects.filter(mandate=gc_mandate).first()
+        return s
