@@ -8,7 +8,7 @@ from gocardless_pro import webhooks
 from gocardless_pro.errors import InvalidSignatureError
 import gocardless_pro as gocardless
 
-from .models import EventLog, Subscription
+from .models import EventLog, Subscription, Customer
 
 from lhspayments.models import Payment
 
@@ -21,9 +21,10 @@ gc_client = gocardless.Client(
 def handle_payment_event(requst, event):
     gc_payment = gc_client.payments.get(event.links.payment)
     lhs_payment = Payment.objects.filter(id=event.links.payment).first()
+    lhs_customer = Customer.objects.filter(mandate=gc_payment.links.mandate).first()
     
     if lhs_payment is None:
-        lhs_payment = Payment.create_from_gocardless_payment(gc_payment)
+        lhs_payment = Payment.create_from_gocardless_payment(gc_payment, lhs_customer.user)
         lhs_payment.save()
         return
 
