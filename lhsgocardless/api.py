@@ -35,7 +35,7 @@ def handle_mandate_event(request, event):
 
 def handle_subscription_event(request, event):
     gc_subscription = gc_client.subscriptions.get(event.links.subscription)
-    lhs_subscription = Subscription.objects.filter(id=event.links.subscription).first()
+    lhs_subscription = Subscription.objects.filter(subscription=event.links.subscription).first()
 
     # add records for unknown non-expired subscriptions
     if lhs_subscription is None and not (gc_subscription.status == 'finished' or gc_subscription.status == 'cancelled'):
