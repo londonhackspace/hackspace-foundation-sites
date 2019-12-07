@@ -73,6 +73,9 @@ def subscription(request):
         gc_client.subscriptions.update(subscription_record.subscription, params=params)
         return redirect('gocardless:index')        
 
+    # TODO: If they're an existing subscriber, we need to find when their last payment was
+    #       and use that for the start date of this
+
     params = {
         "amount": str(amount),
         "currency": "GBP",

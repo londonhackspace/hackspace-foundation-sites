@@ -34,6 +34,23 @@ class User extends fActiveRecord {
         );
     }
 
+    public function buildPayments($from=null, $to=null) {
+        
+      if ($from == null){
+        $from = new fDate('2009-01-01');
+      }
+      if ($to == null) {
+        $to = new fDate('now');
+      }
+        return fRecordSet::build(
+            'Payment',
+            array('user_id=' => $this->getId(),
+            'timestamp>' => $from,
+            'timestamp<' => $to),
+            array('timestamp' => 'desc')
+        );
+    }
+
     public function firstTransaction($from=null, $to=null) {
       if ($from == null){
         $from = new fDate('2009-01-01');

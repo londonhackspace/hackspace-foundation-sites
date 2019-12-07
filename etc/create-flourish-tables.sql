@@ -10,6 +10,7 @@ cards
 interests
 interests_categories
 learnings
+lhspayments_payment
 locations
 meeting_attendees
 password_resets

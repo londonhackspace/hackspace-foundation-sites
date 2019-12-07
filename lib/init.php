@@ -13,6 +13,7 @@ require_once("$root/alias.php");
 require_once("$root/interest.php");
 require_once("$root/calendar.php");
 require_once("$root/project.php");
+require_once("$root/payment.php");
 
 
 if(!isset($DB_HOST)) {
@@ -25,6 +26,8 @@ fORMDatabase::attach($db);
 
 fSession::setLength('30 minutes', '10 weeks');
 fSession::setPath(dirname(__FILE__) . '/../var/session');
+
+fORM::mapClassToTable("Payment", "lhspayments_payment");
 
 if ($uid = fSession::get('user')) {
     $user = new User($uid);

@@ -31,8 +31,8 @@ def handle_payment_event(requst, event):
     lhs_payment.update_from_gocardless_payment(gc_payment)
 
 def handle_mandate_event(request, event):
-    # the main event we care about here is cancellation
-    if event.action == 'cancelled':
+    # the main event we care about here is them becoming invalid
+    if event.action == 'cancelled' or event.action == 'failed' or event.action == 'expired':
         lhs_customer = Customer.objects.filter(mandate=event.links.mandate).first()
 
         if lhs_customer: 

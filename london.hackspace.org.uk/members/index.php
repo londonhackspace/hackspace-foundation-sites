@@ -93,13 +93,15 @@ if (!$user) {
     <tr>
         <th>Date</th>
         <th>Amount</th>
+        <th>Type</th>
     </tr>
     </thead>
     <tbody>
-    <? foreach($user->buildTransactions() as $transaction) {?>
+    <? foreach($user->buildPayments() as $payment) {?>
     <tr>
-        <td><?=$transaction->getTimestamp()?></td>
-        <td>£<?=$transaction->getAmount()?></td>
+        <td><?=$payment->getTimestamp()?></td>
+        <td>£<?=$payment->getAmount()?></td>
+        <td><?php if($payment->getPaymentType() == 1) { ?>Bank<?php } else { ?> GoCardless <?php } ?>
     </tr>
     <? } ?>
     </tbody>
