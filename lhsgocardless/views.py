@@ -14,6 +14,8 @@ from gocardless_pro.errors import InvalidApiUsageError
 from .models import Customer, Subscription
 from lhspayments.models import Payment
 
+from lhspayments import membershiptools
+
 gc_client = gocardless.Client(
     access_token=settings.GOCARDLESS_CREDENTIALS['access_token'],
     environment=settings.GOCARDLESS_ENV
@@ -103,11 +105,13 @@ def subscription(request):
             }
         }
 
+        # Explicity store this here rather than waiting for the notification
+        # so we can correctly attribute the payment once we have multiple reasons
         payment = gc_client.payments.create(params=params)
         payment_rec = Payment.create_from_gocardless_payment(payment, request.user)
         payment_rec.save()
-        request.user.subscribed = True
-        request.user.save()
+        
+        membershiptools.on_new_member(request.user)
 
     return redirect('gocardless:index')
 

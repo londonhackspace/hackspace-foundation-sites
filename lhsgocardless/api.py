@@ -11,6 +11,7 @@ import gocardless_pro as gocardless
 from .models import EventLog, Subscription, Customer
 
 from lhspayments.models import Payment
+from lhspayments import membershiptools
 
 gc_client = gocardless.Client(
     access_token=settings.GOCARDLESS_CREDENTIALS['access_token'],
@@ -23,6 +24,10 @@ def handle_payment_event(requst, event):
     lhs_payment = Payment.objects.filter(id=event.links.payment).first()
     lhs_customer = Customer.objects.filter(mandate=gc_payment.links.mandate).first()
     
+    # should this activate the membership?
+    if not lhs_customer.user.subscribed and Payment.gocardless_status_to_status(gc_payment.status) != Payment.STATE_FAILED:
+        membershiptools.on_new_member(lhs_customer.user)
+
     if lhs_payment is None:
         lhs_payment = Payment.create_from_gocardless_payment(gc_payment, lhs_customer.user)
         lhs_payment.save()
