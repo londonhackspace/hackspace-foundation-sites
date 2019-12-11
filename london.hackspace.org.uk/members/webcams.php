@@ -7,8 +7,8 @@ require('../header.php');
 
 $cameras = array(
   5 => "Kitchen",
-  4 => "Classroom",
-  3 => "Open Space",
+  20 => "3D Printing",
+  18 => "Open Space",
   15 => "Metal Workshop",
   17 => "Wood Workshop",
   14 => "Middle Workshop"
