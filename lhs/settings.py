@@ -163,6 +163,13 @@ PROJECT_MAILING_LIST = 'london-hack-space-test'
 CONTACT_EMAIL = 'contact@' + DOMAIN_NAME
 NOREPLY_EMAIL = 'no-reply@' + DOMAIN_NAME
 
+SMTP_SERVER = 'localhost'
+SMTP_TLS = False
+SMTP_STARTTLS = False
+SMTP_USER = None
+SMTP_PASSWORD = None
+
+
 GOCARDLESS_ENV = 'sandbox'
 # These are our sandbox details, fear not.
 GOCARDLESS_CREDENTIALS = {

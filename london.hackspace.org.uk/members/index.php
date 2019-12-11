@@ -98,10 +98,11 @@ if (!$user) {
     </thead>
     <tbody>
     <? foreach($user->buildPayments() as $payment) {?>
-    <tr>
+    <tr <?php if($payment->getPaymentState() == 3) { ?>style="background-color: lightgrey"<?php } ?>>
+        
         <td><?=$payment->getTimestamp()?></td>
         <td>£<?=$payment->getAmount()?></td>
-        <td><?php if($payment->getPaymentType() == 1) { ?>Bank<?php } else { ?> GoCardless <?php } ?>
+        <td><?php if($payment->getPaymentType() == 1) { ?>Bank<?php } else { ?> GoCardless <?php } if($payment->getPaymentState() == 3) { ?> (Failed) <?php } ?>
     </tr>
     <? } ?>
     </tbody>
