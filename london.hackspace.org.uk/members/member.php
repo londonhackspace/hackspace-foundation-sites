@@ -52,7 +52,8 @@ if(($user->isMember() && $this_user->isMember()) || $user->isAdmin() ) {
         
         <td><?=$payment->getTimestamp()?></td>
         <td>£<?=$payment->getAmount()?></td>
-        <td><?php if($payment->getPaymentType() == 1) { ?>Bank<?php } else { ?> GoCardless <?php } if($payment->getPaymentState() == 3) { ?> (Failed) <?php } ?>
+        <td><?php if($payment->getPaymentType() == 1) { ?>Bank<?php } else { ?> GoCardless <?php } if($payment->getPaymentState() == 3) { ?> (Failed) <?php } 
+              else if($payment->getPaymentState() == 1) { ?> (Pending) <?php } ?>
     </tr>
     <? } ?>
     </tbody>
