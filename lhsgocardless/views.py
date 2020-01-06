@@ -80,7 +80,7 @@ def subscription(request):
 
     # if it's a current subscriber, use their last payment as a clue
     if request.user.subscribed:
-        payment = Payment.objects.filter().exclude(payment_state=Payment.STATE_FAILED).order_by('-timestamp').first()
+        payment = Payment.objects.filter(user=request.user).exclude(payment_state=Payment.STATE_FAILED).order_by('-timestamp').first()
         if payment is not None:
             d = payment.timestamp.date().day
 
