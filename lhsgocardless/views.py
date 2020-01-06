@@ -1,5 +1,5 @@
 from functools import wraps
-from datetime import date
+from datetime import date, timedelta
 
 from django.shortcuts import render
 from django.shortcuts import redirect
@@ -78,11 +78,17 @@ def subscription(request):
     # starting point for the day of the month to charge
     d = date.today().day
 
+    # is this a new subscription?
+    newsub = True
+
     # if it's a current subscriber, use their last payment as a clue
     if request.user.subscribed:
         payment = Payment.objects.filter(user=request.user).exclude(payment_state=Payment.STATE_FAILED).order_by('-timestamp').first()
         if payment is not None:
-            d = payment.timestamp.date().day
+            # if this payment was in the last 30 days, use it
+            if payment.timestamp.date() > (date.today() - timedelta(days=30)):
+                d = payment.timestamp.date().day
+                newsub = False
 
     params = {
         "amount": str(amount),
