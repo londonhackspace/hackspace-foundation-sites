@@ -75,15 +75,21 @@ def subscription(request):
         gc_client.subscriptions.update(subscription_record.subscription, params=params)
         return redirect('gocardless:index')        
 
-    # TODO: If they're an existing subscriber, we need to find when their last payment was
-    #       and use that for the start date of this
+    # starting point for the day of the month to charge
+    d = date.today().day
+
+    # if it's a current subscriber, use their last payment as a clue
+    if request.user.subscribed:
+        payment = Payment.objects.filter().exclude(payment_state=Payment.STATE_FAILED).order_by('-timestamp').first()
+        if payment is not None:
+            d = payment.timestamp.date().day
 
     params = {
         "amount": str(amount),
         "currency": "GBP",
-        "name": "London Hackspace",
+        "name": "Membership",
         "interval_unit": "monthly",
-        "day_of_month": str(date.today().day),
+        "day_of_month": str(d),
         "links": {
         "mandate": customer_record.mandate
         }
@@ -167,4 +173,33 @@ def setup_complete(request):
     gc_client.customers.update(c.customer, params=params)
 
     # now we redirect to the index page, which should now show the user as having a link
+    return redirect('gocardless:index')
+
+@require_gocardless_user
+def reset(request):
+    # Remove any GoCardless customer for this user
+    customer_record = Customer.objects.filter(user=request.user).first()
+
+    if customer_record is not None:
+        try:
+            gc_client.customers.remove(customer_record.customer)
+        except InvalidApiUsageError:
+            # This probably just means the record has already been removed at
+            # the GoCardless end
+            pass 
+        customer_record.delete()
+
+    return redirect('gocardless:index')
+
+@require_gocardless_user
+def remove_sub(request):
+    # Remove the user's subscription
+    customer_record = Customer.objects.filter(user=request.user).first()
+
+    if customer_record is not None:
+        sub = Subscription.objects.filter(customer=customer_record).first()
+        if sub is not None:
+            gc_client.subscriptions.cancel(sub.subscription)
+            sub.delete()
+
     return redirect('gocardless:index')

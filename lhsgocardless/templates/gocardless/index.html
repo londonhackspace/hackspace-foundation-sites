@@ -38,6 +38,7 @@ You have not yet set up GoCardless on your account.<br>
 </div>
 {% endif %}
 <p>GoCardless Ltd will appear on your bank statement when payments are taken against this Direct Debit.</p>
+<a href="{% url 'gocardless:reset' %}" role="button" class="btn btn btn btn-danger">Reset GoCardless</a> This button removes any subscription you may have, so be careful!
 {% endif %}
 
 <h3>Subscription</h3>
@@ -59,7 +60,7 @@ You have not yet set up GoCardless on your account.<br>
                 <input name="subscription-amount" maxlength="3" min="5" max="100" value="{{ amount }}" type="number" class="form-control" aria-label="Subscription amount (in GBP)"/>
                 <div class="input-group-addon">.00</div>
             </div>
-            <button>Update Subscription</button>
+            <button>Update Subscription</button>&nbsp;&nbsp;<a href="{% url 'gocardless:remove_sub' %}" class="btn btn btn-danger">Remove Subscription</a>
         </form>
     {% else %}
         <p>Please create a subscription. You can amend this amount at any time.</p>
