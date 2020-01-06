@@ -106,7 +106,7 @@ def subscription(request):
     sub_rec = Subscription.create_subscription_from_gocardless_subscription(sub)
     sub_rec.save()
 
-    if not request.user.subscribed:
+    if newsub:
         # now create an immediate payment for the first month
         params = {
             "amount": str(amount),
@@ -123,7 +123,8 @@ def subscription(request):
         payment_rec = Payment.create_from_gocardless_payment(payment, request.user)
         payment_rec.save()
         
-        membershiptools.on_new_member(request.user)
+        if not request.user.subscribed:
+            membershiptools.on_new_member(request.user)
 
     return redirect('gocardless:index')
 
