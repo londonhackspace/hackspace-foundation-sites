@@ -103,22 +103,3 @@ ofx.bank_account.statement.transactions.each do |transaction|
       end
     end
 end
-
-db.exec("SELECT users.*, (SELECT max(timestamp) FROM transactions WHERE user_id = users.id) AS lastsubscription
-            FROM users
-            WHERE users.subscribed = true
-            AND (SELECT max(timestamp) FROM transactions WHERE user_id = users.id) < now() - interval '1 month' - interval '14 days'"
-            ) do |result|
-
-    result.each do |user|
-      puts "Unsubscribing #{user['full_name']}."
-      db.exec_params("UPDATE users SET subscribed = false WHERE id = $1", [user['id']])
-      p user['lastsubscription']
-      send_unsubscribe_email(user['email'], user['full_name'], Time.parse(user['lastsubscription']))
-      # check for ldap infos, delete if they exist
-      if user['ldapuser']
-        puts "deleting LDAP account: #{user['ldapuser']}"
-          system("/var/www/hackspace-foundation-sites/bin/ldap-delete.sh", user['ldapuser'])
-      end
-    end
-end
