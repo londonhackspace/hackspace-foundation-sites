@@ -57,6 +57,11 @@ You have not yet set up GoCardless on your account.<br>
 {% else %}
     {% if subscription is not None %}
         <p>You currently have a subscription.<br>The payments are taken on the {{ gc_subscription.day_of_month | ordinal }} day of the month.</p>
+        {% if subserror is not None %}
+        <div class="alert alert-danger" role="alert">
+            Subscription must be at least £5
+        </div>
+        {% endif %}
         <form method="post" action="{% url 'gocardless:subscription' %}" >
             {% csrf_token %}
             <div class="input-group">
@@ -70,6 +75,11 @@ You have not yet set up GoCardless on your account.<br>
         <p>Please create a subscription. You can amend this amount at any time.</p>
         {% if not request.user.subscribed %}
         <p>Submitting this form will start a subscription and also take the first payment.</p>
+        {% endif %}
+        {% if subserror is not None %}
+        <div class="alert alert-danger" role="alert">
+            Subscription must be at least £5
+        </div>
         {% endif %}
         <form method="post" action="{% url 'gocardless:subscription' %}" >
             {% csrf_token %}

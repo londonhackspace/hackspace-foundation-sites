@@ -42,7 +42,8 @@ def index(request):
             mandate = gc_client.mandates.get(customer_record.mandate)
             context['mandate_status'] = mandate.status
             context['subscription'] = Subscription.objects.filter(customer=customer_record).first()
-
+            if request.GET.get('subserror') is not None:
+                context['subserror'] = request.GET.get('subserror')
             if context['subscription'] is not None:
                 context['gc_subscription'] = gc_client.subscriptions.get(context['subscription'].subscription)
                 context['amount'] = int(context['gc_subscription'].amount/100)
@@ -60,6 +61,14 @@ def subscription(request):
 
     if not 'subscription-amount' in request.POST:
         return redirect('gocardless:index')
+
+
+    if int(request.POST['subscription-amount']) < 5:
+        # Wait, that's not allowed...
+        response = redirect('gocardless:index')
+        response['Location'] += '?subserror=toolow'
+        return response
+
 
     # GoCardless expects this in the smallest denomination
     # of the currency
