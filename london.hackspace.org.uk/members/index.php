@@ -19,8 +19,20 @@ if (!$user) {
     <p>You're currently a member of London Hackspace, thanks for your support!</p>
     <? if ($user->isGoCardlessUser()) { ?>  
     <h3>GoCardless</h3>
+    <?
+        // see if the user has actually submitted a payment via gocardless
+        $hasgcpayment = false;
+        foreach($user->buildPayments() as $payment) {
+            if ($payment->getPaymentType() == 2) {
+                $hasgcpayment = true;
+            }
+        }
+        if ($hasgcpayment) {
+    ?>
     You're using GoCardless to subscribe.
     <? } else { ?>
+        <p>We are now moving to GoCardless to handle membership payments. To manage your subscription, please <a href="/gocardless/">click here</a>.</p>
+    <? }} else { ?>
     <h3>Reference Number</h3>
     <p>Your standing order reference number is: <strong><?=$user->getMemberNumber()?></strong></p>
     <? } ?>

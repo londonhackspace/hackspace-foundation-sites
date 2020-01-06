@@ -9,7 +9,7 @@ from django.contrib.auth.decorators import login_required
 from django.urls import reverse as url_reverse
 
 import gocardless_pro as gocardless
-from gocardless_pro.errors import InvalidApiUsageError
+from gocardless_pro.errors import InvalidApiUsageError, InvalidStateError
 
 from .models import Customer, Subscription
 from lhspayments.models import Payment
@@ -98,6 +98,10 @@ def subscription(request):
             if payment.timestamp.date() > (date.today() - timedelta(days=30)):
                 d = payment.timestamp.date().day
                 newsub = False
+
+    # 29-31 aren't valid dates in GoCardless land, so we clamp to the 28th
+    if d > 28:
+        d = 28
 
     params = {
         "amount": str(amount),
@@ -198,6 +202,16 @@ def reset(request):
 
     if customer_record is not None:
         try:
+            # if the user has a subscription, remove it
+            sub = Subscription.objects.filter(customer=customer_record).first()
+            if sub is not None:
+                gc_client.subscriptions.cancel(sub.subscription)
+                sub.delete()
+            try:
+                gc_client.mandates.cancel(customer_record.mandate)
+            except InvalidStateError:
+                # Probably just means the mandate is already cancelled or something
+                pass
             gc_client.customers.remove(customer_record.customer)
         except InvalidApiUsageError:
             # This probably just means the record has already been removed at
