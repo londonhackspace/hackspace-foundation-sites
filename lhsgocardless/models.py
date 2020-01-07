@@ -17,13 +17,13 @@ class EventLog(models.Model):
 # Using the redirect flow, we can only create all of these together, so storing them
 # like this is not a problem.
 class Customer(models.Model):
-    user = models.ForeignKey(User)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     customer = models.CharField(max_length=255)
     mandate = models.CharField(max_length=255)
     created = models.DateTimeField(auto_now_add=True)
 
 class Subscription(models.Model):
-    customer = models.ForeignKey(Customer)
+    customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
     subscription = models.CharField(max_length=255)
 
     @staticmethod

@@ -6,7 +6,7 @@ from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
 
 class PasswordReset(models.Model):
     key = models.TextField(primary_key=True)
-    user = models.ForeignKey('User')
+    user = models.ForeignKey('User', on_delete=models.CASCADE)
     expires = models.DateTimeField()
 
     class Meta:
@@ -24,8 +24,8 @@ class Permission(models.Model):
 
 
 class UserPermission(models.Model):
-    perm = models.ForeignKey(Permission)
-    user = models.ForeignKey('User')
+    perm = models.ForeignKey(Permission, on_delete=models.CASCADE)
+    user = models.ForeignKey('User', on_delete=models.CASCADE)
 
     class Meta:
         db_table = 'userperms'

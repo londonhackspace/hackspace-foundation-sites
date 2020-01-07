@@ -23,7 +23,7 @@ class Payment(models.Model):
 
     id = models.CharField(primary_key=True, max_length=255)
     timestamp = models.DateTimeField()
-    user = models.ForeignKey(User)
+    user = models.ForeignKey(User, on_delete=models.PROTECT)
     amount = models.DecimalField(max_digits=6, decimal_places=2)
     payment_type = models.IntegerField(choices=PAYMENT_TYPES)
     payment_state = models.IntegerField(choices=PAYMENT_STATES)

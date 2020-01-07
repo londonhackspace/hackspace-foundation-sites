@@ -86,7 +86,7 @@ class Migration(migrations.Migration):
                 ('from_date', models.DateTimeField()),
                 ('to_date', models.DateTimeField()),
                 ('contact', models.CharField(blank=True, max_length=255, null=True)),
-                ('location', models.ForeignKey(to='main.Location')),
+                ('location', models.ForeignKey(to='main.Location', on_delete=models.CASCADE)),
             ],
             options={
                 'db_table': 'projects',
@@ -98,7 +98,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('timestamp', models.IntegerField()),
                 ('details', models.CharField(max_length=255)),
-                ('project', models.ForeignKey(to='main.Project')),
+                ('project', models.ForeignKey(to='main.Project', on_delete=models.CASCADE)),
             ],
             options={
                 'db_table': 'projects_logs',
@@ -142,7 +142,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('username', models.CharField(max_length=255)),
-                ('alias', models.ForeignKey(to='main.Alias')),
+                ('alias', models.ForeignKey(to='main.Alias', on_delete=models.CASCADE)),
             ],
             options={
                 'db_table': 'users_aliases',
@@ -152,7 +152,7 @@ class Migration(migrations.Migration):
             name='UserInterest',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('interest', models.ForeignKey(to='main.Interest')),
+                ('interest', models.ForeignKey(to='main.Interest', on_delete=models.CASCADE)),
             ],
             options={
                 'db_table': 'users_interests',
@@ -162,7 +162,7 @@ class Migration(migrations.Migration):
             name='UserLearning',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('learning', models.ForeignKey(to='main.Learning')),
+                ('learning', models.ForeignKey(to='main.Learning', on_delete=models.CASCADE)),
             ],
             options={
                 'db_table': 'users_learnings',
@@ -171,7 +171,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='UserProfile',
             fields=[
-                ('user', models.OneToOneField(to='lhsauth.User', primary_key=True, serialize=False)),
+                ('user', models.OneToOneField(to='lhsauth.User', primary_key=True, serialize=False, on_delete=models.CASCADE)),
                 ('allow_email', models.BooleanField()),
                 ('allow_doorbot', models.BooleanField()),
                 ('photo', models.CharField(blank=True, max_length=255, null=True)),
@@ -185,57 +185,57 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='userlearning',
             name='user',
-            field=models.ForeignKey(to='lhsauth.User'),
+            field=models.ForeignKey(to='lhsauth.User', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='userinterest',
             name='user',
-            field=models.ForeignKey(to='lhsauth.User'),
+            field=models.ForeignKey(to='lhsauth.User', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='useralias',
             name='user',
-            field=models.ForeignKey(to='lhsauth.User'),
+            field=models.ForeignKey(to='lhsauth.User', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='transaction',
             name='user',
-            field=models.ForeignKey(to='lhsauth.User'),
+            field=models.ForeignKey(to='lhsauth.User', on_delete=models.PROTECT),
         ),
         migrations.AddField(
             model_name='subscription',
             name='transaction',
-            field=models.ForeignKey(to='main.Transaction'),
+            field=models.ForeignKey(to='main.Transaction', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='subscription',
             name='user',
-            field=models.ForeignKey(to='lhsauth.User'),
+            field=models.ForeignKey(to='lhsauth.User', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='projectlog',
             name='user',
-            field=models.ForeignKey(to='lhsauth.User', blank=True, null=True),
+            field=models.ForeignKey(to='lhsauth.User', blank=True, null=True, on_delete=models.SET_NULL),
         ),
         migrations.AddField(
             model_name='project',
             name='state',
-            field=models.ForeignKey(to='main.ProjectState'),
+            field=models.ForeignKey(to='main.ProjectState', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='project',
             name='user',
-            field=models.ForeignKey(to='lhsauth.User'),
+            field=models.ForeignKey(to='lhsauth.User', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='interest',
             name='category',
-            field=models.ForeignKey(to='main.InterestCategory', db_column='category'),
+            field=models.ForeignKey(to='main.InterestCategory', db_column='category', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='card',
             name='user',
-            field=models.ForeignKey(to='lhsauth.User'),
+            field=models.ForeignKey(to='lhsauth.User', on_delete=models.CASCADE),
         ),
         migrations.AlterUniqueTogether(
             name='userlearning',

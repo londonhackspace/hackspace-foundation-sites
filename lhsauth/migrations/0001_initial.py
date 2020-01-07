@@ -67,7 +67,7 @@ class Migration(migrations.Migration):
             name='UserPermission',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('perm', models.ForeignKey(to='lhsauth.Permission')),
+                ('perm', models.ForeignKey(to='lhsauth.Permission', on_delete=models.CASCADE)),
             ],
             options={
                 'db_table': 'userperms',
@@ -76,11 +76,11 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='userpermission',
             name='user',
-            field=models.ForeignKey(to='lhsauth.User'),
+            field=models.ForeignKey(to='lhsauth.User', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='passwordreset',
             name='user',
-            field=models.ForeignKey(to='lhsauth.User'),
+            field=models.ForeignKey(to='lhsauth.User', on_delete=models.CASCADE),
         ),
     ]
