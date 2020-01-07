@@ -4,21 +4,6 @@ from __future__ import unicode_literals
 
 from django.db import migrations
 
-def migrate_transactions(apps, schema_editor):
-    Transaction = apps.get_model('main', 'Transaction')
-    Payment = apps.get_model('lhspayments', 'Payment')
-
-    for t in Transaction.objects.all():
-        p = Payment()
-        p.id = t.fit_id
-        p.timestamp = t.timestamp
-        p.user = t.user
-        p.amount = t.amount
-        p.payment_type = 1
-        p.payment_state = 2
-        p.save()
-
-
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -27,5 +12,8 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunPython(migrate_transactions)
+        migrations.RunSQL("""
+            INSERT INTO lhspayments_payment(id,timestamp,amount,payment_type,payment_state,user_id)
+            SELECT fit_id,timestamp,amount,1,2,user_id FROM transactions
+        """)
     ]
