@@ -1,0 +1,3 @@
+# Drop this into /etc/cron.d
+
+0 */6 * * * www-data /var/www/hackspace-foundation-sites/env/bin/python /var/www/hackspace-foundation-sites/manage.py maintain_members

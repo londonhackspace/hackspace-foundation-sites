@@ -30,7 +30,7 @@ def handle_payment_event(requst, event):
     # status if we can
 
     # should this activate the membership?
-    if lhs_customer is not None and not lhs_customer.user.subscribed and Payment.gocardless_status_to_status(gc_payment.status) != Payment.STATE_FAILED:
+    if lhs_customer is not None and not lhs_customer.user.subscribed and not lhs_customer.user.terminated and Payment.gocardless_status_to_status(gc_payment.status) != Payment.STATE_FAILED:
         membershiptools.on_new_member(lhs_customer.user)
 
     if lhs_customer is not None and lhs_payment is None:
