@@ -24,11 +24,16 @@ def handle_payment_event(requst, event):
     lhs_payment = Payment.objects.filter(id=event.links.payment).first()
     lhs_customer = Customer.objects.filter(mandate=gc_payment.links.mandate).first()
     
+    # lhs_customer may be none - I think this is actually only
+    # in the sandbox environment when you send test webhooks,
+    # however to be safe, don't fail and update the payment
+    # status if we can
+
     # should this activate the membership?
-    if not lhs_customer.user.subscribed and Payment.gocardless_status_to_status(gc_payment.status) != Payment.STATE_FAILED:
+    if lhs_customer is not None and not lhs_customer.user.subscribed and Payment.gocardless_status_to_status(gc_payment.status) != Payment.STATE_FAILED:
         membershiptools.on_new_member(lhs_customer.user)
 
-    if lhs_payment is None:
+    if lhs_customer is not None and lhs_payment is None:
         lhs_payment = Payment.create_from_gocardless_payment(gc_payment, lhs_customer.user)
         lhs_payment.save()
         return
