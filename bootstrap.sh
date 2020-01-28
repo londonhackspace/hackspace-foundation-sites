@@ -60,11 +60,12 @@ cd /var/www/hackspace-foundation-sites
 su vagrant -c 'virtualenv -p python3 --always-copy vagrant-env'
 su vagrant -c 'vagrant-env/bin/pip install -r requirements.txt'
 
+psql -U hackspace hackspace < /var/www/hackspace-foundation-sites/etc/create-flourish-tables.sql
+
 su vagrant -c 'vagrant-env/bin/python manage.py migrate sites'
 su vagrant -c 'vagrant-env/bin/python manage.py migrate'
 su vagrant -c 'vagrant-env/bin/python manage.py loaddata main/fixtures/*'
 
-psql -U hackspace hackspace < /var/www/hackspace-foundation-sites/etc/create-flourish-tables.sql
 psql -U hackspace hackspace < /var/www/hackspace-foundation-sites/etc/restore-column-defaults.sql
 psql -U hackspace hackspace < /var/www/hackspace-foundation-sites/etc/restore-multicolumn-pks.sql
 

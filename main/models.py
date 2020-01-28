@@ -25,7 +25,7 @@ class Alias(models.Model):
 
 class Card(models.Model):
     uid = models.CharField(primary_key=True, max_length=255)
-    user = models.ForeignKey(User)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     added_date = models.DateTimeField()  # Actually a DateTime
     active = models.BooleanField()
 
@@ -38,7 +38,7 @@ class Card(models.Model):
 
 class Interest(models.Model):
     interest_id = models.AutoField(primary_key=True)
-    category = models.ForeignKey('InterestCategory', db_column='category')
+    category = models.ForeignKey('InterestCategory', db_column='category', on_delete=models.CASCADE)
     suggested = models.BooleanField()
     name = models.CharField(max_length=255)
     url = models.CharField(max_length=255, blank=True, null=True)
@@ -115,11 +115,11 @@ class ProjectState(models.Model, metaclass=ProjectStateMeta):
 
 
 class Project(models.Model):
-    user = models.ForeignKey(User)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     name = models.CharField(max_length=255)
     description = models.CharField(max_length=500)
-    state = models.ForeignKey(ProjectState)
-    location = models.ForeignKey(Location)
+    state = models.ForeignKey(ProjectState, on_delete=models.CASCADE)
+    location = models.ForeignKey(Location, on_delete=models.CASCADE)
     location_name = models.CharField(db_column='location', max_length=255, blank=True, null=True)
     updated_date = DateTimeDateField()
     from_date = DateTimeDateField()
@@ -224,8 +224,8 @@ class Project(models.Model):
 
 class ProjectLog(models.Model):
     timestamp = models.IntegerField()  # Should be a DateTime
-    project = models.ForeignKey(Project)
-    user = models.ForeignKey(User, blank=True, null=True)
+    project = models.ForeignKey(Project, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL)
     details = models.CharField(max_length=255)
 
     class Meta:
@@ -245,8 +245,8 @@ class ProjectLog(models.Model):
 
 
 class Subscription(models.Model):
-    user = models.ForeignKey(User)
-    transaction = models.ForeignKey('Transaction')
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    transaction = models.ForeignKey('Transaction', on_delete=models.CASCADE)
     start_date = DateTimeDateField()
     end_date = DateTimeDateField()
 
@@ -257,7 +257,7 @@ class Subscription(models.Model):
 class Transaction(models.Model):
     fit_id = models.TextField(unique=True)
     timestamp = DateTimeDateField()
-    user = models.ForeignKey(User)
+    user = models.ForeignKey(User, on_delete=models.PROTECT)
     amount = models.DecimalField(max_digits=6, decimal_places=2)
 
     class Meta:
@@ -268,8 +268,8 @@ class Transaction(models.Model):
 
 
 class UserAlias(models.Model):
-    user = models.ForeignKey(User)
-    alias = models.ForeignKey(Alias)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    alias = models.ForeignKey(Alias, on_delete=models.CASCADE)
     username = models.CharField(max_length=255)
 
     class Meta:
@@ -281,8 +281,8 @@ class UserAlias(models.Model):
 
 
 class UserInterest(models.Model):
-    user = models.ForeignKey(User)
-    interest = models.ForeignKey(Interest)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    interest = models.ForeignKey(Interest, on_delete=models.CASCADE)
 
     class Meta:
         db_table = 'users_interests'
@@ -293,8 +293,8 @@ class UserInterest(models.Model):
 
 
 class UserLearning(models.Model):
-    user = models.ForeignKey(User)
-    learning = models.ForeignKey(Learning)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    learning = models.ForeignKey(Learning, on_delete=models.CASCADE)
 
     class Meta:
         db_table = 'users_learnings'
@@ -305,7 +305,7 @@ class UserLearning(models.Model):
 
 
 class UserProfile(models.Model):
-    user = models.OneToOneField(User, primary_key=True)
+    user = models.OneToOneField(User, primary_key=True, on_delete=models.CASCADE)
     allow_email = models.BooleanField()
     allow_doorbot = models.BooleanField()
     photo = models.CharField(max_length=255, blank=True, null=True)

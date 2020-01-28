@@ -6,7 +6,7 @@ from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
 
 class PasswordReset(models.Model):
     key = models.TextField(primary_key=True)
-    user = models.ForeignKey('User')
+    user = models.ForeignKey('User', on_delete=models.CASCADE)
     expires = models.DateTimeField()
 
     class Meta:
@@ -24,8 +24,8 @@ class Permission(models.Model):
 
 
 class UserPermission(models.Model):
-    perm = models.ForeignKey(Permission)
-    user = models.ForeignKey('User')
+    perm = models.ForeignKey(Permission, on_delete=models.CASCADE)
+    user = models.ForeignKey('User', on_delete=models.CASCADE)
 
     class Meta:
         db_table = 'userperms'
@@ -122,6 +122,9 @@ class User(AbstractBaseUser):
     ldapsshahash = models.CharField(max_length=38, blank=True, null=True)
     ldapshell = models.CharField(max_length=32, blank=True, null=True)
     ldapemail = models.CharField(max_length=255, blank=True, null=True)
+
+    # This allows us to migrate users over slowly/as needed
+    gocardless_user = models.BooleanField(default=False)
 
     class Meta:
         db_table = 'users'

@@ -10,7 +10,7 @@ class LHSUserAdmin(UserAdmin):
     fieldsets = (
         (None, {'fields': ('email', 'password')}),
         (_('Personal info'), {'fields': ('full_name', 'address')}),
-        (_('Attributes'), {'fields': ('hackney', 'terminated', 'admin')}),
+        (_('Attributes'), {'fields': ('hackney', 'terminated', 'admin', 'gocardless_user')}),
         (_('Contact'), {'fields': ('nickname', 'irc_nick', 'ldapuser',
                         'emergency_name', 'emergency_phone')}),
     )
@@ -21,7 +21,7 @@ class LHSUserAdmin(UserAdmin):
         }),
     )
     list_display = ('email', 'full_name', 'admin')
-    list_filter = ('admin', 'terminated', 'subscribed', 'hackney')
+    list_filter = ('admin', 'terminated', 'subscribed', 'hackney', 'gocardless_user')
     search_fields = ('email', 'full_name')
     ordering = ('full_name',)
     filter_horizontal = ()

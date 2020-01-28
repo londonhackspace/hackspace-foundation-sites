@@ -10,6 +10,10 @@ class User extends fActiveRecord {
         return $this->getSubscribed() == '1';
     }
 
+    public function isGoCardlessUser() {
+        return $this->getGocardlessUser() == '1';
+    }
+
     public function isAdmin() {
         return $this->getAdmin() == '1';
     }
@@ -26,6 +30,19 @@ class User extends fActiveRecord {
             array('user_id=' => $this->getId(),
             'timestamp>' => $from,
             'timestamp<' => $to),
+            array('timestamp' => 'desc')
+        );
+    }
+
+    public function buildPayments($from=null, $to=null) {
+        
+      if ($from == null){
+        $from = new fDate('2009-01-01');
+      }
+        return fRecordSet::build(
+            'Payment',
+            array('user_id=' => $this->getId(),
+            'timestamp>' => $from),
             array('timestamp' => 'desc')
         );
     }

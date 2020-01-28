@@ -68,4 +68,7 @@ function menulink($url, $name, $title) {
     <? } ?>
 </head>
 <body>
+<? if (isset($DEV_INSTANCE) && $DEV_INSTANCE) { ?>
+<div class="devinstance alert alert-danger"> This is a test instance! The real site is over here: <a href="https://london.hackspace.org.uk">https://london.hackspace.org.uk</a></div>
+<? } ?>
 <div class="page-container container">

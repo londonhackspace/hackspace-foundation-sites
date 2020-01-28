@@ -42,9 +42,12 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.sites',
     'django.contrib.staticfiles',
+    'django_humanize',
     'absoluteuri',
     'lhsauth',
     'main',
+    'lhsgocardless',
+    'lhspayments',
 ]
 
 MIDDLEWARE = [
@@ -154,8 +157,24 @@ FLOURISH_LOOPBACK_URLS = {
 
 LOGIN_REDIRECT_URL = '/members'
 
+LOGIN_URL = LOGIN_REDIRECT_URL
+
 PROJECT_MAILING_LIST = 'london-hack-space-test'
 
 CONTACT_EMAIL = 'contact@' + DOMAIN_NAME
 NOREPLY_EMAIL = 'no-reply@' + DOMAIN_NAME
+
+SMTP_SERVER = 'localhost'
+SMTP_TLS = False
+SMTP_STARTTLS = False
+SMTP_USER = None
+SMTP_PASSWORD = None
+
+
+GOCARDLESS_ENV = 'sandbox'
+# These are our sandbox details, fear not.
+GOCARDLESS_CREDENTIALS = {
+  'access_token':  '0SDNTJADVK',
+  'webhook_secret': 'YourSecretHere',
+}
 

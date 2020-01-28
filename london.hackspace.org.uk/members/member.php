@@ -38,24 +38,26 @@ if(($user->isMember() && $this_user->isMember()) || $user->isAdmin() ) {
 
   <?if ($user->isAdmin()) { ?>
     <h3>Recent Payments</h3>
-    <table>
-        <thead>
-        <tr>
-            <th>Date</th>
-            <th>Amount</th>
-            <th>FIT ID</th>
-        </tr>
-        </thead>
-        <tbody>
-        <? foreach($this_user->buildTransactions() as $transaction) {?>
-        <tr>
-            <td><?=$transaction->getTimestamp()?></td>
-            <td>£<?=$transaction->getAmount()?></td>
-            <td><?=$transaction->getFitId()?></td>
-        </tr>
-        <? } ?>
-        </tbody>
-    </table>
+    <table class="table">
+    <thead>
+    <tr>
+        <th>Date</th>
+        <th>Amount</th>
+        <th>Type</th>
+    </tr>
+    </thead>
+    <tbody>
+    <? foreach($this_user->buildPayments() as $payment) {?>
+    <tr <?php if($payment->getPaymentState() == 3) { ?>style="background-color: lightgrey"<?php } ?>>
+        
+        <td><?=$payment->getTimestamp()?></td>
+        <td>£<?=$payment->getAmount()?></td>
+        <td><?php if($payment->getPaymentType() == 1) { ?>Bank<?php } else { ?> GoCardless <?php } if($payment->getPaymentState() == 3) { ?> (Failed) <?php } 
+              else if($payment->getPaymentState() == 1) { ?> (Pending) <?php } ?>
+    </tr>
+    <? } ?>
+    </tbody>
+</table>
   <?}?>
 <? } else { ?>
    <p>You don't have access to this page.</p>

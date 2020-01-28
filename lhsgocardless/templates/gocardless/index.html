@@ -1,0 +1,95 @@
+{% extends 'main/base.html' %}
+{% load humanizelib %}
+{% block title %}{% with title='GoCardless' %}{{ block.super }}{% endwith %}{% endblock %}
+{% block page %}{% with page='gocardless' %}{{ block.super }}{% endwith %}{% endblock %}
+{% block content %}
+<p>Hi There. I'd like to talk to you about GoCardless...</p>
+<p>Paying your London Hackspace membership fees by Direct Debit (via GoCardless) requires two steps:</p>
+<ol>
+<li>Create the Direct Debit mandate</li>
+<li>create a recurring subscription (you can cancel this at any time) to actually pay</li>
+</ol>
+<p>Don't worry - this page will guide you through the process. You can come back here at any time to see the current status
+of your payments, or to make changes</p>
+<h3>Setup</h3>
+{% if customer_record is None %}
+You have not yet set up GoCardless on your account.<br>
+<a href="{% url 'gocardless:setup' %}" role="button" class="btn btn-success">Set Up GoCardless</a>
+{% else %}
+
+{% if mandate_status == 'active' %}
+<div class="alert alert-success" role="alert">
+  You have successfully set up a Direct Debit using GoCardless!
+</div>
+{% elif mandate_status == 'unknown' %}
+<div class="alert alert-warning" role="alert">
+  We are unable to obtain the status of the Direct Debit right now, please try later.
+</div>
+{% elif mandate_status == 'failed' %}
+<div class="alert alert-danger" role="alert">
+  The direct debit failed.
+</div>
+{% elif mandate_status == 'cancelled' or mandate_status == 'expired' %}
+<div class="alert alert-danger" role="alert">
+  The direct debit is no longer valid.
+</div>
+{% else %}
+<div class="alert alert-info" role="alert">
+  The Direct Debit is being set up. Please be patient - it can take a few days. 
+  {% if subscription is None %}
+  You can create a subscription while you are waiting.
+  {% endif %}
+</div>
+{% endif %}
+<p>GoCardless Ltd will appear on your bank statement when payments are taken against this Direct Debit.</p>
+<a href="{% url 'gocardless:reset' %}" role="button" class="btn btn btn btn-danger">Reset GoCardless</a> This button removes any subscription you may have, so be careful!
+{% endif %}
+
+<h3>Subscription</h3>
+{% if customer_record is None %}
+<div class="alert alert-info" role="alert">
+    You need to create a Direct Debit before you can create a subscription
+</div>
+{% elif mandate_status == 'failed' or mandate_status == 'cancelled' or mandate_status == 'expired' %}
+<div class="alert alert-warning" role="alert">
+    Please fix your Direct Debit above before you can create any subscriptions.
+</div>
+{% else %}
+    {% if subscription is not None %}
+        <p>You currently have a subscription.<br>The payments are taken on the {{ gc_subscription.day_of_month | ordinal }} day of the month.</p>
+        {% if subserror is not None %}
+        <div class="alert alert-danger" role="alert">
+            Subscription must be at least £5
+        </div>
+        {% endif %}
+        <form method="post" action="{% url 'gocardless:subscription' %}" >
+            {% csrf_token %}
+            <div class="input-group">
+                <div class="input-group-addon">£</div>
+                <input name="subscription-amount" maxlength="3" min="5" max="100" value="{{ amount }}" type="number" class="form-control" aria-label="Subscription amount (in GBP)"/>
+                <div class="input-group-addon">.00</div>
+            </div>
+            <button>Update Subscription</button>&nbsp;&nbsp;<a href="{% url 'gocardless:remove_sub' %}" class="btn btn btn-danger">Remove Subscription</a>
+        </form>
+    {% else %}
+        <p>Please create a subscription. You can amend this amount at any time.</p>
+        {% if not request.user.subscribed %}
+        <p>Submitting this form will start a subscription and also take the first payment.</p>
+        {% endif %}
+        {% if subserror is not None %}
+        <div class="alert alert-danger" role="alert">
+            Subscription must be at least £5
+        </div>
+        {% endif %}
+        <form method="post" action="{% url 'gocardless:subscription' %}" >
+            {% csrf_token %}
+            <div class="input-group">
+                <div class="input-group-addon">£</div>
+                <input name="subscription-amount" maxlength="3" min="5" max="100" value="20" type="number" class="form-control" aria-label="Subscription amount (in GBP)"/>
+                <div class="input-group-addon">.00</div>
+            </div>
+            <button>Create Subscription</button>
+        </form>
+    {% endif %}
+{% endif %}
+{% endblock %}

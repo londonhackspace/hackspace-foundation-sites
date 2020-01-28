@@ -6,6 +6,9 @@
             <? if (!isset($user)) { ?>
                 <?=menulink('/signup.php', 'membership', 'Join');?>
             <? } ?>
+            <? if (isset($user) && $user->isGoCardlessUser()) { ?>
+            <?=menulink('/gocardless/', 'gocardless', 'GoCardless');?>
+            <? } ?>
             <?=menulink('/events/', 'events', 'Events');?>
             <?=menulink('/organisation/', 'organisation', 'Organisation');?>
             <?=menulink('/donate.php', 'donate', 'Donate')?>

@@ -35,3 +35,9 @@ FLOURISH_LOOPBACK_URLS = {
 CONTACT_EMAIL = 'contact@' + DOMAIN_NAME
 NOREPLY_EMAIL = 'no-reply@' + DOMAIN_NAME
 
+# set this to live in production
+GOCARDLESS_ENV = 'sandbox'
+GOCARDLESS_CREDENTIALS = {
+  'access_token':  'A0d7SbxK-Ylz',
+  'webhook_secret': 'YourSecretHere',
+}

@@ -51,7 +51,7 @@ ofx.bank_account.statement.transactions.each do |transaction|
       # As we rely on fit_ids being unique, we have to ignore these.
       next
     end
-    c = db.exec_params("SELECT count(*) FROM transactions WHERE fit_id = $1", [transaction.fit_id])[0]['count']
+    c = db.exec_params("SELECT count(*) FROM lhspayments_payment WHERE id = $1 AND payment_type=1", [transaction.fit_id])[0]['count']
     if c.to_i > 0
       next
     end
@@ -86,7 +86,7 @@ ofx.bank_account.statement.transactions.each do |transaction|
     end
 
     db.transaction do |db|
-      db.exec_params("INSERT INTO transactions (fit_id, timestamp, user_id, amount) VALUES ($1, $2, $3, $4)",
+      db.exec_params("INSERT INTO lhspayments_payment (id, timestamp, user_id, amount, payment_type, payment_state) VALUES ($1, $2, $3, $4, 1, 2)",
                       [transaction.fit_id, transaction.date.iso8601(), user['id'], transaction.amount])
       db.exec_params("UPDATE users SET subscribed = true WHERE id = $1", [user['id']])
 
@@ -100,25 +100,6 @@ ofx.bank_account.statement.transactions.each do |transaction|
           puts "enabling LDAP account: #{user['ldapuser']} (with uid #{uid})"
           system("/var/www/hackspace-foundation-sites/bin/ldap-add.sh", user['ldapuser'], uid.to_s, user['ldapnthash'], user['ldapsshahash'], user['ldapshell'], user['ldapemail'])
         end
-      end
-    end
-end
-
-db.exec("SELECT users.*, (SELECT max(timestamp) FROM transactions WHERE user_id = users.id) AS lastsubscription
-            FROM users
-            WHERE users.subscribed = true
-            AND (SELECT max(timestamp) FROM transactions WHERE user_id = users.id) < now() - interval '1 month' - interval '14 days'"
-            ) do |result|
-
-    result.each do |user|
-      puts "Unsubscribing #{user['full_name']}."
-      db.exec_params("UPDATE users SET subscribed = false WHERE id = $1", [user['id']])
-      p user['lastsubscription']
-      send_unsubscribe_email(user['email'], user['full_name'], Time.parse(user['lastsubscription']))
-      # check for ldap infos, delete if they exist
-      if user['ldapuser']
-        puts "deleting LDAP account: #{user['ldapuser']}"
-          system("/var/www/hackspace-foundation-sites/bin/ldap-delete.sh", user['ldapuser'])
       end
     end
 end
