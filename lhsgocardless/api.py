@@ -71,7 +71,7 @@ def webhook(request):
     body = request.body.strip()
 
     try:
-        events = webhooks.parse(body, secret, signature)
+        events = webhooks.parse(body.decode('utf-8'), secret, signature)
 
         for event in events:
             log_event = EventLog()
