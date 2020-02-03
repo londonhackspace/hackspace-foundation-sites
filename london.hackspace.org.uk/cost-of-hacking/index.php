@@ -7,8 +7,8 @@ $income = $db->translatedQuery("SELECT sum(amount) FROM transactions
 function get_budget() {
   $started = false;
   $budget = Array(
-    'Rent + Service Charge' => '6273',
-    'Business Rates' => '1750',
+    'Rent + Service Charge' => '3004',
+    'Business Rates' => '850',
     'Reserve' => '500',
     'Supplies' => '800',
     'Basic Cleaning' => '200',
