@@ -39,10 +39,16 @@ class User extends fActiveRecord {
       if ($from == null){
         $from = new fDate('2009-01-01');
       }
+
+      if ($to == null) {
+        $to = new fDate('now');
+      }
+      
         return fRecordSet::build(
             'Payment',
             array('user_id=' => $this->getId(),
-            'timestamp>' => $from),
+            'timestamp>' => $from,
+            'timestamp<' => $to),
             array('timestamp' => 'desc')
         );
     }

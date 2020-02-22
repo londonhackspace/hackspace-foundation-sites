@@ -7,10 +7,10 @@ ensureLogin();
 if($user->isMember()) {
     $newUsersCount = 0;
     $newUsers = $db->query( "SELECT users.id, photo, full_name,
-                                        (SELECT min(timestamp) FROM transactions WHERE user_id = users.id) AS first
+                                        (SELECT min(timestamp) FROM lhspayments_payment WHERE user_id = users.id) AS first
                                         FROM users, users_profiles p
                                         WHERE users.id = p.user_id
-                                        AND (SELECT min(timestamp) FROM transactions WHERE user_id = users.id) > now() - interval '1 month'
+                                        AND (SELECT min(timestamp) FROM lhspayments_payment WHERE user_id = users.id) > now() - interval '1 month'
                                         AND photo != ''
                                         AND users.disabled_profile = false
                                         AND subscribed = true

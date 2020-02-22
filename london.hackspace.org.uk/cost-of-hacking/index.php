@@ -1,6 +1,6 @@
 <?php
 require_once( $_SERVER['DOCUMENT_ROOT'] . '/../lib/init.php');
-$income = $db->translatedQuery("SELECT sum(amount) FROM transactions
+$income = $db->translatedQuery("SELECT sum(amount) FROM lhspayments_payment
                                 WHERE timestamp > date_trunc('month', now() - INTERVAL '1 month')
                                 AND timestamp < date_trunc('month', now())")->fetchScalar();
 

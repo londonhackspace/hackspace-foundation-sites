@@ -61,29 +61,29 @@ for($x=0;$x<$gofor;$x++) {
 	$prev_end_date = $past_end_year.'-'.str_pad($past_end_month, 2, '0', STR_PAD_LEFT).'-01';
 
 	// get the number of members for last period
-	$csQuery = $db->translatedQuery( "SELECT COUNT(DISTINCT user_id) FROM transactions WHERE timestamp >= '$prev_start_date' AND timestamp < '$prev_end_date'" );
+	$csQuery = $db->translatedQuery( "SELECT COUNT(DISTINCT user_id) FROM lhspayments_payment WHERE timestamp >= '$prev_start_date' AND timestamp < '$prev_end_date'" );
 	$cs = (int)$csQuery->fetchScalar();
 
 	// get the number of members for this period
-	$ceQuery = $db->translatedQuery( "SELECT COUNT(DISTINCT user_id) FROM transactions WHERE timestamp >= '$period_start_date' AND timestamp < '$period_end_date'" );
+	$ceQuery = $db->translatedQuery( "SELECT COUNT(DISTINCT user_id) FROM lhspayments_payment WHERE timestamp >= '$period_start_date' AND timestamp < '$period_end_date'" );
 	$ce = (int)$ceQuery->fetchScalar();
 
 	// get the number of members who's first payment was this period
-        $cnQuery = $db->translatedQuery("SELECT COUNT(*) FROM (SELECT user_id, MIN(timestamp) AS first FROM transactions GROUP BY user_id) x
+        $cnQuery = $db->translatedQuery("SELECT COUNT(*) FROM (SELECT user_id, MIN(timestamp) AS first FROM lhspayments_payment GROUP BY user_id) x
                         WHERE first >= '$period_start_date' and first < '$period_end_date'");
 	$cn = (int)$cnQuery->fetchScalar();
 
 	// get the number of members who's first payment was before last period, they didn't pay last period but are paying this period
 	$crQuery = $db->translatedQuery( "SELECT user_id
-				FROM (SELECT user_id, MIN(timestamp) AS start FROM transactions GROUP BY user_id) as t2 natural join transactions as t1
-				WHERE timestamp >= '$period_start_date' AND timestamp < '$period_end_date' AND start < '$period_start_date' AND user_id NOT IN (SELECT user_id FROM transactions AS t4 WHERE timestamp >= '$prev_start_date' AND timestamp < '$prev_end_date') 
+				FROM (SELECT user_id, MIN(timestamp) AS start FROM lhspayments_payment GROUP BY user_id) as t2 natural join lhspayments_payment as t1
+				WHERE timestamp >= '$period_start_date' AND timestamp < '$period_end_date' AND start < '$period_start_date' AND user_id NOT IN (SELECT user_id FROM lhspayments_payment AS t4 WHERE timestamp >= '$prev_start_date' AND timestamp < '$prev_end_date') 
 				GROUP BY user_id ORDER BY user_id" );
 
 
 	$cr = $crQuery->countReturnedRows();
 
 	// get the number of members who paid last period but haven't paid this period
-	$cdQuery = $db->translatedQuery( "SELECT user_id FROM transactions WHERE timestamp >= '$prev_start_date' AND timestamp < '$prev_end_date' AND user_id NOT IN (SELECT user_id FROM transactions WHERE timestamp >= '$period_start_date' AND timestamp < '$period_end_date') GROUP BY user_id ORDER BY user_id" );
+	$cdQuery = $db->translatedQuery( "SELECT user_id FROM lhspayments_payment WHERE timestamp >= '$prev_start_date' AND timestamp < '$prev_end_date' AND user_id NOT IN (SELECT user_id FROM lhspayments_payment WHERE timestamp >= '$period_start_date' AND timestamp < '$period_end_date') GROUP BY user_id ORDER BY user_id" );
 	$cd = $cdQuery->countReturnedRows();
 
 	$graph[$period_start] = Array(

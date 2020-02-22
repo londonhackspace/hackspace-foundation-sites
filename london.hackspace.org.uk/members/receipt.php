@@ -22,7 +22,7 @@ if ($_GET['to']) {
   $to = new fDate($_GET['to']);
 }
 
-$transactions = $user->buildTransactions($from, $to);
+$transactions = $user->buildPayments($from, $to);
 
 $minimum = 5;
 
@@ -60,6 +60,10 @@ $count = 0;
     <tr><th>Date</th><th>Membership Payment</th><th>Donation</th><th>Total</th></tr>
 </thead>
 <? foreach($transactions as $transaction) {
+  if($transaction->getPaymentState() != 2) {
+    // not a cleared payment
+    continue;
+  }
   $amount = $transaction->getAmount();
   $mem_amount = min($amount, $minimum);
   $total_membership += $mem_amount;
