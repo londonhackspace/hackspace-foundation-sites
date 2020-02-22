@@ -5,7 +5,7 @@ require( '../header.php' );
 
 ensureLogin();
 
-$last = $db->query('SELECT max(date(timestamp)) FROM transactions')->fetchScalar();
+$last = $db->query('SELECT max(date(timestamp)) FROM lhspayments_payment')->fetchScalar();
 $include_unsubscribed = ($user->isAdmin() && isset($_GET['unsubscribed']) && $_GET['unsubscribed'] == 'on') ? true : false;
 ?>
 
