@@ -39,16 +39,16 @@ class User extends fActiveRecord {
       if ($from == null){
         $from = new fDate('2009-01-01');
       }
+    
+        $selection =  array('user_id=' => $this->getId(), 'timestamp>' => $from);
 
-      if ($to == null) {
-        $to = new fDate('now');
-      }
-      
+        if($to != null) {
+            $selection['timestamp<'] = $to;
+        }
+
         return fRecordSet::build(
             'Payment',
-            array('user_id=' => $this->getId(),
-            'timestamp>' => $from,
-            'timestamp<' => $to),
+            $selection,
             array('timestamp' => 'desc')
         );
     }
@@ -57,14 +57,14 @@ class User extends fActiveRecord {
       if ($from == null){
         $from = new fDate('2009-01-01');
       }
-      if ($to == null) {
-        $to = new fDate('now');
-      }
+
+        $selection = array('user_id=' => $this->getId(), 'timestamp>' => $from);
+        if ($to != null) {
+            $selection['timestamp<'] = $to; 
+        }
         $result = fRecordSet::build(
             'Transaction',
-            array('user_id=' => $this->getId(),
-            'timestamp>' => $from,
-            'timestamp<' => $to),
+            $selection,
             array('timestamp' => 'asc')
         );
 		

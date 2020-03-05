@@ -48,7 +48,7 @@ class Payment(models.Model):
     def create_from_gocardless_payment(payment, user):
         p = Payment()
         p.user = user
-        p.timestamp = payment.created_at
+        p.timestamp = payment.charge_date
         p.id = payment.id
         p.payment_state = Payment.gocardless_status_to_status(payment.status)
         p.payment_type = Payment.TYPE_GOCARDLESS
