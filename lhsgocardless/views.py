@@ -63,7 +63,7 @@ def subscription(request):
         return redirect('gocardless:index')
 
 
-    if int(request.POST['subscription-amount']) < 5:
+    if float(request.POST['subscription-amount']) < 5:
         # Wait, that's not allowed...
         response = redirect('gocardless:index')
         response['Location'] += '?subserror=toolow'
@@ -72,7 +72,7 @@ def subscription(request):
 
     # GoCardless expects this in the smallest denomination
     # of the currency
-    amount = int(request.POST['subscription-amount'])*100
+    amount = int(float(request.POST['subscription-amount'])*100)
 
     subscription_record = Subscription.objects.filter(customer=customer_record).first()
     
