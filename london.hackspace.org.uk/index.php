@@ -9,7 +9,7 @@ require('header.php'); ?>
 
 <div id="home-page-container" class="row">
     <div class="col-md-4 col-md-push-4">
-        <section>
+        <section style="display: none;">
             <h3>Visit us on a Tuesday</h3>
             <p>
                 We hold open evenings <strong>every Tuesday</strong> from <strong>7pm</strong>
@@ -19,6 +19,14 @@ require('header.php'); ?>
         </section>
 
         <section>
+            <h3>COVID19 Coronavirus</h3>
+            <p>
+                As a sensible precaution, our regular public open evenings on Tuesdays, and all other planned group meetings, are suspended until further notice.
+                The space remains open and we advise all members & guests to observe caution as per the government's advice.
+            </p>
+        </section>
+
+        <section style="display:none;">
             <h3>Events</h3>
             <p>
                 We host a variety of events covering topics from electronics to brewing and biohacking to lockpicking.
