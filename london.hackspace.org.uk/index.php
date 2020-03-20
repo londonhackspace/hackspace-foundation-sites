@@ -19,7 +19,7 @@ require('header.php'); ?>
         </section>
 
         <section>
-            <h3>COVID19 Coronavirus</h3>
+            <h3>COVID-19 Coronavirus Precautions</h3>
             <p>
                 As a sensible precaution, our regular public open evenings on Tuesdays, and all other planned group meetings, are suspended until further notice.
                 The space remains open and we advise all members & guests to observe caution as per the government's advice.
