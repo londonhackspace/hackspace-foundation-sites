@@ -22,7 +22,7 @@ require('header.php'); ?>
             <h3>COVID-19 Coronavirus Precautions</h3>
             <p>
                 As a sensible precaution, our regular public open evenings on Tuesdays, and all other planned group meetings, are suspended until further notice.
-                The space is currently <b>closed</b> as per <a href="https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/874732/230320_-_Revised_guidance_note_-_finalVF.pdf">government restrictions on non-residential institutions</a>.
+                The space is currently <b>open for members</b> with maximum occupancy restrictions</a>.
             </p>
         </section>
 
