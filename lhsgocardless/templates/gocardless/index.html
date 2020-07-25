@@ -56,7 +56,13 @@ You have not yet set up GoCardless on your account.<br>
 </div>
 {% else %}
     {% if subscription is not None %}
-        <p>You currently have a subscription.<br>The payments are taken on the {{ gc_subscription.day_of_month | ordinal }} day of the month.</p>
+        <p>You currently have a subscription.<br>The payments are taken on the {{ gc_subscription.day_of_month | ordinal }} day of the month,
+        with the next one due on {{ gc_subscription.upcoming_payments.0.charge_date }}</p>
+        {% if subwarning is not None %}
+        <div class="alert alert-warning" role="alert">
+            {{ subwarning }}
+        </div>
+        {% endif %}
         {% if subserror is not None %}
         <div class="alert alert-danger" role="alert">
             Subscription must be at least £5

@@ -1,5 +1,5 @@
 from functools import wraps
-from datetime import date, timedelta
+from datetime import date, timedelta, datetime
 
 from django.shortcuts import render
 from django.shortcuts import redirect
@@ -42,6 +42,16 @@ def index(request):
             mandate = gc_client.mandates.get(customer_record.mandate)
             context['mandate_status'] = mandate.status
             context['subscription'] = Subscription.objects.filter(customer=customer_record).first()
+            if context['subscription'] is not None:
+                sub = gc_client.subscriptions.get(context['subscription'].subscription)
+                next_charge_date = datetime.strptime(sub.upcoming_payments[0]['charge_date'], '%Y-%m-%d')
+                past_payment = Payment.objects.filter(user=request.user).exclude(payment_state=Payment.STATE_FAILED).order_by('-timestamp').first()
+                past_bank_payment = Payment.objects.filter(user=request.user, payment_type = Payment.TYPE_BANKPAYMENT).order_by('-timestamp').first()
+                if past_payment is not None:
+                    if next_charge_date.date() > (past_payment.timestamp.date() + timedelta(days=31)):
+                        context['subwarning'] = "This will next take payment in over a month - do not cancel your standing order until your next payment is taken!"
+                    elif past_bank_payment is not None and past_bank_payment.timestamp.date() > (date.today() - timedelta(days=30)):
+                        context['subwarning'] = "You should now cancel your standing order."
             if request.GET.get('subserror') is not None:
                 context['subserror'] = request.GET.get('subserror')
             if context['subscription'] is not None:
