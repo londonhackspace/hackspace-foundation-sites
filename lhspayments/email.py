@@ -40,3 +40,9 @@ def new_user_email(user):
     }
 
     send_email(user, 'Your London Hackspace membership is now active', render_to_string("email/new_user.template", ctx))
+
+def invite_to_gocardless(user):
+    ctx = {
+        'name': user.full_name,
+    }
+    send_email(user, 'A New Way to Subscribe to London Hackspace', render_to_string("email/gocardless.template", ctx))
