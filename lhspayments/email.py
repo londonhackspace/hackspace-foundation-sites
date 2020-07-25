@@ -45,4 +45,4 @@ def invite_to_gocardless(user):
     ctx = {
         'name': user.full_name,
     }
-    send_email(user, 'A New Way to Subscribe to London Hackspace', render_to_string("email/gocardless.template", ctx))
+    send_email(user, 'A New Way to Subscribe to London Hackspace', render_to_string("email/go_cardless.template", ctx))
