@@ -13,7 +13,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         count = int(options['count'])
 
-        users = User.objects.filter(subscribed=True, gocardless_user = False).order_by('?')
+        users = User.objects.filter(subscribed=True, gocardless_user = False).order_by('?')[:count]
         for user in users:
             print("Inviting {} to GoCardless".format(user.full_name))
             user.gocardless_user = True
