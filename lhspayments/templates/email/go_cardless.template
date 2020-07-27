@@ -2,12 +2,13 @@ Dear {{ name }},
 
 You are now able to subscribe to London Hackspace by Direct Debit through GoCardless.
 
-You should see a few changes to the membership sections of the site now, including a new GoCardless tab. This will guide you through the process of setting it up. It is not mandatory at this stage, however we would like to transition to this method of payment.
-
-If you have any problems or suggestions, you can either log them on Github Issues (https://github.com/londonhackspace/hackspace-foundation-sites/issues) or email gocardless-trial@london.hackspace.org.uk
+You should see a few changes to the membership sections of the site, including a new GoCardless tab. This will guide you through the process of setting it up. It is not mandatory at this stage, however we would like to transition to this method of payment, since our current method for linking payments is brittle and hard to maintain.
 
 Once you have set up a link from GoCardless to your hackspace account, you can then set up a subscription. Once this is done, you can cancel your standing order. The subscription should take the date of your last payment as a clue for when to take the next one. If your payment is due in the next few days, it will advise you not to cancel your existing standing order just yet, until after the next payment.
 
+If you have any problems or feedback about the setup process, you can either log them on Github Issues (https://github.com/londonhackspace/hackspace-foundation-sites/issues) or email gocardless-trial@london.hackspace.org.uk 
+
+If you cannot pay by direct debit for any reason, we're keen to hear why so we can see if we can come up with other solutions.
 
 Thanks,
 
