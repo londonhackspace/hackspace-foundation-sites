@@ -27,7 +27,6 @@ if (isset($_POST['submit'])) {
         $user->setPassword(fCryptography::hashPassword($_POST['password']));
         $user->setEmergencyName(trim($_POST['emergency_name']));
         $user->setEmergencyPhone(trim($_POST['emergency_phone']));
-        $user->setGocardlessUser(true);
         $user->store();
 
         $email = new fEmail();

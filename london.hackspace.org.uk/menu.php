@@ -6,7 +6,7 @@
             <? if (!isset($user)) { ?>
                 <?=menulink('/signup.php', 'membership', 'Join');?>
             <? } ?>
-            <? if (isset($user) && $user->isGoCardlessUser()) { ?>
+            <? if (isset($user)) { ?>
             <?=menulink('/gocardless/', 'gocardless', 'GoCardless');?>
             <? } ?>
             <?=menulink('/events/', 'events', 'Events');?>

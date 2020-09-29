@@ -11,7 +11,6 @@ class GoCardlessMappingsTestCase(TestCase):
         self.u.email = "test@london.hackspace.org.uk"
         self.u.full_name = "Test User"
         self.u.subscribed = False
-        self.u.gocardless_user = True
         self.u.password = 'flourish_sha1$salt$mypassword'
         self.u.save()
 

@@ -21,17 +21,8 @@ gc_client = gocardless.Client(
     environment=settings.GOCARDLESS_ENV
 )
 
-# Helpers
-def require_gocardless_user(f):
-    @wraps(f)
-    def decorator(request):
-        if not request.user.gocardless_user:
-            # User isn't a gocardless user, send them to the main mambers page
-            return redirect("/members/")
-        return f(request)
-    return login_required(decorator)
 
-@require_gocardless_user
+@login_required
 def index(request):
     customer_record = Customer.objects.filter(user=request.user).first()
     context = {
@@ -62,7 +53,7 @@ def index(request):
     return render(request, 'gocardless/index.html', context=context)
 
 # Handle subscription activities
-@require_gocardless_user
+@login_required
 def subscription(request):
     customer_record = Customer.objects.filter(user=request.user).first()
 
@@ -152,7 +143,7 @@ def subscription(request):
     return redirect('gocardless:index')
 
 # Setup gocardless link for user
-@require_gocardless_user
+@login_required
 def setup_user(request):
     # before we do anything, make sure the user isn't already set up
     customer_record = Customer.objects.filter(user=request.user).first()
@@ -173,7 +164,7 @@ def setup_user(request):
     return redirect(flow.redirect_url)
 
 # complete the flow created in setup_user
-@require_gocardless_user
+@login_required
 def setup_complete(request):
     # make sure we have the get parameter
     flow_id = request.GET.get('redirect_flow_id')
@@ -205,7 +196,7 @@ def setup_complete(request):
     # now we redirect to the index page, which should now show the user as having a link
     return redirect('gocardless:index')
 
-@require_gocardless_user
+@login_required
 def reset(request):
     # Remove any GoCardless customer for this user
     customer_record = Customer.objects.filter(user=request.user).first()
@@ -231,7 +222,7 @@ def reset(request):
 
     return redirect('gocardless:index')
 
-@require_gocardless_user
+@login_required
 def remove_sub(request):
     # Remove the user's subscription
     customer_record = Customer.objects.filter(user=request.user).first()

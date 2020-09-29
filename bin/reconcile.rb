@@ -23,13 +23,6 @@ def send_email(address, subject, text)
   mail.deliver
 end
 
-def send_unsubscribe_email(email, full_name, last_payment)
-  vars = {'name' => firstname(full_name),
-          'date' => last_payment.strftime('%Y-%m-%d')}
-  template = Erubis::Eruby.new(File.read('../emails/lapse.erb'))
-  send_email(email, "Your London Hackspace membership has lapsed", template.result(vars))
-end
-
 def send_subscribe_email(email, full_name)
   vars = {'name' => firstname(full_name)}
   template = Erubis::Eruby.new(File.read('../emails/subscribe.erb'))
