@@ -27,7 +27,7 @@ if (isset($_POST['submit'])) {
         $user->setPassword(fCryptography::hashPassword($_POST['password']));
         $user->setEmergencyName(trim($_POST['emergency_name']));
         $user->setEmergencyPhone(trim($_POST['emergency_phone']));
-        $user->setGocardlessUser(false);
+        $user->setGocardlessUser(true);
         $user->store();
 
         $email = new fEmail();
@@ -39,20 +39,8 @@ if (isset($_POST['submit'])) {
 
 You (or someone who gave us your email address) have set up your London Hackspace membership account:
 
-To actually be able to use the Hackspace, you now would need to become a paying member by setting up a standing order to pay us
-
-Our bank details are:
-
-Barclays Bank plc
-Sort Code: 20-32-06
-Account number: 53413292
-Account Name: London Hackspace Ltd
-Reference: ". sprintf("HS%05u", $user->getId())."
-
-It is vitally important to include your unique reference number above, so that our automated systems can identify the money coming into our
-bank account is from you, to activate your membership.
-
-Your membership will be activated once our bank clears the funds, and our daily script spots it.
+To actually be able to use the Hackspace, you need to become a paying member. Payment is taken by Direct Debit through GoCardless.
+To set this up, log into our website and browse to the GoCardless section of the members area. Note that setting this up is a two stage process, which the website will guide you through.
 
 Reading material for new members: https://wiki.london.hackspace.org.uk/view/New_members_guide
 
