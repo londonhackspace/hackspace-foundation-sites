@@ -26,15 +26,9 @@ require('../header.php');
 
 <p>You can contact the trustees by emailing <i>trustees (at) london.hackspace.org.uk</i>.</p>
 
-<h3>Statutory Information</h3>
+<h3>Information</h3>
 
 <p>London Hackspace Ltd. is a company limited by guarantee, registered in England and Wales with company number 06807563. We are not VAT registered.</p>
-
-<p>Registered address:<br />
-388 High Road<br />
-Wembley<br />
-HA9 6AR<br />
-</p>
 
 <? require('../footer.php'); ?>
 </body>
