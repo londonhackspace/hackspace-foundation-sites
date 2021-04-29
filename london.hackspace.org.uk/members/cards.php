@@ -97,6 +97,8 @@ if (isset($_POST['update_details'])) {
   echo "<div class=\"alert alert-success\"><p>Details saved.</p></div>";
 } ?>
 
+<p><a href="addcard.php">add a card by RFID id</a>.</p>
+
 <form class="form-horizontal" method="post" role="form">
     <input type="hidden" name="token" value="<?=fRequest::generateCSRFToken()?>" />
     <input type="hidden" name="update_details" value="" />
@@ -116,7 +118,7 @@ if (isset($_POST['update_details'])) {
         <div class="col-sm-offset-3 col-sm-9">
           <input type="submit" name="submit" value="Save" class="btn btn-primary"/>
         </div>
-    </div>    
+    </div>
 </form>
 
 <?php require('../footer.php'); ?>
