@@ -19,15 +19,11 @@ require('header.php'); ?>
         </section>
 
         <section>
-            <h3>COVID-19 Coronavirus Precautions</h3>
+            <h3>COVID-19 Coronavirus Current Status</h3>
             <p>
-                As a sensible precaution, our regular public open evenings on Tuesdays, and all other planned group meetings, are suspended until further notice.
-                The space is currently <b>open for members</b> with maximum occupancy restrictions.</a>.
+                The space is currently <b>OPEN</b> with Covid-safe occupancy limits etc.</a>.
             </p>
-            <p>
-                Scanning the official NHS QR-code using NHS England's COVID-19 app on entry is currently <b>mandatory</b>.
-            </p>
-        </section>
+            </section>
 
         <section style="display:none;">
             <h3>Events</h3>
