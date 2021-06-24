@@ -1135,3 +1135,15 @@ form .read-only {
   //color: #ccc;
   background-color: #FF9933 !important;;
 }
+
+.rfidcard {
+  text-align: center
+}
+
+.rfidcard-active {
+  color: #484;
+}
+
+.rfidcard-blocked {
+  color: #a44;
+}
