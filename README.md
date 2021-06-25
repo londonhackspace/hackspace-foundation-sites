@@ -72,3 +72,18 @@ And don't forget to run:
 
 after each deployment.
 
+
+## Running under docker
+
+This is a work-in-progress, but likely to take over from Vagrant quickly.
+
+    docker-compose up
+
+To clear out the database and PHP sessions:
+
+    docker-compose down -v
+
+To access the DB:
+
+    docker-compose exec db psql postgres://hackspace:hackspace@db/hackspace
+

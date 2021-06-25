@@ -19,15 +19,11 @@ require('header.php'); ?>
         </section>
 
         <section>
-            <h3>COVID-19 Coronavirus Precautions</h3>
+            <h3>COVID-19 Coronavirus Current Status</h3>
             <p>
-                As a sensible precaution, our regular public open evenings on Tuesdays, and all other planned group meetings, are suspended until further notice.
-                The space is currently <b>open for members</b> with maximum occupancy restrictions.</a>.
+                The space is currently <b>OPEN</b> with Covid-safe occupancy limits etc.</a>.
             </p>
-            <p>
-                Scanning the official NHS QR-code using NHS England's COVID-19 app on entry is currently <b>mandatory</b>.
-            </p>
-        </section>
+            </section>
 
         <section style="display:none;">
             <h3>Events</h3>
@@ -79,7 +75,7 @@ require('header.php'); ?>
             <ul>
                 <li><a href="https://wiki.london.hackspace.org.uk/">The wiki</a>, for more about the space</li>
                 <li><a href="https://groups.google.com/forum/#!forum/london-hack-space">Chat to us on the mailing list</a></li>
-                <li><a href="http://webchat.freenode.net/?channels=london-hack-space">Chat to us on IRC</a></li>
+                <li><a href="http://kiwiirc.com/client/irc.libera.chat/#londonhackspace">Chat to us on IRC</a></li>
                 <li><a href="signup.php">Become a member</a></li>
                 <li><a href="/organisation/">About the organisation</a></li>
 		<li><a href="https://github.com/londonhackspace/hackspace-foundation-sites/blob/master/london.hackspace.org.uk/index.php">"Edit" this page (you'll need a github account)</a></li>

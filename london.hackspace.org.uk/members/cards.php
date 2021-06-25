@@ -2,7 +2,7 @@
 $page = 'cards';
 $title = 'Card access';
 $desc = '';
-require('../header.php');
+require '../header.php';
 
 if (!isset($user)) {
     fURL::redirect('/login.php?forward=/members/cards.php');
@@ -11,7 +11,7 @@ if (!isset($user)) {
 if (isset($_POST['update_details'])) {
     try {
         fRequest::validateCSRFToken($_POST['token']);
-        $user->setNickname($_POST['nickname']);
+        $user->setNickname(trim($_POST['nickname']));
         $user->setGladosfile($_POST['gladosfile']);
         $user->store();
         fURL::redirect('?saved');
@@ -26,7 +26,7 @@ if (isset($_POST['update_details'])) {
 } elseif (isset($_POST['update_card'])) {
     try {
         fRequest::validateCSRFToken($_POST['token']);
-        foreach($user->buildCards() as $card) {
+        foreach ($user->buildCards() as $card) {
             if (isset($_POST['enable_' . $card->getUid()])) {
                 $card->setActive(1);
                 $card->store();
@@ -60,7 +60,7 @@ if (isset($_POST['update_details'])) {
 <p>The Wiki has more information on how to <a href="http://wiki.london.hackspace.org.uk/view/Door_control_system">add your RFID to the door access system</a>.</p>
 
 <form method="POST">
-    <input type="hidden" name="token" value="<?=fRequest::generateCSRFToken()?>" />
+    <input type="hidden" name="token" value="<?php echo fRequest::generateCSRFToken() ?>" />
     <input type="hidden" name="update_card" value="" />
     <table class="card-management">
         <thead>
@@ -72,33 +72,35 @@ if (isset($_POST['update_details'])) {
         </tr>
         </thead>
         <tbody>
-        <? foreach($user->buildCards() as $card): ?>
-        <tr class="<?=$card->getActive() ? 'allowed' : 'blocked' ?>">
-            <td><?=$card->getAddedDate()?></td>
-            <td><?=$card->getUid()?></td>
+        <?foreach ($user->buildCards() as $card): ?>
+        <tr class="<?php echo $card->getActive() ? 'allowed' : 'blocked' ?>">
+            <td><?php echo $card->getAddedDate() ?></td>
+            <td><?php echo $card->getUid() ?></td>
             <td style="text-align: center">
-                <? if ($card->getActive()): ?>
-                <input class="btn btn-default" type="submit" name="disable_<?=$card->getUid()?>" value="Block" title="This card is currently allowed. Click to block it." />
-                <? else: ?>
-                <input class="btn btn-default" type="submit" name="enable_<?=$card->getUid()?>" value="Allow" title="This card is currently blocked. Click to allow it." />
-                <? endif; ?>
+                <?if ($card->getActive()): ?>
+                <input class="btn btn-default" type="submit" name="disable_<?php echo $card->getUid() ?>" value="Block" title="This card is currently allowed. Click to block it." />
+                <?else: ?>
+                <input class="btn btn-default" type="submit" name="enable_<?php echo $card->getUid() ?>" value="Allow" title="This card is currently blocked. Click to allow it." />
+                <?endif;?>
             </td>
             <td style="text-align: center">
-                <input class="btn btn-default" type="submit" name="delete_<?=$card->getUid()?>" value="Delete" title="Click to delete this card." <? if ($card->getActive()) { ?>disabled<? } ?> />
+                <input class="btn btn-default" type="submit" name="delete_<?php echo $card->getUid() ?>" value="Delete" title="Click to delete this card." <?if ($card->getActive()) {?>disabled<?}?> />
             </td>
         </tr>
-        <? endforeach ?>
+        <?endforeach?>
         </tbody>
     </table>
 </form>
 <br/>
 
-<? if (isset($_GET['saved'])) {
-  echo "<div class=\"alert alert-success\"><p>Details saved.</p></div>";
-} ?>
+<?if (isset($_GET['saved'])) {
+    echo "<div class=\"alert alert-success\"><p>Details saved.</p></div>";
+}?>
+
+<p><a href="addcard.php">add a card by RFID unique id</a>.</p>
 
 <form class="form-horizontal" method="post" role="form">
-    <input type="hidden" name="token" value="<?=fRequest::generateCSRFToken()?>" />
+    <input type="hidden" name="token" value="<?php echo fRequest::generateCSRFToken() ?>" />
     <input type="hidden" name="update_details" value="" />
     <div class="form-group">
         <label for="nickname" class="col-sm-3 control-label">Nickname</label>
@@ -116,9 +118,9 @@ if (isset($_POST['update_details'])) {
         <div class="col-sm-offset-3 col-sm-9">
           <input type="submit" name="submit" value="Save" class="btn btn-primary"/>
         </div>
-    </div>    
+    </div>
 </form>
 
-<?php require('../footer.php'); ?>
+<?php require '../footer.php';?>
 </body>
 </html>

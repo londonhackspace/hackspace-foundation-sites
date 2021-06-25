@@ -1,0 +1,15 @@
+FROM python:3.9
+
+RUN apt-get update && \
+    apt-get -y install vim postgresql-client
+
+WORKDIR /app
+
+COPY requirements.txt .
+RUN pip install -r requirements.txt
+
+COPY . .
+
+EXPOSE 80
+
+CMD ["docker/python-dev-init.sh"]
