@@ -1,0 +1,15 @@
+<?php
+
+$PROJECT_MAILING_LIST = "london-hack-space-test";
+
+$DB_NAME = 'hackspace';
+$DB_USER = 'hackspace';
+$DB_PASSWORD = 'hackspace';
+$DB_HOST = 'db';
+
+#Access Control server details for the members/tools.php stuff
+$ACSERVER_ADDRESS = "http://localhost:1234";
+$ACSERVER_KEY = "KEY GOES HERE";
+
+# Is this a testing instance?
+$DEV_INSTANCE = true;
