@@ -37,6 +37,32 @@ if(($user->isMember() && $this_user->isMember()) || $user->isAdmin() ) {
   </table>
 
   <?if ($user->isAdmin()) { ?>
+    <h3>Access Cards</h3>
+    <table class="table">
+    <thead>
+    <tr>
+        <th>Date added</th>
+        <th>Card ID</th>
+        <th style="text-align: center">Permission</th>
+    </tr>
+    </thead>
+    <tbody>
+    <? foreach($this_user->buildCards() as $card): ?>
+        <tr class="<?=$card->getActive() ? 'allowed' : 'blocked' ?>">
+            <td><?=$card->getAddedDate()?></td>
+            <td><?=implode(str_split($card->getUid(),2),':')?></td>
+            <? if ($card->getActive()): ?>
+              <td class="rfidcard  rfidcard-active">Active</td>
+            <? else: ?>
+              <td class="rfidcard rfidcard-blocked">Blocked</td>
+            <? endif; ?>
+        </tr>
+    <? endforeach ?>
+    </tbody>
+    </table>
+  <?}?>
+
+  <?if ($user->isAdmin()) { ?>
     <h3>Recent Payments</h3>
     <table class="table">
     <thead>
