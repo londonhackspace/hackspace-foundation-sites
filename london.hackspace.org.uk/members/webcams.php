@@ -7,12 +7,15 @@ require('../header.php');
 
 $cameras = array(
   20 => "3D Printing",
-  18 => "Open Space",
-  15 => "Metal Workshop",
+  18 => "Middle Workshop SE",
+  15 => "Metal Workshop SW",
   17 => "Wood Workshop",
-  14 => "Middle Workshop",
+  14 => "Middle Workshop N",
   7 => "Wood Workshop NE",
   17 => "Wood Workshop SW",
+  22 => "Wood Workshop E",
+  21 => "Wood Workshop E2",
+  24 => "Electronics",
   19 => "Cage",
   9 => "Metal Workshop NE"
 );
