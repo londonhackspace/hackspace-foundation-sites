@@ -37,7 +37,11 @@ if (isset($_POST['submit'])) {
         }
 
         if (isset($_POST['forward'])) {
-            fURL::redirect('http://' . $_SERVER['SERVER_NAME'] . $_POST['forward']);
+            if(substr($_POST['forward'],0,1)=='/'){
+              fURL::redirect($_POST['forward']);
+            } else {
+              throw new fValidationException('Forward should be an absolute path in the current site');
+            }
         } else {
             fURL::redirect('/members');
         }
