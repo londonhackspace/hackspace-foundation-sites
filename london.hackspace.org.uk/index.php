@@ -5,7 +5,7 @@ $blurb = 'A non-profit hackerspace in London: a community-run workshop where peo
 $hide_menu = 1;
 $show_twitter_feed = 1;
 $large_page_heading = 1;
-require('header.php'); ?>
+require 'header.php';?>
 
 <div id="home-page-container" class="row">
     <div class="col-md-4 col-md-push-4">
@@ -25,7 +25,7 @@ require('header.php'); ?>
             </p>
             </section>
 
-        <section style="display:none;">
+        <section>
             <h3>Events</h3>
             <p>
                 We host a variety of events covering topics from electronics to brewing and biohacking to lockpicking.
@@ -100,7 +100,7 @@ require('header.php'); ?>
         <section>
             <h3 class="collapsed" data-toggle="collapse" data-target="#flickr-badge-container">Photo stream</h3>
             <div id="flickr-badge-container" class="collapse">
-              <? include('flickr.html') ?>
+              <?include 'flickr.html'?>
               <p><a href="http://www.flickr.com/groups/londonhackspace/pool">View more on Flickr&hellip;</a></p>
             </div>
         </section>
@@ -118,7 +118,7 @@ require('header.php'); ?>
 </div><!-- end of home-page-container -->
 
 
-<? require('footer.php'); ?>
+<?require 'footer.php';?>
 <script type="text/javascript">
 // homepage cleanup events for touch devices and prevent collapseable sections for wide screens
 if($('#home-page-container').length > 0) {
