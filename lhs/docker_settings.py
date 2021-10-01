@@ -41,5 +41,5 @@ GOCARDLESS_CREDENTIALS = {
   'webhook_secret': 'YourSecretHere',
 }
 
-NORDIGEN_TOKEN = 'your-token'
-NORDIGEN_ACCOUNT = 'your-account-id'
+NORDIGEN_TOKEN = '1c4690ece19789cc630097f1202dee5e857285ec'
+NORDIGEN_ACCOUNT = "f269d394-1e78-47d2-bce7-9dca6c34cc3f"
