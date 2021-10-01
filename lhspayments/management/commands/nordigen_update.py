@@ -1,10 +1,4 @@
 from django.core.management.base import BaseCommand
-from datetime import datetime, timedelta, timezone
-import subprocess
-
-from lhsauth.models import User
-from lhspayments.models import Payment
-
 from lhspayments.nordigen_utils import NordProcessor
 
 
