@@ -5,14 +5,16 @@ from lhsauth.models import User
 class Payment(models.Model):
     TYPE_BANKPAYMENT = 1
     TYPE_GOCARDLESS = 2
+    TYPE_NORDAPI = 3
 
     STATE_PENDING = 1
     STATE_SUCCEEDED = 2
     STATE_FAILED = 3
-    
+
     PAYMENT_TYPES = [
         (TYPE_BANKPAYMENT, "Bank Payment"),
-        (TYPE_GOCARDLESS, "GoCardless")
+        (TYPE_GOCARDLESS, "GoCardless"),
+        (TYPE_NORDAPI, "NordigenApi")
     ]
 
     PAYMENT_STATES = [
@@ -41,7 +43,7 @@ class Payment(models.Model):
             'failed': Payment.STATE_FAILED,
             'charged_back': Payment.STATE_FAILED,
         }
-        
+
         return status_map[gcstatus]
 
     @staticmethod

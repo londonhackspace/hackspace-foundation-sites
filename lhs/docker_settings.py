@@ -40,3 +40,6 @@ GOCARDLESS_CREDENTIALS = {
   'access_token':  'A0d7SbxK-Ylz',
   'webhook_secret': 'YourSecretHere',
 }
+
+NORDIGEN_TOKEN = 'your-token'
+NORDIGEN_ACCOUNT = 'your-account-id'
