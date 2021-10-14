@@ -5,7 +5,6 @@ from lhsauth.models import User
 class Payment(models.Model):
     TYPE_BANKPAYMENT = 1
     TYPE_GOCARDLESS = 2
-    TYPE_NORDAPI = 3
 
     STATE_PENDING = 1
     STATE_SUCCEEDED = 2
@@ -13,8 +12,7 @@ class Payment(models.Model):
 
     PAYMENT_TYPES = [
         (TYPE_BANKPAYMENT, "Bank Payment"),
-        (TYPE_GOCARDLESS, "GoCardless"),
-        (TYPE_NORDAPI, "NordigenApi")
+        (TYPE_GOCARDLESS, "GoCardless")
     ]
 
     PAYMENT_STATES = [
