@@ -9,7 +9,7 @@ class Payment(models.Model):
     STATE_PENDING = 1
     STATE_SUCCEEDED = 2
     STATE_FAILED = 3
-
+    
     PAYMENT_TYPES = [
         (TYPE_BANKPAYMENT, "Bank Payment"),
         (TYPE_GOCARDLESS, "GoCardless")
@@ -41,7 +41,7 @@ class Payment(models.Model):
             'failed': Payment.STATE_FAILED,
             'charged_back': Payment.STATE_FAILED,
         }
-
+        
         return status_map[gcstatus]
 
     @staticmethod
