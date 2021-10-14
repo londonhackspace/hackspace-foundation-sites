@@ -1,3 +1,5 @@
+import os
+
 from .settings import *
 
 # SECURITY WARNING: create your own key, and keep it secret!
@@ -41,5 +43,6 @@ GOCARDLESS_CREDENTIALS = {
   'webhook_secret': 'YourSecretHere',
 }
 
-NORDIGEN_TOKEN = 'your-token'
-NORDIGEN_ACCOUNT = 'your-account-id'
+NORDIGEN_TOKEN = os.getenv('NORDIGEN_TOKEN', 'your-token')
+NORDIGEN_ACCOUNT = os.getenv('NORDIGEN_ACCOUNT', 'your-account-id')
+

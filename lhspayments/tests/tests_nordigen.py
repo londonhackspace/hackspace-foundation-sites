@@ -16,7 +16,10 @@ class NordigenApiTests(TestCase):
     fixtures = ["User.yaml"]
 
     def setUp(self):
-        self.nord_processer = NordProcessor()
+        self.nord_processer = NordProcessor(
+            stdout=False,
+            verbosity=1
+        )
 
     @mock.patch('lhspayments.nordigen_utils.NordProcessor.get_new_transactions')
     def test_process_transactions_with_good_data(self, mock_transactions):
@@ -81,13 +84,8 @@ class NordigenApiTests(TestCase):
         p.save()
 
         self.assertEqual(Payment.objects.count(), 1)
-
         self.nord_processer.process_new_transactions()
-
         payments = Payment.objects.filter(user_id=user_id)
-
-        print(payments)
-
         self.assertEqual(payments.count(), 1)
         # self.assertEqual(Payment.objects.count(), 2)
         self.assertEqual(user1.email, 'test.user1@limepepper.co.uk')
@@ -139,13 +137,8 @@ class NordigenApiTests(TestCase):
         p.save()
 
         self.assertEqual(Payment.objects.count(), 2)
-
         self.nord_processer.process_new_transactions()
-
         payments = Payment.objects.filter(user_id=user_id)
-
-        print(payments)
-
         self.assertEqual(payments.count(), 3)
         # self.assertEqual(Payment.objects.count(), 2)
         self.assertEqual(user1.email, 'test.user1@limepepper.co.uk')

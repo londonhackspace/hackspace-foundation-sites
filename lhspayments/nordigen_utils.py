@@ -24,24 +24,25 @@ class NordProcessor():
 
     def __init__(self, **kwargs):
         self.verbosity = kwargs.pop("verbosity", 1)
-        self.syslog = kwargs.pop("syslog", True)
+        self.stdout = kwargs.pop("stdout", False)
         self.dry_run = kwargs.pop("dry_run", False)
 
     def process_new_transactions(self):
-        self.get_new_transactions()
+        self.transactions = self.get_new_transactions()
         self.process_transactions()
 
     def get_new_transactions(self):
         data = self.client.account.transactions(self.account)
         # do we care about pending transactions?
-        self.transactions = data["transactions"]["booked"]
-        return transactions
+        # self.transactions = data["transactions"]["booked"]
+        return data["transactions"]["booked"]
 
     def process_transactions(self):
         for trn in self.transactions:
             # only interested in credits, not payments to suppliers
             if(float(trn["transactionAmount"]["amount"]) < 0):
-                self.pr("supplier payment", level=2)
+                self.pr("supplier payment   :"
+                        f'\"{trn["remittanceInformationUnstructured"]}\"', level=2)
                 # self.pr(trn["remittanceInformationUnstructured"])
                 # self.pr(trn["transactionAmount"])
                 continue
@@ -69,7 +70,7 @@ class NordProcessor():
                 transaction)
         except ParseInfoException:
             self.pr(
-                f"unable to parse  : {transaction['remittanceInformationUnstructured']}", level=0)
+                f"unable to parse  : {transaction['remittanceInformationUnstructured']}", level=2)
             return
 
         try:
@@ -81,11 +82,11 @@ class NordProcessor():
             return
 
         # search for duplicates of this exact tx (i.e. inserted previously
-        # by this script.
+        # by this script on a previous run.
         payments = Payment.objects.filter(id=trn_id)
 
         if(payments.count() == 1):
-            self.pr("found existing transaction", level=2)
+            self.pr(f"found existing transaction: \"{trn_id}\"", level=2)
             return
         elif(len(payments) > 1):
             raise ValueError(
@@ -159,13 +160,20 @@ class NordProcessor():
     def generate_info_hash(self, info):
         "hash the remittence info field into a short relatively unique string"
 
-        info_hash = base64.b64encode(hashlib.sha256(
-            info.encode('utf-8')).digest()).decode("utf-8")[:8]
+        # base64 encoded
+        # info_hash = base64.b64encode(
+        #     hashlib.sha256(
+        #         info.encode('utf-8')
+        #     ).digest()
+        # ).decode("utf-8")[:8]
+
+        info_hash = hashlib.sha256(
+            info.encode('utf-8')).hexdigest().upper()[:8]
 
         return info_hash
 
     def pr(self, message, level=1):
-        if self.syslog and level <= self.verbosity:
+        if self.stdout and level <= self.verbosity:
             print(message)
         self.report.append({"message": message,
                             "level": level})

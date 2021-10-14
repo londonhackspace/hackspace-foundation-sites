@@ -26,7 +26,7 @@ class Command(BaseCommand):
             verbosity=options['verbosity']
         )
 
-        print(options)
+        # print(options)
 
         if json_data:
             f = open(json_data, "r")
@@ -36,3 +36,20 @@ class Command(BaseCommand):
             nord_processer.process_transactions()
         else:
             nord_processer.process_new_transactions()
+
+        for row in nord_processer.report:
+            if row["level"] > options['verbosity']:
+                continue
+
+            # self.stdout.write(str(row["level"]))
+
+            if row["level"] == 0:
+                self.stdout.write(self.style.ERROR(row["message"]))
+            elif row["level"] == 1:
+                self.stdout.write(self.style.SUCCESS(row["message"]))
+            elif row["level"] == 2:
+                self.stdout.write(self.style.WARNING(row["message"]))
+            elif row["level"] == 3:
+                self.stdout.write(row["message"])
+
+
