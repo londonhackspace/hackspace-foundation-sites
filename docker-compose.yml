@@ -67,6 +67,21 @@ services:
     networks:
       - lhs
 
+  smtp:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile-smtp
+    # ports:
+    #   - 9025:25
+    volumes:
+      - .:/app
+      - ./etc/postfix/main.cf:/etc/postfix/main.cf
+      - ./etc/postfix/master.cf:/etc/postfix/master.cf
+      - ./etc/postfix/virtual:/etc/postfix/virtual
+      - ./etc/postfix/mailname:/etc/mailname
+    networks:
+      - lhs
+
 volumes:
   php-session:
   pgdata:

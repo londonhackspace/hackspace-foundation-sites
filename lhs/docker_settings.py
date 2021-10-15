@@ -16,6 +16,9 @@ ALLOWED_HOSTS = [DOMAIN_NAME]
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 
+EMAIL_HOST = 'smtp'
+EMAIL_PORT = 25
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',

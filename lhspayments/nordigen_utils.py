@@ -30,6 +30,7 @@ class NordProcessor():
         # set this to true to force inline output during processing
         self.stdout = kwargs.pop("stdout", False)
         self.dry_run = kwargs.pop("dry_run", False)
+        self.subs_date = kwargs.pop("subs_date", False)
 
     def process_new_transactions(self):
         self.transactions = self.get_new_transactions()
