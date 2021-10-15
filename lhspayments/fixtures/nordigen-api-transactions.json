@@ -71,6 +71,15 @@
             "currency": "GBP"
           },
           "valueDate": "2021-07-27"
+        },
+        {
+          "bookingDate": "2021-08-04",
+          "remittanceInformationUnstructured": "MR oh for a zero HSO7165 STO",
+          "transactionAmount": {
+            "amount": "5.00",
+            "currency": "GBP"
+          },
+          "valueDate": "2021-08-04"
         }
     ],
     "pending": []

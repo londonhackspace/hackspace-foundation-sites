@@ -1,5 +1,5 @@
 - model: lhsauth.user
-  pk: 0001
+  pk: 1
   fields:
     email: test.user1@limepepper.co.uk
     password: flourish_sha1$YUszkBDZfc$f46578297e02944a362252925c68296d89ae4184
@@ -28,12 +28,12 @@
     ldapemail: null
     gocardless_user: true
 - model: lhsauth.user
-  pk: 90002
+  pk: 2
   fields:
     email: test.user2@limepepper.co.uk
     password: flourish_sha1$YUszkBDZfc$f46578297e02944a362252925c68296d89ae4184
     last_login: null
-    full_name: Test User
+    full_name: Test User 2
     subscribed: false
     bankhash: null
     creationdate: null
@@ -57,7 +57,36 @@
     ldapemail: null
     gocardless_user: false
 - model: lhsauth.user
-  pk: 90010
+  pk: 1000
+  fields:
+    email: test.user1000@limepepper.co.uk
+    password: flourish_sha1$YUszkBDZfc$f46578297e02944a362252925c68296d89ae4184
+    last_login: null
+    full_name: Tony the Tiger
+    subscribed: false
+    bankhash: null
+    creationdate: null
+    address: null
+    hackney: false
+    subscription_period: 0
+    nickname: null
+    irc_nick: null
+    gladosfile: null
+    terminated: false
+    admin: false
+    has_profile: false
+    disabled_profile: false
+    doorbot_timestamp: null
+    emergency_name: null
+    emergency_phone: null
+    ldapuser: null
+    ldapnthash: null
+    ldapsshahash: null
+    ldapshell: null
+    ldapemail: null
+    gocardless_user: false
+- model: lhsauth.user
+  pk: 90001
   fields:
     email: test.user3@limepepper.co.uk
     password: flourish_sha1$YUszkBDZfc$f46578297e02944a362252925c68296d89ae4184
@@ -86,9 +115,38 @@
     ldapemail: null
     gocardless_user: false
 - model: lhsauth.user
-  pk: 1000
+  pk: 90002
   fields:
     email: test.user4@limepepper.co.uk
+    password: flourish_sha1$YUszkBDZfc$f46578297e02944a362252925c68296d89ae4184
+    last_login: null
+    full_name: Mr Person
+    subscribed: false
+    bankhash: null
+    creationdate: null
+    address: null
+    hackney: false
+    subscription_period: 0
+    nickname: null
+    irc_nick: null
+    gladosfile: null
+    terminated: false
+    admin: false
+    has_profile: false
+    disabled_profile: false
+    doorbot_timestamp: null
+    emergency_name: null
+    emergency_phone: null
+    ldapuser: null
+    ldapnthash: null
+    ldapsshahash: null
+    ldapshell: null
+    ldapemail: null
+    gocardless_user: false
+- model: lhsauth.user
+  pk: 999999
+  fields:
+    email: test.user5@limepepper.co.uk
     password: flourish_sha1$YUszkBDZfc$f46578297e02944a362252925c68296d89ae4184
     last_login: null
     full_name: Mr Person

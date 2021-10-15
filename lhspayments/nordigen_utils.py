@@ -50,6 +50,7 @@ class NordProcessor():
             elif(trn["transactionAmount"]["currency"] != "GBP"):
                 self.pr(
                     f'bad currency     : \"{trn["transactionAmount"]["currency"]}\" '
+                    f'{trn["transactionAmount"]["amount"]}'
                     f'\"{trn["remittanceInformationUnstructured"]}\"',
                     level=0)
                 continue
