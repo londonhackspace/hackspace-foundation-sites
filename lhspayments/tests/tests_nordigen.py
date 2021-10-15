@@ -176,9 +176,10 @@ class NordigenApiTests(TestCase):
 
         self.nord_processer.process_new_transactions()
         payments = Payment.objects.filter(user_id=user_id)
+
         self.assertEqual(payments.count(), 1)
         # self.assertEqual(Payment.objects.count(), 2)
-        self.assertEqual(user1.email, 'test.user1000@limepepper.co.uk')
+        # self.assertEqual(user1.email, 'test.user1000@limepepper.co.uk')
 
     @mock.patch('lhspayments.nordigen_utils.NordProcessor.get_new_transactions')
     def test_duplicates_002(self, mock_transactions):

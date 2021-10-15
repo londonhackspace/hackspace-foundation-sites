@@ -48,7 +48,8 @@ class Command(BaseCommand):
             elif row["level"] == 1:
                 self.stdout.write(self.style.SUCCESS(row["message"]))
             elif row["level"] == 2:
-                self.stdout.write(self.style.WARNING(row["message"]))
+                # self.stdout.write(self.style.WARNING(row["message"]))
+                self.stdout.write(row["message"])
             elif row["level"] == 3:
                 self.stdout.write(row["message"])
 

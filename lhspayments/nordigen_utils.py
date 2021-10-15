@@ -20,10 +20,14 @@ class NordProcessor():
     client = Client(token=settings.NORDIGEN_TOKEN)
     account = settings.NORDIGEN_ACCOUNT
 
+    # list of results from transaction processing attempts
+    # currently handed to the django command object for rendering
     report = []
 
     def __init__(self, **kwargs):
+        # this is passed through from django command invocation atm
         self.verbosity = kwargs.pop("verbosity", 1)
+        # set this to true to force inline output during processing
         self.stdout = kwargs.pop("stdout", False)
         self.dry_run = kwargs.pop("dry_run", False)
 
@@ -32,6 +36,7 @@ class NordProcessor():
         self.process_transactions()
 
     def get_new_transactions(self):
+        "get transactions from remote API"
         data = self.client.account.transactions(self.account)
         # do we care about pending transactions?
         # self.transactions = data["transactions"]["booked"]
@@ -39,124 +44,172 @@ class NordProcessor():
 
     def process_transactions(self):
         for trn in self.transactions:
-            # only interested in credits, not payments to suppliers
-            if(float(trn["transactionAmount"]["amount"]) < 0):
-                self.pr("supplier payment   :"
-                        f'\"{trn["remittanceInformationUnstructured"]}\"', level=2)
-                # self.pr(trn["remittanceInformationUnstructured"])
-                # self.pr(trn["transactionAmount"])
-                continue
-            # can't handle non-GBP currency
-            elif(trn["transactionAmount"]["currency"] != "GBP"):
-                self.pr(
-                    f'bad currency     : \"{trn["transactionAmount"]["currency"]}\" '
-                    f'{trn["transactionAmount"]["amount"]}'
-                    f'\"{trn["remittanceInformationUnstructured"]}\"',
-                    level=0)
-                continue
-            # ignore well known payment sources, e.g. gocardless
-            elif(re.match("GC C1\s+", trn["remittanceInformationUnstructured"], re.I)):
-                remittence = trn["remittanceInformationUnstructured"]
-                self.pr(
-                    f"ignoring gocardless payment \"{remittence}\"",
-                    level=3)
-                # self.pr(trn)
-                continue
-            self.process_transaction(trn)
+            t = NordigenAccountTransaction.from_json(trn)
 
-    def process_transaction(self, transaction):
+            # filter out unwanted transaction types
+            if not t.is_deposit():
+                self.pr_t(t, f"was disbursement of funds to \"{t.info}\"", 2)
+            elif t.currency != 'GBP':
+                self.pr_t(t,
+                          f"was non uk currency ({t.currency}) transactions "
+                          f"for \"{t.info}\"",
+                          1)
+            elif t.gocardless:
+                self.pr_t(t, f"was gocardless deposit \"{t.info}\"", 2)
+            elif not t.user_id:
+                self.pr_t(t,
+                          f"unable to parse info for user \"{t.info}\" "
+                          f"might be pledge or donations",
+                          2)
+            elif t.amount < 5.00:
+                self.pr_t(t, f"amount was less than £5.00 \"{t.info}\"", 2)
+            else:
+                self.process_transaction(t)
 
-        try:
-            user_id, info, amount, date, dt, trn_id = self.parse_transaction(
-                transaction)
-        except ParseInfoException:
-            self.pr(
-                f"unable to parse  : {transaction['remittanceInformationUnstructured']}", level=2)
-            return
+    def process_transaction(self, t):
+
+        messages = []
 
         try:
-            user = User.objects.get(pk=user_id)
+            user = User.objects.get(pk=t.user_id)
         except User.DoesNotExist:
-            self.pr(f"not found "
-                    f"user_id: {user_id:6} remittance: \"{info}\"", level=0)
-            # self.pr(transaction)
+            self.pr_t(t,
+                      f"user {t.user_id} not found in db \"{t.info}\"",
+                      level=0)
             return
 
-        # search for duplicates of this exact tx (i.e. inserted previously
-        # by this script on a previous run.
-        payments = Payment.objects.filter(id=trn_id)
-
-        if(payments.count() == 1):
-            self.pr(f"found existing transaction: \"{trn_id}\"", level=2)
+        # search for duplicates of this exact tx (i.e. inserted
+        # by this script on a previous run (using concatenated key for trn_id)
+        try:
+            existing_payment = Payment.objects.get(pk=t.trn_id)
+            self.pr_t(t,
+                      f"found existing transaction: \"{t.trn_id}\"", level=2)
             return
-        elif(len(payments) > 1):
-            raise ValueError(
-                f"found more than 1 payment {payments} for: "
-                f"HS{user_id:05} and {trn_id}")
-            return
+        except Payment.DoesNotExist:
+            existing_payment = None
 
-        # search for payments assigned to this user
+        # search for payments assigned to this user with similar
+        # values for multi field matching. i.e. inserted by reconcile.rb
         ofx_payments = Payment.objects.filter(
-            user=user_id,
-            timestamp__date=dt,
-            amount=amount,
+            user=t.user_id,
+            timestamp__date=t.tzdt,
+            amount=t.amount,
             payment_type=Payment.TYPE_BANKPAYMENT
         )
 
         if(ofx_payments.count() > 0):
-            self.pr("found existing transaction with non-matching id")
+            self.pr_t(t,
+                      "found existing transaction with non-matching id"
+                      f' {t.user_id} - info is {t.info}'
+                      )
+            return
+
+        # handle edge cases from reconcile.rb
+        if user.terminated:
+            self.pr_t(t,
+                      "terminated user "
+                      f' {t.user_id} - info is {t.info}',
+                      0
+                      )
+            return
+
+        if not user.address:
+            self.pr_t(t,
+                      "user address is empty "
+                      f' {t.user_id} - info is {t.info}',
+                      0
+                      )
             return
 
         p = Payment()
         p.user = user
-        p.timestamp = dt
-        p.id = trn_id
+        p.timestamp = t.tzdt
+        p.id = t.trn_id
         p.payment_state = Payment.STATE_SUCCEEDED
         p.payment_type = Payment.TYPE_BANKPAYMENT
-        p.amount = amount
+        p.amount = t.amount
 
         if not self.dry_run:
             p.save()
 
-        self.pr(f"payment created for {user} date {dt} amount {amount}")
+        if not user.subscribed:
+            messages.append(f"(subscribing user)")
+            user.subscribed = True
+            if not self.dry_run:
+                user.save()
 
-    def parse_transaction(self, transaction):
-        """parse transaction into dict"""
+        self.pr_t(t,
+                  f"payment created for user_id: {t.user_id} ({user})"
+                  f' {" ".join(messages)}'
+                  )
 
-        info = transaction["remittanceInformationUnstructured"]
-        user_id = self.parse_remittance_field(info)
-        amount = transaction["transactionAmount"]["amount"]
-        date = transaction['valueDate']
-        # convert the YYYY-mm-dd date into a tz enabled datetime
-        dt = datetime.strptime(
-            date, "%Y-%m-%d").replace(tzinfo=timezone.utc)
-        # create the primary key for this transaction
-        trn_id = self.create_key(user_id, info, amount, date, dt)
-        return [user_id, info, amount, date, dt, trn_id]
+    def pr(self, message, level=1):
+        if self.stdout and level <= self.verbosity:
+            print(message)
+        self.report.append({"message": message,
+                            "level": level})
 
-    def parse_remittance_field(self, info_field):
-        """parse remittence information for HS user id value"""
+    def pr_t(self, t, message, level=1):
+        self.pr(f'{t.value_date} {t.amount:6.2f} {t.currency}  {message}', level)
 
-        match = re.search("\sHSO?(\d{4,6})", info_field, re.I)
+
+class NordigenAccountTransaction():
+
+    def __init__(self, **kwargs):
+        self.amount = kwargs.pop("amount", None)
+        self.booking_date = kwargs.pop("booking_date", None)
+        self.currency = kwargs.pop("currency", None)
+        self.info = kwargs.pop("info", None)
+        self.value_date = kwargs.pop("value_date", None)
+        self.gocardless = kwargs.pop("gocardless", False)
+        self.member = kwargs.pop("member", False)
+
+        self.tzdt = kwargs.pop("tzdt", self.parse_date_to_tzdatetime())
+        self.user_id = kwargs.pop("user_id", self.parse_info_for_user())
+
+        self.trn_id = kwargs.pop("trn_id", self.create_trn_id())
+
+    @staticmethod
+    def from_json(data):
+        if isinstance(data, str):
+            data = json.loads(data)
+
+        return NordigenAccountTransaction(
+            amount=float(data['transactionAmount']['amount']),
+            booking_date=data['bookingDate'],
+            currency=data['transactionAmount']['currency'],
+            info=data['remittanceInformationUnstructured'],
+            value_date=data['valueDate']
+        )
+
+    def parse_info_for_user(self):
+        """
+        takes raw string of <PAYEE NAME>  <BANK REF> <PAYMENT TYPE> and
+        populates user_id. if this is some other type of deposit, such as
+        pledge, or the user_id can't be parsed handle it
+        """
+        if(re.match("GC C1\s+", self.info, re.I)):
+            self.gocardless = True
+            return None
+        match = re.search("\sHSO?(\d{4,6})", self.info, re.I)
         if(match):
-            return int(match.group(1))
+            user_id = int(match.group(1))
+            self.member = True
+            return user_id
         else:
-            self.pr(f"field is {info_field}")
-            raise ParseInfoException(
-                'An exception occurred parsing remittance info')
+            # probably a pledge or donation
+            return None
 
-    def create_key(self, user_id, info, amount, date, dt):
-        """generate a unique key for this transaction based off fields"""
+    def parse_date_to_tzdatetime(self):
+        """create a TZ qualified datetime from value_date"""
+        return datetime.strptime(
+            self.value_date, "%Y-%m-%d").replace(tzinfo=timezone.utc)
 
+    def create_trn_id(self):
+        """create a mostly unique trn_id from other fields"""
         # info_hash = self.generate_info_hash(info)
-        # just use the remittence info as suffix to id string
-        info_hash = info.replace(" ", "_")
-
-        # key based off multiple fields (as no fit_id is available)
-        trn_id = f"HS{user_id:05}-{date}-{amount}-{info_hash}"
-
-        # self.pr(trn_id)
-        return trn_id
+        info_hash = self.info.replace(" ", "_")
+        return f"{self.value_date}-{self.amount}-{info_hash}"
 
     def generate_info_hash(self, info):
         "hash the remittence info field into a short relatively unique string"
@@ -173,13 +226,12 @@ class NordProcessor():
 
         return info_hash
 
-    def pr(self, message, level=1):
-        if self.stdout and level <= self.verbosity:
-            print(message)
-        self.report.append({"message": message,
-                            "level": level})
+    def is_deposit(self):
+        return self.amount > 0
 
+    def __str__(self):
+        message = f"""{self.value_date} - {self.amount} - {self.currency}
+            {self.info}
+            {self.user_id}xxx"""
+        return message
 
-class ParseInfoException(Exception):
-    "unable to parse the remittence info into something sensible"
-    pass

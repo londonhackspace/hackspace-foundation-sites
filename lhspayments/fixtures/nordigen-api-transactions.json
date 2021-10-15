@@ -80,6 +80,24 @@
             "currency": "GBP"
           },
           "valueDate": "2021-08-04"
+        },
+        {
+          "bookingDate": "2021-06-26",
+          "remittanceInformationUnstructured": "MR oh for a zero HS90001 STO",
+          "transactionAmount": {
+            "amount": "3.50",
+            "currency": "GBP"
+          },
+          "valueDate": "2021-06-27"
+        },
+        {
+          "bookingDate": "2021-09-26",
+          "remittanceInformationUnstructured": "I am terminated HS00003 STO",
+          "transactionAmount": {
+            "amount": "13.50",
+            "currency": "GBP"
+          },
+          "valueDate": "2021-09-27"
         }
     ],
     "pending": []
