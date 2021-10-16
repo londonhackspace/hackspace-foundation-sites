@@ -1,7 +1,7 @@
 - model: lhsauth.user
   pk: 1
   fields:
-    email: test.user1@limepepper.co.uk
+    email: test.user.1@limepepper.co.uk
     password: flourish_sha1$YUszkBDZfc$f46578297e02944a362252925c68296d89ae4184
     last_login: 2021-06-25 20:00:04+00:00
     full_name: Testy McTestFace
@@ -30,7 +30,7 @@
 - model: lhsauth.user
   pk: 2
   fields:
-    email: test.user2@limepepper.co.uk
+    email: test.user.2@limepepper.co.uk
     password: flourish_sha1$YUszkBDZfc$f46578297e02944a362252925c68296d89ae4184
     last_login: null
     full_name: Test User 2
@@ -59,7 +59,7 @@
 - model: lhsauth.user
   pk: 3
   fields:
-    email: test.user3@limepepper.co.uk
+    email: test.user.3@limepepper.co.uk
     password: flourish_sha1$YUszkBDZfc$f46578297e02944a362252925c68296d89ae4184
     last_login: null
     full_name: Test User 2
@@ -86,9 +86,38 @@
     ldapemail: null
     gocardless_user: false
 - model: lhsauth.user
+  pk: 4
+  fields:
+    email: test.user.4@limepepper.co.uk
+    password: flourish_sha1$YUszkBDZfc$f46578297e02944a362252925c68296d89ae4184
+    last_login: null
+    full_name: Test User 4
+    subscribed: false
+    bankhash: null
+    creationdate: null
+    address: "1 The street\r\nthe town\r\npostcode"
+    hackney: false
+    subscription_period: 0
+    nickname: null
+    irc_nick: null
+    gladosfile: null
+    terminated: false
+    admin: false
+    has_profile: false
+    disabled_profile: false
+    doorbot_timestamp: null
+    emergency_name: null
+    emergency_phone: null
+    ldapuser: null
+    ldapnthash: null
+    ldapsshahash: null
+    ldapshell: null
+    ldapemail: null
+    gocardless_user: false
+- model: lhsauth.user
   pk: 1000
   fields:
-    email: test.user1000@limepepper.co.uk
+    email: test.user.1000@limepepper.co.uk
     password: flourish_sha1$YUszkBDZfc$f46578297e02944a362252925c68296d89ae4184
     last_login: null
     full_name: Tony the Tiger

@@ -1,3 +1,4 @@
+import datetime
 import os
 
 from .settings import *
@@ -16,8 +17,12 @@ ALLOWED_HOSTS = [DOMAIN_NAME]
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 
-EMAIL_HOST = 'smtp'
-EMAIL_PORT = 25
+
+SMTP_SERVER = 'mail'
+SMTP_TLS = False
+SMTP_STARTTLS = False
+SMTP_USER = None
+SMTP_PASSWORD = None
 
 DATABASES = {
     'default': {
@@ -49,3 +54,5 @@ GOCARDLESS_CREDENTIALS = {
 NORDIGEN_TOKEN = os.getenv('NORDIGEN_TOKEN', 'your-token')
 NORDIGEN_ACCOUNT = os.getenv('NORDIGEN_ACCOUNT', 'your-account-id')
 
+SUBS_MIN_PAYMENT = 5.00
+SUBS_GRACE_PERIOD = datetime.timedelta(weeks=6)
