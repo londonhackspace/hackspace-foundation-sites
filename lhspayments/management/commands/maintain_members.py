@@ -1,3 +1,5 @@
+
+from django.conf import settings
 from django.core.management.base import BaseCommand
 from datetime import datetime, timedelta, timezone
 import subprocess
@@ -14,7 +16,7 @@ class Command(BaseCommand):
         # Find ex-members
 
         # calculate the latest payment that's no longer valid
-        d = datetime.now(timezone.utc) - timedelta(weeks=6)
+        d = datetime.now(timezone.utc) - settings.SUBS_GRACE_PERIOD
 
         for u in User.objects.filter(subscribed=True):
             # essentially, has the user made a non-failed payment in the last six weeks?

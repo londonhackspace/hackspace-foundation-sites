@@ -23,23 +23,23 @@ class Command(BaseCommand):
                             ' comparison against expiry etc'
                             )
 
-    def handle(self, *args, **options):
+    def handle(self, *args, **kwargs):
 
         obj_args = {
-            "dry_run": options['dry_run'],
-            "verbosity": options['verbosity']
+            "dry_run": kwargs['dry_run'],
+            "verbosity": kwargs['verbosity']
         }
 
-        if options['subs_date']:
+        if kwargs['subs_date']:
             subs_date = datetime.fromisoformat(
-                options['subs_date'].replace('Z', '+00:00'))
+                kwargs['subs_date'].replace('Z', '+00:00'))
             obj_args['subs_date'] = subs_date
 
         nord_processer = NordProcessor(**obj_args)
 
-        # print(options)
+        # print(kwargs)
 
-        json_data = options['transactions']
+        json_data = kwargs['transactions']
 
         if json_data:
             f = open(json_data, "r")
@@ -52,7 +52,7 @@ class Command(BaseCommand):
             nord_processer.process_new_transactions()
 
         for row in nord_processer.report:
-            if row["level"] > options['verbosity']:
+            if row["level"] > kwargs['verbosity']:
                 continue
 
             # self.stdout.write(str(row["level"]))
@@ -68,11 +68,3 @@ class Command(BaseCommand):
                 self.stdout.write(row["message"])
 
         nord_processer.pr_post_summary()
-
-        # send_mail(
-        #     'Subject here',
-        #     'Here is the message.',
-        #     'from@example.com',
-        #     ['to@example.com'],
-        #     fail_silently=False,
-        # )

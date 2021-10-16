@@ -1,5 +1,6 @@
 import json
 import mock
+from datetime import datetime, timezone
 
 from django.test import TestCase
 import gocardless_pro as gocardless
@@ -79,7 +80,7 @@ class NordigenApiTests(TestCase):
         # create a payment that mocks an OFX inserted record
         p = Payment()
         p.user = user1
-        p.timestamp = "2021-09-29"
+        p.timestamp = "2021-09-29T12:00:00Z"
         p.id = "2021092900000001"
         p.payment_state = Payment.STATE_SUCCEEDED
         p.payment_type = Payment.TYPE_BANKPAYMENT
@@ -122,6 +123,8 @@ class NordigenApiTests(TestCase):
         p = Payment()
         p.user = user1
         p.timestamp = "2021-09-30"
+        p.timestamp = datetime(
+            2021, 9, 30, 0, 0, 0, 0, tzinfo=timezone.utc)
         p.id = "2021092900000001"
         p.payment_state = Payment.STATE_SUCCEEDED
         p.payment_type = Payment.TYPE_BANKPAYMENT
@@ -133,7 +136,7 @@ class NordigenApiTests(TestCase):
         # create a payment that mocks an OFX inserted record
         p = Payment()
         p.user = user1
-        p.timestamp = "2021-10-01"
+        p.timestamp = "2021-10-01T00:00:00Z"
         p.id = "2021100100000001"
         p.payment_state = Payment.STATE_SUCCEEDED
         p.payment_type = Payment.TYPE_BANKPAYMENT

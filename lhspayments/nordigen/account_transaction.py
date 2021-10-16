@@ -31,7 +31,6 @@ class NordigenAccountTransaction():
 
         return NordigenAccountTransaction(
             amount=float(data['transactionAmount']['amount']),
-
             booking_date=data['bookingDate'],
             currency=data['transactionAmount']['currency'],
             info=data['remittanceInformationUnstructured'],

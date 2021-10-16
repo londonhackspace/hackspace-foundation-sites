@@ -11,6 +11,7 @@ from datetime import datetime, timezone, time
 
 from django.utils.dateparse import parse_date
 from django.conf import settings
+from django.db import connection
 
 from lhsauth.models import User
 from lhspayments.models import Payment
@@ -284,16 +285,11 @@ class NordProcessor():
         print(
             f'initial list of {len(self.transactions)} transactions'
         )
-        # print(
-        #     self.statistics
-        # )
-        # pprint.PrettyPrinter(indent=4).pprint(self.statistics)
         if 1 <= self.verbosity:
             for key in sorted(stats.keys()):
                 print(
                     f'{key:20} {stats[key]}'
                 )
-
         print(
             f'total from statistics {sum(self.statistics.values())}'
         )
