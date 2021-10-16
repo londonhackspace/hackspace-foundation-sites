@@ -45,24 +45,8 @@ class NordigenAccountTransaction():
 
     def create_trn_id(self):
         "create a mostly unique trn_id from other fields"
-        # info_hash = self.generate_info_hash(info)
         info_hash = self.info.replace(" ", "_")
         return f"{self.value_date}-{self.amount}-{info_hash}"
-
-    def generate_info_hash(self, info):
-        "hash the remittence info field into a short relatively unique string"
-
-        # base64 encoded
-        # info_hash = base64.b64encode(
-        #     hashlib.sha256(
-        #         info.encode('utf-8')
-        #     ).digest()
-        # ).decode("utf-8")[:8]
-
-        info_hash = hashlib.sha256(
-            info.encode('utf-8')).hexdigest().upper()[:8]
-
-        return info_hash
 
     def is_dispersements(self):
         return self.amount < 0

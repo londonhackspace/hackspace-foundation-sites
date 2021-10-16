@@ -18,10 +18,6 @@ class Command(BaseCommand):
         parser.add_argument('--dry-run', action='store_true',
                             help='don\'t make any changes, just show what would'
                             )
-        parser.add_argument('--force-email', action='store_true',
-                            help='use with caution. with dry run, try'
-                            'to send email. used with docker mail server'
-                            )
         parser.add_argument('--subs-date', type=str,
                             help='for testing, alternative "now" date for '
                             ' comparison against expiry etc'
@@ -31,7 +27,6 @@ class Command(BaseCommand):
 
         obj_args = {
             "dry_run": options['dry_run'],
-            "force_email": options['force_email'],
             "verbosity": options['verbosity']
         }
 

@@ -55,7 +55,6 @@ class NordProcessor():
         # set this to true to force inline output during processing
         self.stdout = kwargs.pop("stdout", False)
         self.dry_run = kwargs.pop("dry_run", False)
-        self.force_email = kwargs.pop("force_email", False)
         # override the "now" date for date comparisons for subscriptions
         self.subs_date = kwargs.pop(
             "subs_date",
@@ -216,12 +215,6 @@ class NordProcessor():
             p.save()
 
         if not user.subscribed:
-
-            # print(t.tzdt)
-            # t.tzdt
-            # print(self.subs_date - settings.SUBS_GRACE_PERIOD)
-            # print(settings.SUBS_GRACE_PERIOD)
-
             # filter payments in future. This is not likely to be a problem
             # for API data, but might come up in testing
             if t.tzdt > self.subs_date:
@@ -235,21 +228,12 @@ class NordProcessor():
                     f"(payment out of grace period - not subscribing)"
                 )
             else:
+                # user status is changed to subscribed here
                 self.statistics['payment_subbed'] += 1
                 messages.append(
                     f"(subscribing user)"
                 )
 
-                # user.subscribed = True
-                # if not self.dry_run:
-                #     user.save()
-                # can't run this without an existing payment
-                #     new_user_email(user)
-
-                # on_new_member handles setting
-                # user.subscribed = True
-                # user.save()
-                # new_user_email(user)
                 if not self.dry_run:
                     on_new_member(user)
 
