@@ -10,7 +10,7 @@ SITE_ID = 1
 DOMAIN_NAME = 'localhost'
 ABSOLUTEURI_PROTOCOL = 'http'
 
-ALLOWED_HOSTS = [DOMAIN_NAME, '192.168.0.105']
+ALLOWED_HOSTS = [DOMAIN_NAME]
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 
