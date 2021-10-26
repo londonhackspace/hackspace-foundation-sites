@@ -13,3 +13,6 @@ $ACSERVER_KEY = "KEY GOES HERE";
 
 # Is this a testing instance?
 $DEV_INSTANCE = true;
+
+# site is using local sendmail for legacy reasons
+# $SMTP_SERVER = 'turing.hackspace.org.uk';
