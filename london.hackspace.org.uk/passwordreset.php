@@ -1,4 +1,4 @@
-<? 
+<?
 $page = 'membership';
 require('header.php');
 
@@ -60,10 +60,15 @@ Cheers,
 
 The London Hackspace email monkey
 ");
-        $email->send();
+        if(isset($SMTP_SERVER)) {
+            $smtp = new fSMTP($SMTP_SERVER);
+            $email->send($smtp);
+        } else {
+            $email->send();
+        }
         echo "<p>An email has been sent to you with further instructions.</p>";
     } catch(fNotFoundException $e) {?>
-        <p>No user exists with that email address. <a href="signup.php">Sign up</a>? 
+        <p>No user exists with that email address. <a href="signup.php">Sign up</a>?
                     Or <a href="passwordreset.php">try again</a>?</p>
 <?  } catch (fValidationException $e) {
         echo "<p>" . $e->printMessage() . "</p>";
@@ -119,7 +124,7 @@ The London Hackspace email monkey
 
 <p>If you are having difficulty please email <i>contact (at) london.hackspace.org.uk</i>.</p>
 
-<? 
+<?
 }
 require('footer.php'); ?>
 </body>

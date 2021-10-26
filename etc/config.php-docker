@@ -13,3 +13,5 @@ $ACSERVER_KEY = "KEY GOES HERE";
 
 # Is this a testing instance?
 $DEV_INSTANCE = true;
+
+$SMTP_SERVER = 'mail';

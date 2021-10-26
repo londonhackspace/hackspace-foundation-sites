@@ -20,6 +20,7 @@ services:
       - 9000:9000
     volumes:
       - .:/app
+      - ./etc/php5/apache2/php.ini:/etc/php5/apache2/php.ini
       - ./etc/config.php-docker:/app/etc/config.php
       - ./var-docker:/app/var  # mask Vagrant's var until we're using docker everywhere
       - php-session:/session  # must be owned by www-data, as done in Dockerfile-php
@@ -64,6 +65,19 @@ services:
       - POSTGRES_PASSWORD=hackspace
     volumes:
       - pgdata:/var/lib/postgresql/data
+    networks:
+      - lhs
+
+  mail:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile-postfix
+    # ports:
+    #   - 9025:25
+    volumes:
+      - .:/app
+      - ./etc/postfix/main.cf:/etc/postfix/main.cf
+      - ./etc/postfix/match_all_destination_pcre:/etc/postfix/match_all_destination_pcre
     networks:
       - lhs
 

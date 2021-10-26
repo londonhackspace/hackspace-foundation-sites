@@ -10,9 +10,16 @@ SITE_ID = 1
 DOMAIN_NAME = 'localhost'
 ABSOLUTEURI_PROTOCOL = 'http'
 
-ALLOWED_HOSTS = [DOMAIN_NAME]
+ALLOWED_HOSTS = [DOMAIN_NAME, '192.168.0.105']
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+
+
+SMTP_SERVER = 'mail'
+SMTP_TLS = False
+SMTP_STARTTLS = False
+SMTP_USER = None
+SMTP_PASSWORD = None
 
 DATABASES = {
     'default': {

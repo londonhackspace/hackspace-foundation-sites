@@ -1,6 +1,6 @@
-<? 
+<?
 $page = 'membership';
-require('header.php'); 
+require('header.php');
 
 if ($user) {
     fURL::redirect('/members');
@@ -51,8 +51,13 @@ Cheers,
 
 The London Hackspace membership automated script
 ");
-        $smtp = new fSMTP('turing.hackspace.org.uk');
-        $email->send($smtp);
+
+        if(isset($SMTP_SERVER)) {
+            $smtp = new fSMTP($SMTP_SERVER);
+            $email->send($smtp);
+        } else {
+            $email->send();
+        }
 
         fSession::set('user', $user->getId());
 
@@ -75,7 +80,7 @@ organisation as well as 24/7 access to the space.</p>
 organisation like this in London isn't cheap</a>. If you can't afford £15/month but still wish to become a member, please email membership@london.hackspace.org.uk to discuss.
 
 <h2>Join the London Hackspace</h2>
-<p>By joining the London Hackspace you're becoming a member of London Hackspace Ltd., and you agree to be bound by 
+<p>By joining the London Hackspace you're becoming a member of London Hackspace Ltd., and you agree to be bound by
 <a href="/organisation/docs/articles.pdf">our constitution</a>. You also agree to follow the
 <a href="http://wiki.london.hackspace.org.uk/view/Rules">rules of the space</a>.</p>
 
@@ -133,7 +138,7 @@ you provide your real name and address in order to join. Your name will be visib
         <div class="col-sm-offset-4 col-sm-8">
           <input type="submit" name="submit" value="Join" class="btn btn-primary"/>
         </div>
-    </div>    
+    </div>
 </form>
 <? require('footer.php'); ?>
 </body>
