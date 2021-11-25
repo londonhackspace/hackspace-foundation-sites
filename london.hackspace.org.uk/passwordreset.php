@@ -60,8 +60,7 @@ Cheers,
 
 The London Hackspace email monkey
 ");
-        $smtp = new fSMTP('turing.hackspace.org.uk');
-        $email->send($smtp);
+        $email->send();
         echo "<p>An email has been sent to you with further instructions.</p>";
     } catch(fNotFoundException $e) {?>
         <p>No user exists with that email address. <a href="signup.php">Sign up</a>? 
