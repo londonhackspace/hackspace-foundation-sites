@@ -18,6 +18,7 @@ $cameras = array(
   24 => "Electronics",
   19 => "Cage",
   9 => "Metal Workshop NE"
+  26 => "Biolab"
 );
 
 if (!isset($user) || !$user->isMember()) {
