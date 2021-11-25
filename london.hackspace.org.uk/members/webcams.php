@@ -17,7 +17,7 @@ $cameras = array(
   21 => "Wood Workshop E2",
   24 => "Electronics",
   19 => "Cage",
-  9 => "Metal Workshop NE"
+  9 => "Metal Workshop NE",
   26 => "Biolab"
 );
 
