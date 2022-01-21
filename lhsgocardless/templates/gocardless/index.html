@@ -11,6 +11,9 @@
 </ol>
 <p>Don't worry - this page will guide you through the process. You can come back here at any time to see the current status
 of your payments, or to make changes</p>
+<h3>Note</h3>
+<p>We currently only support Gocardless Direct Debits from UK bank accounts that
+are denominated in GBP</p>
 <h3>Setup</h3>
 {% if customer_record is None %}
 You have not yet set up GoCardless on your account.<br>
@@ -35,7 +38,7 @@ You have not yet set up GoCardless on your account.<br>
 </div>
 {% else %}
 <div class="alert alert-info" role="alert">
-  The Direct Debit is being set up. Please be patient - it can take a few days. 
+  The Direct Debit is being set up. Please be patient - it can take a few days.
   {% if subscription is None %}
   You can create a subscription while you are waiting.
   {% endif %}
