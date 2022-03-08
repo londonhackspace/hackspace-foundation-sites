@@ -126,7 +126,7 @@ form .alert {
 }
 
 .iconlhs-discord:before {
-    content: "\7f";
+    content: "\64";
 }
 
 
@@ -1274,7 +1274,9 @@ form .read-only {
 
 /* Tool access */
 
+
 /* need this to avoid funkiness while the ng libs are being loaded */
+
 [ng\:cloak],
 [ng-cloak],
 [data-ng-cloak],
