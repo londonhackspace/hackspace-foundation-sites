@@ -78,7 +78,7 @@ if (isset($_POST['submit'])) {
 		if(isset($_POST['aliases'])) {
 			foreach($_POST['aliases'] as $key=>$val) {
 				if($val && $val != null && $val != '')
-					$list[filter_var($key, FILTER_SANITIZE_STRING)] = filter_var($val, FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES);
+					$list[filter_var($key, FILTER_SANITIZE_STRING)] = trim(filter_var($val, FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES));
 			}
 		}
 		$user->setAliases($list);
