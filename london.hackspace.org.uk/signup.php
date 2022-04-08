@@ -32,6 +32,9 @@ if (isset($_POST['submit'])) {
         if (preg_match('/(bitcoin|btc)/', $_POST['fullname'])) {
             throw new fValidationException('Shilling your name is not a good idea');
         }
+	if (!in_array(strtolower(trim($_POST['spam_challenge'])), array('high road', 'high rd'))) {
+            throw new fValidationException('Incorrect spam challenge');
+	}
         $user = new User();
         $user->setEmail(strtolower(trim($_POST['email'])));
         $user->setFullName(trim($_POST['fullname']));
@@ -143,6 +146,14 @@ you provide your real name and address in order to join. Your name will be visib
         <label for="emergency_phone" class="col-sm-4 control-label">Phone number</label>
         <div class="col-sm-8">
             <input type="text" id="emergency_phone" name="emergency_phone" class="form-control" />
+        </div>
+    </div>
+    <strong>Spam challenge</strong>
+    <p>To protect the system against automated account creation, we kindly ask you to answer the question that appears below:</p>
+    <div class="form-group">
+        <label for="spam_challenge" class="col-sm-4 control-label">On what road is the Hackspace *</label>
+        <div class="col-sm-8">
+            <input type="text" id="spam_challenge" name="spam_challenge" class="form-control" />
         </div>
     </div>
     <div class="form-group">
