@@ -1,6 +1,6 @@
-<?
+<?php
 $page = 'membership';
-require('header.php');
+require 'header.php';
 
 if ($user) {
     fURL::redirect('/members');
@@ -19,7 +19,16 @@ if (isset($_POST['submit'])) {
         if ($_POST['password'] != $_POST['passwordconfirm']) {
             throw new fValidationException('Passwords do not match');
         }
-
+        if ($_SERVER['REMOTE_ADDR'] == '135.181.212.206') {
+            throw new fValidationException('Invalid Entry'); // Don't give away too much info, nice and vague
+            error_log('war scam spammers');
+        }
+        if (preg_match('/(http|ftp|mailto)/', $_POST['emergency_contact'])) {
+            throw new fValidationException('Emergency contact looks wrong');
+        }
+        if (preg_match('/(bitcoin|btc)/', $_POST['fullname'])) {
+            throw new fValidationException('Shilling your name is not a good idea');
+        }
         $user = new User();
         $user->setEmail(strtolower(trim($_POST['email'])));
         $user->setFullName(trim($_POST['fullname']));
@@ -51,7 +60,7 @@ Cheers,
 
 The London Hackspace membership automated script
 ");
-        if(isset($SMTP_SERVER)) {
+        if (isset($SMTP_SERVER)) {
             $smtp = new fSMTP($SMTP_SERVER);
             $email->send($smtp);
         } else {
@@ -139,6 +148,6 @@ you provide your real name and address in order to join. Your name will be visib
         </div>
     </div>
 </form>
-<? require('footer.php'); ?>
+<?require 'footer.php';?>
 </body>
 </html>
