@@ -20,6 +20,9 @@ if (isset($_POST['submit'])) {
             throw new fValidationException('Passwords do not match');
         }
         if ($_SERVER['REMOTE_ADDR'] == '135.181.212.206') {
+            sleep(rand(10, 30)); // Teergrube them a bit
+            $dubious_repsonse_codes = array(402, 409, 406, 403, 418, 429);
+            http_response_code($dubious_repsonse_codes[array_rand($dubious_repsonse_codes)]);
             throw new fValidationException('Invalid Entry'); // Don't give away too much info, nice and vague
             error_log('war scam spammers');
         }
