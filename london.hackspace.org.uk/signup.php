@@ -50,7 +50,7 @@ if (isset($_POST['submit'])) {
         $email->setFromEmail('contact@london.hackspace.org.uk', 'London Hackspace');
         $email->setSubject('London Hackspace joining information');
         $name = $user->getFullName();
-        $email->setBody("Hi $name,
+        $email->setBody("Hi,
 
 You (or someone who gave us your email address) have set up your London Hackspace membership account:
 
