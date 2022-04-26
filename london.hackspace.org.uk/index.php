@@ -74,6 +74,7 @@ require 'header.php';?>
             <h3>Resources</h3>
             <ul>
                 <li><a href="https://wiki.london.hackspace.org.uk/">The wiki</a>, for more about the space</li>
+		<li><a href="https://discord.gg/5nyPxmm4bZ">Join us on discord</a></li>
                 <li><a href="https://groups.google.com/forum/#!forum/london-hack-space">Chat to us on the mailing list</a></li>
                 <li><a href="http://kiwiirc.com/client/irc.libera.chat/#londonhackspace">Chat to us on IRC</a></li>
                 <li><a href="signup.php">Become a member</a></li>
