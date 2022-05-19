@@ -18,7 +18,9 @@ $cameras = array(
   24 => "Electronics",
   19 => "Cage",
   9 => "Metal Workshop NE",
-  26 => "Biolab"
+  26 => "Biolab",
+  13 => "Radio Shack",
+  27 => "Model Shop"
 );
 
 if (!isset($user) || !$user->isMember()) {
