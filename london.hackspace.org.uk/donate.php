@@ -25,11 +25,10 @@ Please <a href="/login.php">log in</a> or <a href="/signup.php">sign up</a> in o
 <div class="panel panel-default">
     <div class="panel-heading"><h3 class="panel-title">Paypal</h3></div>
     <div class="panel-body">
-        <form action="https://www.paypal.com/cgi-bin/webscr" method="post">
-            <input type="hidden" name="cmd" value="_s-xclick" />
-            <input type="hidden" name="hosted_button_id" value="3741369" />
-            <input type="image" src="https://www.paypal.com/en_GB/i/btn/btn_donateCC_LG.gif" style="border:0;" name="submit" alt="PayPal - The safer, easier way to pay online." />
-            <img alt="" style="border:0;" src="https://www.paypal.com/en_GB/i/scr/pixel.gif" width="1" height="1" />
+        <form action="https://www.paypal.com/donate" method="post" target="_top">
+            <input type="hidden" name="hosted_button_id" value="6KS7W6AUTCFRL" />
+            <input type="image" src="https://www.paypalobjects.com/en_GB/i/btn/btn_donate_LG.gif" border="0" name="submit" title="PayPal - The safer, easier way to pay online!" alt="Donate with PayPal button" />
+            <img alt="" border="0" src="https://www.paypal.com/en_GB/i/scr/pixel.gif" width="1" height="1" />
         </form>
     </div>
 </div>
@@ -39,8 +38,8 @@ Please <a href="/login.php">log in</a> or <a href="/signup.php">sign up</a> in o
 <div class="panel panel-default">
     <div class="panel-heading"><h3 class="panel-title">Bitcoin</h3></div>
     <div class="panel-body">
-    <a class="coinbase-button" data-code="02f847c530bf2538491bb3c3da5dd851" data-button-style="custom_large" href="https://coinbase.com/checkouts/02f847c530bf2538491bb3c3da5dd851">Donate Bitcoins</a><script src="https://coinbase.com/assets/button.js" type="text/javascript"></script>
-    </div>
+    Apologies we currently do not accept Bitcoin donations
+</div>
 </div>
 </div>
 
