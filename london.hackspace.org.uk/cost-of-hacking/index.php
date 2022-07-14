@@ -7,12 +7,12 @@ $income = $db->translatedQuery("SELECT sum(amount) FROM lhspayments_payment
 function get_budget() {
   $started = false;
   $budget = Array(
-    'Rent + Service Charge' => '3004',
-    'Business Rates' => '850',
+    'Rent + Service Charge' => '3000',
+    'Business Rates' => '1300',
     'Reserve' => '500',
-    'Supplies' => '800',
+    'Supplies' => '500',
     'Basic Cleaning' => '200',
-    'Rubbish' => '200'
+    'Rubbish' => '220'
   );
   //commented out while wiki is down
   /* 
