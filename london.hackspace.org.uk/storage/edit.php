@@ -21,7 +21,7 @@ if(isset($_GET['id'])) {
 
 <?
 $locations = fRecordSet::build('Location');
-$maxStorageMonths = 6;
+$maxStorageMonths = 2;
 if (isset($_POST['token'])) {
     try {
         fRequest::validateCSRFToken($_POST['token']);
