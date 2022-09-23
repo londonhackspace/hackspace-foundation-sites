@@ -13,8 +13,8 @@ require( './header.php' );
 <div class="panel panel-info">
 <div class="panel-heading">Please note</div>
 <div class="panel-body">
-If you want to pay your membership fees for London Hackspace, this can only be done using bank transfer.
-Please <a href="/login.php">log in</a> or <a href="/signup.php">sign up</a> in order to get your bank transfer reference.
+If you want to pay your membership fees for London Hackspace, this can be done using GoCardless.
+Please <a href="/login.php">log in</a> or <a href="/signup.php">sign up</a> for further details.
 </div>
 </div>
 
