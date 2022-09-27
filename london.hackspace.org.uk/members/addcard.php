@@ -42,7 +42,7 @@ if (isset($_POST['submit'])) {
 }
 ?>
 
-<h2>Add card</h2><h3>
+<h2>Add card</h2>
 <form method="POST">
     <input type="hidden" name="token" value="<?=fRequest::generateCSRFToken()?>" />
     <table>
