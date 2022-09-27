@@ -42,7 +42,7 @@ if (isset($_POST['submit'])) {
 }
 ?>
 
-<h2>Add card</h2>
+<h2>Add card</h2><h3>
 <form method="POST">
     <input type="hidden" name="token" value="<?=fRequest::generateCSRFToken()?>" />
     <table>
@@ -55,7 +55,7 @@ if (isset($_POST['submit'])) {
         </tr>
     </table>
 </form>
-<p>Note: Cards added to your membership account may take up to 20 minutes to replicate to the access control systems.</p>
+<p>Notes: Remove colons if present ;) Cards added to your membership account may take up to 20 minutes to replicate to the access control systems.</p>
 <?php require('../footer.php'); ?>
 </body>
 </html>
