@@ -15,7 +15,7 @@ if(isset($_GET['id'])) {
 }
 ?>
 
-<h2><s>Request for storage</s>Storag requests are currently suspended</h2>
+<h2>Storage requests are currently suspended</h2>
 <p>Your request will be sent to the <a target="_blank" href="https://groups.google.com/forum/#!forum/london-hack-space">London Hackspace mailing list</a> for approval where it can be read by the general public. If your project is sensitive in nature choose your words appropriately, but be aware that members may not approve your request if it's too obscure.
 <br/><br/>
 
@@ -186,7 +186,7 @@ if (isset($_POST['token'])) {
             </div>
             <div class="form-group">
                 <div class="col-sm-offset-3 col-sm-9">
-                        <//input type="submit" id="formSubmit" name="submitForm" value="Submit request" class="btn btn-primary"/>
+                        <input type="submit" id="formSubmit" name="submitForm" value="Submit request" class="btn btn-primary"/>
                 </div>
             </div>
         </form>
