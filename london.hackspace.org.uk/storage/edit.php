@@ -1,6 +1,6 @@
 <?
 $page = 'storagedetails_edit';
-$title = "Storage request";
+$title = "Storage request";0
 require( '../header.php' );
 
 ensureMember();
@@ -186,7 +186,7 @@ if (isset($_POST['token'])) {
             </div>
             <div class="form-group">
                 <div class="col-sm-offset-3 col-sm-9">
-                    <input type="submit" id="formSubmit" name="submitForm" value="Submit request" class="btn btn-primary"/>
+                        <//input type="submit" id="formSubmit" name="submitForm" value="Submit request" class="btn btn-primary"/>
                 </div>
             </div>
         </form>
