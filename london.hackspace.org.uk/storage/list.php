@@ -8,7 +8,7 @@ ensureMember();
 $projects = fRecordSet::build('Project',array('state_id!='=>array('6','7')), array('location_id' => 'asc', 'name' => 'asc'));
 ?>
 
-<h2>Storage Requests</h2>
+<h2>Storage Requests - note that new requests are suspended until further notice</h2>
 <a href="/storage/edit.php" class="btn btn-primary"><span class="glyphicon glyphicon-add"></span> Start a storage request</a>
 <br/><br/>
 
