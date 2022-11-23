@@ -19,11 +19,12 @@ require 'header.php';?>
         </section>
 
         <section>
-            <h3>COVID-19 Coronavirus Current Status</h3>
+            <h3>NOTICE - HACKSPACE CLOSED FROM DEC 1ST 2022</h3>
             <p>
-                The space is currently <b>OPEN</b> with Covid-safe occupancy limits etc.</a>.
-            </p>
-            </section>
+                Our lease expires on December 15th 2022 & will be closed to members from the morning of Thursday December 1st.
+                We are in the process of acquiring a new space & will update as soon as via the usual channels. 
+                Please stay in touch & abreast of developments via Discord/mailing list etc
+        </section>
 
         <section>
             <h3>Events</h3>
