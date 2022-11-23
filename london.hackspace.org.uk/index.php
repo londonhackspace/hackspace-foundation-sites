@@ -21,8 +21,8 @@ require 'header.php';?>
         <section>
             <h3>NOTICE - HACKSPACE CLOSED FROM DEC 1ST 2022</h3>
             <p>
-                Our lease expires on December 15th 2022 & will be closed to members from the morning of Thursday December 1st.
-                We are in the process of acquiring a new space & will update as soon as via the usual channels. 
+                Our lease expires on December 15th 2022 & will be closed to members from the morning of Thursday December 1st.<br>
+                We are in the process of acquiring a new space & will update as soon as via the usual channels. <br>
                 Please stay in touch & abreast of developments via Discord/mailing list etc
         </section>
 
