@@ -62,12 +62,13 @@ require 'header.php';?>
                 Our address is:
               </p>
               <p>
-                388 High Road<br>
-                Wembley<br>
-                HA9 6AR<br>
+                41–43 Standard Road<br>
+                The Republic of Park Royal<br>
+                Ealing<br>
+                NW10 6HF<br>
               </p>
               <p>
-                  Convenient transport links. Parking available to members.
+                  Convenient transport links. On-street parking available; day pass for ASDA car park purchasable as last resort.
               </p>
             </div>
         </section>

@@ -35,10 +35,10 @@ $count = 0;
 <div id="non-menu-content" class="grid_10">
 <div style="padding-top: 1em; padding-bottom:2em; float:left; width:100%;">
   <div style="float:left">London Hackspace Ltd.<br>
-    388 High Road<br>
-    Wembley<br>
-    London<br>
-    HA9 6AR<br>
+    41–43 Standard Road<br>
+    The Republic of Park Royal<br>
+    Ealing<br>
+    NW10 6HF<br>
   </div>
 
   <div style="float:right">

@@ -5,9 +5,9 @@ $data = array(
     'logo' => 'https://london.hackspace.org.uk/images/london.png',
     'url' => 'https://london.hackspace.org.uk',
     'location' => array(
-        'address' => '388 High Road, Wembley, HA9 6AR',
-        'lat' => 51.55387,
-        'lon' => -0.29002
+        'address' => '41–43 Standard Road, The Republic of Park Royal, Ealing, NW10 6HF',
+        'lat' => 51.5277,
+        'lon' => -0.2642
     ),
     'spacefed' => array(
         'spacenet' => true,
