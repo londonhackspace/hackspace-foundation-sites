@@ -59,7 +59,7 @@ require 'header.php';?>
             <h3>Location</h3>
             <div>
               <p>
-                Our address is:
+                Our "interim" address is:
               </p>
               <p>
                 41–43 Standard Road<br>
