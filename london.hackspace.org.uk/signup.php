@@ -32,7 +32,7 @@ if (isset($_POST['submit'])) {
         if (preg_match('/(bitcoin|btc)/', $_POST['fullname'])) {
             throw new fValidationException('Shilling your name is not a good idea');
         }
-	if (!in_array(strtolower(trim($_POST['spam_challenge'])), array('high road', 'high rd'))) {
+	if (!in_array(strtolower(trim($_POST['spam_challenge'])), array('standard', 'standard road', 'standard rd'))) {
             throw new fValidationException('Incorrect spam challenge');
 	}
         $user = new User();
