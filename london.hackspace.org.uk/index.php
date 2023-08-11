@@ -22,7 +22,7 @@ require 'header.php';?>
             <h3>NOTICE - HACKSPACE CLOSED FROM DEC 1ST 2022</h3>
             <p>
                 Our lease expired on December 15th 2022 & we are currently <strong>closed</strong>.<br>
-                We are in the process of acquiring a new space & will update as soon as via the usual channels. <br>
+                We have acquired a new, temporary, space in Park Royal and are in the process of getting it ready for opening. We will update as soon as via the usual channels. <br>
                 Please stay in touch & abreast of developments via Discord/mailing list etc
         </section>
 
