@@ -14,6 +14,7 @@
             <?=menulink('/donate.php', 'donate', 'Donate')?>
             <?if (isset($user) && $user->isMember()) {?>
                 <?=menulink('/members/members.php', 'memberslist', 'Members List')?>
+                <!-- <?=menulink('/members/webcams.php', 'webcams', 'Webcams')?> -->
                 <?=menulink('/storage/list.php', 'storagelist', 'Storage Requests')?>
                 <?=menulink('/members/minutes.php', 'minutes', 'Minutes')?>
             <? } ?>
@@ -25,7 +26,7 @@
                         <?=menulink('/members/cards.php', 'cards', 'Access Cards')?>
                         <?if (isset($user) && $user->isMember()) {?>
                         <?=menulink('/members/code.php', 'code', 'Car Park Code')?>
-                        <?=menulink('/members/tools.php', 'tools', 'Tools')?>
+                        <!-- <?=menulink('/members/tools.php', 'tools', 'Tools')?> -->
                         <?=menulink('/members/ldap.php', 'LDAP', 'Edit LDAP Account')?>
                         <? } ?>
                     </ul>
