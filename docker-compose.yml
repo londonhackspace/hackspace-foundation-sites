@@ -62,6 +62,8 @@ services:
       - POSTGRES_DB=hackspace
       - POSTGRES_USER=hackspace
       - POSTGRES_PASSWORD=hackspace
+    ports:
+      - 5432:5432
     volumes:
       - pgdata:/var/lib/postgresql/data
     networks:
