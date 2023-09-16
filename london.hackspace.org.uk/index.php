@@ -63,8 +63,7 @@ require 'header.php';?>
               </p>
               <p>
                 41–43 Standard Road<br>
-                The Republic of Park Royal<br>
-                Ealing<br>
+                Park Royal<br>
                 NW10 6HF<br>
               </p>
               <p>
