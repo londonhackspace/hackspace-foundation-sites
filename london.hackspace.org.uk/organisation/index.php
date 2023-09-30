@@ -17,7 +17,7 @@ require('../header.php');
 
 <p>There are several ways of getting in contact with London Hackspace members and starting a first conversation, be it that you want to learn more about our community, you are interested in coming to our space, you want to discuss your project with someone, or for any other reason.</p>
 
-<p>We have a number of very active <a href="http://wiki.london.hackspace.org.uk/view/Mailing_List">mailing lists</a> for the community and its subgroups, an <a href="http://wiki.london.hackspace.org.uk/view/IRC">IRC channel</a> on Freenode, but also a weekly <a href="http://wiki.london.hackspace.org.uk/view/Weekly_Open_Evenings">social night every Tuesday</a> that is open to the public.</p>
+<p>We have a number of very active <a href="http://wiki.london.hackspace.org.uk/view/Mailing_List">mailing lists</a> for the community and its subgroups, an <a href="http://wiki.london.hackspace.org.uk/view/IRC">IRC channel</a> on libera.chat, but also a weekly <a href="http://wiki.london.hackspace.org.uk/view/Weekly_Open_Evenings">social night on Wednesdays</a> that is open to the public (Note: currently members-only while space not complete).</p>
 
 <h3>Trustees</h3>
 
