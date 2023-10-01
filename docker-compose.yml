@@ -67,6 +67,19 @@ services:
     networks:
       - lhs
 
+  mail:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile-postfix
+    # ports:
+    #   - 9025:25
+    volumes:
+      - .:/app
+      - ./etc/postfix/main.cf:/etc/postfix/main.cf
+      - ./etc/postfix/match_all_destination_pcre:/etc/postfix/match_all_destination_pcre
+    networks:
+      - lhs
+
 volumes:
   php-session:
   pgdata:
