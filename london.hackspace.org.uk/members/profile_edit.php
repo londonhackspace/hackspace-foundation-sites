@@ -195,7 +195,7 @@ if (isset($_GET['saved'])) {
 			</label>
 		</div>
 	    <div class="form-group personal-site">
-	        <label for="website">Website</label><strong> Note re Discord ID - be aware that this gives you a publically-visible role on our Discord server dependent on membership status</strong>
+	        <label for="website">Website</label><strong> Note re Discord ID - be aware that this gives you a publicly-visible role on our Discord server dependent on membership status</strong>
 	        <input type="text" id="website" name="website" class="form-control" value="<? if($user_profile->getWebsite()) { echo htmlspecialchars($user_profile->getWebsite()); } else { echo 'http://'; } ?>" />
 	    </div>    
 
