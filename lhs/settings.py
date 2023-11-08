@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'main',
     'lhsgocardless',
     'lhspayments',
+    'lhsdiscord',
 ]
 
 MIDDLEWARE = [
@@ -178,3 +179,12 @@ GOCARDLESS_CREDENTIALS = {
   'webhook_secret': 'YourSecretHere',
 }
 
+DISCORD = {
+    #'bot_token': '',
+    #'guild_id': 1,
+    'bot_role': 'LHS Member Handler',
+    'subscribed_role': 'Registered LHS Member',
+    'registered_role': 'Registered',
+    'toggle_roles': False,
+    'ignore_roles': []
+}
