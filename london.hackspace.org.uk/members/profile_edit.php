@@ -195,13 +195,14 @@ if (isset($_GET['saved'])) {
 			</label>
 		</div>
 	    <div class="form-group personal-site">
-	        <label for="website">Website</label><strong> Note re Discord ID - be aware that this gives you a publicly-visible role on our Discord server dependent on membership status</strong>
+	        <label for="website">Website</label>
 	        <input type="text" id="website" name="website" class="form-control" value="<? if($user_profile->getWebsite()) { echo htmlspecialchars($user_profile->getWebsite()); } else { echo 'http://'; } ?>" />
 	    </div>    
 
 
 	    <div class="form-group aliases">
-	        <label for="aliases">Aliases</label>
+	        <label for="aliases">Aliases</label><br>
+			<strong><i> Note re Discord ID - be aware that this gives you a publicly-visible role on our Discord server dependent on membership status</i></strong>
 			<div class="alias-fields">
             <? 
             $all_aliases = fRecordSet::build('Aliase',array(),array('aliases.type' => 'asc', 'aliases.id' => 'asc'));
