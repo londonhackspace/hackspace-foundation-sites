@@ -80,7 +80,7 @@ class FlourishPasswordField(models.CharField):
         value = self.flourish_to_django(value)
         return super(FlourishPasswordField, self).to_python(value)
 
-    def from_db_value(self, value, expression, connection, context):
+    def from_db_value(self, value, expression, connection):
         return self.flourish_to_django(value)
 
     def get_prep_value(self, value):
