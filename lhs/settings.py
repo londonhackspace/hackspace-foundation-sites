@@ -98,7 +98,7 @@ WSGI_APPLICATION = 'lhs.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'hackspace',
         'USER': 'hackspace'
     }
@@ -188,3 +188,6 @@ DISCORD = {
     'toggle_roles': False,
     'ignore_roles': []
 }
+
+DEFAULT_AUTO_FIELD='django.db.models.AutoField'
+

@@ -67,7 +67,7 @@ def handle_subscription_event(request, event):
 def webhook(request):
     secret = settings.GOCARDLESS_CREDENTIALS['webhook_secret']
 
-    signature = request.META["HTTP_WEBHOOK_SIGNATURE"]
+    signature = request.headers["webhook-signature"]
     body = request.body.strip()
 
     try:

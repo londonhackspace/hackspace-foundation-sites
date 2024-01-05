@@ -1,15 +1,15 @@
-from django.conf.urls import url
+from django.urls import path
 
 from . import views
 from . import api
 
 app_name = 'gocardless'
 urlpatterns = [
-    url(r'^$', views.index, name='index'),
-    url(r'setup$', views.setup_user, name='setup'),
-    url(r'setupcomplete$', views.setup_complete, name='setup_redirect'),
-    url(r'subscription$', views.subscription, name='subscription'),
-    url(r'reset$', views.reset, name='reset'),
-    url(r'removesub$', views.remove_sub, name='remove_sub'),
-    url(r'^webhook$', api.webhook),
+    path('', views.index, name='index'),
+    path('setup', views.setup_user, name='setup'),
+    path('setupcomplete', views.setup_complete, name='setup_redirect'),
+    path('subscription', views.subscription, name='subscription'),
+    path('reset', views.reset, name='reset'),
+    path('removesub', views.remove_sub, name='remove_sub'),
+    path('webhook', api.webhook),
 ]
