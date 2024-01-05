@@ -1,6 +1,7 @@
 from django.db import connection
 from django.conf import settings
 import discord
+from asgiref.sync import sync_to_async
 from enum import Enum
 
 class DiscordStatus(Enum):
@@ -89,8 +90,64 @@ class DiscordMember:
             return ' '
 
 
+@sync_to_async
+def GetDiscordMembers(client):
+    # build a temporary database table of discord users
+    with connection.cursor() as cursor:
+        cursor.execute(
+            """
+            CREATE TEMP TABLE temp_discord_users(
+            discord_name VARCHAR PRIMARY KEY,
+            discord_registered BOOLEAN,
+            discord_subscribed BOOLEAN
+            );
+            """)
+        for member in client.guild.members:
+            if not member.bot:
+                member_is_registered = (member.get_role(client.registered_role.id) != None) if client.registered_role is not None else False
+                member_is_subscribed = (member.get_role(client.subscribed_role.id) != None) if client.subscribed_role is not None else False
+                cursor.execute(
+                    """INSERT INTO temp_discord_users
+                    (discord_name, discord_registered, discord_subscribed)
+                    VALUES (%s, %s, %s)
+                    """, (member._user.__str__(), member_is_registered, member_is_subscribed))
+        
+        cursor.execute("""
+            WITH lhs_discord AS 
+                ( SELECT 
+                users_aliases.user_id, 
+                users.full_name,
+                users_aliases.username as discord_name,
+                users.subscribed
+                FROM users_aliases
+                INNER JOIN users
+                ON users_aliases.user_id = users.id
+                WHERE users_aliases.alias_id = 'Discord'
+                )
+            SELECT 
+            lhs_discord.user_id, 
+            lhs_discord.full_name,
+            temp_discord_users.discord_name,
+            lhs_discord.subscribed,
+            temp_discord_users.discord_registered,
+            temp_discord_users.discord_subscribed
+            FROM lhs_discord
+            RIGHT JOIN temp_discord_users
+            ON lhs_discord.discord_name = temp_discord_users.discord_name 
+            WHERE lhs_discord.user_id IS NOT NULL OR temp_discord_users.discord_registered OR temp_discord_users.discord_subscribed    
+            """)
 
-
+        
+        members = []
+        while True:
+            row = cursor.fetchone()
+            if row == None:
+                break
+            members.append(DiscordMember(client, row))
+        
+        cursor.execute("DROP TABLE IF EXISTS temp_discord_users;")
+            
+        return members
 
 class DiscordMemberClient(discord.Client):
     def __init__(self):
@@ -109,63 +166,8 @@ class DiscordMemberClient(discord.Client):
     def has_registered_role(self):
         return self.registered_role is not None
 
-    def getDiscordMembers(self):
-       # build a temporary database table of discord users
-        with connection.cursor() as cursor:
-            cursor.execute(
-                """
-                CREATE TEMP TABLE temp_discord_users(
-                discord_name VARCHAR PRIMARY KEY,
-                discord_registered BOOLEAN,
-                discord_subscribed BOOLEAN
-                );
-                """)
-            for member in self.guild.members:
-                if not member.bot:
-                    member_is_registered = (member.get_role(self.registered_role.id) != None) if self.registered_role is not None else False
-                    member_is_subscribed = (member.get_role(self.subscribed_role.id) != None) if self.subscribed_role is not None else False
-                    cursor.execute(
-                        """INSERT INTO temp_discord_users
-                        (discord_name, discord_registered, discord_subscribed)
-                        VALUES (%s, %s, %s)
-                        """, (member._user.__str__(), member_is_registered, member_is_subscribed))
-            
-            cursor.execute("""
-                WITH lhs_discord AS 
-                    ( SELECT 
-                    users_aliases.user_id, 
-                    users.full_name,
-                    users_aliases.username as discord_name,
-                    users.subscribed
-                    FROM users_aliases
-                    INNER JOIN users
-                    ON users_aliases.user_id = users.id
-                    WHERE users_aliases.alias_id = 'Discord'
-                    )
-                SELECT 
-                lhs_discord.user_id, 
-                lhs_discord.full_name,
-                temp_discord_users.discord_name,
-                lhs_discord.subscribed,
-                temp_discord_users.discord_registered,
-                temp_discord_users.discord_subscribed
-                FROM lhs_discord
-                RIGHT JOIN temp_discord_users
-                ON lhs_discord.discord_name = temp_discord_users.discord_name 
-                WHERE lhs_discord.user_id IS NOT NULL OR temp_discord_users.discord_registered OR temp_discord_users.discord_subscribed    
-                """)
-
-            
-            members = []
-            while True:
-                row = cursor.fetchone()
-                if row == None:
-                    break
-                members.append(DiscordMember(self, row))
-            
-            cursor.execute("DROP TABLE IF EXISTS temp_discord_users;")
-                
-            return members
+    async def getDiscordMembers(self):
+        return await GetDiscordMembers(self)
 
     def run(self, command_handler, command_parameters):
         self.handle_command = command_handler

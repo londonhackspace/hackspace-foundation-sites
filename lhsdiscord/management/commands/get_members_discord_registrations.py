@@ -57,7 +57,7 @@ def printDiscordMembers(members):
         
 
 async def handleCommand(client, parameter):
-    members = client.getDiscordMembers()
+    members = await client.getDiscordMembers()
     printDiscordMembers(members)
 
 

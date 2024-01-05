@@ -4,7 +4,7 @@ The integration of the Hackspace website with the Discord Server allows for givi
 
 In order to communicate with Discord a bot needs to be added to the server with "Manage Roles" permissions (268435456)
 
-The following information needs to be added to lhs/settings.py
+The following information needs to be added to lhs/production_settings.py
 
 ~~~
 DISCORD = {
