@@ -17,7 +17,7 @@ db = PG.connect(dbname: 'hackspace', user: 'hackspace', password: pgpass)
 db.exec("SELECT *, (SELECT amount FROM lhspayments_payment WHERE user_id = users.id ORDER BY timestamp DESC LIMIT 1) AS amount FROM users WHERE subscribed = true") do |result|
 result.each do |user|
  email = "To: #{user['full_name']} <#{user['email']}>
-From: London Hackspace Trustees<trustees@london.hackspace.org.uk>
+From: London Hackspace Trustees <trustees@london.hackspace.org.uk>
 Subject: Blah
 
 Dear #{user['full_name'].gsub(/^(Mr|Mrs|Miss|Ms)\.?\s+/, '').split(' ')[0]},
