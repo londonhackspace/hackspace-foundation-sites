@@ -30,7 +30,7 @@ Regards
 The London Hackspace Trustees
 
 "
-  Net::SMTP.start('localhost') do |smtp|
+  Net::SMTP.start('turing.hackspace.org.uk') do |smtp|
     puts user['email']
     #puts email
     smtp.send_message email, 'trustees@london.hackspace.org.uk', user['email']
