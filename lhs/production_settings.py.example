@@ -41,3 +41,48 @@ GOCARDLESS_CREDENTIALS = {
   'access_token':  'A0d7SbxK-Ylz',
   'webhook_secret': 'YourSecretHere',
 }
+
+# set the appropriate token
+DISCORD = {
+    'bot_token': '',
+    'guild_id': 943237246092447794,
+    'bot_role': 'LHS Member Handler',
+    'subscribed_role': 'Registered LHS Member',
+    'registered_role': 'Registered',
+    'toggle_roles': False,
+    'ignore_roles': []
+}
+
+DEFAULT_AUTO_FIELD='django.db.models.AutoField'
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'stream': sys.stdout,
+            'formatter': 'verbose',
+        },
+    },
+    'loggers': {
+        'root': {
+            'handlers': ['console'],
+            'level': 'INFO',
+        },
+        'django': {
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+        'django.template': {
+            'level': 'INFO',
+        }
+    },
+    'formatters': {
+        'verbose': {
+            'format': '%(asctime)s %(name)s %(levelname)s %(message)s',
+        },
+    },
+}
+
