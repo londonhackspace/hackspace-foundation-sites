@@ -3,7 +3,7 @@ from django.core.management.base import BaseCommand
 from lhsdiscord.discord_utils import *
 
 async def handleCommand(client, parameter):
-    members = client.getDiscordMembers()
+    members = await client.getDiscordMembers()
     for member in members:
         if member.needs_updating():
             await client.setMemberRegistration(member.discord_name, member.actual_status())
