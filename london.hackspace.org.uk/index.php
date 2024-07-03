@@ -22,7 +22,6 @@ require 'header.php';?>
             <h3>Status Update (2024-07-03): London Hackspace is now open again to members!</h3>
             <p>
                 We're still not finished - major construction work is done for a while but there's plenty still to do building workbenches, unpacking equipment and cabling ACNodes. Ask around for ways you can help while you're in working on projects.<br>
-                We have acquired a new, temporary, space in Park Royal and are in the process of getting it ready for opening. We will update as soon as via the usual channels. <br>
                 Please stay in touch & abreast of developments via Discord/mailing list etc
             </p>
             To get an Orientation and unlock your 24/7 access, keep in touch via our <a href="https://discord.com/channels/943237246092447794/943237246092447797%7C">Discord Guild</a> for announcements.
