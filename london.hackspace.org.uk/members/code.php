@@ -11,15 +11,14 @@ if (!isset($user)) {
 if($user->isMember()) {
 
 ?>
-<h2>Car Park Barrier Code</h2>
+<h2>Gate to side alley</h2>
 
-<p>The barrier to the car park at the rear of the hackspace has a keypad code. Please make sure it shuts behind you, and do not let anyone tailgate you in.</p>
-<p><b>Please park only in the designated Hackspace parking spots. </b></p>
+<p>The gate to the alleyway at the left (West) of the building has a padlock which is often locked. Please lock it if you are the last out of the building.</p>
 <p>Please treat this as confidential and do not pass it on to non-members or visitors, if in doubt please direct them to this page.</p>
 
 <p>The code was last changed on <?php echo date('j F Y', filemtime( '../../var/gate-code.txt' )) ?>.</p>
 
-<p><a onclick="document.getElementById('gate-code').style.display = 'block';" href='#gate-code'>Show keypad code</a></p>
+<p><a onclick="document.getElementById('gate-code').style.display = 'block';" href='#gate-code'>Show padlock code</a></p>
 
 <p id="gate-code" style="display:none;font-weight:bold;font-size:x-large;">
 <?=nl2br(file_get_contents('../../var/gate-code.txt')); ?>
