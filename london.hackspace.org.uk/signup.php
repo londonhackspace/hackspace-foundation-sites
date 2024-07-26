@@ -90,8 +90,8 @@ The London Hackspace membership automated script
 <p>The London Hackspace is a members-owned non-profit association. Members have a hand in the running of the
 organisation as well as 24/7 access to the space.</p>
 
-<p>Membership is paid monthly by standing order. We require £15/month from members in order to keep the space running. <a href="/cost-of-hacking/">Running an
-organisation like this in London isn't cheap</a>. If you can't afford £15/month but still wish to become a member, please email membership@london.hackspace.org.uk to discuss.
+<p>Membership is paid monthly by standing order. We require £20/month from members in order to keep the space running. <a href="/cost-of-hacking/">Running an
+organisation like this in London isn't cheap</a>. If you can't afford £20/month but still wish to become a member, please email membership@london.hackspace.org.uk to discuss.
 
 <h2>Join the London Hackspace</h2>
 <p>By joining the London Hackspace you're becoming a member of London Hackspace Ltd., and you agree to be bound by

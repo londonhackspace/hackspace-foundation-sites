@@ -89,7 +89,7 @@
 					<h2>How You Can Help</h2>
 				</header>
 				<ul>
-					<li><strong class="large"><a href="https://london.hackspace.org.uk/signup.php">Join London Hackspace today!</a></strong> You'll get 24/7 access, a storage box for your projects, and warm fuzzy feelings for supporting us. We need members to pay an average £15/month for the space to survive.</li>
+					<li><strong class="large"><a href="https://london.hackspace.org.uk/signup.php">Join London Hackspace today!</a></strong> You'll get 24/7 access, a storage box for your projects, and warm fuzzy feelings for supporting us. We need members to pay an average £20/month for the space to survive.</li>
 					<li>If you're already a member, <strong class="large">increase your monthly subscription payment</strong> by a few pounds.</li>
 					<li>Volunteer to run a workshop on your area of expertise, or help us keep our infrastructure in shape.</li>
 					<li>Let us know if there's something you'd like added to or changed in the Hackspace that would convince you to pay more each month.</li>
