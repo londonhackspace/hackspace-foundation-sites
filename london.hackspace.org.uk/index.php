@@ -98,6 +98,10 @@ require 'header.php';?>
                 allowfullscreen
             ></iframe>
             </div>
+            <div width="338" height="20">
+                <p>
+                Note: This video was made in our previous space. We'll update when the new space is in a fit state.
+                </p>
         </section>
 
         <section>
