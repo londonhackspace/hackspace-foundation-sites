@@ -15,13 +15,13 @@ if(isset($_GET['id'])) {
 }
 ?>
 
-<h2>Storage requests are currently suspended</h2>
+<h2>Request for storage</h2>
 <p>Your request will be sent to the <a target="_blank" href="https://groups.google.com/forum/#!forum/london-hack-space">London Hackspace mailing list</a> for approval where it can be read by the general public. If your project is sensitive in nature choose your words appropriately, but be aware that members may not approve your request if it's too obscure.
 <br/><br/>
 
 <?
 $locations = fRecordSet::build('Location');
-$maxStorageMonths = 0;
+$maxStorageMonths = 3;
 if (isset($_POST['token'])) {
     try {
         fRequest::validateCSRFToken($_POST['token']);
