@@ -5,6 +5,7 @@ $subscribers = $db->translatedQuery( "
   select
     u.id,
     u.subscribed,
+    u.full_name,
     coalesce(u.nickname, u.full_name) nick,
     u.gladosfile,
     c.uid
@@ -26,6 +27,7 @@ foreach( $subscribers as $row ) {
     $lastid = $row['id'];
     $sub = array(
       'id' => $row['id'],
+      'name' => $row['full_name'],
       'nick' => $row['nick'],
       'subscribed' => $row['subscribed'] == 't',
       'gladosfile' => $row['gladosfile'],
