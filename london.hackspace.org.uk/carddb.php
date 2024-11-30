@@ -6,6 +6,7 @@ $subscribers = $db->translatedQuery( "
     u.id,
     u.subscribed,
     u.full_name,
+    u.ldapuser,
     coalesce(u.nickname, u.full_name) nick,
     u.gladosfile,
     c.uid
@@ -29,6 +30,7 @@ foreach( $subscribers as $row ) {
       'id' => $row['id'],
       'name' => $row['full_name'],
       'nick' => $row['nick'],
+      'ldap' => $row['ldapuser'],
       'subscribed' => $row['subscribed'] == 't',
       'gladosfile' => $row['gladosfile'],
       'perms' => array(),
