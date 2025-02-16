@@ -30,6 +30,7 @@
           case 'XMPP/Jabber': echo '<a target="_blank" href="xmpp:' . $username_html . '">' . $username_html . '</a>'; break;
           case 'RSS': echo '<a target="_blank" href="' . $username_html . '">RSS Feed</a>'; break;
           case 'Ello': echo '<a target="_blank" href="https://ello.co/' . $username_html . '">' . $username_html . '</a>'; break;
+          case 'Fediverse': list($null, $user_name, $user_domain) = split('@',$username_html); echo '<a target="_blank" href="https://'. $user_domain. '/@' . $user_name . '">' . $username_html . '</a>'; break;
           // we don't do anything with 'Minecraft' atm
           default: echo $username_html;
         }?>
