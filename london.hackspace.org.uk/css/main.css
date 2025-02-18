@@ -129,6 +129,14 @@ form .alert {
     content: "\64";
 }
 
+.iconlhs-fediverse:before {
+    content: "\6d";
+}
+
+.iconlhs-bluesky:before {
+    content: "\62";
+}
+
 
 /* /end setup */
 
