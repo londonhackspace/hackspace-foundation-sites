@@ -9,11 +9,11 @@ require 'header.php';?>
 
 <div id="home-page-container" class="row">
     <div class="col-md-4 col-md-push-4">
-        <section style="display: none;">
-            <h3>Visit us on a Tuesday</h3>
+        <section>
+            <h3>Visit us on a Wednesday</h3>
             <p>
-                We hold open evenings <strong>every Tuesday</strong> from <strong>7pm</strong>
-                where members and non-members hang out, hack on projects, socialise, and collaborate.
+                We try to hold open evenings <strong>most Wednesdays</strong> from <strong>7pm</strong>
+                where prospective members can come, check out the space, and attend our space induction. Please check on Discord or our mailing list first to confirm, just in case.
                 <a href="http://wiki.london.hackspace.org.uk/view/Weekly_Open_Evenings">Learn more</a>.
             </p>
         </section>
