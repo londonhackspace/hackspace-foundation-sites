@@ -45,6 +45,8 @@ f.close
 
 db = PG.connect(dbname: 'hackspace', user: 'hackspace', password: pgpass)
 
+db.prepare 'dupesql', "SELECT count(*) FROM lhspayments_payment WHERE user_id = $1 AND payment_type=1 AND amount = $2 AND CAST(timestamp AS date) = $3"
+
 ofx.bank_account.statement.transactions.each do |transaction|
     if transaction.fit_id.to_i < 200000000000000
       # Barclays now returns non_unique fit_ids in a low range for uncleared transactions.
@@ -82,6 +84,17 @@ ofx.bank_account.statement.transactions.each do |transaction|
 
     if transaction.amount.to_i < 5
       puts "User #{user['full_name']} is paying less than £5 (£#{transaction.amount}), not subscribing."
+      next
+    end
+
+    # ignore transactions that are duplicates for the same user, amount and
+    # transaction date.
+    # get the date part of the OFX transaction DTPOSTED field as a string
+    trn_date = transaction.date.strftime("%Y-%m-%d")
+    # search for transactions that match the user, amount and date-part
+    dupes = db.exec_prepared('dupesql', [user['id'], transaction.amount, trn_date])[0]['count']
+    if dupes.to_i > 0
+      puts "User #{user['full_name']}(#{user['id']}) has matching payment #{transaction.amount} on date #{transaction.date.iso8601()} (though FITID was not matched)"
       next
     end
 
