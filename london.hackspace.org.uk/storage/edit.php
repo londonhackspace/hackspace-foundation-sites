@@ -162,7 +162,7 @@ if (isset($_POST['token'])) {
                                 echo '>'.$location->getName().'</option>';
                             } ?>
                     </select>
-                    <input type="text" id="location" name="location" class="form-control" placeholder="Where abouts exactly?" value="<? if($_POST && $_POST['location']) { echo htmlspecialchars($_POST['location']); } else if($project->getLocation()) { echo htmlspecialchars($project->getLocation()); }?>"/>
+                    <input type="text" id="location" name="location" class="form-control" placeholder="Whereabouts exactly?" value="<? if($_POST && $_POST['location']) { echo htmlspecialchars($_POST['location']); } else if($project->getLocation()) { echo htmlspecialchars($project->getLocation()); }?>"/>
                     <p class="alert alert-warning tip-loading-bay hide" role="alert"><span class="glyphicon glyphicon-star"></span> The loading bay must be kept clear at all times.</p>
                 </div>
             </div>
