@@ -14,7 +14,7 @@ class DateTimeDateField(models.DateField):
         # DateField can accept DateTimes, so nothing to do
         return super(DateTimeDateField, self).to_python(value)
 
-    def from_db_value(self, value, expression, connection, context):
+    def from_db_value(self, value, expression, connection):
         # Override from_db_value even if though the superclass doesn't
         return self.to_python(value)
 
