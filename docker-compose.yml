@@ -1,4 +1,3 @@
-version: '3.8'
 services:
   web:
     image: nginx
@@ -44,24 +43,14 @@ services:
     networks:
       - lhs
 
-#  ruby:
-#    build:
-#      context: .
-#      dockerfile: docker/Dockerfile-ruby
-#    ports:
-#      - 8002:8002
-#    depends_on:
-#      - db
-#    networks:
-#      - lhs
-
   db:
-    # Flourish relies on pg_attrdef.pg_attrdef, which is removed in 12
-    image: "postgres:11-alpine"
+    image: "postgres:15.18-trixie"
     environment:
       - POSTGRES_DB=hackspace
       - POSTGRES_USER=hackspace
       - POSTGRES_PASSWORD=hackspace
+    ports:
+      - 5532:5432
     volumes:
       - pgdata:/var/lib/postgresql/data
     networks:

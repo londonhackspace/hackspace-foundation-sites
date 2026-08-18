@@ -21,5 +21,7 @@ if ! psql -tA $DB -c "$check" >/dev/null; then
   psql $DB < etc/restore-multicolumn-pks.sql
 fi
 
+cp -n docker/docker_settings.py lhs/docker_settings.py
+
 python manage.py runserver 0.0.0.0:9001
 

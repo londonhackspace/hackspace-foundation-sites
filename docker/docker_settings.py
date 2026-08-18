@@ -7,9 +7,10 @@ SECRET_KEY = 'notasecretkey'
 DEBUG = True
 
 SITE_ID = 1
-DOMAIN_NAME = 'localhost'
+DOMAIN_NAME = 'localhost:8000'
 ABSOLUTEURI_PROTOCOL = 'http'
 
+# Add your machine's IP address for gocardless webhooks to work
 ALLOWED_HOSTS = [DOMAIN_NAME]
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
@@ -34,9 +35,13 @@ FLOURISH_LOOPBACK_URLS = {
 CONTACT_EMAIL = 'contact@' + DOMAIN_NAME
 NOREPLY_EMAIL = 'no-reply@' + DOMAIN_NAME
 
-# set this to live in production
+# set this to your actual sandbox credentials
 GOCARDLESS_ENV = 'sandbox'
 GOCARDLESS_CREDENTIALS = {
   'access_token':  'A0d7SbxK-Ylz',
   'webhook_secret': 'YourSecretHere',
 }
+
+CSRF_TRUSTED_ORIGINS = [
+    'http://localhost:8000',
+]
