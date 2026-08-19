@@ -10,6 +10,8 @@ cards
 interests
 interests_categories
 learnings
+lhsgocardless_customer
+lhsgocardless_subscription
 lhspayments_payment
 locations
 meeting_attendees

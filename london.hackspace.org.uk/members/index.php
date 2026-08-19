@@ -6,6 +6,10 @@ if (!$user) {
     fURL::redirect('/login.php?forward=/members');
 }
 ?>
+<script src="https://unpkg.com/@popperjs/core@2"></script>
+<script src="https://unpkg.com/tippy.js@6"></script>
+
+
 <h2>Members Area</h2>
 
 <? if ($user->getAddress() == '') {?>
@@ -17,25 +21,50 @@ if (!$user) {
     <p>Please <a href="/members/edit.php">provide your details</a> to continue.</p>
 <?} else if ($user->isMember()) { ?>
     <p>You're currently a member of London Hackspace, thanks for your support!</p>
-    <? if ($user->isGoCardlessUser()) { ?>  
-    <h3>GoCardless</h3>
-    <?
-        // see if the user has actually submitted a payment via gocardless
-        $hasgcpayment = false;
-        foreach($user->buildPayments() as $payment) {
-            if ($payment->getPaymentType() == 2) {
-                $hasgcpayment = true;
+    <div  id="gcstatus"><h3>GoCardless</h3>
+    
+        <?
+            $gocardless = $user->getGocardlessStatus();
+            if ($gocardless == 'None') { ?>
+            <p>You do not currently have a GoCardless subscription. 
+                We are now moving to GoCardless to handle membership payments. To manage your subscription, please <a href="/gocardless/">click here</a>.
+                If you cannot use GoCardless, then your standing order reference number is: <strong><?=$user->getMemberNumber()?></strong></p>
+
+            </p>
+            <?
+            } else if ($gocardless == 'Mandate') { ?>
+                <p>You have a GoCardless mandate, but no active subscription.</p>
+                If you cannot use GoCardless, then your standing order reference number is: <strong><?=$user->getMemberNumber()?></strong></p>
+            <?
+            } else if ($gocardless == 'Subscribed') { ?>
+                <p>You have an active GoCardless subscription.</p>
+            <?
             }
+        ?>
+    </div>
+      <script>
+    fetch('/gocardless/mandatelog?user=<?= $user->getId() ?>&count')
+      .then(response => response.text())
+      .then(data => {
+        if (data != 0) {
+          tippy('#gcstatus', {
+            content: 'Loading...',
+            allowHTML: true,
+            maxWidth: 'none',
+            delay: [500, 0],
+            placement: 'bottom',
+            onShow(instance) {
+              // Code here is executed every time the tippy shows
+              fetch('/gocardless/mandatelog?user=<?= $user->getId() ?>')
+                .then(response => response.text())
+                .then(data => {
+                  instance.setContent(data);
+                });
+            }
+          });
         }
-        if ($hasgcpayment) {
-    ?>
-    You're using GoCardless to subscribe.
-    <? } else { ?>
-        <p>We are now moving to GoCardless to handle membership payments. To manage your subscription, please <a href="/gocardless/">click here</a>.</p>
-    <? }} else { ?>
-    <h3>Reference Number</h3>
-    <p>Your standing order reference number is: <strong><?=$user->getMemberNumber()?></strong></p>
-    <? } ?>
+      });
+  </script>
 <? } else { ?>
     <p>You're not currently a member of London Hackspace. To become a member, we ask that you pay what you
        think the space is worth to you. Running a place like this isn't cheap, so please be as
@@ -109,15 +138,47 @@ if (!$user) {
     </tr>
     </thead>
     <tbody>
-    <? foreach($user->buildPayments() as $payment) {?>
-    <tr <?php if($payment->getPaymentState() == 3) { ?>style="background-color: lightgrey"<?php } ?>>
-        
-        <td><?=$payment->getTimestamp()?></td>
-        <td>£<?=$payment->getAmount()?></td>
-        <td><?php if($payment->getPaymentType() == 1) { ?>Bank<?php } else { ?> GoCardless <?php } if($payment->getPaymentState() == 3) { ?> (Failed) <?php } 
-                else if($payment->getPaymentState() == 1) { ?> (Pending) <?php } ?>
-    </tr>
-    <? } ?>
+        <? foreach($user->buildPayments() as $payment) {?>
+            <tr id="payment-<?= $payment->getId() ?>" <?php if ($payment->getPaymentState() == 3) { ?>style="background-color: lightgrey" <?php } ?>>
+                <td><?=$payment->getTimestamp()?></td>
+                <td>£<?=$payment->getAmount()?></td>
+                <td>
+                    <?php if ($payment->getPaymentType() == 1) { 
+                            ?>Bank<?php 
+                        } else { 
+                            ?> GoCardless <?php
+                        }
+                        if ($payment->getPaymentState() == 3) { 
+                            ?> (Failed) <?php 
+                        } else if ($payment->getPaymentState() == 1) { 
+                            ?> (Pending) <?php 
+                        } else if ($payment->getPaymentState() == 4) { 
+                            ?> (Retrying) <?php 
+                        } 
+                    ?>
+                </td>    
+                <? if ($payment->getPaymentType() == 2) { ?>
+                    <script>
+                        tippy('#payment-<?= $payment->getId() ?>', {
+                            content: 'Loading...',
+                            allowHTML: true,
+                            maxWidth: 'none',
+                            delay: [500, 0],
+                            placement: 'bottom',
+                            arrow: false,
+                            onShow(instance) {
+                            // Code here is executed every time the tippy shows
+                            fetch('/gocardless/paymentlog?user=<?= $user->getId() ?>&payment=<?= $payment->getId() ?>')
+                                .then(response => response.text())
+                                .then(data => {
+                                    instance.setContent(data);
+                                });
+                            }
+                        });
+                    </script>
+                <? } ?>       
+            </tr>
+        <? } ?>
     </tbody>
 </table>
 

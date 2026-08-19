@@ -1,3 +1,5 @@
+from collections import OrderedDict
+
 from django.db import models
 
 from lhsauth.models import User
@@ -11,6 +13,7 @@ class EventLog(models.Model):
     action = models.CharField(max_length=255)
     links = models.TextField()
     details = models.TextField()
+    user = models.ForeignKey(User, on_delete=models.PROTECT, null=True)
 
 # gocardless has the concept of customers, mandates, and bank accounts.
 # the only thing we really need here are mandates. We store customer ID as well in case it is useful.
@@ -35,3 +38,20 @@ class Subscription(models.Model):
         # TODO: handle this case
         s.customer = Customer.objects.filter(mandate=gc_mandate).first()
         return s
+    
+class oldLhsGocardless():
+    MAX_LENGTH = 20
+
+    def __init__(self):
+        self.data = OrderedDict()
+
+    def add(self, key, user_id):
+        if (len(self.data) >= self.MAX_LENGTH):
+            self.data.popitem(last=True)
+        self.data[key] = user_id
+
+    def get(self, key):
+        return self.data.get(key, None) if key in self.data else None
+    
+old_subscriptions = oldLhsGocardless()
+old_mandates = oldLhsGocardless()

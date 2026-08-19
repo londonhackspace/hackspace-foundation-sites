@@ -1,5 +1,6 @@
 from functools import wraps
 from datetime import date, timedelta, datetime
+import json
 
 from django.shortcuts import render
 from django.shortcuts import redirect
@@ -11,10 +12,11 @@ from django.urls import reverse as url_reverse
 import gocardless_pro as gocardless
 from gocardless_pro.errors import InvalidApiUsageError, InvalidStateError
 
-from .models import Customer, Subscription
+from .models import Customer, EventLog, Subscription, old_mandates, old_subscriptions
 from lhspayments.models import Payment
 
 from lhspayments import membershiptools
+import pprint
 
 gc_client = gocardless.Client(
     access_token=settings.GOCARDLESS_CREDENTIALS['access_token'],
@@ -119,6 +121,7 @@ def subscription(request):
         "name": "Membership",
         "interval_unit": "monthly",
         "day_of_month": str(d),
+        "retry_if_possible": True,
         "links": {
         "mandate": customer_record.mandate
         }
@@ -135,6 +138,7 @@ def subscription(request):
             "amount": str(amount),
             "currency": "GBP",
             "description": "First month payment",
+            "retry_if_possible": True,
             "links": {
                 "mandate": customer_record.mandate
             }
@@ -143,7 +147,7 @@ def subscription(request):
         # Explicity store this here rather than waiting for the notification
         # so we can correctly attribute the payment once we have multiple reasons
         payment = gc_client.payments.create(params=params)
-        payment_rec = Payment.create_from_gocardless_payment(payment, request.user)
+        payment_rec = Payment.create_from_gocardless_payment(None, payment, request.user)
         payment_rec.save()
         
         if not request.user.subscribed:
@@ -216,6 +220,7 @@ def reset(request):
             sub = Subscription.objects.filter(customer=customer_record).first()
             if sub is not None:
                 gc_client.subscriptions.cancel(sub.subscription)
+                old_subscriptions.add(sub.subscription, customer_record.user_id)
                 sub.delete()
             try:
                 gc_client.mandates.cancel(customer_record.mandate)
@@ -227,6 +232,7 @@ def reset(request):
             # This probably just means the record has already been removed at
             # the GoCardless end
             pass 
+        old_mandates.add(customer_record.mandate, customer_record.user_id)
         customer_record.delete()
 
     return redirect('gocardless:index')
@@ -240,6 +246,67 @@ def remove_sub(request):
         sub = Subscription.objects.filter(customer=customer_record).first()
         if sub is not None:
             gc_client.subscriptions.cancel(sub.subscription)
+            old_subscriptions.add(sub.subscription, customer_record.user_id)
             sub.delete()
 
     return redirect('gocardless:index')
+
+@require_gocardless_user
+def mandate_log(request):
+    get_count = 'count' in request.GET
+    context = {
+        'error_message': None,
+        'get_count': get_count
+    }
+    if "user" not in request.GET:
+        context['error_message'] = 'No user specified'
+        valid_user = False
+    else:
+        user_id = request.GET["user"] 
+        if str(request.user.id) == user_id or request.user.admin:
+            valid_user = True
+            log_events = EventLog.objects.filter(user_id = user_id).exclude(resource_type='payments').exclude(resource_type='payouts').exclude(resource_type='billing_requests').exclude(action='payment_created').order_by('-created_at')
+            for event in log_events:
+                event.details = json.loads(event.details)
+            context['log_events'] = log_events   
+        else:
+            valid_user = False
+            context['error_message'] = "You can only view your own mandate log"
+
+    context ['valid_user'] =  valid_user
+
+    response = render(request, 'gocardless/eventlog.html', context=context)
+    response.status_code = 403 if not valid_user else 200
+    return response
+
+@require_gocardless_user
+def payment_log(request):
+    get_count = 'count' in request.GET
+    context = {
+        'error_message': None,
+        'get_count': get_count
+    }
+    if "payment" not in request.GET:
+        context['error_message'] = 'No payment specified'
+        valid_user = False
+    elif "user" not in request.GET:
+        context['error_message'] = 'No user specified'
+        valid_user = False
+    else:
+        user_id = request.GET["user"] 
+        payment = request.GET["payment"]
+        if str(request.user.id) == user_id or request.user.admin:
+            valid_user = True
+            log_events = EventLog.objects.filter(user_id = user_id, resource_type = 'payments', links__contains = f'{payment}').exclude(action = 'surcharge_fee_debited').order_by('-created_at')
+            for event in log_events:
+                event.details = json.loads(event.details)
+            context['log_events'] = log_events   
+        else:
+            valid_user = False
+            context['error_message'] = "You can only view your own mandate log"
+
+    context ['valid_user'] =  valid_user
+
+    response = render(request, 'gocardless/eventlog.html', context=context)
+    response.status_code = 403 if not valid_user else 200
+    return response

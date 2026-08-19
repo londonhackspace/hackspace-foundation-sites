@@ -5,19 +5,50 @@ from __future__ import unicode_literals
 from django.db import migrations
 from django.db import connection
 
+tables = {
+    'aliases',
+    'cards',
+    'interests',
+    'interests_categories',
+    'learnings',
+    'lhspayments_payment',
+    'locations',
+    'meeting_attendees',
+    'password_resets',
+    'perms',
+    'project_states',
+    'projects',
+    'projects_logs',
+    'proxy_votes',
+    'subscriptions',
+    'transactions',
+    'userperms',
+    'users',
+    'users_aliases',
+    'users_interests',
+    'users_learnings',
+    'users_profiles'
+}
 
 def insert_flourish_table(apps, schema_editor):
+	query = """create table if not exists flourish_tables (
+  		tablename name
+		);"""
+	with connection.cursor() as cursor:
+		cursor.execute(query)
 	# this is written so that if the item already exists,
 	# it will not be added again, therefore it is safe on both
 	# new installs and as an update to existing ones
-	query = """
+	for table in tables:
+		query = f"""
 		INSERT INTO flourish_tables (tablename) 
-			SELECT 'lhspayments_payment' WHERE NOT EXISTS (
-				SELECT * FROM flourish_tables WHERE tablename = 'lhspayments_payment'
+			SELECT '{table}' WHERE NOT EXISTS (
+				SELECT * FROM flourish_tables WHERE tablename = '{table}'
 			);
 		"""
-	with connection.cursor() as cursor:
-		cursor.execute(query)
+		with connection.cursor() as cursor:
+			cursor.execute(query)
+
 
 
 class Migration(migrations.Migration):

@@ -18,7 +18,7 @@ class Command(BaseCommand):
 
         for u in User.objects.filter(subscribed=True):
             # essentially, has the user made a non-failed payment in the last six weeks?
-            payment = Payment.objects.filter(user=u).filter(timestamp__gte=d).exclude(payment_state=Payment.STATE_FAILED).first()
+            payment = Payment.objects.filter(user=u).filter(timestamp__gte=d).exclude(payment_state=Payment.STATE_FAILED).exclude(payment_state=Payment.STATE_RETRYING).first()
             if payment is None:
                 # As a special case, if there are no payments (even failed ones) then they're
                 # a permanent member like the cleaner or something

@@ -46,7 +46,7 @@ class GoCardlessMappingsTestCase(TestCase):
         }
         test_payment = gocardless.resources.Payment(test_payment_attrs, 200)
 
-        payment = Payment.create_from_gocardless_payment(test_payment, self.u)
+        payment = Payment.create_from_gocardless_payment('paid_out', test_payment, self.u)
 
         self.assertEqual(payment.id, 'PM000SP2D0B3XY')
         self.assertEqual(payment.timestamp, '2019-11-18T05:40:18.789Z')
@@ -119,7 +119,7 @@ class GoCardlessMappingsTestCase(TestCase):
         }
         test_payment = gocardless.resources.Payment(test_payment_attrs, 200)
 
-        payment = Payment.create_from_gocardless_payment(test_payment, self.u)
+        payment = Payment.create_from_gocardless_payment('submitted', test_payment, self.u)
         payment.save()
 
         # just to check

@@ -1,0 +1,20 @@
+{% if not valid_user %}
+    <p> {{ error_message }} </p>
+{% elif get_count %}
+    {{ log_events.count }}
+{% else %}
+    <table style="width: 100%;">
+        <tr>
+            <th style="text-align: center;">Date</th>
+            <th style="text-align: center;">Time</th>
+            <th style="text-align: center;">Description</th>
+        </tr>
+    {% for log_event in log_events %}
+        <tr>
+            <td style="padding-left: 5px; padding-right: 5px;">{{ log_event.created_at.date }}</td>
+            <td style="padding-left: 5px; padding-right: 5px;">{{ log_event.created_at.time }}</td>
+            <td style="padding-left: 5px; padding-right: 5px;">{{ log_event.details.description }}</td>
+        </tr>
+    {% endfor %}
+    </table>
+{% endif %}

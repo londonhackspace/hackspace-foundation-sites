@@ -1,9 +1,11 @@
 FROM php:7.4-fpm
 
 RUN apt-get update && \
-    apt-get -y install vim libpq-dev libcurl4-openssl-dev
+    apt-get -y install vim libpq-dev libcurl4-openssl-dev npm
 
 RUN docker-php-ext-install pgsql curl
+
+RUN npm i tippy.js
 
 WORKDIR /app
 COPY . .

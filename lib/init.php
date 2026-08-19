@@ -14,6 +14,7 @@ require_once("$root/interest.php");
 require_once("$root/calendar.php");
 require_once("$root/project.php");
 require_once("$root/payment.php");
+require_once("$root/gocardless.php");
 
 
 if(!isset($DB_HOST)) {
@@ -28,6 +29,8 @@ fSession::setLength('30 minutes', '10 weeks');
 fSession::setPath(dirname(__FILE__) . '/../var/session');
 
 fORM::mapClassToTable("Payment", "lhspayments_payment");
+fORM::mapClassToTable("GocardlessCustomer", "lhsgocardless_customer");
+fORM::mapClassToTable("GocardlessSubscription", "lhsgocardless_subscription");
 
 if ($uid = fSession::get('user')) {
     $user = new User($uid);

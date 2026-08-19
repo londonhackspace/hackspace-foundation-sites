@@ -95,6 +95,26 @@ class User extends fActiveRecord {
             array('category' => 'asc', 'name' => 'asc')
         );
     }
+
+    public function getGocardlessStatus() {
+        $mandates = fRecordSet::build(
+            'GocardlessCustomer',
+            array('user_id=' => $this->getId())
+        );
+        if (count($mandates) == 0) {
+            return 'None';
+        } else {
+            $subscriptions = fRecordSet::build(
+                'GocardlessSubscription',
+                array('customer_id=' => $mandates[0]->getId())
+            );
+            if (count($subscriptions) == 0) {
+                return 'Mandate';
+            } else {
+                return 'Subscribed';
+            }
+        }
+    }
 	
 	public function setLearnings($list) {
         global $db;
