@@ -665,7 +665,7 @@ class fRequest
 		foreach ($globals as &$global) {
 			foreach ($global as $key => $value) {
 				if (substr($key, 0, 8) == 'action::') {
-					$found = (boolean) $global['action'] = substr($key, 8);
+					$found = (bool) $global['action'] = substr($key, 8);
 					unset($global[$key]);
 				}
 			}
