@@ -1,4 +1,4 @@
-<? 
+<?php 
 $page = 'minutes';
 $title = "Meeting Minutes";
 $desc = '';
@@ -24,9 +24,9 @@ if($user->isMember()) {
 <?=nl2br(file_get_contents('../../var/080919-minutes.txt')); ?>
 </p>
 
-<? } else { ?>
+<?php } else { ?>
    <p>You must be a member to use this page.</p>
-<? }
+<?php }
 
 require('../footer.php'); ?>
 

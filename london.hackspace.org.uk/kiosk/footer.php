@@ -1,24 +1,24 @@
 </div></div>
 
-<? if (isset($cardid)) { ?>
+<?php if (isset($cardid)) { ?>
 <div class="footer">
   <div class="container-fluid btn-group">
-    <? /* Navigation is disabled so this doesn't leak data */ ?>
+    <?php /* Navigation is disabled so this doesn't leak data */ ?>
     <a href="/kiosk/" class="btn btn-warning">Log Out</a>
-    <? if(!isset($page) || $page != 'main') { ?>
+    <?php if(!isset($page) || $page != 'main') { ?>
         <a href="/kiosk/card.php?cardid=<?=$cardid?>" class="btn btn-default">Back</a>
-    <? } ?>
+    <?php } ?>
   </div>
 </div>
 
-<? } ?>
+<?php } ?>
 
 <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
 <script type="text/javascript" src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
 <script type="text/javascript" src="/javascript/jquery.idle.min.js"></script>
 <script type="text/javascript" src="/javascript/kiosk.js"></script>
 
-<? if (isset($_GET['cardid'])) { ?>
+<?php if (isset($_GET['cardid'])) { ?>
 <script type="text/javascript">
     $(document).idle({
         onIdle: function() {
@@ -28,7 +28,7 @@
         timeout: 30000
     });
 </script>
-<? } ?>
+<?php } ?>
 
 <script type="text/javascript">
 

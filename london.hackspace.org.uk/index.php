@@ -1,4 +1,4 @@
-<?
+<?php
 $page = 'about';
 $desc = 'The London Hackspace is a non-profit hackerspace in London. We\'re a community-run workshop for people to come to share tools and knowledge.';
 $blurb = 'A non-profit hackerspace in London: a community-run workshop where people come to share tools and knowledge.';

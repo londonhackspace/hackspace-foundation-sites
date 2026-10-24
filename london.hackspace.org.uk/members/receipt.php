@@ -1,4 +1,4 @@
-<?
+<?php
 require('../header-minimal.php');
 
 if (!$user) {
@@ -59,7 +59,7 @@ $count = 0;
 <thead>
     <tr><th>Date</th><th>Membership Payment</th><th>Donation</th><th>Total</th></tr>
 </thead>
-<? foreach($transactions as $transaction) {
+<?php foreach($transactions as $transaction) {
   if($transaction->getPaymentState() != 2) {
     // not a cleared payment
     continue;
@@ -76,7 +76,7 @@ $count = 0;
         <td>£<?=number_format($donation, 2)?></td>
         <td>£<?=number_format($mem_amount + $donation, 2)?></td>
     </tr>
-<?
+<?php
 }
 ?>
 </table>
@@ -93,6 +93,6 @@ No VAT is included as London Hackspace is not VAT registered.<br>
 London Hackspace is not a registered charity. Your donations are not eligible for gift aid.
 </footer>
 
-<? require('../footer.php'); ?>
+<?php require('../footer.php'); ?>
 </body>
 </html>

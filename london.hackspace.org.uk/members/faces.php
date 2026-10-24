@@ -1,4 +1,4 @@
-<?
+<?php
 $page = 'faces';
 require( '../header.php' );
 
@@ -31,9 +31,9 @@ if($user->isMember()) {
 
 <h2><?=$users->countReturnedRows()?> faces of London Hackspace.</h2> 
 
-<?  foreach( $users as $user ) { ?>
+<?php  foreach( $users as $user ) { ?>
     <a href="/members/profile/<?=$user['id']?>"><img style="max-width: 80px;padding-bottom:5px;" src="/members/photo/<?=$user['photo'] ?>_med.png" alt="<?=htmlspecialchars($user['full_name']) ?>" title="<?=htmlspecialchars($user['full_name'])?>"/></a>
-<? } 
+<?php } 
  } else { ?>
    <p>You must be a member to use this page.</p>
 <?php } 

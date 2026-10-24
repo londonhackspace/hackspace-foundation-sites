@@ -24,13 +24,13 @@ function menulink($url, $name, $title) {
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <? if (isset($noindex) && $noindex == True) { ?>
+    <?php if (isset($noindex) && $noindex == True) { ?>
     <meta name="robots" content="noindex" />
-    <? } ?>
-    <? if (isset($desc)) { ?>
+    <?php } ?>
+    <?php if (isset($desc)) { ?>
     <meta name="description" content="<?=$desc ?>" />
-    <? } ?>
-    <title><? if (isset($title)) echo "$title &mdash; "; ?>London Hackspace</title>
+    <?php } ?>
+    <title><?php if (isset($title)) echo "$title &mdash; "; ?>London Hackspace</title>
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
     <meta name="apple-mobile-web-app-capable" content="yes"/> 
@@ -63,12 +63,12 @@ function menulink($url, $name, $title) {
       <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
 
-    <? if (isset($extra_head)) { ?>
+    <?php if (isset($extra_head)) { ?>
         <?=$extra_head ?>
-    <? } ?>
+    <?php } ?>
 </head>
 <body>
-<? if (isset($DEV_INSTANCE) && $DEV_INSTANCE) { ?>
+<?php if (isset($DEV_INSTANCE) && $DEV_INSTANCE) { ?>
 <div class="devinstance alert alert-danger"> This is a test instance! The real site is over here: <a href="https://london.hackspace.org.uk">https://london.hackspace.org.uk</a></div>
-<? } ?>
+<?php } ?>
 <div class="page-container container">

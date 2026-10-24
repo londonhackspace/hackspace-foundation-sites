@@ -1,4 +1,4 @@
-<?
+<?php
 $page = 'events';
 $title = 'Events';
 require '../header.php';
@@ -23,7 +23,7 @@ $timestamp = mktime(0, 0, 0, $month, $day, $year);
 <div class="row">
 <div class="col-md-8 calendar-alldays-container">
 
-<?
+<?php
 // init the calendar and retrieve the events
 $calendar = new Calendar();
 $eventsList = $calendar->getEvents($startOfTheMonth);
@@ -94,7 +94,7 @@ while (true) {
 		  		<p><?php echo nl2br(strip_tags(trim($desc))) ?></p>
 	  		</div>
 	  	</div>
-    <?
+    <?php
         if (!isset($hasEvents[$dateStart->format('Ymd')])) {
             $hasEvents[$dateStart->format('Ymd')] = 1;
         } else if ($hasEvents[$dateStart->format('Ymd')] < 4) {

@@ -1,4 +1,4 @@
-<?
+<?php
 $title = 'Meeting Attendance';
 $meeting = 'egm2016';
 $suppress_card_input = true;
@@ -15,13 +15,13 @@ if($user->getId() != 1) {
     <input type="text" name="attendance_card" id="cardid" accesskey="i"/>
 </form>
 
-<?
+<?php
 if (isset($_POST['attendance_card'])) {
     $cards = fRecordSet::build('Card', array('uid=' => $_POST['attendance_card']));
     if ($cards->count() == 0) {
 ?>
     <div class="alert alert-danger" role="alert">Unknown Card</div>
-<?
+<?php
     } else {
         $card = $cards->getRecord(0);
         $attending_user = new User($card->getUserId());
@@ -29,7 +29,7 @@ if (isset($_POST['attendance_card'])) {
         if (!$attending_user->isMember()) {
 ?>
     <div class="alert alert-danger" role="alert">You are not a London Hackspace member</div>
-<?
+<?php
         } else {
             $res = $db->translatedQuery("SELECT 1 FROM meeting_attendees WHERE user_id = %s AND meeting = %s",
                                         $attending_user->getId(), $meeting);
@@ -39,13 +39,13 @@ if (isset($_POST['attendance_card'])) {
                 ?>
         <div class="alert alert-success" role="alert">Welcome, <?=htmlspecialchars($attending_user->getFullName()) ?>.
           Your attendance has been registered.</div>
-    <?
+    <?php
             } else {
 ?>
         <div class="alert alert-info" role="alert">Attendance already registered</div>
 
 
-<?
+<?php
             }
         }
     }

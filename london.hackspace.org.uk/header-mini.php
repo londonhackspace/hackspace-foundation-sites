@@ -5,13 +5,13 @@ header("Content-Type: text/html; charset=utf-8");
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <? if (isset($noindex) && $noindex == True) { ?>
+    <?php if (isset($noindex) && $noindex == True) { ?>
     <meta name="robots" content="noindex" />
-    <? } ?>
-    <? if (isset($desc)) { ?>
+    <?php } ?>
+    <?php if (isset($desc)) { ?>
     <meta name="description" content="<?=$desc ?>" />
-    <? } ?>
-    <title><? if (isset($title)) echo "$title &mdash; "; ?>London Hackspace</title>
+    <?php } ?>
+    <title><?php if (isset($title)) echo "$title &mdash; "; ?>London Hackspace</title>
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
     <meta name="apple-mobile-web-app-capable" content="yes"/> 

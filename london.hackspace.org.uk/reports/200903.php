@@ -1,4 +1,4 @@
-<? 
+<?php 
 $page = 'reports';
 $title = 'March 2009';
 require('../header.php'); 
@@ -51,6 +51,6 @@ All funds currently on our books are therefore implicitly earmarked for this cau
 </table>
 
 
-<? require('../footer.php'); ?>
+<?php require('../footer.php'); ?>
 </body>
 </html>

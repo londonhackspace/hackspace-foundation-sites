@@ -1,4 +1,4 @@
-<? 
+<?php 
 $page = 'reports';
 $title = 'Reports';
 require('../header.php'); 
@@ -26,6 +26,6 @@ financial and organisational health of the Foundation.</p>
     <li><a href="/reports/201003.php">March</a></li>
 </ul>
 
-<? require('../footer.php'); ?>
+<?php require('../footer.php'); ?>
 </body>
 </html>

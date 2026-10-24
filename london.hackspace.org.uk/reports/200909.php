@@ -1,4 +1,4 @@
-<? 
+<?php 
 $page = 'reports';
 $title = 'September 2009';
 require('../header.php'); 
@@ -52,6 +52,6 @@ accounted for under the Miscellaneous category. It's refunded in October.</p>
     <tr></tr>
 </table>
 
-<? require('../footer.php'); ?>
+<?php require('../footer.php'); ?>
 </body>
 </html>

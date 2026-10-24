@@ -1,4 +1,4 @@
-<?
+<?php
 $page = 'cards';
 $title = 'Card access';
 $desc = '';

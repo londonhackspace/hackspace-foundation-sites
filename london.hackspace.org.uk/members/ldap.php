@@ -1,4 +1,4 @@
-<?
+<?php
 $page = 'ldap';
 $title = 'LDAP Account Settings';
 $extra_head = '
@@ -98,7 +98,7 @@ function all_ok(message) {
 
 </script>
 
-<?
+<?php
 
 $shells = array('/bin/bash', '/bin/sh', '/bin/zsh');
 
@@ -290,17 +290,17 @@ if($user->isMember()) {
         nickname is for the door announcer.
     -->
 
-    <?
+    <?php
     if (isset($error)) {
         echo '<script>bad_things(' . json_encode($error) . ');</script>';
     }
     ?>
 
-    * <input id="username"      type=text     size=32 value="<? echo htmlspecialchars($user->getLdapuser()); ?>"><label for="username">LDAP Username</label><br />
+    * <input id="username"      type=text     size=32 value="<?php echo htmlspecialchars($user->getLdapuser()); ?>"><label for="username">LDAP Username</label><br />
     * <input id="ssha_password" type=password size=32><label for="ssha_password">Password for general use (Will be converted to an SSHA hash).</label><br />
     * <input id="nt_password"   type=password size=32><label for="nt_password">Password for spacefed wifi (Will be converted to an NTLMv2 hash).</label><br />
     <select id="shell">
-    <?
+    <?php
     foreach ($shells as $shell) {
         if ($user->getLdapshell() === $shell) {
             echo '<option value="'.$shell.'" selected>'.$shell.'</option>';
@@ -310,7 +310,7 @@ if($user->isMember()) {
     }
      ?>
     </select><label for="shell">Login shell</label><br />
-    * <input id="email"      type=text     size=32 value="<? echo htmlspecialchars($email); ?>"><label for="username">LDAP Email address</label><br />
+    * <input id="email"      type=text     size=32 value="<?php echo htmlspecialchars($email); ?>"><label for="username">LDAP Email address</label><br />
 
     <button onclick="calculateHashes()">Update LDAP account</button>
 
@@ -323,7 +323,7 @@ if($user->isMember()) {
     <input type="hidden" name="ldapemail"    id="ldapemail" value="" />
     <input type="hidden" name="create"       id="create" value="create" />
     </form>
-<? } else { ?>
+<?php } else { ?>
     <p>You must be a member to use this page.</p>
 <?php }
 

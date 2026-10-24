@@ -1,4 +1,4 @@
-<? 
+<?php 
 $page = 'retention';
 require( '../header.php' );
 
@@ -11,7 +11,7 @@ if (!$user->isMember()) {
 ?>
 <div class="stats-page">
 <h2>Member Retention</h2>
-<?
+<?php
 $length = 1;
 
 // get the last period
@@ -137,7 +137,7 @@ for($x=0;$x<$gofor;$x++) {
 </tr>
 </thead>
 <tbody>
-<?
+<?php
 foreach($graph as $period) {
 	echo '<tr>';
 	foreach($period as $td) {
@@ -173,7 +173,7 @@ foreach($graph as $period) {
 <pre>(CD/CS) X 100</pre>
 </div>
 
-<? require('../footer.php'); ?>
+<?php require('../footer.php'); ?>
     <script type="text/javascript" src="https://www.google.com/jsapi"></script>
     <script type="text/javascript">
       google.load("visualization", "1", {packages:["corechart"]});
@@ -181,7 +181,7 @@ foreach($graph as $period) {
       function drawChart() {
         var data = google.visualization.arrayToDataTable([
           ['Period', 'Retention', 'Acquisition', 'Return', 'Attrition/Churn'],
-<?
+<?php
 $greverse = array_reverse($graph);
 foreach($greverse as $period) {
 	echo "\t[";
@@ -207,7 +207,7 @@ foreach($greverse as $period) {
           	format: "MM/yy", 
           	gridlines: {color: 'white'},
           	ticks: [
-<?
+<?php
 foreach($greverse as $period) {
 	$y = (int)substr($period['period'],0,4);
 	$m = (int)substr($period['period'],5,2);

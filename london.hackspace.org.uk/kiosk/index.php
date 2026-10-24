@@ -1,4 +1,4 @@
-<?
+<?php
 $title = 'Membership Kiosk';
 require('./header.php');
 
@@ -12,6 +12,6 @@ require('./header.php');
 <img src="../images/kiosk_reader_art.png">
 
 
-<? require('./footer.php'); ?>
+<?php require('./footer.php'); ?>
 </body>
 </html>

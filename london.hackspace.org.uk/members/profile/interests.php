@@ -1,7 +1,7 @@
 <div class="interests">
   <h4>Interests</h4>
   <div class="list">
-  <? $interest_category = '';
+  <?php $interest_category = '';
      $interest_count = 0;
      foreach($this_user->buildInterests() as $interest) {
       if ($interest_category != $interest->getCategory()) {
@@ -14,15 +14,15 @@
         <div>
           <h5><?=$interest->getCategory() ?></h5>
           <ul>
-      <? } ?>
+      <?php } ?>
             <li>
-              <? if($interest->getUrl() != null && $interest->getUrl() != '') { ?>
+              <?php if($interest->getUrl() != null && $interest->getUrl() != '') { ?>
                 <a href="<?=htmlentities($interest->getUrl())?>" target="_blank"><?=htmlspecialchars($interest->getName()) ?></a>
-              <? } else { ?>
+              <?php } else { ?>
                 <?=htmlspecialchars($interest->getName()) ?>
-              <? } ?>
+              <?php } ?>
             </li>
-    <? $interest_count++;
+    <?php $interest_count++;
     } ?>
       </ul>
       </div>

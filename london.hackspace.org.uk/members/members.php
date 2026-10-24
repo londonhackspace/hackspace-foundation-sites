@@ -1,4 +1,4 @@
-<?
+<?php
 $page = 'memberslist';
 $title = "Members";
 require( '../header.php' );
@@ -10,7 +10,7 @@ $include_unsubscribed = ($user->isAdmin() && isset($_GET['unsubscribed']) && $_G
 ?>
 
 <h2>Members list</h2>
-<? if($user->isMember()) { ?>
+<?php if($user->isMember()) { ?>
   <p>This is a list of all members, up to date as of the last accounts reconciliation (<?=$last?>).</p>
     <p>Please keep this list among members only.</p>
     <p>To see members who have uploaded a photo you can <a href="faces.php">visit the faces page</a>.</p>
@@ -25,32 +25,32 @@ $include_unsubscribed = ($user->isAdmin() && isset($_GET['unsubscribed']) && $_G
 			</div>
 	    </div>
 	</form>
-	<? if($user->isAdmin()) { ?>
+	<?php if($user->isAdmin()) { ?>
 	<form class="subscription-form" method="get">
 		<div class="checkbox">
 			<label>
-				<input type="checkbox" <? if($include_unsubscribed) { echo 'checked'; } ?> name="unsubscribed" id="unsubscribed"> Include unsubscribed members
+				<input type="checkbox" <?php if($include_unsubscribed) { echo 'checked'; } ?> name="unsubscribed" id="unsubscribed"> Include unsubscribed members
 			</label>
 		</div>
 	</form>
-	<? } ?>
+	<?php } ?>
 
 	<p><strong>Total:</strong> <span class="search-total"></span></p>
     <table class="table table-condensed table-hover search tablesorter">
         <thead>
             <tr>
                 <th class="member-id">ID</th>
-				<? if($user->isAdmin()) { ?>
+				<?php if($user->isAdmin()) { ?>
 	                <th>E</th>
-				<? } ?>
-				<? if($include_unsubscribed) { ?>
+				<?php } ?>
+				<?php if($include_unsubscribed) { ?>
 	                <th>£</th>
-				<? } ?>
+				<?php } ?>
                 <th>Full name</th>
-				<? if($user->isAdmin()) { ?>
+				<?php if($user->isAdmin()) { ?>
 	                <th>Profile</th>
 	                <th>Doorbot</th>
-				<? } ?>
+				<?php } ?>
             </tr>
         </thead>
         <tbody>
@@ -61,31 +61,31 @@ $include_unsubscribed = ($user->isAdmin() && isset($_GET['unsubscribed']) && $_G
         ?>
             <tr>
                 <td class="member-id"><?= $row['id'] ?></td>
-				<? if($user->isAdmin()) { ?>
+				<?php if($user->isAdmin()) { ?>
 					<td><a href="mailto:<?= htmlspecialchars( $row['email'] ) ?>" title="<?= htmlspecialchars( $row['email'] ) ?>"><span class="glyphicon glyphicon-envelope"></span></a><p class="hidden"><?= htmlspecialchars( $row['email'] ) ?></p></td>
-				<? } ?>
-				<? if($include_unsubscribed) { ?>
-					<td><? if($row['subscribed']) {
+				<?php } ?>
+				<?php if($include_unsubscribed) { ?>
+					<td><?php if($row['subscribed']) {
 						echo ($row['subscribed'] == 'f') ? '' : '<span class="glyphicon glyphicon-ok"></span>';
 					} ?><p class="hidden"><?=($row['subscribed'] == 'f') ? 'unsubscribed' : 'subscribed'; ?></p></td>
-				<? } ?>
+				<?php } ?>
                 <td>
-					<? if(!$user->isAdmin() && $row['has_profile'] == 't' && $row['disabled_profile'] == 'f') { ?>
+					<?php if(!$user->isAdmin() && $row['has_profile'] == 't' && $row['disabled_profile'] == 'f') { ?>
 	                	<a href="/members/profile/<?=$row['id']?>" title=""><?= htmlspecialchars( $row['full_name'] ) ?></a>
-                	<? } else if(!$user->isAdmin()) { ?>
+                	<?php } else if(!$user->isAdmin()) { ?>
 	               		<?= htmlspecialchars( $row['full_name'] ) ?>
-                	<? } else { ?>
+                	<?php } else { ?>
 	                	<a href="/members/member.php?id=<?=$row['id']?>" title=""><?= htmlspecialchars( $row['full_name'] ) ?></a>
-                	<? } ?>
+                	<?php } ?>
                 </td>
-				<? if($user->isAdmin()) { ?>
+				<?php if($user->isAdmin()) { ?>
 	                <td>
-					<? if($row['has_profile'] == 't' && $row['disabled_profile'] == 'f') { ?>
+					<?php if($row['has_profile'] == 't' && $row['disabled_profile'] == 'f') { ?>
 	                	<p class="hidden">profile</p><a href="/members/profile/<?=$row['id']?>" title="visit member's profile"><span class="glyphicon glyphicon-user"></span></a>
-					<? } ?>
+					<?php } ?>
 	                </td>
 		            <td><?= htmlspecialchars( $row['nickname'] ) ?></td>
-				<? } ?>
+				<?php } ?>
             </tr>
         <?php endforeach; ?>
         </tbody>
@@ -93,7 +93,7 @@ $include_unsubscribed = ($user->isAdmin() && isset($_GET['unsubscribed']) && $_G
    <br/>
 
    <p><a href="index.php">Return to membership home</a></p>
-<? } else { ?>
+<?php } else { ?>
    <p>You must be a member to use this page.</p>
 <?php } 
 
@@ -101,18 +101,18 @@ require('../footer.php'); ?>
 <script type="text/javascript" src="/javascript/jquery.tablesorter.min.js"></script>
 <script type="text/javascript">
 $(document).ready(function() { 
-	$(".search").tablesorter( {sortList: <? if($include_unsubscribed) echo "[[3,0]]"; else if($user->isAdmin()) echo "[[2,0]]"; else echo "[[1,0]]"; ?>} );
+	$(".search").tablesorter( {sortList: <?php if($include_unsubscribed) echo "[[3,0]]"; else if($user->isAdmin()) echo "[[2,0]]"; else echo "[[1,0]]"; ?>} );
 	$('.search-form button').click(function(e) {
 		e.preventDefault;
 		e.stopPropagation;
 		$('.search-form input').trigger('keyup');
 		return false;
 	});
-	<? if($user->isAdmin()) { ?>
+	<?php if($user->isAdmin()) { ?>
 	$('input[name="unsubscribed"]').change(function(e) {
 		$('.subscription-form').submit();
 	});
-	<? } ?>
+	<?php } ?>
 	$('input[type="search"]').keyup(function(e) {
 		window.location.hash='#'+$(this).val();
 		var searchString = $(this).val().toLowerCase();

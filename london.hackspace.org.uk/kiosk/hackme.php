@@ -1,4 +1,4 @@
-<?
+<?php
 $title = 'Hack Me Sticker';
 require('./header.php');
 
@@ -42,7 +42,7 @@ if (isset($_POST['print']) && $user->isMember()) {
 
 ?>
 
-<? if($user->isMember()) { ?>
+<?php if($user->isMember()) { ?>
 
 <p>If you are donating something to the space that anyone can work on use this sticker to document it.</p>
 
@@ -73,7 +73,7 @@ if (isset($_POST['print']) && $user->isMember()) {
     </div>
 </div>
 </form>
-<? } ?>
+<?php } ?>
 
 <?require('./footer.php')?>
 </body>

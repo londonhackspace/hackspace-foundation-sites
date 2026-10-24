@@ -1,4 +1,4 @@
-<?
+<?php
 $page = 'storagedetails_print';
 $title = "Storage list";
 require( '../header-mini.php' );
@@ -40,7 +40,7 @@ if($project->getState() != 'Approved') {
 	<h1>DO NOT HACK</h1>
 	<h1><?=htmlspecialchars($project->getName())?></h1>
 	<h3><?=htmlspecialchars($projectUser->getFullName())?></h3>
-	<h3><? if($project->getContact()) echo $project->getContact(); else echo $projectUser->getEmail()?></h3>
+	<h3><?php if($project->getContact()) echo $project->getContact(); else echo $projectUser->getEmail()?></h3>
 	<br/>
 	<h2>Removed by <?=$to->format('jS M Y')?></h2>
 	<strong><?=$project->getExtensionDuration()?> days maximum time extension</strong>

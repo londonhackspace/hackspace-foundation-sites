@@ -1,4 +1,4 @@
-<? 
+<?php 
 $page = 'profile_edit';
 $title = "Edit your profile";
 $desc = '';
@@ -155,29 +155,29 @@ if (isset($_GET['saved'])) {
 				    Trained in the art of... <span class="caret"></span>
 				  </button>
 				  <ul class="dropdown-menu">
-		            <? foreach(fRecordSet::build('Learning') as $training) {?>
+		            <?php foreach(fRecordSet::build('Learning') as $training) {?>
 					<li><img data-lid="<?=$training->getLearningId()?>" data-name="<?=$training->getName()?>" src="/images/trained-<?=strtolower(str_replace(' ','',$training->getName()));?>.png" class="icon" title="<?=$training->getDescription()?>" /> <?=$training->getName()?></li>
-		            <? } ?>
+		            <?php } ?>
 				  </ul>
 				</div>
 			</div>
 	    	<div class="form-group training-badges container">
-            <? foreach($my_learning as $training) {?>
+            <?php foreach($my_learning as $training) {?>
 				<div class="remove-img"><img src="/images/trained-<?=strtolower(str_replace(' ','',$training->getName()));?>.png"/><input type="hidden" name="learnings[<?=$training->getLearningId()?>]" value="<?=$training->getName()?>" /></div>
-            <? } ?>
+            <?php } ?>
 			</div>
         </div>
 	</div>
 	<div class="col-md-9">
-		<? if($user->getDisabledProfile() == 0) { ?>
+		<?php if($user->getDisabledProfile() == 0) { ?>
 		<small class="profile_edit"><input type="submit" name="disable" value="Disable my profile" class="btn btn-default btn-sm"/></small>
-		<? } else { ?>
+		<?php } else { ?>
 		<small class="profile_edit"><input type="submit" name="enable" value="Enable my profile" class="btn btn-primary btn-sm"/></small>
-		<? } ?>
+		<?php } ?>
 
 		<h3>
 			<?= htmlspecialchars($user->getFullName()) ?>
-			<p><small><?=$user->getMemberNumber()?><br/><? if($user->firstTransaction() != null) {
+			<p><small><?=$user->getMemberNumber()?><br/><?php if($user->firstTransaction() != null) {
 				echo ' Joined '.$user->firstTransaction(); 
 			} if($user_profile->getAllowDoorbot() && $user->getDoorbotTimestamp() != '') {
 				echo ', last seen '.date('dS M Y', strtotime($user->getDoorbotTimestamp()));
@@ -186,17 +186,17 @@ if (isset($_GET['saved'])) {
 		</h3>
 		<div class="checkbox">
 			<label>
-				<input type="checkbox" <? if($user_profile->getAllowEmail()) { echo 'checked'; } ?> name="allow_email" id="allow_email"> allow members to see my email address (<a href="mailto:<?=$user->getEmail()?>"><?=$user->getEmail()?></a>)
+				<input type="checkbox" <?php if($user_profile->getAllowEmail()) { echo 'checked'; } ?> name="allow_email" id="allow_email"> allow members to see my email address (<a href="mailto:<?=$user->getEmail()?>"><?=$user->getEmail()?></a>)
 			</label>
 		</div>
 		<div class="checkbox">
 			<label>
-				<input type="checkbox" <? if($user_profile->getAllowDoorbot()) { echo 'checked'; } ?> name="allow_doorbot" id="allow_doorbot"> allow members to see the date I last visited the space (this helps people find each other)
+				<input type="checkbox" <?php if($user_profile->getAllowDoorbot()) { echo 'checked'; } ?> name="allow_doorbot" id="allow_doorbot"> allow members to see the date I last visited the space (this helps people find each other)
 			</label>
 		</div>
 	    <div class="form-group personal-site">
 	        <label for="website">Website</label>
-	        <input type="text" id="website" name="website" class="form-control" value="<? if($user_profile->getWebsite()) { echo htmlspecialchars($user_profile->getWebsite()); } else { echo 'http://'; } ?>" />
+	        <input type="text" id="website" name="website" class="form-control" value="<?php if($user_profile->getWebsite()) { echo htmlspecialchars($user_profile->getWebsite()); } else { echo 'http://'; } ?>" />
 	    </div>    
 
 
@@ -204,42 +204,42 @@ if (isset($_GET['saved'])) {
 	        <label for="aliases">Aliases</label><br>
 			<strong><i> Note re Discord ID - be aware that this gives you a publicly-visible role on our Discord server dependent on membership status</i></strong>
 			<div class="alias-fields">
-            <? 
+            <?php 
             $all_aliases = fRecordSet::build('Aliase',array(),array('aliases.type' => 'asc', 'aliases.id' => 'asc'));
 			foreach($my_aliases as $my_alias) { 
 			?>
 				<div class="input-group alias-field">
 					<input type="text" class="form-control" name="aliases[<?=$my_alias->getAliasId();?>]" value="<?=htmlspecialchars($my_alias->getUsername());?>">
 					<div class="input-group-btn">
-				        <? if (ctype_digit($my_alias->getAliasId())) { ?>
+				        <?php if (ctype_digit($my_alias->getAliasId())) { ?>
 				        <button type="button" class="btn btn-default dropdown-toggle no-icon" data-toggle="dropdown">Other <span class="caret"></span></button>
-				        <? } else { ?>
+				        <?php } else { ?>
 				        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"><span class="member-social-icon iconlhs-<?=substr(strtolower(preg_replace("/[^0-9a-zA-Z]/","",$my_alias->getAliasId())),0,14);?>" title="<?=$my_alias->getAliasId()?>"></span><?=$my_alias->getAliasId()?> <span class="caret"></span></button>
-				        <? } ?>
+				        <?php } ?>
 				        <ul class="dropdown-menu pull-right">
-				            <? $lastType = null; foreach($all_aliases as $alias) {?>
+				            <?php $lastType = null; foreach($all_aliases as $alias) {?>
 			            	<?if($lastType != null && ($lastType != $alias->getType())) { ?>
 			            	<li class="divider"></li>
-			            	<? } ?>
+			            	<?php } ?>
 							<li><span class="member-social-icon iconlhs-<?=substr(strtolower(preg_replace("/[^0-9a-zA-Z]/","",$alias->getId())),0,14);?>" title="<?=$alias->getId()?>"></span><?=$alias->getId()?></li>
-				            <? $lastType = $alias->getType();
+				            <?php $lastType = $alias->getType();
 							} ?>
 				        </ul>
 				        <button title="remove" type="button" class="btn btn-default alias-remove">x</button>
 				    </div><!-- /btn-group -->
 				</div><!-- /input-group -->
-            <? } ?>
+            <?php } ?>
 				<div class="input-group alias-field">
 					<input type="text" class="form-control" name="aliases[]" value="">
 					<div class="input-group-btn">
 				        <button type="button" class="btn btn-default dropdown-toggle no-icon" data-toggle="dropdown">Find me on <span class="caret"></span></button>
 				        <ul class="dropdown-menu pull-right">
-				            <? $lastType = null; foreach($all_aliases as $alias) {?>
+				            <?php $lastType = null; foreach($all_aliases as $alias) {?>
 			            	<?if($lastType != null && ($lastType != $alias->getType())) { ?>
 			            	<li class="divider"></li>
-			            	<? } ?>
+			            	<?php } ?>
 							<li><span class="member-social-icon iconlhs-<?=substr(strtolower(preg_replace("/[^0-9a-zA-Z]/","",$alias->getId())),0,14);?>" title="<?=$alias->getId()?>"></span><?=$alias->getId()?></li>
-				            <? $lastType = $alias->getType();
+				            <?php $lastType = $alias->getType();
 							} ?>
 				        </ul>
 				        <button title="remove" type="button" class="btn btn-default alias-remove">x</button>
@@ -259,32 +259,32 @@ if (isset($_GET['saved'])) {
 	        <strong>Interests</strong><br/>
         	<small>What else brings you here? Select those which are relevant.</small>
 	        <div class="row">
-	            <? 
+	            <?php 
 	            $interest_category = ''; 
 	            $interest_count = 0;
 	            foreach($user->getInterests() as $interest) {
 	            	$selected = $my_interests->filter(array('getInterestId=' => $interest->getInterestId()))->count();
 	            ?>
-					<? if($interest_category != $interest->getCategory()) { 
+					<?php if($interest_category != $interest->getCategory()) { 
 						$interest_category = $interest->getCategory();
 					?>
-						<? if($interest_count > 0) { ?>
+						<?php if($interest_count > 0) { ?>
 					</div>
-				    <? } ?>
+				    <?php } ?>
 		        	<div class="col-md-3">
 		        		<h5><?=$interest->getCategory() ?></h5>
-				    <? } ?>
+				    <?php } ?>
 						<div class="checkbox restyle">
-							<label <? if($selected) { echo 'class="selected"'; } ?>><input type="checkbox" <? if($selected) { echo 'checked="checked"'; } ?> name="interests[<?=$interest->getInterestId() ?>]" id="trained[<?=$interest->getInterestId() ?>]"> <?=htmlspecialchars($interest->getName()) ?></label>
+							<label <?php if($selected) { echo 'class="selected"'; } ?>><input type="checkbox" <?php if($selected) { echo 'checked="checked"'; } ?> name="interests[<?=$interest->getInterestId() ?>]" id="trained[<?=$interest->getInterestId() ?>]"> <?=htmlspecialchars($interest->getName()) ?></label>
 						</div>
-					<? $interest_count++; ?>
-		        <? } ?>
+					<?php $interest_count++; ?>
+		        <?php } ?>
 				</div>
 	        </div>
       		<strong>Other interests</strong><br/>
       		<small>Comma separated list</small><br/>
       		<div class="other-interests-container">
-	        <input type="text" id="other_interests" name="other_interests" class="form-control" value="<? foreach($my_interests as $interest) { if($interest->getCategory() == 'Other') { echo htmlspecialchars($interest->getName()).','; } } ?>" />
+	        <input type="text" id="other_interests" name="other_interests" class="form-control" value="<?php foreach($my_interests as $interest) { if($interest->getCategory() == 'Other') { echo htmlspecialchars($interest->getName()).','; } } ?>" />
 			</div>
 	    </div>	
 	    <div class="form-group">
@@ -294,7 +294,7 @@ if (isset($_GET['saved'])) {
 </div>
 
 </form>
-<? require('../footer.php'); ?>
+<?php require('../footer.php'); ?>
 <script type="text/javascript" src="/javascript/bootstrap-tagsinput.min.js"></script>
 <script type="text/javascript" src="/javascript/typeahead.min.js"></script>
 <script>
@@ -342,7 +342,7 @@ $('.alias-remove').bind('click touchend', function(e) {
 
 // add intersts features
 $('#other_interests').tagsinput({confirmKeys: [188, 13]});
-var other_interests = [<? 
+var other_interests = [<?php 
 	$all_other = fRecordSet::build('Interest',array('category='=>'Other'),array('name'=>'asc')); 
 	$count = 0;
 	foreach($all_other as $other) {

@@ -1,4 +1,4 @@
-<?
+<?php
 $page = 'storagelist';
 $title = "Storage list";
 require( '../header.php' );
@@ -12,7 +12,7 @@ $projects = fRecordSet::build('Project',array('state_id!='=>array('6','7')), arr
 <a href="/storage/edit.php" class="btn btn-primary"><span class="glyphicon glyphicon-add"></span> Start a storage request</a>
 <br/><br/>
 
-<? 
+<?php 
     $loc = ''; 
     foreach($projects as $project) {
         if($project->getLocationId() != $loc) {
@@ -21,9 +21,9 @@ $projects = fRecordSet::build('Project',array('state_id!='=>array('6','7')), arr
             echo "<h3>".$location->getName()."</h3>";
         }
         ?>
-        <div class="status list small <?= strtolower($project->getState()); ?>"><?= $project->getState(); ?> <?if($project->getState() == 'Extended') { ?>(<?=$project->getExtensionDuration()?> days)<? } ?></div>
+        <div class="status list small <?= strtolower($project->getState()); ?>"><?= $project->getState(); ?> <?if($project->getState() == 'Extended') { ?>(<?=$project->getExtensionDuration()?> days)<?php } ?></div>
         <a href="/storage/<?=$project->getId()?>"><?=htmlspecialchars($project->getName())?></a><br/>
-        <?
+        <?php
     }
 
 $projects = fRecordSet::build('Project',array('state_id='=>array('6','7')), array('state_id' => 'asc', 'name' => 'asc')); ?>
@@ -31,9 +31,9 @@ $projects = fRecordSet::build('Project',array('state_id='=>array('6','7')), arra
 <br/><br/>
 <h3>Old requests</h3>
 
-<? foreach($projects as $project) { ?>
+<?php foreach($projects as $project) { ?>
         <div class="status list small <?= strtolower($project->getState()); ?>"><?= $project->getState(); ?></div>
         <a href="/storage/<?=$project->getId()?>"><?=htmlspecialchars($project->getName())?></a><br/>
-<? }
+<?php }
 
 require('../footer.php'); ?>

@@ -43,9 +43,9 @@
 		data.addColumn('string', 'Item');
 		data.addColumn('number', 'Cost');
     data.addRows([
-<? foreach ($budget as $name => $amount) { ?>
+<?php foreach ($budget as $name => $amount) { ?>
       ['<?=$name?> £<?=number_format($amount)?>', <?=$amount?>],
-<? } ?>
+<?php } ?>
       ]);
 
 

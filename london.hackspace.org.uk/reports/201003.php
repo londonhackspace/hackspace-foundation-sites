@@ -1,4 +1,4 @@
-<? 
+<?php 
 $page = 'reports';
 $title = 'March 2010';
 require('../header.php'); 
@@ -50,6 +50,6 @@ it more, so it's showing up as Donations (other) in our balance sheet.</p>
     <tr></tr>
 </table>
 
-<? require('../footer.php'); ?>
+<?php require('../footer.php'); ?>
 </body>
 </html>

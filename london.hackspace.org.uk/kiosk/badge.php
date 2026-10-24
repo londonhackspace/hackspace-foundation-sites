@@ -1,4 +1,4 @@
-<?
+<?php
 $title = 'Name Badge Sticker';
 require('./header.php');
 
@@ -67,7 +67,7 @@ function is_checked($thing)
 
 ?>
 
-<? if($user->isMember()) { ?>
+<?php if($user->isMember()) { ?>
 
 <p>On this page you can print a name badge to stick to yourself.</p>
 
@@ -78,25 +78,25 @@ function is_checked($thing)
 <tbody>
     <tr><th>Your name:</th><td><?=htmlspecialchars($user->getFullName())?></td></tr>
 
-    <? if($user_profile->getAllowEmail()) { ?>
+    <?php if($user_profile->getAllowEmail()) { ?>
     <!-- <input type="checkbox" id="checkbox-2-1" class="regular-checkbox big-checkbox" /><label for="checkbox-2-1"></label> -->
     <tr><th><input type="checkbox" <?=is_checked("email")?> name="email" id="email" class="regular-checkbox big-checkbox" /><label for="email"></label> Your email:</th><td><?=htmlspecialchars($user->getEmail()) ?></td></tr>
-    <? } ?>
+    <?php } ?>
 
-    <? if($user_profile->getWebsite() != '') { ?>
+    <?php if($user_profile->getWebsite() != '') { ?>
     <tr><th><input type="checkbox" <?=is_checked("website")?> name="website" id="website" class="regular-checkbox big-checkbox" /><label for="website"></label> Your website:</th><td><?=htmlspecialchars($user_profile->getWebsite()) ?></td></tr>
-    <? } ?>
-    <? if($user->hasUsersAliases()) {?>
-    <? foreach($user->buildUsersAliases() as $alias) {?>
+    <?php } ?>
+    <?php if($user->hasUsersAliases()) {?>
+    <?php foreach($user->buildUsersAliases() as $alias) {?>
         <tr><th><input type="checkbox" <?=is_checked($alias->getAliasId())?> name="<?=$alias->getAliasId()?>" id="<?=$alias->getAliasId()?>" class="regular-checkbox big-checkbox" /><label for="<?=$alias->getAliasId()?>"></label> <?=$alias->getAliasId()?>:</th><td><?=htmlspecialchars($alias->getUsername()) ?></td></tr>
-    <? } ?>
-    <? } ?>
+    <?php } ?>
+    <?php } ?>
 
     <tr><td><button name="print" value="<?=$user->getId()?>" class="btn btn-primary">Print Sticker</button></td></tr>
 </tbody>
 </table>
 </form>
-<? } ?>
+<?php } ?>
 
 <?require('./footer.php')?>
 </body>

@@ -1,4 +1,4 @@
-<?
+<?php
 require('../../lib/init.php');
 
 $id = NULL;
@@ -53,7 +53,7 @@ if(
 
 	if(!$this_user->isMember() && ($user->getMemberNumber() == $this_user->getMemberNumber())) { ?>
 		<div class="alert alert-info"><p>Thanks! Your profile will become available to other members when your payment has been received.</p></div>
-	<? } ?>
+	<?php } ?>
 <div class="row profile profile-view">
 	<div class="col-md-3">
     <div class="member-avatar">
@@ -61,31 +61,31 @@ if(
             <img src="/members/photo.php?name=<?=$user_profile->getPhoto() ?>" class="display img-responsive" alt="User photo"/>
         </span>
     </div>
-    <? if($this_user->hasLearnings()) {?>
+    <?php if($this_user->hasLearnings()) {?>
       <div class="member-training">
-        <? foreach($this_user->buildLearnings() as $training) {?>
+        <?php foreach($this_user->buildLearnings() as $training) {?>
 			    <a href="<?=$training->getUrl()?>" class="training-badge" target="_blank">
             <img src="/images/trained-<?=strtolower(str_replace(' ','',$training->getName()));?>.png"
                  title="<?=$training->getDescription()?>"
                  alt="<?=$training->getDescription()?>"
             /></a>
-        <? } ?>
+        <?php } ?>
       </div>
-    <? } ?>
+    <?php } ?>
 	</div>
   <div class="col-md-9">
-      <? if($user->getMemberNumber() == $this_user->getMemberNumber()) { ?>
+      <?php if($user->getMemberNumber() == $this_user->getMemberNumber()) { ?>
         <small class="profile_edit">
           <a class="btn btn-default btn-sm" href="/members/profile_edit.php">Edit my profile</a>
         </small>
-      <? } ?>
+      <?php } ?>
       <div class="profile-heading">
         <h3>
           <?= htmlspecialchars($this_user->getFullName()) ?>
         </h3>
         <p class="details">
           <?=$this_user->getMemberNumber()?>
-          <? if($this_user->firstTransaction() != null) {
+          <?php if($this_user->firstTransaction() != null) {
               echo ' joined in '.$this_user->firstTransaction();
             } if($user_profile->getAllowDoorbot() && $this_user->getDoorbotTimestamp() != '') {
               echo ', last seen '.date('dS M Y', strtotime($this_user->getDoorbotTimestamp()));
@@ -93,11 +93,11 @@ if(
         </p>
       </div>
       <div class="profile-body">
-        <? require('profile/aliases.php'); ?>
-        <? if($user_profile->getDescription() != '') { ?>
+        <?php require('profile/aliases.php'); ?>
+        <?php if($user_profile->getDescription() != '') { ?>
           <h4>Projects I'm working on</h4>
           <p><?=nl2br(htmlspecialchars($user_profile->getDescription())) ?></p>
-        <? }
+        <?php }
            if($this_user->hasInterests()) {
             require('profile/interests.php');
            } ?>
@@ -105,7 +105,7 @@ if(
   </div>
 </div>
 <br/>
-<? } else if (($user->isMember() && $this_user->isMember()) || ($user->getMemberNumber() == $this_user->getMemberNumber()) || $user->isAdmin()){ ?>
+<?php } else if (($user->isMember() && $this_user->isMember()) || ($user->getMemberNumber() == $this_user->getMemberNumber()) || $user->isAdmin()){ ?>
 <div class="row profile">
 	<div class="col-md-3">
 		<div class="member-avatar">
@@ -113,22 +113,22 @@ if(
     </div>
   </div>
 	<div class="col-md-9">
-		<? if($user->getMemberNumber() == $this_user->getMemberNumber()) { ?>
+		<?php if($user->getMemberNumber() == $this_user->getMemberNumber()) { ?>
 		<small class="profile_edit"><a class="btn btn-default btn-sm" href="/members/profile_edit.php">Edit my profile</a></small>
-		<? } ?>
+		<?php } ?>
 
 		<h3>
 			<?= htmlspecialchars($this_user->getFullName()) ?>
 			<p><small><?=$this_user->getMemberNumber()?></small></p>
 		</h3>
-    <? if($this_user->getEmergencyName() && $this_user->getEmergencyPhone()) { ?>
+    <?php if($this_user->getEmergencyName() && $this_user->getEmergencyPhone()) { ?>
     <ul class="contact-list">
       <li><span class="glyphicon glyphicon-heart"></span> I have supplied an emergency contact </li>
     </ul>
-    <? } ?>
+    <?php } ?>
   </div>
 </div>
-<? } else { ?>
+<?php } else { ?>
    <p>You don't have access to this page.</p>
 <?php }
 require('../footer.php'); ?>

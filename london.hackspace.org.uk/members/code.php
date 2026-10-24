@@ -1,4 +1,4 @@
-<? 
+<?php 
 $page = 'code';
 $title = "Code access";
 $desc = '';
@@ -30,7 +30,7 @@ h4 {
 }
 
 </style>
-<?  
+<?php  
     $code_file = file_get_contents('../../var/gate-code.json');
     $gate_codes = json_decode($code_file, true);
 ?>
@@ -90,9 +90,9 @@ This requires a single press of the down button situated on the side of the cont
 <h4>If there is nobody left in the building, or it is after 8:30pm, then ensure the gate is locked.</h4>
 <p>This is done with the padlock and chain,     
     the padlock is opened with the code above.
-<? } else { ?>
+<?php } else { ?>
    <p>You must be a member to use this page.</p>
-<? }
+<?php }
 
 require('../footer.php'); ?>
 </body>

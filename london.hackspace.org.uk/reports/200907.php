@@ -1,4 +1,4 @@
-<? 
+<?php 
 $page = 'reports';
 $title = 'July 2009';
 require('../header.php'); 
@@ -63,6 +63,6 @@ fiddly to do and I don't have the time.</p>
     <tr></tr>
 </table>
 
-<? require('../footer.php'); ?>
+<?php require('../footer.php'); ?>
 </body>
 </html>

@@ -1,4 +1,4 @@
-<?
+<?php
 $title = 'Notice of Disposal';
 require('./header.php');
 
@@ -29,7 +29,7 @@ if (isset($_POST['print']) && $user->isMember()) {
 
 ?>
 
-<? if($user->isMember()) { ?>
+<?php if($user->isMember()) { ?>
 
 <p>On this page you can print a Notice of Disposal sticker, use them with care.</p>
 
@@ -55,7 +55,7 @@ if (isset($_POST['print']) && $user->isMember()) {
 </div>
 </form>
 
-<? } ?>
+<?php } ?>
 <?require('./footer.php')?>
 </body>
 </html>

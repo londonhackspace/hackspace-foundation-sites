@@ -1,4 +1,4 @@
-<?
+<?php
 $title = 'Project Storage';
 require('./header.php');
 
@@ -35,7 +35,7 @@ if (isset($_POST['print'])) {
 $projects = fRecordSet::build('Project', array('state_id!='=>array('6','7'), 'user_id=' => $user->getId()));
 ?>
 
-<? if($projects->count() > 0) { ?>
+<?php if($projects->count() > 0) { ?>
 
 <p>You can print Do Not Hack stickers for your current storage projects.</p>
 
@@ -46,30 +46,30 @@ $projects = fRecordSet::build('Project', array('state_id!='=>array('6','7'), 'us
     <tr><th>Project</th><th>State</th><th>Print</th>
 </thead>
 <tbody>
-<? foreach($projects as $project) { ?>
+<?php foreach($projects as $project) { ?>
     <tr>
     <th><?=htmlspecialchars($project->getName()) ?></th>
     <td><?=$project->getState()?></td>
-    <td><? if ($project->getStateId() == 2 or $project->getStateId() == 4) {?>
+    <td><?php if ($project->getStateId() == 2 or $project->getStateId() == 4) {?>
             <button name="print" value="<?=$project->getId()?>" class="btn btn-primary">
                  <span class="glyphicon glyphicon-print"></span>
                 Print
             </button>
-        <? } ?>
+        <?php } ?>
     </td>
     </tr>
-<? } ?>
+<?php } ?>
 </tbody>
 </table>
 </form>
 
 <p>You can only print stickers for projects which have been approved.</p>
 
-<? } else { ?>
+<?php } else { ?>
 
 <p>You don't have any current storage requests. To create one, please log into the Hackspace web site.</p>
 
-<? } ?>
+<?php } ?>
 
 <?require('./footer.php')?>
 </body>

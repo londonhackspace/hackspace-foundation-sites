@@ -1,4 +1,4 @@
-<? 
+<?php 
 $page = 'retention';
 require( '../header.php' );
 
@@ -11,7 +11,7 @@ if (!$user->isMember()) {
 ?>
 <div class="stats-page">
 <h2>Member Interests</h2>
-<?
+<?php
 
 $graph = Array();
 
@@ -32,7 +32,7 @@ $cats = $db->translatedQuery( "SELECT COUNT(DISTINCT user_id) AS total, category
 </tr>
 </thead>
 <tbody>
-<?
+<?php
 foreach( $cats as $interest ) {
 	echo '<tr>';
 	foreach($interest as $td) {
@@ -59,7 +59,7 @@ foreach( $cats as $interest ) {
 </tr>
 </thead>
 <tbody>
-<?
+<?php
 foreach( $query as $interest ) {
 	echo '<tr>';
 	foreach($interest as $td) {
@@ -74,7 +74,7 @@ foreach( $query as $interest ) {
 </tbody>
 </table>
 
-<? require('../footer.php'); ?>
+<?php require('../footer.php'); ?>
     <script type="text/javascript" src="https://www.google.com/jsapi"></script>
     <script type="text/javascript">
       google.load("visualization", "1", {packages:["corechart"]});
@@ -82,7 +82,7 @@ foreach( $query as $interest ) {
       function drawChart() {
         var data = google.visualization.arrayToDataTable([
           ['Interests', 'Members'],
-<?
+<?php
 foreach( $query as $interest ) {
 	echo "\t[";
   # FIXME: use JSON. We're currently relying on there being no close-script tags in the DB.
@@ -116,7 +116,7 @@ foreach( $query as $interest ) {
 
         var data = google.visualization.arrayToDataTable([
           ['Categories', 'Members'],
-<?
+<?php
 foreach( $cats as $interest ) {
 	echo "\t[";
 	echo '\''.$interest['category'].'\','.((int)$interest['total']/(int)$total*100);

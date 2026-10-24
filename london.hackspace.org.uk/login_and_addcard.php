@@ -1,4 +1,4 @@
-<?
+<?php
 $page = 'addcard';
 require('header.php');
 
@@ -61,7 +61,7 @@ if (isset($_GET['added']) && !isset($_POST['submit'])) {
 
 ?>
 <p>Your card was added. For security, you have been logged out.</p>
-<?
+<?php
 
 } else {
 
@@ -91,7 +91,7 @@ if (isset($_GET['added']) && !isset($_POST['submit'])) {
 </form>
 
 <p>Forgotten your password? <a href="passwordreset.php">Reset it here</a>.</p>
-<?
+<?php
 }
 
 require('footer.php'); ?>

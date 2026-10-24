@@ -1,4 +1,4 @@
-<?
+<?php
 $page = 'memberdetail';
 require('../header.php');
 
@@ -20,7 +20,7 @@ try {
 <script src="https://unpkg.com/@popperjs/core@2"></script>
 <script src="https://unpkg.com/tippy.js@6"></script>
 
-<?
+<?php
 if (($user->isMember() && $this_user->isMember()) || $user->isAdmin()) {
 ?>
   <h2>Member Info</h2>
@@ -33,13 +33,13 @@ if (($user->isMember() && $this_user->isMember()) || $user->isAdmin()) {
       <th>ID</th>
       <td><?= $this_user->getMemberNumber() ?></td>
     </tr>
-    <? if ($this_user->getHasProfile()) { ?>
+    <?php if ($this_user->getHasProfile()) { ?>
       <tr>
         <th>Profile</th>
         <td><a href="/members/profile.php?id=<?= $this_user->getId() ?>">Visit member's profile</a></td>
       </tr>
-    <? } ?>
-    <? if ($user->isAdmin()) { ?>
+    <?php } ?>
+    <?php if ($user->isAdmin()) { ?>
       <tr>
         <th>Member?</th>
         <td><?= ($this_user->isMember()) ? "Yes" : "No" ?></td>
@@ -64,7 +64,7 @@ if (($user->isMember() && $this_user->isMember()) || $user->isAdmin()) {
         <th>Emergency Contact</th>
         <td><?= htmlspecialchars($this_user->getEmergencyName()) ?><br /><?= htmlspecialchars($this_user->getEmergencyPhone()) ?></td>
       </tr>
-    <? } ?>
+    <?php } ?>
   </table>
 
   <script>
@@ -92,7 +92,7 @@ if (($user->isMember() && $this_user->isMember()) || $user->isAdmin()) {
   </script>
 
 
-  <? if ($user->isAdmin()) { ?>
+  <?php if ($user->isAdmin()) { ?>
     <h3>Access Cards</h3>
     <table class="table">
       <thead>
@@ -103,22 +103,22 @@ if (($user->isMember() && $this_user->isMember()) || $user->isAdmin()) {
         </tr>
       </thead>
       <tbody>
-        <? foreach ($this_user->buildCards() as $card): ?>
+        <?php foreach ($this_user->buildCards() as $card): ?>
           <tr class="<?= $card->getActive() ? 'allowed' : 'blocked' ?>">
             <td><?= $card->getAddedDate() ?></td>
             <td><?= implode(':', str_split($card->getUid(), 2)) ?></td>
-            <? if ($card->getActive()): ?>
+            <?php if ($card->getActive()): ?>
               <td class="rfidcard  rfidcard-active">Active</td>
-            <? else: ?>
+            <?php else: ?>
               <td class="rfidcard rfidcard-blocked">Blocked</td>
-            <? endif; ?>
+            <?php endif; ?>
           </tr>
-        <? endforeach ?>
+        <?php endforeach ?>
       </tbody>
     </table>
-  <? } ?>
+  <?php } ?>
 
-  <? if ($user->isAdmin()) { ?>
+  <?php if ($user->isAdmin()) { ?>
     <h3>Recent Payments</h3>
     <table class="table">
       <thead>
@@ -129,7 +129,7 @@ if (($user->isMember() && $this_user->isMember()) || $user->isAdmin()) {
         </tr>
       </thead>
       <tbody>
-        <? foreach ($this_user->buildPayments() as $payment) { ?>
+        <?php foreach ($this_user->buildPayments() as $payment) { ?>
           <tr id="payment-<?= $payment->getId() ?>" <?php if ($payment->getPaymentState() == 3) { ?>style="background-color: lightgrey" <?php } ?>>
 
             <td><?= $payment->getTimestamp() ?></td>
@@ -149,7 +149,7 @@ if (($user->isMember() && $this_user->isMember()) || $user->isAdmin()) {
                     } 
               ?>
             </td>
-            <? if ($payment->getPaymentType() == 2) { ?>
+            <?php if ($payment->getPaymentType() == 2) { ?>
               <script>
                 tippy('#payment-<?= $payment->getId() ?>', {
                   content: 'Loading...',
@@ -168,15 +168,15 @@ if (($user->isMember() && $this_user->isMember()) || $user->isAdmin()) {
                   }
                 });
               </script>
-            <? } ?>          
+            <?php } ?>          
           </tr>
-        <? } ?>
+        <?php } ?>
       </tbody>
     </table>
-  <? } ?>
-<? } else { ?>
+  <?php } ?>
+<?php } else { ?>
   <p>You don't have access to this page.</p>
-<? }
+<?php }
 require('../footer.php');
 ?>
 </body>

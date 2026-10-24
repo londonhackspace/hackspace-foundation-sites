@@ -3,12 +3,12 @@
         <ul class="nav navbar-nav">
             <?=menulink('/', 'about', 'Home');?>
             <li><a href="http://wiki.london.hackspace.org.uk">Wiki</a></li>
-            <? if (!isset($user)) { ?>
+            <?php if (!isset($user)) { ?>
                 <?=menulink('/signup.php', 'membership', 'Join');?>
-            <? } ?>
-            <? if (isset($user) && $user->isGoCardlessUser()) { ?>
+            <?php } ?>
+            <?php if (isset($user) && $user->isGoCardlessUser()) { ?>
             <?=menulink('/gocardless/', 'gocardless', 'GoCardless');?>
-            <? } ?>
+            <?php } ?>
             <?=menulink('/events/', 'events', 'Events');?>
             <?=menulink('/organisation/', 'organisation', 'Organisation');?>
             <?=menulink('/donate.php', 'donate', 'Donate')?>
@@ -17,8 +17,8 @@
                 <!-- <?=menulink('/members/webcams.php', 'webcams', 'Webcams')?> -->
                 <?=menulink('/storage/list.php', 'storagelist', 'Storage Requests')?>
                 <?=menulink('/members/minutes.php', 'minutes', 'Minutes')?>
-            <? } ?>
-            <? if (isset($user)) { ?>
+            <?php } ?>
+            <?php if (isset($user)) { ?>
             <li class="dropdown">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
                         aria-expanded="false">Access <span class="caret"></span></a>
@@ -28,10 +28,10 @@
                         <?=menulink('/members/code.php', 'code', 'Access and Lockup (including Codes)')?>
                         <?=menulink('/members/tools.php', 'tools', 'Tools')?>
                         <?=menulink('/members/ldap.php', 'LDAP', 'Edit LDAP Account')?>
-                        <? } ?>
+                        <?php } ?>
                     </ul>
                 </li>
 
-            <? } ?>
+            <?php } ?>
         </ul>
 </nav>

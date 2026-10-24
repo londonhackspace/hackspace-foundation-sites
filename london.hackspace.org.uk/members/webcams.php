@@ -1,4 +1,4 @@
-<?
+<?php
 $page = 'webcams';
 $title = "Webcams";
 $noindex = True;
@@ -28,7 +28,7 @@ if (!isset($user) || !$user->isMember()) {
 }
 ?>
 <div id="webcam-grid">
-<?
+<?php
 foreach ($cameras as $id => $name) {
 
 ?>
@@ -39,8 +39,8 @@ foreach ($cameras as $id => $name) {
   </a>
 </div>
 
-<? } ?>
+<?php } ?>
 </div>
-<? require('../footer.php'); ?>
+<?php require('../footer.php'); ?>
 </body>
 </html>

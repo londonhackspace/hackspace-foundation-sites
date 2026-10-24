@@ -1,4 +1,4 @@
-<? 
+<?php 
 $page = 'reports';
 $title = 'August 2009';
 require('../header.php'); 
@@ -52,6 +52,6 @@ able to afford a proper space.</p>
     <tr></tr>
 </table>
 
-<? require('../footer.php'); ?>
+<?php require('../footer.php'); ?>
 </body>
 </html>

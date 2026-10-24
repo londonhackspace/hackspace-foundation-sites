@@ -1,4 +1,4 @@
-<? 
+<?php 
 $page = 'membership';
 require('header.php');
 
@@ -65,7 +65,7 @@ The London Hackspace email monkey
     } catch(fNotFoundException $e) {?>
         <p>No user exists with that email address. <a href="signup.php">Sign up</a>? 
                     Or <a href="passwordreset.php">try again</a>?</p>
-<?  } catch (fValidationException $e) {
+<?php  } catch (fValidationException $e) {
         echo "<p>" . $e->printMessage() . "</p>";
     } catch (fSQLException $e) {
         echo "<p>An unexpected error occurred, please try again later</p>";
@@ -97,7 +97,7 @@ The London Hackspace email monkey
         </div>
     </div>
 </form>
-<?
+<?php
 } else {
 ?>
 <p>To reset your password, enter your email address:</p>
@@ -119,7 +119,7 @@ The London Hackspace email monkey
 
 <p>If you are having difficulty please email <i>contact (at) london.hackspace.org.uk</i>.</p>
 
-<? 
+<?php 
 }
 require('footer.php'); ?>
 </body>

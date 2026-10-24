@@ -1,4 +1,4 @@
-<? 
+<?php 
 $page = 'donate';
 $title = 'Donate';
 require( './header.php' );
@@ -46,7 +46,7 @@ Please <a href="/login.php">log in</a> or <a href="/signup.php">sign up</a> for 
 <div class="col-md-4">
 <div class="panel panel-default">
     <div class="panel-heading"><h3 class="panel-title">Bank Transfer</h3></div>
-        <? if ($user) { ?>
+        <?php if ($user) { ?>
         <table class="table">
         <tbody>
             <tr>
@@ -74,12 +74,12 @@ Please <a href="/login.php">log in</a> or <a href="/signup.php">sign up</a> for 
         </table>
 
 
-        <? } else { ?>
+        <?php } else { ?>
         <div class="panel-body">
             Due to direct debit fraud, we require you to <a href="/login.php">log in</a>
             before you can see our bank details.
         </div>
-        <? } ?>
+        <?php } ?>
 </div>
 </div>
 

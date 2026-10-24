@@ -1,4 +1,4 @@
-<? 
+<?php 
 $page = 'members';
 require('../header.php'); 
 
@@ -12,7 +12,7 @@ if (!$user) {
 
 <h2>Members Area</h2>
 
-<? if ($user->getAddress() == '') {?>
+<?php if ($user->getAddress() == '') {?>
     <h4>More Details Required</h4>
 
     <p>UK Law requires that we store our members' real name and address. Since you haven't provided
@@ -23,7 +23,7 @@ if (!$user) {
     <p>You're currently a member of London Hackspace, thanks for your support!</p>
     <div  id="gcstatus"><h3>GoCardless</h3>
     
-        <?
+        <?php
             $gocardless = $user->getGocardlessStatus();
             if ($gocardless == 'None') { ?>
             <p>You do not currently have a GoCardless subscription. 
@@ -31,14 +31,14 @@ if (!$user) {
                 If you cannot use GoCardless, then your standing order reference number is: <strong><?=$user->getMemberNumber()?></strong></p>
 
             </p>
-            <?
+            <?php
             } else if ($gocardless == 'Mandate') { ?>
                 <p>You have a GoCardless mandate, but no active subscription.</p>
                 If you cannot use GoCardless, then your standing order reference number is: <strong><?=$user->getMemberNumber()?></strong></p>
-            <?
+            <?php
             } else if ($gocardless == 'Subscribed') { ?>
                 <p>You have an active GoCardless subscription.</p>
-            <?
+            <?php
             }
         ?>
     </div>
@@ -65,15 +65,15 @@ if (!$user) {
         }
       });
   </script>
-<? } else { ?>
+<?php } else { ?>
     <p>You're not currently a member of London Hackspace. To become a member, we ask that you pay what you
        think the space is worth to you. Running a place like this isn't cheap, so please be as
        generous as you can. The Hackspace requires a minimum of <a href='/cost-of-hacking/'>£20/month</a> per member to run.</p>
 
-<? if ($user->isGoCardlessUser()) { ?>
+<?php if ($user->isGoCardlessUser()) { ?>
 <h3>GoCardless </h3>
 <p>We are now using GoCardless to handle membership payments. To manage your subscription, please <a href="/gocardless/">click here</a>.</p>
-<? } else { ?>
+<?php } else { ?>
 <h3>Standing Order</h3>
     <p>Set up a monthly standing order with your bank (most banks let you do this online),
        using the following details.</p>
@@ -116,7 +116,7 @@ if (!$user) {
       bank transfer with the same details, or bring these details to any Barclays branch and pay in cash.
       Please make sure that the reference is correct; bank cashiers frequently get it wrong.</p>
 
-<? } ?>
+<?php } ?>
 
 <h3>Tell us about yourself</h3>
 
@@ -126,7 +126,7 @@ if (!$user) {
    <p>If you have any problems paying, please contact 
       <a href="mailto:membership@london.hackspace.org.uk">membership@london.hackspace.org.uk</a>.</p>
 
-<? } ?>
+<?php } ?>
 
 <h3>Your Recent Payments</h3>
 <table class="table">
@@ -138,7 +138,7 @@ if (!$user) {
     </tr>
     </thead>
     <tbody>
-        <? foreach($user->buildPayments() as $payment) {?>
+        <?php foreach($user->buildPayments() as $payment) {?>
             <tr id="payment-<?= $payment->getId() ?>" <?php if ($payment->getPaymentState() == 3) { ?>style="background-color: lightgrey" <?php } ?>>
                 <td><?=$payment->getTimestamp()?></td>
                 <td>£<?=$payment->getAmount()?></td>
@@ -157,7 +157,7 @@ if (!$user) {
                         } 
                     ?>
                 </td>    
-                <? if ($payment->getPaymentType() == 2) { ?>
+                <?php if ($payment->getPaymentType() == 2) { ?>
                     <script>
                         tippy('#payment-<?= $payment->getId() ?>', {
                             content: 'Loading...',
@@ -176,12 +176,12 @@ if (!$user) {
                             }
                         });
                     </script>
-                <? } ?>       
+                <?php } ?>       
             </tr>
-        <? } ?>
+        <?php } ?>
     </tbody>
 </table>
 
-<? require('../footer.php'); ?>
+<?php require('../footer.php'); ?>
 </body>
 </html>

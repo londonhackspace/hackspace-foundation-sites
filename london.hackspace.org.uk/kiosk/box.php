@@ -1,4 +1,4 @@
-<?
+<?php
 $title = 'Member Box Sticker';
 require('./header.php');
 
@@ -24,7 +24,7 @@ if (isset($_POST['print']) && $user->isMember()) {
 
 ?>
 
-<? if($user->isMember()) { ?>
+<?php if($user->isMember()) { ?>
 
 <p>On this page you can print a label for your box.</p>
 
@@ -40,7 +40,7 @@ if (isset($_POST['print']) && $user->isMember()) {
 </tbody>
 </table>
 </form>
-<? } ?>
+<?php } ?>
 
 <?require('./footer.php')?>
 </body>

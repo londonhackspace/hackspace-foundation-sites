@@ -1,4 +1,4 @@
-<?
+<?php
 $page = 'storagedetails_edit';
 $title = "Storage details";
 require( '../header.php' );
@@ -74,50 +74,50 @@ if (isset($_POST['submit']) && ($user->getId() != $project->getUserId() || $user
 }
 ?>
 
-<? if($user->getId() == $project->getUserId() && ($project->getState() == 'Pending Approval' || $project->getState() == 'Unapproved')) { ?>
+<?php if($user->getId() == $project->getUserId() && ($project->getState() == 'Pending Approval' || $project->getState() == 'Unapproved')) { ?>
 	<small class="edit_bttn">
 	<a href="/storage/edit/<?=$project->getId()?>" class="btn btn-default">Edit request</a>
 	</small>
-<? } if($user->getId() == $project->getUserId() && ($project->getState() == 'Approved' || $project->getState() == 'Passed Deadline' || $project->getState() == 'Extended')) { ?>
+<?php } if($user->getId() == $project->getUserId() && ($project->getState() == 'Approved' || $project->getState() == 'Passed Deadline' || $project->getState() == 'Extended')) { ?>
 	<small class="edit_bttn">
 	<form class="form-inline" role="form" method="post" style="display: inline;">
 		<input type="hidden" name="token" value="<?=fRequest::generateCSRFToken()?>" />
 		<input type="submit" name="remove" class="btn btn-default" value="Mark as removed from the space"/>
-		<? if(!$project->hasExtension()) { ?>
+		<?php if(!$project->hasExtension()) { ?>
 		<input type="submit" name="extend" class="btn btn-default" value="Extend the deadline"/>
-		<? } ?>
+		<?php } ?>
 	</form>
 	</small>
-<? } ?>
+<?php } ?>
 <h2>Storage Request</h2>
 <h3><?=htmlspecialchars($project->getName()); ?>
-	<div class="status <?= strtolower($project->getState()); ?>"><?= $project->getState(); ?> <?if($project->getState() == 'Extended') { ?>(<?=$project->getExtensionDuration()?> days)<? } ?></div>
+	<div class="status <?= strtolower($project->getState()); ?>"><?= $project->getState(); ?> <?if($project->getState() == 'Extended') { ?>(<?=$project->getExtensionDuration()?> days)<?php } ?></div>
 <p><small>
-	By <a href="/members/member.php?id=<?=$project->getUserId()?>"><?=htmlspecialchars($projectUser->getFullName())?></a> (incase of emergency contact <? if($project->getContact()) { ?><a href="mailto:<?=$project->getContact()?>"><span class="glyphicon glyphicon-envelope" style="margin-left:5px;margin-right:4px;" aria-hidden="true"></span><?=$project->getContact()?></a><? } else { ?><a href="mailto:<?=$projectUser->getEmail()?>"><span class="glyphicon glyphicon-envelope" style="margin-left:5px;margin-right:4px;" aria-hidden="true"></span><?=$projectUser->getEmail()?></a><? } ?>)<br/>
+	By <a href="/members/member.php?id=<?=$project->getUserId()?>"><?=htmlspecialchars($projectUser->getFullName())?></a> (incase of emergency contact <?php if($project->getContact()) { ?><a href="mailto:<?=$project->getContact()?>"><span class="glyphicon glyphicon-envelope" style="margin-left:5px;margin-right:4px;" aria-hidden="true"></span><?=$project->getContact()?></a><?php } else { ?><a href="mailto:<?=$projectUser->getEmail()?>"><span class="glyphicon glyphicon-envelope" style="margin-left:5px;margin-right:4px;" aria-hidden="true"></span><?=$projectUser->getEmail()?></a><?php } ?>)<br/>
 	<?=$project->outputDates(); ?><br/>
 	<?=$project->outputDuration(); ?>
 	<?=$project->outputLocation(); ?>
 </small></p>
 </h3>
-<? if($project->recentPost() && $user->getId() == $project->getUserId()) { ?>
+<?php if($project->recentPost() && $user->getId() == $project->getUserId()) { ?>
 	<div class="alert alert-success storage-request-notice">
 		<p>Now you've made a storage request don't forget:</p>
-		<div><a target="_blank" href="<?=$project->getMailingListURL()?>" class="btn btn-success">Read the mailing list topic</a> this is where other members <? if(!$project->isShortTerm()) { ?> can choose to expediate your request (if its urgent) or unapprove it.<? } else { ?> can raise any concerns they have with your request.<? } ?></div>
+		<div><a target="_blank" href="<?=$project->getMailingListURL()?>" class="btn btn-success">Read the mailing list topic</a> this is where other members <?php if(!$project->isShortTerm()) { ?> can choose to expediate your request (if its urgent) or unapprove it.<?php } else { ?> can raise any concerns they have with your request.<?php } ?></div>
 		<div><a target="_blank" href="/storage/print/<?=$project->getId()?>" class="btn btn-success">Print DO NOT HACK label</a> after it's been <strong>approved</strong> and attach it to your project. This is to let other members know your project is accounted for. You can print it at the kiosk on the 1st floor near the entrance.</div>
-		<? if($project->getState() == 'Pending Approval') { ?><p>Your request will be automatically approved after <?=$project->automaticApprovalDuration();?> days if you don't make any changes and no one replies on the mailing list.</p><? } ?>
+		<?php if($project->getState() == 'Pending Approval') { ?><p>Your request will be automatically approved after <?=$project->automaticApprovalDuration();?> days if you don't make any changes and no one replies on the mailing list.</p><?php } ?>
 	</div>
-<? } else { ?>
+<?php } else { ?>
 	<a target="_blank" href="<?=$project->getMailingListURL()?>" class="btn btn-default">Read the mailing list topic</a>
 	<a target="_blank" href="/storage/print/<?=$project->getId()?>" class="btn btn-default">Print DO NOT HACK label</a><br/>
-<? } ?>
+<?php } ?>
 <br/>
-	<?if($project->hasExtension()) { ?><strong>Extended for <?=$project->getExtensionDuration()?> days</strong><br/><br/><? } ?>
+	<?if($project->hasExtension()) { ?><strong>Extended for <?=$project->getExtensionDuration()?> days</strong><br/><br/><?php } ?>
 <p><?=nl2br(htmlspecialchars($project->getDescription())); ?></p>
 <br/>
 <hr/>
 <strong>Activity log</strong><br/><br/>
 <ul>
-<? foreach($projectslogs as $log) {
+<?php foreach($projectslogs as $log) {
 	$userURL = '';
 	if($log->getUserId() != null) {
 		$logUser = new User($log->getUserId());
@@ -126,7 +126,7 @@ if (isset($_POST['submit']) && ($user->getId() != $project->getUserId() || $user
 	echo '<li><span class="light-color">'.date('g:ia jS M',$log->getTimestamp()).'</span> | '.str_replace('Mailing List','<a target="_blank" href="'.$project->getMailingListURL().'">Mailing List</a>',htmlspecialchars($log->getDetails())).$userURL.'</li>';
 } ?>
 </ul>
-<? if($user->getId() != $project->getUserId() || $user->isAdmin()) { ?>
+<?php if($user->getId() != $project->getUserId() || $user->isAdmin()) { ?>
 <hr/>
 <form class="form-inline" role="form" method="post">
 	<strong>Update Status</strong><br/>
@@ -134,7 +134,7 @@ if (isset($_POST['submit']) && ($user->getId() != $project->getUserId() || $user
 	<input type="hidden" name="token" value="<?=fRequest::generateCSRFToken()?>" />
 	<select class="form-control" name="state">
 		<option value="" disabled selected></option>
-		<? foreach($states as $state) {
+		<?php foreach($states as $state) {
 			$newStatus = $state->getName();
 			if($newStatus != $project->getState() && $project->canTransitionStates($project->getState(),$newStatus)) {
 				echo '<option value="'.$state->getName().'" ';
@@ -147,5 +147,5 @@ if (isset($_POST['submit']) && ($user->getId() != $project->getUserId() || $user
 	<input type="text" name="reason" class="form-control" placeholder="Is there a reason for this change?" style="width: 280px;" />
 	<input type="submit" name="submit" value="Update status" class="btn btn-primary"/>
 </form>
-<? }
+<?php }
  require('../footer.php'); ?>

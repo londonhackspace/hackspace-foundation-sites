@@ -1,4 +1,4 @@
-<?
+<?php
 $title = 'Membership Management';
 $page = 'main';
 require('./header.php');
@@ -31,23 +31,23 @@ if ($user->isMember()) {
 
 ?>
 
-<? if ($user->isMember()) {
+<?php if ($user->isMember()) {
 ?>
 <div class="alert alert-success" role="alert">
     <strong>Welcome, <?=htmlspecialchars($user->getFullName())?></strong>.
     You are a member of London Hackspace.
 </div>
-<? } else { ?>
+<?php } else { ?>
 <div class="alert alert-warning" role="alert">
     Hi, <?=htmlspecialchars($user->getFullName())?>.
     <strong>You are not currently a member of London Hackspace</strong>.
 </div>
-<? } ?>
+<?php } ?>
 <table class="table">
 <tr><th>Member ID</th><td> <?=$user->getMemberNumber()?></td></tr>
-<? if ($user->isMember() and $expires) { ?>
+<?php if ($user->isMember() and $expires) { ?>
 <tr><th>Subscription Expiry</th><td> <?=$expires ?></td></tr>
-<? } ?>
+<?php } ?>
 </table>
 
 <h2>Print Membership Stickers</h2>
@@ -65,11 +65,11 @@ if ($user->isMember()) {
 <a href="/kiosk/nod.php?cardid=<?=$cardid?>" class="btn btn-default">Notice of Disposal</a>
 </div>
 
-<? if ($user->getId() == 1) { ?>
+<?php if ($user->getId() == 1) { ?>
 <div class="btn-group">
     <a href="/kiosk/meeting.php?cardid=<?=$cardid?>" class="btn btn-default">Meeting Attendance</a>
 </div>
-<? } ?>
+<?php } ?>
 
 <?require('./footer.php')?>
 </body>

@@ -1,4 +1,4 @@
-<?
+<?php
 $title = 'Card inactive';
 require('./header.php');
 

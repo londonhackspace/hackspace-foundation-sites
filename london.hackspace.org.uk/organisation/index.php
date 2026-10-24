@@ -1,4 +1,4 @@
-<?
+<?php
 $page = 'organisation';
 $title = 'Organisation';
 /* Grammatical note: I usually spell organization with a Z as per the proper Oxford spelling:
@@ -30,6 +30,6 @@ require('../header.php');
 
 <p>London Hackspace Ltd. is a company limited by guarantee, registered in England and Wales with company number 06807563. We are not VAT registered.</p>
 
-<? require('../footer.php'); ?>
+<?php require('../footer.php'); ?>
 </body>
 </html>

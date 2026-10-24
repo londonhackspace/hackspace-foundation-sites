@@ -1,4 +1,4 @@
-<? 
+<?php 
 $page = 'edit';
 $title = "Edit your details";
 $desc = '';
@@ -51,7 +51,7 @@ if (isset($_GET['saved'])) {
 <p><a href="http://www.legislation.gov.uk/ukpga/2006/46/part/8/chapter/2/crossheading/general">UK law</a> requires us to
 store the full name and address of all our members. If you don't provide these details, you won't receive membership privileges.</p>
 
-<? /* <p>If you prefer to pay for a longer period of time, you can change your membership period here. You must pay at least £5/month.</p> */ ?>
+<?php /* <p>If you prefer to pay for a longer period of time, you can change your membership period here. You must pay at least £5/month.</p> */ ?>
 
 <form class="form-horizontal" method="post" role="form">
     <input type="hidden" name="token" value="<?=fRequest::generateCSRFToken()?>" />
@@ -74,7 +74,7 @@ store the full name and address of all our members. If you don't provide these d
             <textarea id="address" name="address" class="form-control" rows="5"><?=$user->getAddress()?></textarea>
         </div>
     </div>
-<? /*
+<?php /*
     <div class="form-group">
        <label for="length" class="col-sm-3 control-label">Subscription Length (months)</label>
        <div class="col-sm-9">
@@ -116,6 +116,6 @@ store the full name and address of all our members. If you don't provide these d
         </div>
     </div>
 </form>
-<? require('../footer.php'); ?>
+<?php require('../footer.php'); ?>
 </body>
 </html>

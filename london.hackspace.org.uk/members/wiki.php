@@ -1,4 +1,4 @@
-<? 
+<?php 
 $page = 'wiki';
 require( '../header.php' );
 
@@ -7,7 +7,7 @@ if (!$user) {
 }
 ?>
 <h2>Wiki Account</h2>
-<?
+<?php
 
 if($user->isMember()) {
     $email = $user->getEmail();
@@ -136,7 +136,7 @@ if($user->isMember()) {
         <br />
     <?php endif; ?>
     <p><a href="index.php">Return to membership home</a></p>
-<? } else { ?>
+<?php } else { ?>
     <p>You must be a member to use this page.</p>
 <?php } 
 

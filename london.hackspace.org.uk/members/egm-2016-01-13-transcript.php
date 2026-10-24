@@ -34,9 +34,9 @@ require('../header.php');
   <li><a href="?dl=pdf">PDF</a></li>
 </ul>
 
-<? } else { ?>
+<?php } else { ?>
    <p>You must be a member to use this page.</p>
-<? }
+<?php }
 
 require('../footer.php'); ?>
 </body>

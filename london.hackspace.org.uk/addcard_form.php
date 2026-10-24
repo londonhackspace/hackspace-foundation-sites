@@ -1,4 +1,4 @@
-<?
+<?php
 /*
  * For a card-adding station return a page that can be filled in with the scanned UID
  * 

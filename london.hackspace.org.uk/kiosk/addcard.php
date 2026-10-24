@@ -1,4 +1,4 @@
-<?
+<?php
 $title = 'Add a card';
 require('./header.php');
 

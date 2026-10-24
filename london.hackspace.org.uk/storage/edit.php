@@ -1,4 +1,4 @@
-<?
+<?php
 $page = 'storagedetails_edit';
 $title = "Storage request";
 require( '../header.php' );
@@ -19,7 +19,7 @@ if(isset($_GET['id'])) {
 <p>Your request will be sent to the <a target="_blank" href="https://groups.google.com/forum/#!forum/london-hack-space">London Hackspace mailing list</a> for approval where it can be read by the general public. If your project is sensitive in nature choose your words appropriately, but be aware that members may not approve your request if it's too obscure.
 <br/><br/>
 
-<?
+<?php
 $locations = fRecordSet::build('Location');
 $maxStorageMonths = 3;
 if (isset($_POST['token'])) {
@@ -131,19 +131,19 @@ if (isset($_POST['token'])) {
             <div class="form-group">
                 <label for="name" class="col-sm-3 control-label">Name of Item</label>
                 <div class="col-sm-9">
-                    <input type="text" class="form-control" id="name" name="name" placeholder="What are you storing?" value="<? if($_POST && $_POST['name']) { echo htmlspecialchars($_POST['name']); } else if($project->getName()) { echo htmlspecialchars($project->getName()); } ?>">
+                    <input type="text" class="form-control" id="name" name="name" placeholder="What are you storing?" value="<?php if($_POST && $_POST['name']) { echo htmlspecialchars($_POST['name']); } else if($project->getName()) { echo htmlspecialchars($project->getName()); } ?>">
                 </div>
             </div>
             <div class="form-group">
                 <label for="description" class="col-sm-3 control-label">Description</label>
                 <div class="col-sm-9">
-                    <textarea id="description" name="description" class="form-control" placeholder="What will you be doing? What tools do you need and how often do you plan to work on it?" rows="3"><? if($_POST && htmlspecialchars($_POST['description'])) { echo htmlspecialchars($_POST['description']); } else if($project->getDescription()) { echo htmlspecialchars($project->getDescription()); } ?></textarea>
+                    <textarea id="description" name="description" class="form-control" placeholder="What will you be doing? What tools do you need and how often do you plan to work on it?" rows="3"><?php if($_POST && htmlspecialchars($_POST['description'])) { echo htmlspecialchars($_POST['description']); } else if($project->getDescription()) { echo htmlspecialchars($project->getDescription()); } ?></textarea>
                 </div>
             </div>
             <div class="form-group location-fields">
                 <label class="col-sm-3 control-label">Contact</label>
                 <div class="col-sm-9">
-                    <input type="email" id="contact" name="contact" placeholder="Email address" class="form-control" value="<? if($_POST && $_POST['contact']) { echo htmlspecialchars($_POST['contact']); } else if($project->getContact()) { echo $project->getContact(); }?>"/> or <?=$user->getEmail();?> (if left blank)
+                    <input type="email" id="contact" name="contact" placeholder="Email address" class="form-control" value="<?php if($_POST && $_POST['contact']) { echo htmlspecialchars($_POST['contact']); } else if($project->getContact()) { echo $project->getContact(); }?>"/> or <?=$user->getEmail();?> (if left blank)
                     <p class="help-block">Your email address (above) will be made available to all members in case there's a problem with your project while it's being stored in the space.</p>
                 </div>
             </div>
@@ -151,8 +151,8 @@ if (isset($_POST['token'])) {
                 <label for="location_id" class="col-sm-3 control-label">Location</label>
                 <div class="col-sm-9">
                     <select class="form-control" id="location_id" name="location_id">
-                        <option value="" disabled <? if((!$_POST || !$_POST['location_id']) && !$project->getLocationId()) { echo 'selected'; } ?>></option>
-                        <? foreach($locations as $location) {
+                        <option value="" disabled <?php if((!$_POST || !$_POST['location_id']) && !$project->getLocationId()) { echo 'selected'; } ?>></option>
+                        <?php foreach($locations as $location) {
                                 echo '<option value="'.$location->getId().'" ';
                                 if($_POST && $_POST['location_id'] == $location->getId()) { 
                                     echo 'selected'; 
@@ -162,15 +162,15 @@ if (isset($_POST['token'])) {
                                 echo '>'.$location->getName().'</option>';
                             } ?>
                     </select>
-                    <input type="text" id="location" name="location" class="form-control" placeholder="Whereabouts exactly?" value="<? if($_POST && $_POST['location']) { echo htmlspecialchars($_POST['location']); } else if($project->getLocation()) { echo htmlspecialchars($project->getLocation()); }?>"/>
+                    <input type="text" id="location" name="location" class="form-control" placeholder="Whereabouts exactly?" value="<?php if($_POST && $_POST['location']) { echo htmlspecialchars($_POST['location']); } else if($project->getLocation()) { echo htmlspecialchars($project->getLocation()); }?>"/>
                     <p class="alert alert-warning tip-loading-bay hide" role="alert"><span class="glyphicon glyphicon-star"></span> The loading bay must be kept clear at all times.</p>
                 </div>
             </div>
             <div class="form-group">
                 <label for="from_date" class="col-sm-3 control-label">Storage Dates</label>
                 <div class="col-sm-9">
-                    arrival <input type="date" placeholder="yyyy-mm-dd" value="<? if($_POST && $_POST['from_date']) { echo htmlspecialchars($_POST['from_date']); } else if($project->getFromDate()) { echo $project->getFromDate(); } ?>" min="<?=date('Y-m-d') ?>" max="<?=date('Y-m-d', strtotime("+$maxStorageMonths months"))?>" id="from_date" name="from_date" class="form-control" />
-                    &nbsp;&nbsp; <div style="display:inline;white-space:nowrap;">removal&nbsp;<input type="date" placeholder="yyyy-mm-dd" value="<? if($_POST && $_POST['to_date']) { echo htmlspecialchars($_POST['to_date']); } else if($project->getToDate()) { echo $project->getToDate(); } ?>" min="<?=date('Y-m-d') ?>" max="<?=date('Y-m-d', strtotime("+$maxStorageMonths months"))?>" id="to_date" name="to_date" class="form-control" /></div>
+                    arrival <input type="date" placeholder="yyyy-mm-dd" value="<?php if($_POST && $_POST['from_date']) { echo htmlspecialchars($_POST['from_date']); } else if($project->getFromDate()) { echo $project->getFromDate(); } ?>" min="<?=date('Y-m-d') ?>" max="<?=date('Y-m-d', strtotime("+$maxStorageMonths months"))?>" id="from_date" name="from_date" class="form-control" />
+                    &nbsp;&nbsp; <div style="display:inline;white-space:nowrap;">removal&nbsp;<input type="date" placeholder="yyyy-mm-dd" value="<?php if($_POST && $_POST['to_date']) { echo htmlspecialchars($_POST['to_date']); } else if($project->getToDate()) { echo $project->getToDate(); } ?>" min="<?=date('Y-m-d') ?>" max="<?=date('Y-m-d', strtotime("+$maxStorageMonths months"))?>" id="to_date" name="to_date" class="form-control" /></div>
                     <p class="alert alert-info tip-short-term-storage hide" role="alert"><span class="glyphicon glyphicon-star"></span> It's okay to store your project short term to let paint dry, give yourself a break, etc. But short term storage requests can <strong> only be extended 2 days</strong> at most. If it takes longer you'll need to submit a new storage request and leave enough time for other members to review.</p>
                     <p class="alert alert-warning tip-indoor-review hide" role="alert"><span class="glyphicon glyphicon-star"></span> We need <strong>2 days to review</strong> indoor storage requests unless it's a matter of urgency.</p>
                     <p class="alert alert-warning tip-yard-review hide" role="alert"><span class="glyphicon glyphicon-star"></span> We need <strong>7 days to review</strong> yard storage requests unless it's a matter of urgency.</p>
@@ -181,7 +181,7 @@ if (isset($_POST['token'])) {
             <div class="form-group location-fields">
                 <label class="col-sm-3 control-label">Status</label>
                 <div class="col-sm-9">
-                    <div class="status <? if($project->getState()) { echo strtolower($project->getState()); } else { echo 'pending'; } ?>"><? if($project->getState()) { echo $project->getState(); } else { echo 'Pending Approval'; } ?></div>
+                    <div class="status <?php if($project->getState()) { echo strtolower($project->getState()); } else { echo 'pending'; } ?>"><?php if($project->getState()) { echo $project->getState(); } else { echo 'Pending Approval'; } ?></div>
                 </div>
             </div>
             <div class="form-group">
@@ -214,7 +214,7 @@ if (isset($_POST['token'])) {
     </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
 
-<? require('../footer.php'); ?>
+<?php require('../footer.php'); ?>
 <script type="text/javascript" src="/javascript/moment.min.js"></script>
 <script type="text/javascript" src="/javascript/jquery-ui-1.9.2.custom.min.js"></script>
 <script type="text/javascript">

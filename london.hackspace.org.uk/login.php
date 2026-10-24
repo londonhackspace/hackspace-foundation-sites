@@ -1,4 +1,4 @@
-<? 
+<?php 
 $page = 'login';
 require('header.php'); 
 
@@ -57,9 +57,9 @@ if (isset($_POST['submit'])) {
 ?>
 <form class="form-horizontal" method="post" role="form">
     <input type="hidden" name="token" value="<?=fRequest::generateCSRFToken()?>" />
-    <? if (isset($_GET['forward'])) { ?>
+    <?php if (isset($_GET['forward'])) { ?>
         <input type="hidden" name="forward" value="<?=htmlentities($_GET['forward'])?>" />
-    <? }?>
+    <?php }?>
     <div class="form-group">
         <label for="email" class="col-sm-2 control-label">Email</label>
         <div class="col-sm-10">
@@ -90,6 +90,6 @@ if (isset($_POST['submit'])) {
 
 <p>Forgotten your password? <a href="passwordreset.php">Reset it here</a>.</p>
 
-<? require('footer.php'); ?>
+<?php require('footer.php'); ?>
 </body>
 </html>

@@ -1,20 +1,20 @@
 <ul class="contact-list">
-  <? if ($this_user->getEmergencyName() && $this_user->getEmergencyPhone()) { ?>
+  <?php if ($this_user->getEmergencyName() && $this_user->getEmergencyPhone()) { ?>
     <li><span class="glyphicon glyphicon-heart"></span> I have an emergency contact </li>
-  <? } ?>
-  <? if ($user_profile->getAllowEmail()) { ?>
+  <?php } ?>
+  <?php if ($user_profile->getAllowEmail()) { ?>
     <li><span class="glyphicon glyphicon-envelope"></span> <a href="mailto:<?= $this_user->getEmail() ?>"><?= $this_user->getEmail() ?></a></li>
-  <? } ?>
-  <? if ($user_profile->getWebsite() != '') { ?>
+  <?php } ?>
+  <?php if ($user_profile->getWebsite() != '') { ?>
     <li><span class="glyphicon glyphicon-globe"></span> <a href="<?= htmlspecialchars($user_profile->getWebsite()) ?>" target="_blank"><?= htmlspecialchars($user_profile->getWebsite()) ?></a></li>
-  <? } ?>
+  <?php } ?>
 </ul>
-<? if ($this_user->hasUsersAliases()) { ?>
+<?php if ($this_user->hasUsersAliases()) { ?>
   <h4>Aliases</h4>
   <ul class="aliases-list social-aliases">
-    <? foreach ($this_user->buildUsersAliases() as $alias) { ?>
+    <?php foreach ($this_user->buildUsersAliases() as $alias) { ?>
       <li><span class="member-social-icon iconlhs-<?= substr(strtolower(preg_replace("/[^0-9a-zA-Z]/", "", $alias->getAliasId())), 0, 14); ?>" title="<?= $alias->getAliasId() ?>"></span>
-        <?
+        <?php
         $username_html = htmlspecialchars($alias->getUsername());
         switch ($alias->getAliasId()) {
           case 'Facebook':
@@ -68,6 +68,6 @@
             echo $username_html;
         } ?>
       </li>
-    <? } ?>
+    <?php } ?>
   </ul>
-<? } ?>
+<?php } ?>

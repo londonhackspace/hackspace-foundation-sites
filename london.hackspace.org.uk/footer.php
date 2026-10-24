@@ -1,16 +1,16 @@
-        <? if (!isset($hide_menu)) { ?>
+        <?php if (!isset($hide_menu)) { ?>
         </div><!-- end of non-menu-content -->
-        <? } ?>
+        <?php } ?>
     </div>
     <!-- End of Main Body section -->
-<? if (!isset($hide_copyright)){ ?>
+<?php if (!isset($hide_copyright)){ ?>
     <footer id="ft">
         <p>Copyright &copy; <?=date('Y')?> London Hackspace Ltd. Site kindly hosted by <a href="http://www.bitfolk.com">Bitfolk</a>.<br/></p>
     </footer>
-<? } ?>
+<?php } ?>
 </div><!-- doc -->
 
-<? if (isset($show_twitter_feed)) { ?>
+<?php if (isset($show_twitter_feed)) { ?>
 <script>
 !function(d,s,id){
     var js,fjs=d.getElementsByTagName(s)[0];
@@ -22,7 +22,7 @@
     }
 }(document,"script","twitter-wjs");
 </script>
-<? } ?>
+<?php } ?>
 <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 <script type="text/javascript" src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
 <script type="text/javascript" src="/javascript/main.js"></script>

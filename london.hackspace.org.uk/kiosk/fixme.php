@@ -1,4 +1,4 @@
-<?
+<?php
 $title = 'Fix Me Sticker';
 require('./header.php');
 
@@ -39,7 +39,7 @@ if (isset($_POST['print']) && $user->isMember()) {
 
 ?>
 
-<? if($user->isMember()) { ?>
+<?php if($user->isMember()) { ?>
 
 <p>On this page you can print a Fix Me label, use it to mark something that needs fixing.</p>
 
@@ -72,7 +72,7 @@ if (isset($_POST['print']) && $user->isMember()) {
     </div>
 </div>
 </form>
-<? } ?>
+<?php } ?>
 
 <?require('./footer.php')?>
 </body>

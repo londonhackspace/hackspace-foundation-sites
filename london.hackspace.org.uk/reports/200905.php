@@ -1,4 +1,4 @@
-<? 
+<?php 
 $page = 'reports';
 $title = 'May 2009';
 require('../header.php'); 
@@ -56,6 +56,6 @@ other than London &mdash; this is visible in the Earmarks table.</p>
 
 
 
-<? require('../footer.php'); ?>
+<?php require('../footer.php'); ?>
 </body>
 </html>
