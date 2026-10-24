@@ -144,7 +144,7 @@ class fValidationException extends fExpectedException
 			$message = sprintf(
 				"<p>%1\$s</p>\n<ul>\n<li>%2\$s</li>\n</ul>",
 				self::compose($params[0]),
-				join("</li>\n<li>", $this->formatErrorArray($params[1]))
+				implode("</li>\n<li>", $this->formatErrorArray($params[1]))
 			);
 
 			$params = array_merge(
@@ -178,7 +178,7 @@ class fValidationException extends fExpectedException
 				$new_errors[] = sprintf(
 					"<span>%1\$s</span>\n<ul>\n<li>%2\$s</li>\n</ul>",
 					$error['name'],
-					join("</li>\n<li>", $this->formatErrorArray($error['errors']))
+					implode("</li>\n<li>", $this->formatErrorArray($error['errors']))
 				);
 			}
 		}
