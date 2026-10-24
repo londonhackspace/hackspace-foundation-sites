@@ -67,7 +67,7 @@ while (true) {
 			</div>
 	  		<div class="calendar-einfo">
 	  			<h3><?php echo $dateStart->format('l') ?>
-	  				<?if ($dateStart->format('d-m-Y') == date('d-m-Y')) {?>
+	  				<?php if ($dateStart->format('d-m-Y') == date('d-m-Y')) {?>
 	  					<span class="label label-plain">Today</span>
 	  				<?}?>
 	  			</h3>
@@ -80,7 +80,7 @@ while (true) {
 			</div>
 	  		<div class="calendar-einfo">
 		  		<h4>
-		  		<?if ($event->getRecurringEventId()) {?>
+		  		<?php if ($event->getRecurringEventId()) {?>
 		  		<span class="label label-<?php echo $repeatStyle ?>"><?php echo $repeatTag ?></span>
 		  		<?}
         if (isset($url[0]) && isset($url[0][0])) {?>
@@ -145,7 +145,7 @@ while (true) {
 </div>
 </div>
 
-<?require '../footer.php';?>
+<?php require '../footer.php';?>
 <script type="text/javascript">
 $(document).ready(function() {
 	$('.calendar-datepicker td[data-date]').bind('click touchend', function(e) {

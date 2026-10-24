@@ -218,7 +218,7 @@ if (isset($_GET['saved'])) {
 				        <?php } ?>
 				        <ul class="dropdown-menu pull-right">
 				            <?php $lastType = null; foreach($all_aliases as $alias) {?>
-			            	<?if($lastType != null && ($lastType != $alias->getType())) { ?>
+			            	<?php if($lastType != null && ($lastType != $alias->getType())) { ?>
 			            	<li class="divider"></li>
 			            	<?php } ?>
 							<li><span class="member-social-icon iconlhs-<?=substr(strtolower(preg_replace("/[^0-9a-zA-Z]/","",$alias->getId())),0,14);?>" title="<?=$alias->getId()?>"></span><?=$alias->getId()?></li>
@@ -235,7 +235,7 @@ if (isset($_GET['saved'])) {
 				        <button type="button" class="btn btn-default dropdown-toggle no-icon" data-toggle="dropdown">Find me on <span class="caret"></span></button>
 				        <ul class="dropdown-menu pull-right">
 				            <?php $lastType = null; foreach($all_aliases as $alias) {?>
-			            	<?if($lastType != null && ($lastType != $alias->getType())) { ?>
+			            	<?php if($lastType != null && ($lastType != $alias->getType())) { ?>
 			            	<li class="divider"></li>
 			            	<?php } ?>
 							<li><span class="member-social-icon iconlhs-<?=substr(strtolower(preg_replace("/[^0-9a-zA-Z]/","",$alias->getId())),0,14);?>" title="<?=$alias->getId()?>"></span><?=$alias->getId()?></li>

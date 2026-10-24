@@ -103,17 +103,19 @@ if (($user->isMember() && $this_user->isMember()) || $user->isAdmin()) {
         </tr>
       </thead>
       <tbody>
-        <?php foreach ($this_user->buildCards() as $card): ?>
+        <?php foreach ($this_user->buildCards() as $card) { ?>
           <tr class="<?= $card->getActive() ? 'allowed' : 'blocked' ?>">
             <td><?= $card->getAddedDate() ?></td>
             <td><?= implode(':', str_split($card->getUid(), 2)) ?></td>
-            <?php if ($card->getActive()): ?>
+            <?php if ($card->getActive()) { ?>
               <td class="rfidcard  rfidcard-active">Active</td>
-            <?php else: ?>
+            <?php } else { ?>
               <td class="rfidcard rfidcard-blocked">Blocked</td>
-            <?php endif; ?>
+            <?php } ?>
           </tr>
-        <?php endforeach ?>
+        <?php 
+        }
+         ?>
       </tbody>
     </table>
   <?php } ?>

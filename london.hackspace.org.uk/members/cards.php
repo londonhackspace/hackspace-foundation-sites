@@ -72,28 +72,31 @@ if (isset($_POST['update_details'])) {
         </tr>
         </thead>
         <tbody>
-        <?foreach ($user->buildCards() as $card): ?>
+        <?php foreach ($user->buildCards() as $card) {
+            ?>
         <tr class="<?php echo $card->getActive() ? 'allowed' : 'blocked' ?>">
             <td><?php echo $card->getAddedDate() ?></td>
             <td><?php echo $card->getUid() ?></td>
             <td style="text-align: center">
-                <?if ($card->getActive()): ?>
+                <?php if ($card->getActive()) { ?>
                 <input class="btn btn-default" type="submit" name="disable_<?php echo $card->getUid() ?>" value="Block" title="This card is currently allowed. Click to block it." />
-                <?else: ?>
+                <?php } else { ?>
                 <input class="btn btn-default" type="submit" name="enable_<?php echo $card->getUid() ?>" value="Allow" title="This card is currently blocked. Click to allow it." />
-                <?endif;?>
+                <?php } ; ?>
             </td>
             <td style="text-align: center">
-                <input class="btn btn-default" type="submit" name="delete_<?php echo $card->getUid() ?>" value="Delete" title="Click to delete this card." <?if ($card->getActive()) {?>disabled<?}?> />
+                <input class="btn btn-default" type="submit" name="delete_<?php echo $card->getUid() ?>" value="Delete" title="Click to delete this card." <?php if ($card->getActive()) {?>disabled<?}?> />
             </td>
         </tr>
-        <?endforeach?>
+        <?php
+        }
+        ?>
         </tbody>
     </table>
 </form>
 <br/>
 
-<?if (isset($_GET['saved'])) {
+<?php if (isset($_GET['saved'])) {
     echo "<div class=\"alert alert-success\"><p>Details saved.</p></div>";
 }?>
 

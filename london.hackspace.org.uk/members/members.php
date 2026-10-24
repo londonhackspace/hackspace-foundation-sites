@@ -57,7 +57,7 @@ $include_unsubscribed = ($user->isAdmin() && isset($_GET['unsubscribed']) && $_G
         <?php
         $subscription_query = ($include_unsubscribed) ? '' : 'WHERE subscribed = true';
         $users = $db->translatedQuery( 'SELECT id, subscribed, full_name, email, nickname, has_profile, disabled_profile FROM users '.$subscription_query.' ORDER BY lower(full_name)');
-        foreach( $users as $row ):
+        foreach( $users as $row ) {
         ?>
             <tr>
                 <td class="member-id"><?= $row['id'] ?></td>
@@ -87,7 +87,7 @@ $include_unsubscribed = ($user->isAdmin() && isset($_GET['unsubscribed']) && $_G
 		            <td><?= htmlspecialchars( $row['nickname'] ) ?></td>
 				<?php } ?>
             </tr>
-        <?php endforeach; ?>
+        <?php } ?>
         </tbody>
    </table>
    <br/>

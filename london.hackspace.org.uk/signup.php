@@ -162,6 +162,6 @@ you provide your real name and address in order to join. Your name will be visib
         </div>
     </div>
 </form>
-<?require 'footer.php';?>
+<?php require 'footer.php';?>
 </body>
 </html>

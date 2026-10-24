@@ -75,7 +75,7 @@ if (isset($_POST['submit'])) {
 new QRCode(document.getElementById("qrcode"), "https://london.hackspace.org.uk/members/addcard.php?uid=<?=$_GET['cardid'] ?>");
 </script>
 
-    <?require('./footer.php')?>
+    <?php require('./footer.php')?>
 <script type="text/javascript">
     $(function() {
         $('#email').focus();

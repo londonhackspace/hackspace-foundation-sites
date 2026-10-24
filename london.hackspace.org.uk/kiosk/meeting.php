@@ -55,6 +55,6 @@ if (isset($_POST['attendance_card'])) {
 
 <p><strong>Swipe your card below to register your attendance.</strong></p>
 
-<?require('./footer.php')?>
+<?php require('./footer.php')?>
 </body>
 </html>

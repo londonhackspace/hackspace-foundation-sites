@@ -83,7 +83,7 @@ if($user->isMember()) {
     }
 ?>
     <p>As a member of London Hackspace you are entitled to administrator rights on <a href="http://wiki.london.hackspace.org.uk">our wiki</a>.</p>
-    <?php if( count( $accounts ) > 0 ): ?>
+    <?php if( count( $accounts ) > 0 ) { ?>
         <p>These wiki accounts have the same confirmed e-mail address as your membership account:</p>
         <table>
             <thead>
@@ -94,7 +94,7 @@ if($user->isMember()) {
                 </tr>
             </thead>
             <tbody>
-                <?php foreach( $accounts as $id => $details ): ?>
+                <?php foreach( $accounts as $id => $details ) { ?>
                     <tr>
                         <td><?php echo $details['username'] ?></td>
                         <td><?php echo $details['linked'] ? 'Yes' : 'No' ?></td>
@@ -106,10 +106,10 @@ if($user->isMember()) {
                             </form>
                         </td>
                     </tr>
-                <?php endforeach; ?>
+                <?php } ?>
             </tbody>
         </table>
-    <?php else: ?>
+    <?php } else { ?>
         <p>No account currently exists on the wiki with the same confirmed e-mail address as your London Hackspace account.  If you already have an account on the wiki you should set or update your e-mail address there, otherwise use the form below to create a wiki account now.</p>
         <hr />
         <?php if( isset( $error ) ) echo $error; ?>
@@ -134,7 +134,7 @@ if($user->isMember()) {
             </table>
         </form>
         <br />
-    <?php endif; ?>
+    <?php } ?>
     <p><a href="index.php">Return to membership home</a></p>
 <?php } else { ?>
     <p>You must be a member to use this page.</p>

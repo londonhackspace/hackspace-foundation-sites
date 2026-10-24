@@ -91,7 +91,7 @@ if (isset($_POST['submit']) && ($user->getId() != $project->getUserId() || $user
 <?php } ?>
 <h2>Storage Request</h2>
 <h3><?=htmlspecialchars($project->getName()); ?>
-	<div class="status <?= strtolower($project->getState()); ?>"><?= $project->getState(); ?> <?if($project->getState() == 'Extended') { ?>(<?=$project->getExtensionDuration()?> days)<?php } ?></div>
+	<div class="status <?= strtolower($project->getState()); ?>"><?= $project->getState(); ?> <?php if($project->getState() == 'Extended') { ?>(<?=$project->getExtensionDuration()?> days)<?php } ?></div>
 <p><small>
 	By <a href="/members/member.php?id=<?=$project->getUserId()?>"><?=htmlspecialchars($projectUser->getFullName())?></a> (incase of emergency contact <?php if($project->getContact()) { ?><a href="mailto:<?=$project->getContact()?>"><span class="glyphicon glyphicon-envelope" style="margin-left:5px;margin-right:4px;" aria-hidden="true"></span><?=$project->getContact()?></a><?php } else { ?><a href="mailto:<?=$projectUser->getEmail()?>"><span class="glyphicon glyphicon-envelope" style="margin-left:5px;margin-right:4px;" aria-hidden="true"></span><?=$projectUser->getEmail()?></a><?php } ?>)<br/>
 	<?=$project->outputDates(); ?><br/>
@@ -111,7 +111,7 @@ if (isset($_POST['submit']) && ($user->getId() != $project->getUserId() || $user
 	<a target="_blank" href="/storage/print/<?=$project->getId()?>" class="btn btn-default">Print DO NOT HACK label</a><br/>
 <?php } ?>
 <br/>
-	<?if($project->hasExtension()) { ?><strong>Extended for <?=$project->getExtensionDuration()?> days</strong><br/><br/><?php } ?>
+	<?php if($project->hasExtension()) { ?><strong>Extended for <?=$project->getExtensionDuration()?> days</strong><br/><br/><?php } ?>
 <p><?=nl2br(htmlspecialchars($project->getDescription())); ?></p>
 <br/>
 <hr/>

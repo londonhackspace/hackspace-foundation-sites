@@ -75,7 +75,7 @@ if (isset($_POST['print']) && $user->isMember()) {
 </form>
 <?php } ?>
 
-<?require('./footer.php')?>
+<?php require('./footer.php')?>
 </body>
 </html>
  

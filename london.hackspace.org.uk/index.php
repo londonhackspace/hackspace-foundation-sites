@@ -107,7 +107,7 @@ require 'header.php';?>
         <section>
             <h3 class="collapsed" data-toggle="collapse" data-target="#flickr-badge-container">Photo stream</h3>
             <div id="flickr-badge-container" class="collapse">
-              <?include 'flickr.html'?>
+              <?php include 'flickr.html'?>
               <p><a href="http://www.flickr.com/groups/londonhackspace/pool">View more on Flickr&hellip;</a></p>
             </div>
         </section>
@@ -125,7 +125,7 @@ require 'header.php';?>
 </div><!-- end of home-page-container -->
 
 
-<?require 'footer.php';?>
+<?php require 'footer.php';?>
 <script type="text/javascript">
 // homepage cleanup events for touch devices and prevent collapseable sections for wide screens
 if($('#home-page-container').length > 0) {

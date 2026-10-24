@@ -21,7 +21,7 @@ $projects = fRecordSet::build('Project',array('state_id!='=>array('6','7')), arr
             echo "<h3>".$location->getName()."</h3>";
         }
         ?>
-        <div class="status list small <?= strtolower($project->getState()); ?>"><?= $project->getState(); ?> <?if($project->getState() == 'Extended') { ?>(<?=$project->getExtensionDuration()?> days)<?php } ?></div>
+        <div class="status list small <?= strtolower($project->getState()); ?>"><?= $project->getState(); ?> <?php if($project->getState() == 'Extended') { ?>(<?=$project->getExtensionDuration()?> days)<?php } ?></div>
         <a href="/storage/<?=$project->getId()?>"><?=htmlspecialchars($project->getName())?></a><br/>
         <?php
     }

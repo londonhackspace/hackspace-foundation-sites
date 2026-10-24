@@ -1,14 +1,14 @@
 <?php require_once('header-minimal.php'); ?>
     <div id="login-logout-container">
         <div class="btn-group">
-        <?if ($user) { ?>
+        <?php if ($user) { ?>
           <a class="btn btn-default dropdown-toggle" data-toggle="dropdown" href="/members/">
             <?= htmlspecialchars($user->getFullName()) ?> <span class="caret"></span>
           </a>
           <ul class="dropdown-menu pull-right" role="menu">
             <?=menulink('/members/', 'members', 'Membership Status')?>
             <li class="divider"></li>
-            <?if (isset($user) && $user->isMember()) {?>
+            <?php if (isset($user) && $user->isMember()) {?>
                 <?=menulink('/members/code.php', 'code', 'Car Park Code')?>
                 <?=menulink('/members/cards.php', 'cards', 'Manage Access Cards')?>
             <?php } ?>

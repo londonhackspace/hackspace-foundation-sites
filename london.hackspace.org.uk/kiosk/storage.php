@@ -71,6 +71,6 @@ $projects = fRecordSet::build('Project', array('state_id!='=>array('6','7'), 'us
 
 <?php } ?>
 
-<?require('./footer.php')?>
+<?php require('./footer.php')?>
 </body>
 </html>

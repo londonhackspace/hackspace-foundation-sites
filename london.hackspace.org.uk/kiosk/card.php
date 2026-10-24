@@ -71,6 +71,6 @@ if ($user->isMember()) {
 </div>
 <?php } ?>
 
-<?require('./footer.php')?>
+<?php require('./footer.php')?>
 </body>
 </html>

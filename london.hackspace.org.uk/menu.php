@@ -12,7 +12,7 @@
             <?=menulink('/events/', 'events', 'Events');?>
             <?=menulink('/organisation/', 'organisation', 'Organisation');?>
             <?=menulink('/donate.php', 'donate', 'Donate')?>
-            <?if (isset($user) && $user->isMember()) {?>
+            <?php if (isset($user) && $user->isMember()) {?>
                 <?=menulink('/members/members.php', 'memberslist', 'Members List')?>
                 <!-- <?=menulink('/members/webcams.php', 'webcams', 'Webcams')?> -->
                 <?=menulink('/storage/list.php', 'storagelist', 'Storage Requests')?>
@@ -24,7 +24,7 @@
                         aria-expanded="false">Access <span class="caret"></span></a>
                     <ul class="dropdown-menu" role="menu">
                         <?=menulink('/members/cards.php', 'cards', 'Access Cards')?>
-                        <?if (isset($user) && $user->isMember()) {?>
+                        <?php if (isset($user) && $user->isMember()) {?>
                         <?=menulink('/members/code.php', 'code', 'Access and Lockup (including Codes)')?>
                         <?=menulink('/members/tools.php', 'tools', 'Tools')?>
                         <?=menulink('/members/ldap.php', 'LDAP', 'Edit LDAP Account')?>
