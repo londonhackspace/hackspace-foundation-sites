@@ -278,7 +278,7 @@ class fXML implements ArrayAccess
 		if ($this->__dom->namespaceURI && $this->__dom->prefix == '' && strpos($name, ':') === FALSE) {
 			$name = '__:' . $name;
 		}
-		return (boolean) $this->query($name . '[1]')->length;
+		return (bool) $this->query($name . '[1]')->length;
 	}
 
 
@@ -491,7 +491,7 @@ class fXML implements ArrayAccess
 	 */
 	public function offsetExists($offset)
 	{
-		return (boolean) $this->query('@' . $offset . '[1]')->length;
+		return (bool) $this->query('@' . $offset . '[1]')->length;
 	}
 
 

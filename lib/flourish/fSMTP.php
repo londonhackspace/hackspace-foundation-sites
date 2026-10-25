@@ -243,7 +243,7 @@ class fSMTP
 		if (!$this->find($response, '#^220[ -]#')) {
 			throw new fConnectivityException(
 				'Unknown SMTP welcome message, %1$s, from server %2$s on port %3$s',
-				join($this->line_ending, $response),
+				implode($this->line_ending, $response),
 				$this->host,
 				$this->port
 			);
@@ -278,7 +278,7 @@ class fSMTP
 			$this->max_size = $match[0][1];
 		}
 
-		$this->pipelining = (boolean) $this->find($response, '#^250[ -]PIPELINING$#');
+		$this->pipelining = (bool) $this->find($response, '#^250[ -]PIPELINING$#');
 
 		$auth_methods = array();
 		if ($match = $this->find($response, '#^250[ -]AUTH[ =](.*)$#')) {
@@ -338,7 +338,7 @@ class fSMTP
 				'qop=auth'
 			);
 
-			$response = $this->write(base64_encode(join(',', $response_params)), 2);
+			$response = $this->write(base64_encode(implode(',', $response_params)), 2);
 
 		} elseif (in_array('CRAM-MD5', $auth_methods)) {
 			$response = $this->write('AUTH CRAM-MD5', 1);
@@ -376,7 +376,7 @@ class fSMTP
 	 */
 	public function enableDebugging($flag)
 	{
-		$this->debug = (boolean) $flag;
+		$this->debug = (bool) $flag;
 	}
 
 
@@ -423,7 +423,7 @@ class fSMTP
 			450, 451, 452, 500, 501, 502, 503, 504, 521, 530, 550, 551, 552, 553
 		);
 
-		$regex  = '#^(' . join('|', $codes) . ')#';
+		$regex  = '#^(' . implode('|', $codes) . ')#';
 		$errors = array();
 		foreach ($response as $line) {
 			if (preg_match($regex, $line)) {
@@ -435,7 +435,7 @@ class fSMTP
 				"The following unexpected SMTP errors occurred for the server %1\$s on port %2\$s:\n%3\$s",
 				$this->host,
 				$this->port,
-				join("\n", $errors)
+				implode("\n", $errors)
 			);
 		}
 	}
@@ -463,8 +463,8 @@ class fSMTP
 				$response[] = $line;
 				if ($expect !== NULL) {
 					$result = NULL;
-					$matched_number = is_int($expect) && sizeof($response) == $expect;
-					$matched_regex  = is_string($expect) && preg_match($expect, $response[sizeof($response)-1]);
+					$matched_number = is_int($expect) && count($response) == $expect;
+					$matched_regex  = is_string($expect) && preg_match($expect, $response[count($response)-1]);
 					if ($matched_number || $matched_regex) {
 						break;
 					}
@@ -474,7 +474,7 @@ class fSMTP
 			}
 		}
 		if (fCore::getDebug($this->debug)) {
-			fCore::debug("Received:\n" . join($this->line_ending, $response), $this->debug);
+			fCore::debug("Received:\n" . implode($this->line_ending, $response), $this->debug);
 		}
 		$this->handleErrors($response);
 		return $response;

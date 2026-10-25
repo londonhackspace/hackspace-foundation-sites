@@ -390,7 +390,7 @@ class fSQLTranslation
 	 */
 	public function enableDebugging($flag)
 	{
-		$this->debug = (boolean) $flag;
+		$this->debug = (bool) $flag;
 	}
 
 
@@ -491,7 +491,7 @@ class fSQLTranslation
 					$to_fix[$table] = array_merge($to_fix[$table], $national_columns[$table]);
 
 				} elseif (preg_match('#\*#', $selection, $match)) {
-					foreach ($table_aliases as $alias => $table) {
+					foreach ($table_aliases as $table) {
 						if (empty($national_columns[$table])) {
 							continue;
 						}
@@ -541,7 +541,7 @@ class fSQLTranslation
 					// Unquote the identifiers
 					$column = str_replace('"', '', $column);
 
-					foreach ($table_aliases as $alias => $table) {
+					foreach ($table_aliases as $table) {
 						if (empty($national_columns[$table])) {
 							continue;
 						}
@@ -614,7 +614,7 @@ class fSQLTranslation
 			$replace = preg_replace(
 				'#\bselect\s+' . preg_quote($select_clause, '#') . '#i',
 				'SELECT ' . strtr(
-					join(', ', array_merge($selections, $additions)),
+					implode(', ', array_merge($selections, $additions)),
 					array('\\' => '\\\\', '$' => '\\$')
 				),
 				$select
@@ -733,7 +733,7 @@ class fSQLTranslation
 				);
 				$translated_sql = $new_sql;
 				if ($extra_statements) {
-					$translated_sql .= '; ' . join('; ', $extra_statements);
+					$translated_sql .= '; ' . implode('; ', $extra_statements);
 				}
 				fCore::debug(
 					self::compose(

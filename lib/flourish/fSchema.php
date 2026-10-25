@@ -510,7 +510,7 @@ class fSchema
 				} elseif (in_array($info['type'], array('char', 'varchar', 'text', 'timestamp', 'date', 'time')) ) {
 					$info['default'] = substr($row['default'], 1, -1);
 				} elseif ($info['type'] == 'boolean') {
-					$info['default'] = (boolean) substr($row['default'], 1, -1);
+					$info['default'] = (bool) substr($row['default'], 1, -1);
 				} else {
 					$info['default'] = $row['default'];
 				}
@@ -583,7 +583,7 @@ class fSchema
 			$params[] = $schema;
 			$params[] = $table;
 		}
-		$sql .= '((' . join(') OR( ', $conditions) . '))';
+		$sql .= '((' . implode(') OR( ', $conditions) . '))';
 
 		$sql .= "
 				) UNION (
@@ -616,7 +616,7 @@ class fSchema
 			$params[] = $schema;
 			$params[] = $table;
 		}
-		$sql .= '((' . join(') OR( ', $conditions) . '))';
+		$sql .= '((' . implode(') OR( ', $conditions) . '))';
 
 		$sql .= "
 				 )
@@ -896,7 +896,7 @@ class fSchema
 				} elseif (in_array($info['type'], array('char', 'varchar', 'text', 'timestamp')) ) {
 					$info['default'] = substr($row['default'], 2, -2);
 				} elseif ($info['type'] == 'boolean') {
-					$info['default'] = (boolean) substr($row['default'], 2, -2);
+					$info['default'] = (bool) substr($row['default'], 2, -2);
 				} elseif (in_array($info['type'], array('integer', 'float')) ) {
 					$info['default'] = str_replace(array('(', ')'), '', $row['default']);
 				} else {
@@ -1164,7 +1164,7 @@ class fSchema
 			// with a max length of all valid values concatenated by ,s
 			if (stripos($match[2], 'set') === 0) {
 				$values = preg_replace("/^'|'\$/D", '', explode(",", $match[3]));
-				$match[3] = strlen(join(',', $values));
+				$match[3] = strlen(implode(',', $values));
 			}
 
 			// Type specific information
@@ -1193,7 +1193,7 @@ class fSchema
 			}
 
 			if ($info['type'] == 'boolean' && isset($info['default'])) {
-				$info['default'] = (boolean) $info['default'];
+				$info['default'] = (bool) $info['default'];
 			}
 
 			// Auto increment fields
@@ -1452,7 +1452,7 @@ class fSchema
 						$info['default'] = str_replace("''", "'", substr(trim($row['data_default']), 1, -1));
 
 					} elseif ($info['type'] == 'boolean') {
-						$info['default'] = (boolean) trim($row['data_default']);
+						$info['default'] = (bool) trim($row['data_default']);
 
 					} elseif (in_array($info['type'], array('integer', 'float'))) {
 						$info['default'] = trim($row['data_default']);
@@ -1546,7 +1546,7 @@ class fSchema
 			$params[] = $schema;
 			$params[] = $table;
 		}
-		$sql .= '((' . join(') OR( ', $conditions) . '))';
+		$sql .= '((' . implode(') OR( ', $conditions) . '))';
 
 		$sql .= " ORDER BY
 						 AC.OWNER ASC,
@@ -2325,14 +2325,14 @@ class fSchema
 	 *     (string) {column name} => array(
 	 *         'type'           => (string)  {data type},
 	 *         'placeholder'    => (string)  {fDatabase::escape() placeholder for this data type},
-	 *         'not_null'       => (boolean) {if value can't be null},
+	 *         'not_null'       => (bool) {if value can't be null},
 	 *         'default'        => (mixed)   {the default value},
 	 *         'valid_values'   => (array)   {the valid values for a varchar field},
 	 *         'max_length'     => (integer) {the maximum length in a varchar field},
 	 *         'min_value'      => (numeric) {the minimum value for an integer/float field},
 	 *         'max_value'      => (numeric) {the maximum value for an integer/float field},
 	 *         'decimal_places' => (integer) {the number of decimal places for a decimal/numeric/money/smallmoney field},
-	 *         'auto_increment' => (boolean) {if the integer primary key column is a serial/autoincrement/auto_increment/indentity column},
+	 *         'auto_increment' => (bool) {if the integer primary key column is a serial/autoincrement/auto_increment/indentity column},
 	 *         'comment'        => (string)  {the SQL comment/description for the column}
 	 *     ), ...
 	 * )
@@ -2344,14 +2344,14 @@ class fSchema
 	 * array(
 	 *     'type'           => (string)  {data type},
 	 *     'placeholder'    => (string)  {fDatabase::escape() placeholder for this data type},
-	 *     'not_null'       => (boolean) {if value can't be null},
+	 *     'not_null'       => (bool) {if value can't be null},
 	 *     'default'        => (mixed)   {the default value-may contain special strings CURRENT_TIMESTAMP, CURRENT_TIME or CURRENT_DATE},
 	 *     'valid_values'   => (array)   {the valid values for a varchar field},
 	 *     'max_length'     => (integer) {the maximum length in a char/varchar field},
 	 *     'min_value'      => (fNumber) {the minimum value for an integer/float field},
 	 *     'max_value'      => (fNumber) {the maximum value for an integer/float field},
 	 *     'decimal_places' => (integer) {the number of decimal places for a decimal/numeric/money/smallmoney field},
-	 *     'auto_increment' => (boolean) {if the integer primary key column is a serial/autoincrement/auto_increment/indentity column},
+	 *     'auto_increment' => (bool) {if the integer primary key column is a serial/autoincrement/auto_increment/indentity column},
 	 *     'comment'        => (string)  {the SQL comment/description for the column}
 	 * )
 	 * }}}
@@ -2433,7 +2433,7 @@ class fSchema
 					throw new fProgrammerException(
 						'The element specified, %1$s, is invalid. Must be one of: %2$s.',
 						$element,
-						join(', ', array('type', 'placeholder', 'not_null', 'default', 'valid_values', 'max_length', 'min_value', 'max_value', 'decimal_places', 'auto_increment'))
+						implode(', ', array('type', 'placeholder', 'not_null', 'default', 'valid_values', 'max_length', 'min_value', 'max_value', 'decimal_places', 'auto_increment'))
 					);
 				}
 				return $this->merged_column_info[$table][$column][$element];
@@ -2568,7 +2568,7 @@ class fSchema
 			throw new fProgrammerException(
 				'The key type specified, %1$s, is invalid. Must be one of: %2$s.',
 				$key_type,
-				join(', ', $valid_key_types)
+				implode(', ', $valid_key_types)
 			);
 		}
 
@@ -2667,7 +2667,7 @@ class fSchema
 			throw new fProgrammerException(
 				'The relationship type specified, %1$s, is invalid. Must be one of: %2$s.',
 				$relationship_type,
-				join(', ', $valid_relationship_types)
+				implode(', ', $valid_relationship_types)
 			);
 		}
 
@@ -2867,14 +2867,14 @@ class fSchema
 	{
 		$primary_key_columns = $this->merged_keys[$table]['primary'];
 
-		if (sizeof($primary_key_columns) != 2) {
+		if (count($primary_key_columns) != 2) {
 			return FALSE;
 		}
 
 		if (empty($this->merged_column_info[$table])) {
 			$this->getColumnInfo($table);
 		}
-		if (sizeof($this->merged_column_info[$table]) != 2) {
+		if (count($this->merged_column_info[$table]) != 2) {
 			return FALSE;
 		}
 
@@ -2883,7 +2883,7 @@ class fSchema
 			$foreign_key_columns[] = $key['column'];
 		}
 
-		return sizeof($foreign_key_columns) == 2 && !array_diff($foreign_key_columns, $primary_key_columns);
+		return count($foreign_key_columns) == 2 && !array_diff($foreign_key_columns, $primary_key_columns);
 	}
 
 
@@ -3114,7 +3114,7 @@ class fSchema
 			throw new fProgrammerException(
 				'The key type specified, %1$s, is invalid. Must be one of: %2$s.',
 				$key_type,
-				join(', ', $valid_key_types)
+				implode(', ', $valid_key_types)
 			);
 		}
 

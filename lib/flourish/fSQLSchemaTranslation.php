@@ -802,7 +802,7 @@ class fSQLSchemaTranslation
 		foreach ($column_info as $row) {
 			$output['columns'][]     = $row['column_name'];
 			$output['name']          = $row['constraint_name'];
-			$output['autoincrement'] = (boolean) $row['auto_increment'];
+			$output['autoincrement'] = (bool) $row['auto_increment'];
 		}
 
 		return $output;
@@ -1929,7 +1929,7 @@ class fSQLSchemaTranslation
 				) . $check_constraint['definition'] . ')';
 			}
 
-			foreach ($unique_constraints as $name => $columns) {
+			foreach ($unique_constraints as $columns) {
 				$key = array_search($data['column_name'], $columns);
 				$columns[$key] = $data['new_column_name'];
 				$extra_statements[] = $this->database->escape(
@@ -2116,7 +2116,7 @@ class fSQLSchemaTranslation
 				$data['table_without_schema']
 			);
 			if (count($primary_key_columns) == 1) {
-				$is_identity = (boolean) $this->database->query(
+				$is_identity = (bool) $this->database->query(
 					"SELECT
 						CASE WHEN C.IDENTITY = 'Y' AND (C.GENERATED = 'D' OR C.GENERATED = 'A') THEN '1' ELSE '0' END AS AUTO_INCREMENT
 					FROM
@@ -2249,7 +2249,7 @@ class fSQLSchemaTranslation
 				if (count($data['column_names']) > 1) {
 					$message = self::compose(
 						'The columns "%1$s" in the table "%2$s" do not have a unique constraint',
-						join('", "', $data['column_names']),
+						implode('", "', $data['column_names']),
 						$data['table']
 					);
 				} else {
@@ -2627,7 +2627,7 @@ class fSQLSchemaTranslation
 				) . $check_constraint['definition'];
 			}
 
-			foreach ($unique_constraints as $constraint_name => $columns) {
+			foreach ($unique_constraints as $columns) {
 				$extra_statements[] = $this->database->escape(
 					"ALTER TABLE %r ADD UNIQUE (%r)",
 					$data['table'],
@@ -2840,7 +2840,7 @@ class fSQLSchemaTranslation
 					'EXEC sp_rename "' . $data['table'] . '.fl_tmp_identity_col", %r',
 					$primary_key_column
 				);
-				foreach ($unique_constraints as $constraint_name => $columns) {
+				foreach ($unique_constraints as $columns) {
 					$extra_statements[] = $this->database->escape(
 						"ALTER TABLE %r ADD UNIQUE (%r)",
 						$data['table'],
@@ -2883,7 +2883,7 @@ class fSQLSchemaTranslation
 					$data['table'],
 					$data['column_name']
 				);
-				foreach ($unique_constraints as $constraint_name => $columns) {
+				foreach ($unique_constraints as $columns) {
 					$extra_statements[] = $this->database->escape(
 						"ALTER TABLE %r ADD UNIQUE (%r)",
 						$data['table'],
@@ -2970,7 +2970,7 @@ class fSQLSchemaTranslation
 				if (count($data['column_names']) > 1) {
 					$message = self::compose(
 						'The columns "%1$s" in the table "%2$s" do not have a unique constraint',
-						join('", "', $data['column_names']),
+						implode('", "', $data['column_names']),
 						$data['table']
 					);
 				} else {
@@ -3072,7 +3072,7 @@ class fSQLSchemaTranslation
 
 		if ($data['type'] == 'column_comment') {
 			$column_match[6] = ' COMMENT ' . $data['comment'];
-			$column_def      = join('', array_slice($column_match, 1));
+			$column_def      = implode('', array_slice($column_match, 1));
 			$sql = $this->database->escape(
 				"ALTER TABLE %r MODIFY %r ",
 				$data['table'],
@@ -3080,7 +3080,7 @@ class fSQLSchemaTranslation
 			) . $column_def;
 
 		} elseif ($data['type'] == 'rename_column') {
-			$column_def = join('', array_slice($column_match, 1));
+			$column_def = implode('', array_slice($column_match, 1));
 			$sql = $this->database->escape(
 				"ALTER TABLE %r CHANGE %r %r ",
 				$data['table'],
@@ -3161,7 +3161,7 @@ class fSQLSchemaTranslation
 				$column_match[1]   = ' ' . $data['data_type'];
 			}
 
-			$column_def        = join('', array_slice($column_match, 1));
+			$column_def        = implode('', array_slice($column_match, 1));
 			$sql = $this->database->escape(
 				"ALTER TABLE %r MODIFY %r ",
 				$data['table'],
@@ -3184,7 +3184,7 @@ class fSQLSchemaTranslation
 			} elseif (preg_match('#^\s*DEFAULT\s+NULL\s*$#i', $column_match[4])) {
 				$column_match[4] = '';
 			}
-			$column_def = join('', array_slice($column_match, 1));
+			$column_def = implode('', array_slice($column_match, 1));
 			$sql = $this->database->escape(
 				"ALTER TABLE %r MODIFY %r ",
 				$data['table'],
@@ -3194,7 +3194,7 @@ class fSQLSchemaTranslation
 		} elseif ($data['type'] == 'drop_not_null') {
 			$column_match[2] = '';
 			$column_match[3] = '';
-			$column_def = join('', array_slice($column_match, 1));
+			$column_def = implode('', array_slice($column_match, 1));
 			$sql = $this->database->escape(
 				"ALTER TABLE %r MODIFY %r ",
 				$data['table'],
@@ -3208,7 +3208,7 @@ class fSQLSchemaTranslation
 
 			$column_match[1] = ' ENUM' . $valid_values;
 
-			$column_def = join('', array_slice($column_match, 1));
+			$column_def = implode('', array_slice($column_match, 1));
 			$sql = $this->database->escape(
 				"ALTER TABLE %r MODIFY %r ",
 				$data['table'],
@@ -3235,7 +3235,7 @@ class fSQLSchemaTranslation
 
 			$column_match[1] = ' VARCHAR(' . $longest . ')';
 
-			$column_def = join('', array_slice($column_match, 1));
+			$column_def = implode('', array_slice($column_match, 1));
 			$sql = $this->database->escape(
 				"ALTER TABLE %r MODIFY %r ",
 				$data['table'],
@@ -3250,7 +3250,7 @@ class fSQLSchemaTranslation
 				if (!empty($column_match[5])) {
 					$column_match[5] = '';
 				}
-				$column_def = join('', array_slice($column_match, 1));
+				$column_def = implode('', array_slice($column_match, 1));
 				$before_statements[] = $this->database->escape(
 					"ALTER TABLE %r MODIFY %r ",
 					$data['table'],
@@ -3264,7 +3264,7 @@ class fSQLSchemaTranslation
 				$sql = preg_replace('#\s+autoincrement#i', '', $sql);
 
 				$column_match[5] = ' AUTO_INCREMENT';
-				$column_def = join('', array_slice($column_match, 1));
+				$column_def = implode('', array_slice($column_match, 1));
 				$after_statements[] = $this->database->escape(
 					"ALTER TABLE %r MODIFY %r " . $column_def,
 					$data['table'],
@@ -3352,7 +3352,7 @@ class fSQLSchemaTranslation
 				if (count($data['column_names']) > 1) {
 					$message = self::compose(
 						'The columns "%1$s" in the table "%2$s" do not have a unique constraint',
-						join('", "', $data['column_names']),
+						implode('", "', $data['column_names']),
 						$data['table']
 					);
 				} else {
@@ -4043,7 +4043,7 @@ class fSQLSchemaTranslation
 				if (count($data['column_names']) > 1) {
 					$message = self::compose(
 						'The columns "%1$s" in the table "%2$s" do not have a unique constraint',
-						join('", "', $data['column_names']),
+						implode('", "', $data['column_names']),
 						$data['table']
 					);
 				} else {
@@ -4408,7 +4408,7 @@ class fSQLSchemaTranslation
 				if (count($data['column_names']) > 1) {
 					$message = self::compose(
 						'The columns "%1$s" in the table "%2$s" do not have a unique constraint',
-						join('", "', $data['column_names']),
+						implode('", "', $data['column_names']),
 						$data['table']
 					);
 				} else {
@@ -4608,7 +4608,7 @@ class fSQLSchemaTranslation
 
 				$temp_create_table_sql = str_replace(
 					$info['definition'],
-					join('', $info['pieces']),
+					implode('', $info['pieces']),
 					$temp_create_table_sql
 				);
 			}
@@ -5017,7 +5017,7 @@ class fSQLSchemaTranslation
 			if (count($data['column_names']) > 1) {
 				$message = self::compose(
 					'The columns "%1$s" in the table "%2$s" do not have a unique constraint',
-					join('", "', $data['column_names']),
+					implode('", "', $data['column_names']),
 					$data['table']
 				);
 			} else {
