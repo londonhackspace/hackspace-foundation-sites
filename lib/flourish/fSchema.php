@@ -2812,6 +2812,8 @@ class fSchema
 						ORDER BY
 							name ASC";
 				break;
+			default:
+				throw new fProgrammerException('Unsupported database type');
 		}
 
 		$result = $this->database->query($sql);
