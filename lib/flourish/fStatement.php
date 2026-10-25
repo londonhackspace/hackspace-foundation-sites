@@ -117,7 +117,7 @@ class fStatement
 
 			case 'oci8':
 				$named_placeholders = array();
-				for ($i = 1; $i <= sizeof($placeholders); $i++) {
+				for ($i = 1; $i <= count($placeholders); $i++) {
 					$named_placeholders[] = ':p' . $i;
 				}
 				$query = vsprintf($query, $named_placeholders);
@@ -128,15 +128,15 @@ class fStatement
 			case 'pdo':
 			case 'sqlsrv':
 				$question_marks = array();
-				if (sizeof($placeholders)) {
-					$question_marks = array_fill(0, sizeof($placeholders), '?');
+				if (count($placeholders)) {
+					$question_marks = array_fill(0, count($placeholders), '?');
 				}
 				$query = vsprintf($query, $question_marks);
 				break;
 
 			case 'pgsql':
 				$dollar_placeholders = array();
-				for ($i = 1; $i <= sizeof($placeholders); $i++) {
+				for ($i = 1; $i <= count($placeholders); $i++) {
 					$dollar_placeholders[] = '$' . $i;
 				}
 				$query = vsprintf($query, $dollar_placeholders);
@@ -181,7 +181,7 @@ class fStatement
 
 			case 'sqlsrv':
 				$params = array();
-				for ($i = 0; $i < sizeof($placeholders); $i++) {
+				for ($i = 0; $i < count($placeholders); $i++) {
 					if ($placeholders[$i] == '%s') {
 						$this->bound_params[$i] = array(
 							NULL,

@@ -504,7 +504,7 @@ class fDirectory
 
 		$objects = $this->scan();
 
-		for ($i=0; $i < sizeof($objects); $i++) {
+		for ($i=0; $i < count($objects); $i++) {
 			if ($objects[$i] instanceof fDirectory) {
 				array_splice($objects, $i+1, 0, $objects[$i]->scan());
 			}

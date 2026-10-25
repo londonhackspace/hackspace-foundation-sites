@@ -750,9 +750,9 @@ class fValidation
 				}
 			}
 			if (!$found) {
-				$messages[join(',', $fields)] = self::compose(
+				$messages[implode(',', $fields)] = self::compose(
 					'%sPlease enter a value for at least one',
-					fValidationException::formatField(join(', ', array_map($this->makeFieldName, $fields)))
+					fValidationException::formatField(implode(', ', array_map($this->makeFieldName, $fields)))
 				);
 			}
 		}
@@ -772,9 +772,9 @@ class fValidation
 			foreach ($fields as $field) {
 				if (self::hasValue($field)) {
 					if ($found) {
-						$messages[join(',', $fields)] = self::compose(
+						$messages[implode(',', $fields)] = self::compose(
 							'%sPlease enter a value for only one',
-							fValidationException::formatField(join(', ', array_map($this->makeFieldName, $fields)))
+							fValidationException::formatField(implode(', ', array_map($this->makeFieldName, $fields)))
 						);
 						continue 2;
 					}
@@ -782,9 +782,9 @@ class fValidation
 				}
 			}
 			if (!$found) {
-				$messages[join(',', $fields)] = self::compose(
+				$messages[implode(',', $fields)] = self::compose(
 					'%sPlease enter a value for one',
-					fValidationException::formatField(join(', ', array_map($this->makeFieldName, $fields)))
+					fValidationException::formatField(implode(', ', array_map($this->makeFieldName, $fields)))
 				);
 			}
 		}
@@ -871,7 +871,7 @@ class fValidation
 			}
 		}
 
-		return join($glue, $joined);
+		return implode($glue, $joined);
 	}
 
 	/**
@@ -920,7 +920,7 @@ class fValidation
 			return $messages;
 		}
 
-		$ordered_items = array_fill(0, sizeof($this->message_order), array());
+		$ordered_items = array_fill(0, count($this->message_order), array());
 		$other_items   = array();
 
 		foreach ($messages as $key => $message) {
@@ -980,7 +980,7 @@ class fValidation
 	public function setMessageOrder($match, $match_2=NULL)
 	{
 		$args = func_get_args();
-		if (sizeof($args) == 1 && is_array($args[0])) {
+		if (count($args) == 1 && is_array($args[0])) {
 			$args = $args[0];
 		}
 

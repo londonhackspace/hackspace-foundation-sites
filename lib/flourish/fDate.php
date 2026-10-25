@@ -175,7 +175,7 @@ class fDate
 			throw new fProgrammerException(
 				'The formatting string, %1$s, contains one of the following non-date formatting characters: %2$s',
 				$format,
-				join(', ', str_split($restricted_formats))
+				implode(', ', str_split($restricted_formats))
 			);
 		}
 

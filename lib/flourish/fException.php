@@ -43,7 +43,7 @@ abstract class fException extends Exception
 		$components = array_slice(func_get_args(), 1);
 
 		// Handles components passed as an array
-		if (sizeof($components) == 1 && is_array($components[0])) {
+		if (count($components) == 1 && is_array($components[0])) {
 			$components = $components[0];
 		}
 
@@ -126,7 +126,7 @@ abstract class fException extends Exception
 				}
 			}
 
-			return join("\n", $new_output);
+			return implode("\n", $new_output);
 
 		} else {
 			return (string) $data;
@@ -215,8 +215,8 @@ abstract class fException extends Exception
 
 		// Handle %s that weren't properly escaped
 		$formats    = $matches[1];
-		$delimeters = ($formats) ? array_fill(0, sizeof($formats), '#') : array();
-		$lookahead  = join(
+		$delimeters = ($formats) ? array_fill(0, count($formats), '#') : array();
+		$lookahead  = implode(
 			'|',
 			array_map(
 				'preg_quote',
@@ -229,14 +229,14 @@ abstract class fException extends Exception
 
 		// If we have an extra argument, it is the exception code
 		$code = NULL;
-		if ($required_args == sizeof($args) - 1) {
+		if ($required_args == count($args) - 1) {
 			$code = array_pop($args);
 		}
 
-		if (sizeof($args) != $required_args) {
+		if (count($args) != $required_args) {
 			$message = self::compose(
 				'%1$d components were passed to the %2$s constructor, while %3$d were specified in the message',
-				sizeof($args),
+				count($args),
 				get_class($this),
 				$required_args
 			);
@@ -289,7 +289,7 @@ abstract class fException extends Exception
 		$backtrace = array_diff($backtrace, array('{main}'));
 		$backtrace = array_reverse($backtrace);
 
-		return join("\n", $backtrace);
+		return implode("\n", $backtrace);
 	}
 
 
@@ -332,11 +332,11 @@ abstract class fException extends Exception
 		preg_match_all($reg_exp, $content, $html_matches, PREG_SET_ORDER);
 		$text_matches = preg_split($reg_exp, $content_with_newlines);
 
-		foreach($text_matches as $key => $value) {
+		foreach($text_matches as $value) {
 			$value = htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
 		}
 
-		for ($i = 0; $i < sizeof($html_matches); $i++) {
+		for ($i = 0; $i < count($html_matches); $i++) {
 			$text_matches[$i] .= $html_matches[$i][0];
 		}
 
@@ -400,7 +400,7 @@ abstract class fException extends Exception
 
 		preg_match_all('#<li(.*?)</li>#i', $list_contents, $list_items, PREG_SET_ORDER);
 
-		$ordered_items = array_fill(0, sizeof($matching_array), array());
+		$ordered_items = array_fill(0, count($matching_array), array());
 		$other_items   = array();
 
 		foreach ($list_items as $list_item) {
@@ -420,7 +420,7 @@ abstract class fException extends Exception
 		}
 		$final_list = array_merge($final_list, $other_items);
 
-		$this->message = $beginning . join("\n", $final_list) . $ending;
+		$this->message = $beginning . implode("\n", $final_list) . $ending;
 
 		return $this;
 	}
@@ -521,7 +521,7 @@ abstract class fException extends Exception
 		$matching_arrays = func_get_args();
 
 		if (!preg_match('#^(.*<(?:ul|ol)[^>]*?>)(.*?)(</(?:ul|ol)>.*)$#isD', $this->message, $matches)) {
-			return array_merge(array($this->message), array_fill(0, sizeof($matching_arrays)-1, ''));
+			return array_merge(array($this->message), array_fill(0, count($matching_arrays)-1, ''));
 		}
 
 		$beginning_html  = $matches[1];
@@ -538,7 +538,7 @@ abstract class fException extends Exception
 			uasort($matching_array, array('self', 'sortMatchingArray'));
 
 			// We may match more than one list item per matching string, so we need a multi-dimensional array to hold them
-			$matched_list_items = array_fill(0, sizeof($matching_array), array());
+			$matched_list_items = array_fill(0, count($matching_array), array());
 			$found              = FALSE;
 
 			foreach ($list_items as $list_item) {
@@ -558,11 +558,11 @@ abstract class fException extends Exception
 
 			// This merges all of the multi-dimensional arrays back to one so we can do a simple join
 			$merged_list_items = array();
-			foreach ($matched_list_items as $match_num => $matched_items) {
+			foreach ($matched_list_items as $matched_items) {
 				$merged_list_items = array_merge($merged_list_items, $matched_items);
 			}
 
-			$output[] = $beginning_html . join("\n", $merged_list_items) . $ending_html;
+			$output[] = $beginning_html . implode("\n", $merged_list_items) . $ending_html;
 		}
 
 		return $output;

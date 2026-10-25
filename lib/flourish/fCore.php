@@ -310,7 +310,7 @@ class fCore
 		}
 
 		$parameters = array_slice(func_get_args(), 1);
-		if (sizeof($parameters) == 1 && is_array($parameters[0])) {
+		if (count($parameters) == 1 && is_array($parameters[0])) {
 			$parameters = $parameters[0];
 		}
 
@@ -406,8 +406,8 @@ class fCore
 		if ($invalid_oses = array_diff($oses, $valid_oses)) {
 			throw new fProgrammerException(
 				'One or more of the OSes specified, %$1s, is invalid. Must be one of: %2$s.',
-				join(' ', $invalid_oses),
-				join(', ', $valid_oses)
+				implode(' ', $invalid_oses),
+				implode(', ', $valid_oses)
 			);
 		}
 
@@ -585,7 +585,7 @@ class fCore
 				}
 			}
 
-			return join("\n", $new_output);
+			return implode("\n", $new_output);
 
 		} else {
 			return (string) $data;
@@ -621,7 +621,7 @@ class fCore
 	 */
 	static public function enableDebugging($flag)
 	{
-		self::$debug = (boolean) $flag;
+		self::$debug = (bool) $flag;
 	}
 
 
@@ -1151,7 +1151,7 @@ class fCore
 		$messages = array();
 
 		if (self::$error_message_queue) {
-			$message = join("\n\n", self::$error_message_queue);
+			$message = implode("\n\n", self::$error_message_queue);
 			$messages[self::$error_destination] = $message;
 		}
 
@@ -1164,7 +1164,7 @@ class fCore
 			$messages[self::$exception_destination] .= self::$exception_message;
 		}
 
-		$hash = md5(join('', self::$significant_error_lines), TRUE);
+		$hash = md5(implode('', self::$significant_error_lines), TRUE);
 		$hash = strtr(base64_encode($hash), '/', '-');
 		$hash = substr(rtrim($hash, '='), 0, 8);
 

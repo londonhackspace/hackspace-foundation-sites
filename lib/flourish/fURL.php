@@ -250,7 +250,7 @@ class fURL
 		settype($parameter, 'array');
 		settype($value, 'array');
 
-		if (sizeof($parameter) != sizeof($value)) {
+		if (count($parameter) != count($value)) {
 			throw new fProgrammerException(
 				"There are a different number of parameters and values.\nParameters:\n%1\$s\nValues\n%2\$s",
 				$parameter,
@@ -258,7 +258,7 @@ class fURL
 			);
 		}
 
-		for ($i=0; $i<sizeof($parameter); $i++) {
+		for ($i=0; $i<count($parameter); $i++) {
 			$qs_array[$parameter[$i]] = $value[$i];
 		}
 

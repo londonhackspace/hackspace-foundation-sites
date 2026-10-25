@@ -51,7 +51,7 @@ class fText
 		$components = array_slice(func_get_args(), 1);
 
 		// Handles components passed as an array
-		if (sizeof($components) == 1 && is_array($components[0])) {
+		if (count($components) == 1 && is_array($components[0])) {
 			$components = $components[0];
 		}
 
@@ -93,7 +93,7 @@ class fText
 			throw new fProgrammerException(
 				'The timing specified, %1$s, is not a valid timing. Must be one of: %2$s.',
 				$timing,
-				join(', ', $valid_timings)
+				implode(', ', $valid_timings)
 			);
 		}
 

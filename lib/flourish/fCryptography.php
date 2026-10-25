@@ -277,7 +277,7 @@ class fCryptography
 		$elements = explode('#', $ciphertext);
 
 		// We need to make sure this ciphertext came from here, otherwise we are gonna have issues decrypting it
-		if (sizeof($elements) != 4 || $elements[0] != 'fCryptography::public') {
+		if (count($elements) != 4 || $elements[0] != 'fCryptography::public') {
 			throw new fProgrammerException(
 				'The ciphertext provided does not appear to have been encrypted using %s',
 				__CLASS__ . '::publicKeyEncrypt()'
@@ -526,7 +526,7 @@ class fCryptography
 
 		// If we could not use the OS random number generators we get some of the most unique info we can
 		if (!$bytes) {
-			$string = microtime(TRUE) . uniqid('', TRUE) . join('', stat(__FILE__)) . disk_free_space(dirname(__FILE__));
+			$string = microtime(TRUE) . uniqid('', TRUE) . implode('', stat(__FILE__)) . disk_free_space(dirname(__FILE__));
 			$bytes  = substr(pack('H*', md5($string)), 0, 4);
 		}
 
@@ -559,7 +559,7 @@ class fCryptography
 		$elements = explode('#', $ciphertext);
 
 		// We need to make sure this ciphertext came from here, otherwise we are gonna have issues decrypting it
-		if (sizeof($elements) != 4 || $elements[0] != 'fCryptography::symmetric') {
+		if (count($elements) != 4 || $elements[0] != 'fCryptography::symmetric') {
 			throw new fProgrammerException(
 				'The ciphertext provided does not appear to have been encrypted using %s',
 				__CLASS__ . '::symmetricKeyEncrypt()'

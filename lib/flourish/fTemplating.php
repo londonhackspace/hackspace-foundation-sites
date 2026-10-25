@@ -426,7 +426,7 @@ class fTemplating
 			throw new fProgrammerException(
 				'The mode specified, %1$s, is invalid. Must be one of: %2$s.',
 				$mode,
-				join(', ', $valid_modes)
+				implode(', ', $valid_modes)
 			);
 		}
 
@@ -476,7 +476,7 @@ class fTemplating
 			throw new fProgrammerException(
 				'The mode specified, %1$s, is invalid. Must be one of: %2$s.',
 				$mode,
-				join(', ', $valid_modes)
+				implode(', ', $valid_modes)
 			);
 		}
 
@@ -748,7 +748,7 @@ class fTemplating
 			}
 		}
 
-		$hash       = sha1(join('|', $paths));
+		$hash       = sha1(implode('|', $paths));
 		$cache_file = $this->minification_directory . $hash . '.' . $type;
 
 		$regenerate    = FALSE;
@@ -1145,7 +1145,7 @@ class fTemplating
 		$last_type     = NULL;
 		$last_location = NULL;
 		$last_media    = NULL;
-		foreach ($values as $i => $value) {
+		foreach ($values as $value) {
 			$type = $this->verifyValue($element, $value, $file_type);
 
 			$media    = is_array($value) && isset($value['media']) ? $value['media'] : NULL;

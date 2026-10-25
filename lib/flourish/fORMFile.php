@@ -300,7 +300,7 @@ class fORMFile
 				'The column specified, %1$s, is a %2$s column. Must be one of %3$s to be set as a file upload column.',
 				$column,
 				$data_type,
-				join(', ', $valid_data_types)
+				implode(', ', $valid_data_types)
 			);
 		}
 
@@ -588,7 +588,7 @@ class fORMFile
 	 */
 	static public function moveFromTemp($object, &$values, &$old_values, &$related_records, &$cache)
 	{
-		foreach ($values as $column => $value) {
+		foreach ($values as $value) {
 			if (!$value instanceof fFile) {
 				continue;
 			}
@@ -676,7 +676,7 @@ class fORMFile
 		list ($action, $subject) = fORM::parseMethod($method_name);
 		$column = fGrammar::underscorize($subject);
 
-		if (sizeof($parameters) > 1) {
+		if (count($parameters) > 1) {
 			throw new fProgrammerException(
 				'The column specified, %s, does not accept more than one parameter',
 				$column

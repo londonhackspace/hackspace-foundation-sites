@@ -354,7 +354,7 @@ class fGrammar
 		}
 
 		if (is_array($quantity)) {
-			$quantity = sizeof($quantity);
+			$quantity = count($quantity);
 		}
 
 		if ($quantity == 1) {
@@ -407,7 +407,7 @@ class fGrammar
 			throw new fProgrammerException(
 				'The type specified, %1$s, is invalid. Must be one of: %2$s.',
 				$type,
-				join(', ', $valid_types)
+				implode(', ', $valid_types)
 			);
 		}
 
@@ -418,7 +418,7 @@ class fGrammar
 		settype($strings, 'array');
 		$strings = array_values($strings);
 
-		switch (sizeof($strings)) {
+		switch (count($strings)) {
 			case 0:
 				return '';
 				break;
@@ -433,7 +433,7 @@ class fGrammar
 
 			default:
 				$last_string = array_pop($strings);
-				return join(', ', $strings) . ' ' . $type . ' ' . $last_string;
+				return implode(', ', $strings) . ' ' . $type . ' ' . $last_string;
 				break;
 		}
 	}

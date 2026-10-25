@@ -112,7 +112,7 @@ class fORMDate
 				'The column specified, %1$s, is a %2$s column. Must be one of %3$s to be set as a date created column.',
 				$column,
 				$data_type,
-				join(', ', $valid_data_types)
+				implode(', ', $valid_data_types)
 			);
 		}
 
@@ -151,7 +151,7 @@ class fORMDate
 				'The column specified, %1$s, is a %2$s column. Must be one of %3$s to be set as a date updated column.',
 				$column,
 				$data_type,
-				join(', ', $valid_data_types)
+				implode(', ', $valid_data_types)
 			);
 		}
 
@@ -203,7 +203,7 @@ class fORMDate
 				'The timezone column specified, %1$s, is a %2$s column. Must be %3$s to be set as a timezone column.',
 				$timezone_column,
 				$timezone_column_data_type,
-				join(', ', $valid_timezone_column_data_types)
+				implode(', ', $valid_timezone_column_data_types)
 			);
 		}
 

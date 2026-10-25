@@ -271,7 +271,7 @@ class fFilesystem
 			throw new fProgrammerException(
 				'The element specified, %1$s, is invalid. Must be one of: %2$s.',
 				$element,
-				join(', ', $valid_elements)
+				implode(', ', $valid_elements)
 			);
 		}
 

@@ -300,7 +300,7 @@ class fRequest
 
 		$regex = '#^' . preg_quote($prefix, '#') . '#';
 
-		$current_backup       = sizeof(self::$backup_files);
+		$current_backup       = count(self::$backup_files);
 		self::$backup_files[] = $_FILES;
 
 		$_FILES = array();
@@ -324,7 +324,7 @@ class fRequest
 		);
 
 		foreach ($globals as $refs) {
-			$current_backup   = sizeof($refs['backup']);
+			$current_backup   = count($refs['backup']);
 			$refs['backup'][] = $refs['array'];
 			$refs['array']    = array();
 			foreach ($refs['backup'][$current_backup] as $field => $value) {
@@ -770,7 +770,7 @@ class fRequest
 		$output = array();
 
 		// We use this suffix to force stable sorting with the built-in sort function
-		$suffix = sizeof($types);
+		$suffix = count($types);
 
 		foreach ($types as $type) {
 			$parts = explode(';', $type);

@@ -116,7 +116,7 @@ class fORMJSON
 	 */
 	static public function toJSONRecordSet($record_set, $class, &$records)
 	{
-		return '[' . join(',', $record_set->call('toJSON')) . ']';
+		return '[' . implode(',', $record_set->call('toJSON')) . ']';
 	}
 
 

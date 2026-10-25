@@ -172,7 +172,7 @@ class fORMOrdering
 			$conditions[] = fORMDatabase::makeCondition($schema, $table, $other_column, '=', $value);
 		}
 
-		$params[0] .= join(' AND ', $conditions);
+		$params[0] .= implode(' AND ', $conditions);
 
 		return $params;
 	}
@@ -207,7 +207,7 @@ class fORMOrdering
 			$conditions[] = fORMDatabase::makeCondition($schema, $table, $other_column, '=', $value);
 		}
 
-		$params[0] .= join(' AND ', $conditions);
+		$params[0] .= implode(' AND ', $conditions);
 
 		return $params;
 	}
@@ -587,7 +587,7 @@ class fORMOrdering
 					$params[]     = $current_value;
 				}
 
-				$params[0] .= join(' AND ', $conditions);
+				$params[0] .= implode(' AND ', $conditions);
 				if ($other_columns) {
 					$params[0] .= " AND ";
 					$params = self::addOtherFieldsWhereParams($schema, $params, $table, $other_columns, $values);

@@ -302,7 +302,7 @@ class fDatabase
 			throw new fProgrammerException(
 				'The database type specified, %1$s, is invalid. Must be one of: %2$s.',
 				$type,
-				join(', ', $valid_types)
+				implode(', ', $valid_types)
 			);
 		}
 
@@ -1027,7 +1027,7 @@ class fDatabase
 	 */
 	public function enableDebugging($flag)
 	{
-		$this->debug = (boolean) $flag;
+		$this->debug = (bool) $flag;
 	}
 
 
@@ -1095,7 +1095,7 @@ class fDatabase
 	{
 		$values = array_slice(func_get_args(), 1);
 
-		if (sizeof($values) < 1) {
+		if (count($values) < 1) {
 			throw new fProgrammerException(
 				'No value was specified to escape'
 			);
@@ -1393,7 +1393,7 @@ class fDatabase
 							// so instead store a ?
 							default:
 								$output .= '?';
-								continue;
+								break;
 						}
 						if ($last_type == 'nchar') {
 							$output .= '+';
@@ -1492,12 +1492,12 @@ class fDatabase
 			}
 
 			if (is_array($value)) {
-				$sql .= join(', ', array_map($callback, $value));
+				$sql .= implode(', ', array_map($callback, $value));
 			} else {
 				$sql .= call_user_func($callback, $value);
 			}
 
-			if (sizeof($values)) {
+			if (count($values)) {
 				$value = array_shift($values);
 			} else {
 				$value = NULL;
@@ -1513,10 +1513,10 @@ class fDatabase
 			);
 		}
 
-		if (sizeof($values)) {
+		if (count($values)) {
 			throw new fProgrammerException(
 				'%1$s extra value(s) were passed for the placeholders in: %2$s',
-				sizeof($values),
+				count($values),
 				$original_sql
 			);
 		}
@@ -2015,7 +2015,7 @@ class fDatabase
 			foreach ($errors as $error) {
 				$new_errors[] = isset($error['message']) ? $error['message'] : $error['string'];
 			}
-			$error = join("\n", $new_errors);
+			$error = implode("\n", $new_errors);
 		}
 
 		$connection_regexes = array(
@@ -2841,7 +2841,7 @@ class fDatabase
 
 					} elseif ($piece == '%r') {
 						if (is_array($value)) {
-							$new_sql .= join(', ', array_map($this->escapeIdentifier, $value));
+							$new_sql .= implode(', ', array_map($this->escapeIdentifier, $value));
 						} else {
 							$new_sql .= $this->escapeIdentifier($value);
 						}
@@ -2936,7 +2936,7 @@ class fDatabase
 			$output[] = $this->run($query, 'fResult');
 		}
 
-		return sizeof($output) == 1 ? $output[0] : $output;
+		return count($output) == 1 ? $output[0] : $output;
 	}
 
 
@@ -2988,7 +2988,7 @@ class fDatabase
 			throw new fProgrammerException(
 				'The hook specified, %1$s, should be one of: %2$s.',
 				$hook,
-				join(', ', $valid_hooks)
+				implode(', ', $valid_hooks)
 			);
 		}
 
@@ -3191,7 +3191,7 @@ class fDatabase
 				$result->setReturnedRows(sqlite_num_rows($result->getResult()));
 			}
 		} elseif (is_array($result->getResult())) {
-			$result->setReturnedRows(sizeof($result->getResult()));
+			$result->setReturnedRows(count($result->getResult()));
 		}
 	}
 
@@ -3337,7 +3337,7 @@ class fDatabase
 			throw $e;
 		}
 
-		return sizeof($output) == 1 ? $output[0] : $output;
+		return count($output) == 1 ? $output[0] : $output;
 	}
 
 
@@ -3364,10 +3364,10 @@ class fDatabase
 		} else {
 			$queries = $this->preprocess($statement, $params, FALSE);
 
-			if (sizeof($queries) > 1) {
+			if (count($queries) > 1) {
 				throw new fProgrammerException(
 					'Only a single unbuffered query can be run at a time, however %d were passed',
-					sizeof($queries)
+					count($queries)
 				);
 			}
 
@@ -3410,10 +3410,10 @@ class fDatabase
 			TRUE
 		);
 
-		if (sizeof($queries) > 1) {
+		if (count($queries) > 1) {
 			throw new fProgrammerException(
 				'Only a single unbuffered query can be run at a time, however %d were passed',
-				sizeof($queries)
+				count($queries)
 			);
 		}
 

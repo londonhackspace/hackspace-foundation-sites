@@ -131,7 +131,7 @@ class fORMColumn
 				'The column specified, %1$s, is a %2$s column. Must be one of %3$s to be set as an email column.',
 				$column,
 				$data_type,
-				join(', ', $valid_data_types)
+				implode(', ', $valid_data_types)
 			);
 		}
 
@@ -175,7 +175,7 @@ class fORMColumn
 				'The column specified, %1$s, is a %2$s column. Must be one of %3$s to be set as a link column.',
 				$column,
 				$data_type,
-				join(', ', $valid_data_types)
+				implode(', ', $valid_data_types)
 			);
 		}
 
@@ -220,7 +220,7 @@ class fORMColumn
 				'The column specified, %1$s, is a %2$s column. Must be %3$s to be set as a number column.',
 				$column,
 				$data_type,
-				join(', ', $valid_data_types)
+				implode(', ', $valid_data_types)
 			);
 		}
 
@@ -269,7 +269,7 @@ class fORMColumn
 				'The column specified, %1$s, is a %2$s column. Must be one of %3$s to be set as a password column.',
 				$column,
 				$data_type,
-				join(', ', $valid_data_types)
+				implode(', ', $valid_data_types)
 			);
 		}
 
@@ -328,7 +328,7 @@ class fORMColumn
 				'The column specified, %1$s, is a %2$s column. Must be one of %3$s to be set as a random string column.',
 				$column,
 				$data_type,
-				join(', ', $valid_data_types)
+				implode(', ', $valid_data_types)
 			);
 		}
 
@@ -337,7 +337,7 @@ class fORMColumn
 			throw new fProgrammerException(
 				'The type specified, %1$s, is an invalid type. Must be one of: %2$s.',
 				$type,
-				join(', ', $valid_types)
+				implode(', ', $valid_types)
 			);
 		}
 

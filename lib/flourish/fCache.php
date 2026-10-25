@@ -232,7 +232,7 @@ class fCache
 				throw new fProgrammerException(
 					'The type specified, %s, is not a valid cache type. Must be one of: %s.',
 					$type,
-					join(', ', array('apc', 'database', 'directory', 'file', 'memcache', 'redis', 'xcache'))
+					implode(', ', array('apc', 'database', 'directory', 'file', 'memcache', 'redis', 'xcache'))
 				);
 		}
 

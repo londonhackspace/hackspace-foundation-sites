@@ -155,7 +155,7 @@ class fHTML
 		}
 
 		// Merge the text and html back together
-		for ($i = 0; $i < sizeof($html_matches); $i++) {
+		for ($i = 0; $i < count($html_matches); $i++) {
 			$text_matches[$i] .= $html_matches[$i][0];
 		}
 
@@ -188,7 +188,7 @@ class fHTML
 		}
 
 		// Merge the text and html back together
-		for ($i = 0; $i < sizeof($html_matches); $i++) {
+		for ($i = 0; $i < count($html_matches); $i++) {
 			$text_matches[$i] .= $html_matches[$i][0];
 		}
 

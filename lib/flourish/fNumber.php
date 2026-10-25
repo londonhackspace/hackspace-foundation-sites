@@ -213,8 +213,8 @@ class fNumber
 				$number2['fraction'] = str_pad($number2['fraction'], $frac_len, '0', STR_PAD_RIGHT);
 			}
 
-			$number1 = join('.', $number1);
-			$number2 = join('.', $number2);
+			$number1 = implode('.', $number1);
+			$number2 = implode('.', $number2);
 		} else {
 			$number1 = $number1['integer'];
 			$number2 = $number2['integer'];
@@ -325,7 +325,7 @@ class fNumber
 			return $output;
 		}
 
-		return join('.', $parts);
+		return implode('.', $parts);
 	}
 
 
@@ -889,7 +889,7 @@ class fNumber
 			}
 		}
 
-		$this->value = (strlen($value['fraction'])) ? join('.', $value) : $value['integer'];
+		$this->value = (strlen($value['fraction'])) ? implode('.', $value) : $value['integer'];
 		$this->scale = strlen($value['fraction']);
 	}
 
@@ -1140,7 +1140,7 @@ class fNumber
 		}
 		array_unshift($int_sections, substr($integer, 0, $i+3));
 
-		$integer  = join(',', $int_sections);
+		$integer  = implode(',', $int_sections);
 		$fraction = (strlen($fraction)) ? '.' . $fraction : '';
 
 		if ($remove_zero_fraction && rtrim($fraction, '.0') === '') {

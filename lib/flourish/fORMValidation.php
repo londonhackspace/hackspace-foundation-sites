@@ -474,7 +474,7 @@ class fORMValidation
 			return self::compose(
 				'%1$sPlease choose from one of the following: %2$s',
 				fValidationException::formatField(fORM::getColumnName($class, $column)),
-				join(', ', $info['valid_values'])
+				implode(', ', $info['valid_values'])
 			);
 		}
 
@@ -705,7 +705,7 @@ class fORMValidation
 			}
 			return self::compose(
 				'%sPlease enter a value for at least one',
-				fValidationException::formatField(join(', ', $column_names))
+				fValidationException::formatField(implode(', ', $column_names))
 			);
 		}
 	}
@@ -735,7 +735,7 @@ class fORMValidation
 				if ($found_value) {
 					return self::compose(
 						'%sPlease enter a value for only one',
-						fValidationException::formatField(join(', ', $column_names))
+						fValidationException::formatField(implode(', ', $column_names))
 					);
 				}
 				$found_value = TRUE;
@@ -745,7 +745,7 @@ class fORMValidation
 		if (!$found_value) {
 			return self::compose(
 				'%sPlease enter a value for one',
-				fValidationException::formatField(join(', ', $column_names))
+				fValidationException::formatField(implode(', ', $column_names))
 			);
 		}
 	}
@@ -832,12 +832,12 @@ class fORMValidation
 					$params[] = $value;
 				}
 			}
-			$params[0] .= join(' AND ', $conditions);
+			$params[0] .= implode(' AND ', $conditions);
 
 			$result = call_user_func_array($db->translatedQuery, $params);
 			$result->tossIfNoRows();
 
-			return array(join(',', $pk_columns) => self::compose(
+			return array(implode(',', $pk_columns) => self::compose(
 				'Another %1$s with the same %2$s already exists',
 				fORM::getRecordName($class),
 				fGrammar::joinArray($columns, 'and')
@@ -973,7 +973,7 @@ class fORMValidation
 				}
 			}
 
-			$params[0] .= join(' AND ', $conditions);
+			$params[0] .= implode(' AND ', $conditions);
 
 			if ($object->exists()) {
 				foreach ($pk_columns as $pk_column) {
@@ -993,15 +993,15 @@ class fORMValidation
 				foreach ($unique_columns as $unique_column) {
 					$column_names[] = fORM::getColumnName($class, $unique_column);
 				}
-				if (sizeof($column_names) == 1) {
-					$messages[join('', $unique_columns)] = self::compose(
+				if (count($column_names) == 1) {
+					$messages[implode('', $unique_columns)] = self::compose(
 						'%sThe value specified must be unique, however it already exists',
-						fValidationException::formatField(join('', $column_names))
+						fValidationException::formatField(implode('', $column_names))
 					);
 				} else {
-					$messages[join(',', $unique_columns)] = self::compose(
+					$messages[implode(',', $unique_columns)] = self::compose(
 						'%sThe values specified must be a unique combination, however the specified combination already exists',
-						fValidationException::formatField(join(', ', $column_names))
+						fValidationException::formatField(implode(', ', $column_names))
 					);
 				}
 
@@ -1031,7 +1031,7 @@ class fORMValidation
 			return self::compose(
 				'%1$sPlease choose from one of the following: %2$s',
 				fValidationException::formatField(fORM::getColumnName($class, $column)),
-				join(', ', $valid_values)
+				implode(', ', $valid_values)
 			);
 		}
 	}
@@ -1295,7 +1295,7 @@ class fORMValidation
 
 		$matches = self::$message_orders[$class];
 
-		$ordered_items = array_fill(0, sizeof($matches), array());
+		$ordered_items = array_fill(0, count($matches), array());
 		$other_items   = array();
 
 		foreach ($messages as $key => $message) {
@@ -1402,7 +1402,7 @@ class fORMValidation
 				'The column specified, %1$s, is of the data type %2$s. Must be one of %3$s to be treated as case insensitive.',
 				$column,
 				$type,
-				join(', ', $valid_types)
+				implode(', ', $valid_types)
 			);
 		}
 
@@ -1534,12 +1534,12 @@ class fORMValidation
 
 		foreach (self::$one_or_more_rules[$class] as $rule) {
 			$message = self::checkOneOrMoreRule($schema, $class, $values, $rule['columns']);
-			if ($message) { $validation_messages[join(',', $rule['columns'])] = $message; }
+			if ($message) { $validation_messages[implode(',', $rule['columns'])] = $message; }
 		}
 
 		foreach (self::$only_one_rules[$class] as $rule) {
 			$message = self::checkOnlyOneRule($schema, $class, $values, $rule['columns']);
-			if ($message) { $validation_messages[join(',', $rule['columns'])] = $message; }
+			if ($message) { $validation_messages[implode(',', $rule['columns'])] = $message; }
 		}
 
 		return $validation_messages;

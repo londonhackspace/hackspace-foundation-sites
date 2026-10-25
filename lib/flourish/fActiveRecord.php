@@ -510,7 +510,7 @@ abstract class fActiveRecord
 				$operators[] = $operator;
 
 
-				if (sizeof($operators) == 1) {
+				if (count($operators) == 1) {
 
 					// Handle fuzzy searches
 					if ($operator == '~') {
@@ -526,7 +526,7 @@ abstract class fActiveRecord
 					// Handle intersection
 					} elseif ($operator == '><') {
 
-						if (sizeof($methods) != 2 || sizeof($values) != 2) {
+						if (count($methods) != 2 || count($values) != 2) {
 							throw new fProgrammerException(
 								'The intersection operator, %s, requires exactly two methods and two values',
 								$operator
@@ -574,16 +574,16 @@ abstract class fActiveRecord
 				// Handle OR conditions
 				} else {
 
-					if (sizeof($methods) != sizeof($values)) {
+					if (count($methods) != count($values)) {
 						throw new fProgrammerException(
 							'When performing an %1$s comparison there must be an equal number of methods and values, however there are not',
 							'OR',
-							sizeof($methods),
-							sizeof($values)
+							count($methods),
+							count($values)
 						);
 					}
 
-					if (sizeof($methods) != sizeof($operators)) {
+					if (count($methods) != count($operators)) {
 						throw new fProgrammerException(
 							'When performing an %s comparison there must be a comparison operator for each column, however one or more is missing',
 							'OR'
@@ -591,7 +591,7 @@ abstract class fActiveRecord
 					}
 
 					$results    = array();
-					$iterations = sizeof($methods);
+					$iterations = count($methods);
 					for ($i=0; $i<$iterations; $i++) {
 						$results[] = self::checkCondition($operators[$i], $values[$i], $record->{$methods[$i]}());
 					}
@@ -983,7 +983,7 @@ abstract class fActiveRecord
 				return $this->inspect($subject);
 
 			case 'set':
-				if (sizeof($parameters) < 1) {
+				if (count($parameters) < 1) {
 					throw new fProgrammerException(
 						'The method, %s(), requires at least one parameter',
 						$method_name
@@ -993,7 +993,7 @@ abstract class fActiveRecord
 
 			// Related data methods
 			case 'associate':
-				if (sizeof($parameters) < 1) {
+				if (count($parameters) < 1) {
 					throw new fProgrammerException(
 						'The method, %s(), requires at least one parameter',
 						$method_name
@@ -1038,7 +1038,7 @@ abstract class fActiveRecord
 				return fORMRelated::hasRecords($class, $this->values, $this->related_records, $subject, $route);
 
 			case 'inject':
-				if (sizeof($parameters) < 1) {
+				if (count($parameters) < 1) {
 					throw new fProgrammerException(
 						'The method, %s(), requires at least one parameter',
 						$method_name
@@ -1078,7 +1078,7 @@ abstract class fActiveRecord
 				return $this;
 
 			case 'tally':
-				if (sizeof($parameters) < 1) {
+				if (count($parameters) < 1) {
 					throw new fProgrammerException(
 						'The method, %s(), requires at least one parameter',
 						$method_name
@@ -1153,7 +1153,7 @@ abstract class fActiveRecord
 		$table      = fORM::tablize($class);
 		$pk_columns = $schema->getKeys($table, 'primary');
 
-		if (sizeof($pk_columns) == 1 && $schema->getColumnInfo($table, $pk_columns[0], 'auto_increment')) {
+		if (count($pk_columns) == 1 && $schema->getColumnInfo($table, $pk_columns[0], 'auto_increment')) {
 			$this->values[$pk_columns[0]] = NULL;
 			unset($this->old_values[$pk_columns[0]]);
 		}
@@ -1193,7 +1193,7 @@ abstract class fActiveRecord
 			// being triggered since it is not really a real record instantiation
 			$trace = array_slice(debug_backtrace(), 0, 2);
 
-			$is_forced = sizeof($trace) == 2;
+			$is_forced = count($trace) == 2;
 			$is_forced = $is_forced && $trace[1]['function'] == 'forceConfigure';
 			$is_forced = $is_forced && isset($trace[1]['class']);
 			$is_forced = $is_forced && $trace[1]['type'] == '::';
@@ -1228,7 +1228,7 @@ abstract class fActiveRecord
 
 			// If the primary key does not look properly formatted, check to see if it is a UNIQUE key
 			$is_unique_key = FALSE;
-			if (is_array($key) && (sizeof($pk_columns) == 1 || array_diff(array_keys($key), $pk_columns))) {
+			if (is_array($key) && (count($pk_columns) == 1 || array_diff(array_keys($key), $pk_columns))) {
 				$unique_keys = $schema->getKeys($table, 'unique');
 				$key_keys    = array_keys($key);
 				foreach ($unique_keys as $unique_key) {
@@ -1239,7 +1239,7 @@ abstract class fActiveRecord
 			}
 
 			$wrong_keys = is_array($key) && (count($key) != count($pk_columns) || array_diff(array_keys($key), $pk_columns));
-			$wrong_type = !is_array($key) && (sizeof($pk_columns) != 1 || !is_scalar($key));
+			$wrong_type = !is_array($key) && (count($pk_columns) != 1 || !is_scalar($key));
 
 			// If we didn't find a UNIQUE key and primary key doesn't look right we fail
 			if (!$is_unique_key && ($wrong_keys || $wrong_type)) {
@@ -1376,7 +1376,7 @@ abstract class fActiveRecord
 			$value_placeholders[]  = $info['placeholder'];
 		}
 
-		$sql    = 'INSERT INTO %r (' . join(', ', $column_placeholders) . ') VALUES (' . join(', ', $value_placeholders) . ')';
+		$sql    = 'INSERT INTO %r (' . implode(', ', $column_placeholders) . ') VALUES (' . implode(', ', $value_placeholders) . ')';
 		$params = array($sql, $table);
 		$params = array_merge($params, $columns);
 		$params = array_merge($params, $values);
@@ -1417,7 +1417,7 @@ abstract class fActiveRecord
 			$params[] = $value;
 		}
 
-		$sql = 'UPDATE %r SET ' . join(', ', $assignments) . ' WHERE ';
+		$sql = 'UPDATE %r SET ' . implode(', ', $assignments) . ' WHERE ';
 		array_unshift($params, $sql);
 
 		return fORMDatabase::addPrimaryKeyWhereParams($schema, $params, $table, $table, $this->values, $this->old_values);
@@ -1674,7 +1674,7 @@ abstract class fActiveRecord
 		// If we just deleted an object that has an auto-incrementing primary key,
 		// lets delete that value from the object since it is no longer valid
 		$pk_columns  = $schema->getKeys($table, 'primary');
-		if (sizeof($pk_columns) == 1 && $schema->getColumnInfo($table, $pk_columns[0], 'auto_increment')) {
+		if (count($pk_columns) == 1 && $schema->getColumnInfo($table, $pk_columns[0], 'auto_increment')) {
 			$this->values[$pk_columns[0]] = NULL;
 			unset($this->old_values[$pk_columns[0]]);
 		}
@@ -1835,7 +1835,7 @@ abstract class fActiveRecord
 		$schema = fORMSchema::retrieve($class);
 
 		try {
-			if ($values === array_combine(array_keys($values), array_fill(0, sizeof($values), NULL))) {
+			if ($values === array_combine(array_keys($values), array_fill(0, count($values), NULL))) {
 				throw new fExpectedException('The values specified for the unique key are all NULL');
 			}
 
@@ -1857,7 +1857,7 @@ abstract class fActiveRecord
 				$params[] = $value;
 			}
 
-			$params[0] .= join(' AND ', $conditions);
+			$params[0] .= implode(' AND ', $conditions);
 
 			$result = call_user_func_array($db->translatedQuery, $params);
 			$result->tossIfNoRows();
@@ -1939,7 +1939,7 @@ abstract class fActiveRecord
 				throw new fProgrammerException(
 					'The element specified, %1$s, is invalid. Must be one of: %2$s.',
 					$element,
-					join(', ', array_keys($info))
+					implode(', ', array_keys($info))
 				);
 			}
 			return $info[$element];
@@ -2443,7 +2443,7 @@ abstract class fActiveRecord
 					$elements[] = 'min_value';
 					$elements[] = 'max_value';
 				}
-				$signature .= " * @param  string \$element  The element to return. Must be one of: '" . join("', '", $elements) . "'.\n";
+				$signature .= " * @param  string \$element  The element to return. Must be one of: '" . implode("', '", $elements) . "'.\n";
 				$signature .= " * @return mixed  The metadata array or a single element\n";
 				$signature .= " */\n";
 			}
@@ -2598,7 +2598,7 @@ abstract class fActiveRecord
 
 			// We need the primary key to get a hash, otherwise certain recursive relationships end up losing members
 			$pk_columns = $schema->getKeys($table, 'primary');
-			if (sizeof($pk_columns) == 1 && $schema->getColumnInfo($table, $pk_columns[0], 'auto_increment')) {
+			if (count($pk_columns) == 1 && $schema->getColumnInfo($table, $pk_columns[0], 'auto_increment')) {
 				fActiveRecord::$replicate_map[$class][$hash]->values[$pk_columns[0]] = $this->values[$pk_columns[0]];
 			}
 
@@ -2613,7 +2613,7 @@ abstract class fActiveRecord
 
 
 		// When just TRUE is passed we recursively replicate all related records
-		if (sizeof($parameters) == 1 && $parameters[0] === TRUE) {
+		if (count($parameters) == 1 && $parameters[0] === TRUE) {
 			$parameters = array();
 			$recursive  = TRUE;
 
@@ -2696,10 +2696,10 @@ abstract class fActiveRecord
 			foreach (fActiveRecord::$replicate_map as $class => $records) {
 				$table      = fORM::tablize($class);
 				$pk_columns = $schema->getKeys($table, 'primary');
-				if (sizeof($pk_columns) != 1 || !$schema->getColumnInfo($table, $pk_columns[0], 'auto_increment')) {
+				if (count($pk_columns) != 1 || !$schema->getColumnInfo($table, $pk_columns[0], 'auto_increment')) {
 					continue;
 				}
-				foreach ($records as $hash => $record) {
+				foreach ($records as $record) {
 					$record->values[$pk_columns[0]] = NULL;
 				}
 			}
@@ -2811,7 +2811,7 @@ abstract class fActiveRecord
 				$pk_column            = $pk_columns[0];
 				$pk_auto_incrementing = $schema->getColumnInfo($table, $pk_column, 'auto_increment');
 
-				if (sizeof($pk_columns) == 1 && $pk_auto_incrementing && !$this->values[$pk_column]) {
+				if (count($pk_columns) == 1 && $pk_auto_incrementing && !$this->values[$pk_column]) {
 					$new_autoincrementing_record = TRUE;
 				}
 			}

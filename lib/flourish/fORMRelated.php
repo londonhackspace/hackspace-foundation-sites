@@ -187,7 +187,7 @@ class fORMRelated
 		} elseif ($records_to_associate instanceof fRecordSet) {
 			$records = clone $records_to_associate;
 
-		} elseif (!sizeof($records_to_associate)) {
+		} elseif (!count($records_to_associate)) {
 			$records = fRecordSet::buildFromArray($related_class, array());
 
 		} elseif (reset($records_to_associate) instanceof fActiveRecord) {
@@ -467,7 +467,7 @@ class fORMRelated
 		$pk_columns    = $schema->getKeys($related_table, 'primary');
 
 		// If there is a multi-fiend primary key we want to populate based on any field BUT the foreign key to the current class
-		if (sizeof($pk_columns) > 1) {
+		if (count($pk_columns) > 1) {
 
 			$first_pk_column = NULL;
 			$relationships   = fORMSchema::getRoutes($schema, $related_table, $table, '*-to-one');
@@ -651,7 +651,7 @@ class fORMRelated
 					$db->escape(
 						sprintf(
 							"SELECT %s FROM :from_clause WHERE",
-							join(', ', $aliased_related_pk_columns)
+							implode(', ', $aliased_related_pk_columns)
 						) . " %r = ",
 						$table_with_route . '.' . $column
 					),
@@ -677,7 +677,7 @@ class fORMRelated
 				$primary_keys = array();
 
 				foreach ($result as $row) {
-					if (sizeof($row) > 1) {
+					if (count($row) > 1) {
 						$primary_key = array();
 						foreach ($row as $column => $value) {
 							$value = $db->unescape($column_info[$column]['type'], $value);
@@ -691,7 +691,7 @@ class fORMRelated
 				}
 
 				$related_info['record_set']   = NULL;
-				$related_info['count']        = sizeof($primary_keys);
+				$related_info['count']        = count($primary_keys);
 				$related_info['associate']    = FALSE;
 				$related_info['primary_keys'] = $primary_keys;
 			}
@@ -773,7 +773,7 @@ class fORMRelated
 			}
 		}
 
-		return (boolean) $related_records[$related_table][$route]['count'];
+		return (bool) $related_records[$related_table][$route]['count'];
 	}
 
 
@@ -921,7 +921,7 @@ class fORMRelated
 
 			// Try to load the value from the database first
 			try {
-				if (sizeof($pk_columns) == 1) {
+				if (count($pk_columns) == 1) {
 					$primary_key_values = fRequest::get($first_pk_column);
 				} else {
 					$primary_key_values = array();
@@ -993,15 +993,15 @@ class fORMRelated
 				$signature .= "/**\n";
 				$signature .= " * Creates the related " . $related_class . "\n";
 				$signature .= " * \n";
-				if (sizeof($route_names) > 1) {
-					$signature .= " * @param  string \$route  The route to the related class. Must be one of: '" . join("', '", $route_names) . "'.\n";
+				if (count($route_names) > 1) {
+					$signature .= " * @param  string \$route  The route to the related class. Must be one of: '" . implode("', '", $route_names) . "'.\n";
 				}
 				$signature .= " * @return " . $related_class . "  The related object\n";
 				$signature .= " */\n";
 			}
 			$create_method = 'create' . $related_class;
 			$signature .= 'public function ' . $create_method . '(';
-			if (sizeof($route_names) > 1) {
+			if (count($route_names) > 1) {
 				$signature .= '$route';
 			}
 			$signature .= ')';
@@ -1033,15 +1033,15 @@ class fORMRelated
 				$signature .= "/**\n";
 				$signature .= " * Populates the related " . $related_class . "\n";
 				$signature .= " * \n";
-				if (sizeof($route_names) > 1) {
-					$signature .= " * @param  string \$route  The route to the related class. Must be one of: '" . join("', '", $route_names) . "'.\n";
+				if (count($route_names) > 1) {
+					$signature .= " * @param  string \$route  The route to the related class. Must be one of: '" . implode("', '", $route_names) . "'.\n";
 				}
 				$signature .= " * @return fActiveRecord  The record object, to allow for method chaining\n";
 				$signature .= " */\n";
 			}
 			$populate_method = 'populate' . $related_class;
 			$signature .= 'public function ' . $populate_method . '(';
-			if (sizeof($route_names) > 1) {
+			if (count($route_names) > 1) {
 				$signature .= '$route';
 			}
 			$signature .= ')';
@@ -1054,15 +1054,15 @@ class fORMRelated
 				$signature .= " * Associates the related " . $related_class . " to this record\n";
 				$signature .= " * \n";
 				$signature .= " * @param  fActiveRecord|array|string|integer \$record  The record, or the primary key of the record, to associate\n";
-				if (sizeof($route_names) > 1) {
-					$signature .= " * @param  string \$route  The route to the related class. Must be one of: '" . join("', '", $route_names) . "'.\n";
+				if (count($route_names) > 1) {
+					$signature .= " * @param  string \$route  The route to the related class. Must be one of: '" . implode("', '", $route_names) . "'.\n";
 				}
 				$signature .= " * @return fActiveRecord  The record object, to allow for method chaining\n";
 				$signature .= " */\n";
 			}
 			$associate_method = 'associate' . $related_class;
 			$signature .= 'public function ' . $associate_method . '($record';
-			if (sizeof($route_names) > 1) {
+			if (count($route_names) > 1) {
 				$signature .= ', $route';
 			}
 			$signature .= ')';
@@ -1074,15 +1074,15 @@ class fORMRelated
 				$signature .= "/**\n";
 				$signature .= " * Indicates if a related " . $related_class . " exists\n";
 				$signature .= " * \n";
-				if (sizeof($route_names) > 1) {
-					$signature .= " * @param  string \$route  The route to the related class. Must be one of: '" . join("', '", $route_names) . "'.\n";
+				if (count($route_names) > 1) {
+					$signature .= " * @param  string \$route  The route to the related class. Must be one of: '" . implode("', '", $route_names) . "'.\n";
 				}
 				$signature .= " * @return boolean  If a related record exists\n";
 				$signature .= " */\n";
 			}
 			$has_method = 'has' . $related_class;
 			$signature .= 'public function ' . $has_method . '($record';
-			if (sizeof($route_names) > 1) {
+			if (count($route_names) > 1) {
 				$signature .= ', $route';
 			}
 			$signature .= ')';
@@ -1129,15 +1129,15 @@ class fORMRelated
 					$signature .= "/**\n";
 					$signature .= " * Calls the ::populate() method for multiple child " . $related_class . " records. Uses request value arrays in the form " . $related_table . "::{column_name}[].\n";
 					$signature .= " * \n";
-					if (sizeof($one_to_many_route_names) > 1) {
-						$signature .= " * @param  string \$route  The route to the related class. Must be one of: '" . join("', '", $one_to_many_route_names) . "'.\n";
+					if (count($one_to_many_route_names) > 1) {
+						$signature .= " * @param  string \$route  The route to the related class. Must be one of: '" . implode("', '", $one_to_many_route_names) . "'.\n";
 					}
 					$signature .= " * @return fActiveRecord  The record object, to allow for method chaining\n";
 					$signature .= " */\n";
 				}
 				$populate_related_method = 'populate' . fGrammar::pluralize($related_class);
 				$signature .= 'public function ' . $populate_related_method . '(';
-				if (sizeof($one_to_many_route_names) > 1) {
+				if (count($one_to_many_route_names) > 1) {
 					$signature .= '$route';
 				}
 				$signature .= ')';
@@ -1154,15 +1154,15 @@ class fORMRelated
 					$signature .= "/**\n";
 					$signature .= " * Creates entries in the appropriate joining table to create associations with the specified " . $related_class . " records. Uses request value array(s) in the form " . $related_table . "::{primary_key_column_name(s)}[].\n";
 					$signature .= " * \n";
-					if (sizeof($many_to_many_route_names) > 1) {
-						$signature .= " * @param  string \$route  The route to the related class. Must be one of: '" . join("', '", $many_to_many_route_names) . "'.\n";
+					if (count($many_to_many_route_names) > 1) {
+						$signature .= " * @param  string \$route  The route to the related class. Must be one of: '" . implode("', '", $many_to_many_route_names) . "'.\n";
 					}
 					$signature .= " * @return fActiveRecord  The record object, to allow for method chaining\n";
 					$signature .= " */\n";
 				}
 				$link_related_method = 'link' . fGrammar::pluralize($related_class);
 				$signature .= 'public function ' . $link_related_method . '(';
-				if (sizeof($many_to_many_route_names) > 1) {
+				if (count($many_to_many_route_names) > 1) {
 					$signature .= '$route';
 				}
 				$signature .= ')';
@@ -1178,15 +1178,15 @@ class fORMRelated
 					$signature .= " * Creates entries in the appropriate joining table to create associations with the specified " . $related_class . " records\n";
 					$signature .= " * \n";
 					$signature .= " * @param  fRecordSet|array \$records_to_associate  The records to associate - should be an fRecords, an array of records or an array of primary keys\n";
-					if (sizeof($many_to_many_route_names) > 1) {
-						$signature .= " * @param  string           \$route  The route to the related class. Must be one of: '" . join("', '", $many_to_many_route_names) . "'.\n";
+					if (count($many_to_many_route_names) > 1) {
+						$signature .= " * @param  string           \$route  The route to the related class. Must be one of: '" . implode("', '", $many_to_many_route_names) . "'.\n";
 					}
 					$signature .= " * @return fActiveRecord  The record object, to allow for method chaining\n";
 					$signature .= " */\n";
 				}
 				$associate_related_method = 'associate' . fGrammar::pluralize($related_class);
 				$signature .= 'public function ' . $associate_related_method . '($records_to_associate';
-				if (sizeof($many_to_many_route_names) > 1) {
+				if (count($many_to_many_route_names) > 1) {
 					$signature .= ', $route';
 				}
 				$signature .= ')';
@@ -1200,15 +1200,15 @@ class fORMRelated
 				$signature .= "/**\n";
 				$signature .= " * Builds an fRecordSet of the related " . $related_class . " objects\n";
 				$signature .= " * \n";
-				if (sizeof($route_names) > 1) {
-					$signature .= " * @param  string \$route  The route to the related class. Must be one of: '" . join("', '", $route_names) . "'.\n";
+				if (count($route_names) > 1) {
+					$signature .= " * @param  string \$route  The route to the related class. Must be one of: '" . implode("', '", $route_names) . "'.\n";
 				}
 				$signature .= " * @return fRecordSet  A record set of the related " . $related_class . " objects\n";
 				$signature .= " */\n";
 			}
 			$build_method = 'build' . fGrammar::pluralize($related_class);
 			$signature .= 'public function ' . $build_method . '(';
-			if (sizeof($route_names) > 1) {
+			if (count($route_names) > 1) {
 				$signature .= '$route';
 			}
 			$signature .= ')';
@@ -1220,15 +1220,15 @@ class fORMRelated
 				$signature .= "/**\n";
 				$signature .= " * Indicates if related " . $related_class . " objects exist\n";
 				$signature .= " * \n";
-				if (sizeof($route_names) > 1) {
-					$signature .= " * @param  string \$route  The route to the related class. Must be one of: '" . join("', '", $route_names) . "'.\n";
+				if (count($route_names) > 1) {
+					$signature .= " * @param  string \$route  The route to the related class. Must be one of: '" . implode("', '", $route_names) . "'.\n";
 				}
 				$signature .= " * @return boolean  If related " . $related_class . " objects exist\n";
 				$signature .= " */\n";
 			}
 			$has_method = 'has' . fGrammar::pluralize($related_class);
 			$signature .= 'public function ' . $has_method . '(';
-			if (sizeof($route_names) > 1) {
+			if (count($route_names) > 1) {
 				$signature .= '$route';
 			}
 			$signature .= ')';
@@ -1240,15 +1240,15 @@ class fORMRelated
 				$signature .= "/**\n";
 				$signature .= " * Returns an array of the primary keys for the related " . $related_class . " objects\n";
 				$signature .= " * \n";
-				if (sizeof($route_names) > 1) {
-					$signature .= " * @param  string \$route  The route to the related class. Must be one of: '" . join("', '", $route_names) . "'.\n";
+				if (count($route_names) > 1) {
+					$signature .= " * @param  string \$route  The route to the related class. Must be one of: '" . implode("', '", $route_names) . "'.\n";
 				}
 				$signature .= " * @return array  The primary keys of the related " . $related_class . " objects\n";
 				$signature .= " */\n";
 			}
 			$list_method = 'list' . fGrammar::pluralize($related_class);
 			$signature .= 'public function ' . $list_method . '(';
-			if (sizeof($route_names) > 1) {
+			if (count($route_names) > 1) {
 				$signature .= '$route';
 			}
 			$signature .= ')';
@@ -1261,15 +1261,15 @@ class fORMRelated
 				$signature .= "/**\n";
 				$signature .= " * Counts the number of related " . $related_class . " objects\n";
 				$signature .= " * \n";
-				if (sizeof($route_names) > 1) {
-					$signature .= " * @param  string \$route  The route to the related class. Must be one of: '" . join("', '", $route_names) . "'.\n";
+				if (count($route_names) > 1) {
+					$signature .= " * @param  string \$route  The route to the related class. Must be one of: '" . implode("', '", $route_names) . "'.\n";
 				}
 				$signature .= " * @return integer  The number related " . $related_class . " objects\n";
 				$signature .= " */\n";
 			}
 			$count_method = 'count' . fGrammar::pluralize($related_class);
 			$signature .= 'public function ' . $count_method . '(';
-			if (sizeof($route_names) > 1) {
+			if (count($route_names) > 1) {
 				$signature .= '$route';
 			}
 			$signature .= ')';
@@ -1432,7 +1432,7 @@ class fORMRelated
 		}
 
 		$related_records[$related_table][$route]['record_set']   = NULL;
-		$related_records[$related_table][$route]['count']        = sizeof($primary_keys);
+		$related_records[$related_table][$route]['count']        = count($primary_keys);
 		$related_records[$related_table][$route]['associate']    = FALSE;
 		$related_records[$related_table][$route]['primary_keys'] = $primary_keys;
 	}

@@ -331,7 +331,7 @@ class fJSON
 		$output         = NULL;
 		$container      = NULL;
 
-		if (sizeof($matches) == 1 && strlen($matches[0][0]) == strlen($json)) {
+		if (count($matches) == 1 && strlen($matches[0][0]) == strlen($json)) {
 			$match = $matches[0][0];
 			$stack = array();
 			$type  = self::getElementType($stack, self::J_ARRAY_OPEN, $match);
@@ -398,7 +398,7 @@ class fJSON
 			// Closing an object or array
 			if ($type == self::J_OBJ_CLOSE || $type == self::J_ARRAY_CLOSE) {
 				array_pop($stack);
-				if (sizeof($stack) == 0) {
+				if (count($stack) == 0) {
 					break;
 				}
 				$new_container = end($stack);
@@ -463,7 +463,7 @@ class fJSON
 			unset($match);
 		}
 
-		if ($matched_length != strlen($json) || sizeof($stack) > 0) {
+		if ($matched_length != strlen($json) || count($stack) > 0) {
 			return NULL;
 		}
 
@@ -549,7 +549,7 @@ class fJSON
 				$members[] = self::encode((string) $key) . ':' . self::encode($val);
 			}
 
-			$output .= join(',', $members);
+			$output .= implode(',', $members);
 			$output .= '}';
 			return $output;
 		}
@@ -558,11 +558,11 @@ class fJSON
 			$output  = '[';
 			$members = array();
 
-			foreach ($value as $key => $val) {
+			foreach ($value as $val) {
 				$members[] = self::encode($val);
 			}
 
-			$output .= join(',', $members);
+			$output .= implode(',', $members);
 			$output .= ']';
 			return $output;
 		}

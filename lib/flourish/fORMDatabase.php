@@ -102,7 +102,7 @@ class fORMDatabase
 			throw new fProgrammerException(
 				'The role specified, %1$s, is invalid. Must be one of: %2$s.',
 				$role,
-				join(', ', $valid_roles)
+				implode(', ', $valid_roles)
 			);
 		}
 
@@ -160,7 +160,7 @@ class fORMDatabase
 		}
 
 		// More than one value
-		if (sizeof($values) > 1) {
+		if (count($values) > 1) {
 			switch ($operator) {
 				case '=':
 					$non_null_values = array();
@@ -208,7 +208,7 @@ class fORMDatabase
 						$condition[] = $escaped_column . ' LIKE %s';
 						$params[] = '%' . $value . '%';
 					}
-					$params[0] .= '(' . join(' OR ', $condition) . ')';
+					$params[0] .= '(' . implode(' OR ', $condition) . ')';
 					break;
 
 				case '^~':
@@ -217,7 +217,7 @@ class fORMDatabase
 						$condition[] = $escaped_column . ' LIKE %s';
 						$params[] = $value . '%';
 					}
-					$params[0] .= '(' . join(' OR ', $condition) . ')';
+					$params[0] .= '(' . implode(' OR ', $condition) . ')';
 					break;
 
 				case '$~':
@@ -226,7 +226,7 @@ class fORMDatabase
 						$condition[] = $escaped_column . ' LIKE %s';
 						$params[] = '%' . $value;
 					}
-					$params[0] .= '(' . join(' OR ', $condition) . ')';
+					$params[0] .= '(' . implode(' OR ', $condition) . ')';
 					break;
 
 				case '&~':
@@ -235,7 +235,7 @@ class fORMDatabase
 						$condition[] = $escaped_column . ' LIKE %s';
 						$params[] = '%' . $value . '%';
 					}
-					$params[0] .= '(' . join(' AND ', $condition) . ')';
+					$params[0] .= '(' . implode(' AND ', $condition) . ')';
 					break;
 
 				case '!~':
@@ -244,7 +244,7 @@ class fORMDatabase
 						$condition[] = $escaped_column . ' NOT LIKE %s';
 						$params[] = '%' . $value . '%';
 					}
-					$params[0] .= '(' . join(' AND ', $condition) . ')';
+					$params[0] .= '(' . implode(' AND ', $condition) . ')';
 					break;
 
 				default:
@@ -472,7 +472,7 @@ class fORMDatabase
 			}
 		}
 
-		$params[0] .= join(', ', $expressions);
+		$params[0] .= implode(', ', $expressions);
 
 		return $params;
 	}
@@ -512,7 +512,7 @@ class fORMDatabase
 			$conditions[] = self::makeCondition($schema, $table, $pk_column, '=', $value);
 		}
 
-		$params[0] .= join(' AND ', $conditions);
+		$params[0] .= implode(' AND ', $conditions);
 
 		return $params;
 	}
@@ -598,7 +598,7 @@ class fORMDatabase
 				}
 				$operators[] = $operator;
 
-				if (sizeof($operators) == 1) {
+				if (count($operators) == 1) {
 
 					// Make sure every column is qualified by a table name
 					$new_columns = array();
@@ -614,7 +614,7 @@ class fORMDatabase
 					if ($operator == '~') {
 
 						// If the value to search is a single string value, parse it for search terms
-						if (sizeof($values) == 1 && is_string($values[0])) {
+						if (count($values) == 1 && is_string($values[0])) {
 							$values = self::parseSearchTerms($values[0], TRUE);
 						}
 
@@ -632,14 +632,14 @@ class fORMDatabase
 								$sub_condition[] = $db->escape('%r', $column) . ' LIKE %s';
 								$params[] = '%' . $value . '%';
 							}
-							$condition[] = '(' . join(' OR ', $sub_condition) . ')';
+							$condition[] = '(' . implode(' OR ', $sub_condition) . ')';
 						}
-						$params[0] .= ' (' . join(' AND ', $condition) . ') ';
+						$params[0] .= ' (' . implode(' AND ', $condition) . ') ';
 
 					// Handle intersection
 					} elseif ($operator == '><') {
 
-						if (sizeof($columns) != 2 || sizeof($values) != 2) {
+						if (count($columns) != 2 || count($values) != 2) {
 							throw new fProgrammerException(
 								'The intersection operator, %s, requires exactly two columns and two values',
 								$operator
@@ -685,16 +685,16 @@ class fORMDatabase
 
 				// Handle OR combos
 				} else {
-					if (sizeof($columns) != sizeof($values)) {
+					if (count($columns) != count($values)) {
 						throw new fProgrammerException(
 							'When creating an %1$s where clause there must be an equal number of columns and values, however %2$s column(s) and %3$s value(s) were provided',
 							'OR',
-							sizeof($columns),
-							sizeof($values)
+							count($columns),
+							count($values)
 						);
 					}
 
-					if (sizeof($columns) != sizeof($operators)) {
+					if (count($columns) != count($operators)) {
 						throw new fProgrammerException(
 							'When creating an %s where clause there must be a comparison operator for each column, however one or more is missing',
 							'OR'
@@ -702,7 +702,7 @@ class fORMDatabase
 					}
 
 					$params[0] .= ' (';
-					$iterations = sizeof($columns);
+					$iterations = count($columns);
 					for ($j=0; $j<$iterations; $j++) {
 						if ($j) {
 							$params[0] .= ' OR ';
@@ -726,7 +726,7 @@ class fORMDatabase
 						$new_parts[] = $part;
 					}
 				}
-				$escaped_column = join('||', $new_parts);
+				$escaped_column = implode('||', $new_parts);
 				$params = self::addColumnCondition($db, $schema, $params, $table, $column, $operator, $values, $escaped_column, '%s');
 
 			// Single column condition
@@ -1126,7 +1126,7 @@ class fORMDatabase
 					$parts = preg_split('#(order\s+by)#i', $temp_sql, -1, PREG_SPLIT_DELIM_CAPTURE);
 					$parts[2] = preg_replace('#(?<!avg\(|count\(|max\(|min\(|sum\(|cast\(|case |when |"|avg\("|count\("|max\("|min\("|sum\("|cast\("|case "|when "|\{|\.)((?!' . $preg_table_pattern . ')((?:"|\b)\w+"?\.)?(?:"|\b)\w+"?\."?\w+"?)(?![\w."])#i', 'max(\1)', $parts[2]);
 
-					$temp_sql = join('', $parts);
+					$temp_sql = implode('', $parts);
 				}
 
 				$temp_sql = str_replace(':from_clause', $from_clause, $temp_sql);
@@ -1209,7 +1209,7 @@ class fORMDatabase
 				if (self::$pcre_supports_unicode_character_properties === NULL) {
 					fCore::startErrorCapture();
 					preg_match('#\pC#u', 'test');
-					self::$pcre_supports_unicode_character_properties = !((boolean) fCore::stopErrorCapture());
+					self::$pcre_supports_unicode_character_properties = !((bool) fCore::stopErrorCapture());
 				}
 				if (self::$pcre_supports_unicode_character_properties) {
 					$match = preg_replace('#(^[\pC\pC\pM\pP\pS\pZ]+|[\pC\pC\pM\pP\pS\pZ]+$)#iDu', '', $match);

@@ -192,7 +192,7 @@ class fImage extends fFile
 
 						$win_search = 'dir /B "C:\Program Files\ImageMagick*" 2> NUL';
 						exec($win_search, $win_output);
-						$win_output = trim(join("\n", $win_output));
+						$win_output = trim(implode("\n", $win_output));
 
 						if (!$win_output || stripos($win_output, 'File not found') !== FALSE) {
 							throw new Exception();
@@ -245,7 +245,7 @@ class fImage extends fFile
 					if (!$found && fCore::checkOS('linux', 'freebsd', 'aix')) {
 						$nix_search = 'whereis -b convert';
 						exec($nix_search, $nix_output);
-						$nix_output = trim(str_replace('convert:', '', join("\n", $nix_output)));
+						$nix_output = trim(str_replace('convert:', '', implode("\n", $nix_output)));
 
 						if (!$nix_output) {
 							throw new Exception();
@@ -257,7 +257,7 @@ class fImage extends fFile
 					if (!$found && fCore::checkOS('osx', 'netbsd', 'openbsd')) {
 						$osx_search = 'whereis convert';
 						exec($osx_search, $osx_output);
-						$osx_output = trim(join("\n", $osx_output));
+						$osx_output = trim(implode("\n", $osx_output));
 
 						if (!$osx_output) {
 							throw new Exception();
@@ -359,7 +359,7 @@ class fImage extends fFile
 			throw new fProgrammerException(
 				'The element specified, %1$s, is invalid. Must be one of: %2$s.',
 				$element,
-				join(', ', $valid_elements)
+				implode(', ', $valid_elements)
 			);
 		}
 
@@ -815,7 +815,7 @@ class fImage extends fFile
 			unset($output['type']);
 
 		} else {
-			$last_modification = $this->pending_modifications[sizeof($this->pending_modifications)-1];
+			$last_modification = $this->pending_modifications[count($this->pending_modifications)-1];
 			$output['width']  = $last_modification['width'];
 			$output['height'] = $last_modification['height'];
 		}
@@ -940,7 +940,7 @@ class fImage extends fFile
 		}
 
 
-		foreach ($this->pending_modifications as $num => $mod) {
+		foreach ($this->pending_modifications as $mod) {
 
 			if (ini_get('memory_limit') != '-1') {
 				$old_byte_usage = $this->pending_modifications[0]['old_width'] * $this->pending_modifications[0]['old_height'] * 4;
@@ -1217,7 +1217,7 @@ class fImage extends fFile
 			throw new fEnvironmentException(
 				"An error occurred running the command, %1\$s, to modify the image. The error output was:\n%2\$s",
 				$command_line,
-				join("\n", $output)
+				implode("\n", $output)
 			);
 		}
 	}
@@ -1401,7 +1401,7 @@ class fImage extends fFile
 			throw new fProgrammerException(
 				'The new image type specified, %1$s, is invalid. Must be one of: %2$s.',
 				$new_image_type,
-				join(', ', $valid_image_types)
+				implode(', ', $valid_image_types)
 			);
 		}
 
@@ -1409,7 +1409,7 @@ class fImage extends fFile
 			$jpeg_quality = (int) round($jpeg_quality);
 		}
 
-		if (!is_integer($jpeg_quality) || $jpeg_quality < 1 || $jpeg_quality > 100) {
+		if (!is_int($jpeg_quality) || $jpeg_quality < 1 || $jpeg_quality > 100) {
 			throw new fProgrammerException(
 				'The JPEG quality specified, %1$s, is either not an integer, less than %2$s or greater than %3$s.',
 				$jpeg_quality,

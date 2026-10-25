@@ -680,7 +680,7 @@ class fRecordSet implements IteratorAggregate, ArrayAccess, Countable
 					);
 					$params[] = $value;
 				}
-				$sql .= join(' AND ', $conditions);
+				$sql .= implode(' AND ', $conditions);
 
 			} else {
 				$sql .= str_replace(
@@ -724,7 +724,7 @@ class fRecordSet implements IteratorAggregate, ArrayAccess, Countable
 		$pk_columns = $schema->getKeys($table, 'primary');
 
 		// We have a multi-field primary key, making things kinda ugly
-		if (sizeof($pk_columns) > 1) {
+		if (count($pk_columns) > 1) {
 
 			$escape_pk_columns = array();
 			foreach ($pk_columns as $pk_column) {
@@ -752,9 +752,9 @@ class fRecordSet implements IteratorAggregate, ArrayAccess, Countable
 					);
 					$params[] = $value;
 				}
-				$conditions[] = join(' AND ', $sub_conditions);
+				$conditions[] = implode(' AND ', $sub_conditions);
 			}
-			$params[0] .= '(' . join(') OR (', $conditions) . ')';
+			$params[0] .= '(' . implode(') OR (', $conditions) . ')';
 
 		// We have a single primary key field, making things nice and easy
 		} else {
@@ -932,7 +932,7 @@ class fRecordSet implements IteratorAggregate, ArrayAccess, Countable
 	public function count($ignore_limit=FALSE)
 	{
 		if ($ignore_limit !== TRUE || $this->non_limited_count === NULL) {
-			return sizeof($this->records);
+			return count($this->records);
 		}
 
 		if (!is_numeric($this->non_limited_count)) {
@@ -1197,7 +1197,7 @@ class fRecordSet implements IteratorAggregate, ArrayAccess, Countable
 	 */
 	public function getPrimaryKeys()
 	{
-		if (!sizeof($this->records)) {
+		if (!count($this->records)) {
 			return array();
 		}
 
@@ -1218,7 +1218,7 @@ class fRecordSet implements IteratorAggregate, ArrayAccess, Countable
 				$keys[$pk_column] = $record->$method();
 			}
 
-			$primary_keys[$number] = (sizeof($pk_columns) == 1) ? $keys[$first_pk_column] : $keys;
+			$primary_keys[$number] = (count($pk_columns) == 1) ? $keys[$first_pk_column] : $keys;
 		}
 
 		return $primary_keys;
@@ -1310,7 +1310,7 @@ class fRecordSet implements IteratorAggregate, ArrayAccess, Countable
 
 		$parameters_array = array();
 		$found_record     = FALSE;
-		$total_records    = sizeof($this->records);
+		$total_records    = count($this->records);
 
 		foreach ($parameters as $parameter) {
 			if (!is_array($parameter)) {
@@ -1326,9 +1326,9 @@ class fRecordSet implements IteratorAggregate, ArrayAccess, Countable
 					$parameters_array[] = array_pad(array(), $total_records, $parameter);
 				}
 
-			} elseif (sizeof($parameter) > $total_records) {
+			} elseif (count($parameter) > $total_records) {
 				$parameters_array[] = array_slice($parameter, 0, $total_records);
-			} elseif (sizeof($parameter) < $total_records) {
+			} elseif (count($parameter) < $total_records) {
 				$parameters_array[] = array_pad($parameter, $total_records, NULL);
 			} else {
 				$parameters_array[] = $parameter;
@@ -1434,7 +1434,7 @@ class fRecordSet implements IteratorAggregate, ArrayAccess, Countable
 	 */
 	public function offsetGet($offset)
 	{
-		if ((!is_integer($offset) && !is_numeric($offset)) || $offset < 0) {
+		if ((!is_int($offset) && !is_numeric($offset)) || $offset < 0) {
 			throw new fProgrammerException(
 				'The offset specified, %1$s, is invalid. Offsets must be a non-negative integer.',
 				$offset
@@ -1551,7 +1551,7 @@ class fRecordSet implements IteratorAggregate, ArrayAccess, Countable
 		// Run the query and inject the results into the records
 		$result = call_user_func_array($db->translatedQuery, $params);
 
-		$total_records = sizeof($this->records);
+		$total_records = count($this->records);
 		for ($i=0; $i < $total_records; $i++) {
 
 
@@ -1679,7 +1679,7 @@ class fRecordSet implements IteratorAggregate, ArrayAccess, Countable
 
 		unset($result);
 
-		$total_records = sizeof($this->records);
+		$total_records = count($this->records);
 		$get_method   = 'get' . fGrammar::camelize($relationship['column'], TRUE);
 		$tally_method = 'tally' . fGrammar::pluralize($related_class);
 
@@ -1793,7 +1793,7 @@ class fRecordSet implements IteratorAggregate, ArrayAccess, Countable
 	{
 		if ($length === NULL) {
 			if ($offset >= 0) {
-				$length = sizeof($this->records) - $offset;
+				$length = count($this->records) - $offset;
 			} else {
 				$length = abs($offset);
 			}
@@ -1922,7 +1922,7 @@ class fRecordSet implements IteratorAggregate, ArrayAccess, Countable
 			if (is_array($this->class)) {
 				$names = array_map(array('fORM', 'getRecordName'), $this->class);
 				$names = array_map(array('fGrammar', 'pluralize'), $names);
-				$name  = join(', ', $names);
+				$name  = implode(', ', $names);
 			} else {
 				$name = fGrammar::pluralize(fORM::getRecordName($this->class));
 			}
@@ -1984,7 +1984,7 @@ class fRecordSet implements IteratorAggregate, ArrayAccess, Countable
 		throw new fProgrammerException(
 			'The %1$s operation can not be performed on a record set with multiple types (%2$s) of records',
 			$operation,
-			join(', ', $this->class)
+			implode(', ', $this->class)
 		);
 	}
 }

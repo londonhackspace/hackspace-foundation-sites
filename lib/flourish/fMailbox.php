@@ -320,7 +320,7 @@ class fMailbox
 		}
 		$headers[] = $header;
 
-		file_put_contents($ciphertext_file, join("\r\n", $headers) . "\r\n\r\n" . $structure['data']);
+		file_put_contents($ciphertext_file, implode("\r\n", $headers) . "\r\n\r\n" . $structure['data']);
 
 		$private_key = openssl_pkey_get_private(
 			$smime_pair['private_key']->read(),
@@ -542,12 +542,12 @@ class fMailbox
 				preg_match_all('#"[^"]+?"#', $value, $matches, PREG_SET_ORDER);
 				foreach ($matches as $i => $match) {
 					$strings[] = $match[0];
-					$value = preg_replace('#' . preg_quote($match[0], '#') . '#', ':string' . sizeof($strings), $value, 1);
+					$value = preg_replace('#' . preg_quote($match[0], '#') . '#', ':string' . count($strings), $value, 1);
 				}
 				preg_match_all('#\([^)]+?\)#', $value, $matches, PREG_SET_ORDER);
 				foreach ($matches as $i => $match) {
 					$strings[] = $match[0];
-					$value = preg_replace('#' . preg_quote($match[0], '#') . '#', ':string' . sizeof($strings), $value, 1);
+					$value = preg_replace('#' . preg_quote($match[0], '#') . '#', ':string' . count($strings), $value, 1);
 				}
 
 				$emails = explode(',', $value);
@@ -891,7 +891,7 @@ class fMailbox
 			throw new fProgrammerException(
 				'The mailbox type specified, %1$s, in invalid. Must be one of: %2$s.',
 				$type,
-				join(', ', $valid_types)
+				implode(', ', $valid_types)
 			);
 		}
 
@@ -1083,7 +1083,7 @@ class fMailbox
 		settype($uid, 'array');
 
 		if ($this->type == 'imap') {
-			$this->write('UID STORE ' . join(',', $uid) . ' +FLAGS (\\Deleted)');
+			$this->write('UID STORE ' . implode(',', $uid) . ' +FLAGS (\\Deleted)');
 			$this->write('EXPUNGE');
 
 		} elseif ($this->type == 'pop3') {
@@ -1102,7 +1102,7 @@ class fMailbox
 	 */
 	public function enableDebugging($flag)
 	{
-		$this->debug = (boolean) $flag;
+		$this->debug = (bool) $flag;
 	}
 
 
@@ -1188,7 +1188,7 @@ class fMailbox
 		} elseif ($this->type == 'pop3') {
 			$response = $this->write('RETR ' . $uid);
 			array_shift($response);
-			$response = join("\r\n", $response);
+			$response = implode("\r\n", $response);
 
 			return $response;
 		}
@@ -1335,7 +1335,7 @@ class fMailbox
 					array_pop($response);
 				}
 
-				$response = trim(join("\r\n", $response));
+				$response = trim(implode("\r\n", $response));
 				$headers = self::parseHeaders($response);
 				$output[$i] = array(
 					'uid'      => $i,
@@ -1427,7 +1427,7 @@ class fMailbox
 				}
 
 				if ($expect !== NULL) {
-					$matched_number = is_int($expect) && sizeof($response) == $expect;
+					$matched_number = is_int($expect) && count($response) == $expect;
 					$matched_regex  = is_string($expect) && preg_match($expect, $line);
 					if ($matched_number || $matched_regex) {
 						break;
@@ -1436,12 +1436,12 @@ class fMailbox
 			}
 		}
 		if (fCore::getDebug($this->debug)) {
-			fCore::debug("Received:\n" . join("\r\n", $response), $this->debug);
+			fCore::debug("Received:\n" . implode("\r\n", $response), $this->debug);
 		}
 
 		if ($this->type == 'pop3') {
 			// Remove the termination octet
-			if ($response && $response[sizeof($response)-1] == '.') {
+			if ($response && $response[count($response)-1] == '.') {
 				$response = array_slice($response, 0, -1);
 			}
 			// Remove byte-stuffing

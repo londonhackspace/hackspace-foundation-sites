@@ -679,7 +679,7 @@ class fUTF8
 		}
 
 		$keys = array_keys($value);
-		$num_keys = sizeof($keys);
+		$num_keys = count($keys);
 		for ($i=0; $i<$num_keys; $i++) {
 			$value[$keys[$i]] = self::clean($value[$keys[$i]]);
 		}
@@ -771,7 +771,7 @@ class fUTF8
 	 */
 	static private function detect($string)
 	{
-		return (boolean) preg_match('#[^\x00-\x7F]#', $string);
+		return (bool) preg_match('#[^\x00-\x7F]#', $string);
 	}
 
 
@@ -1177,7 +1177,7 @@ class fUTF8
 			throw new fProgrammerException(
 				'The pad type specified, %1$s, is not valid. Must be one of: %2$s.',
 				$pad_type,
-				join(', ', $valid_pad_types)
+				implode(', ', $valid_pad_types)
 			);
 		}
 

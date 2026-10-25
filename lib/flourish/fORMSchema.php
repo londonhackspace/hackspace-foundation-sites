@@ -93,7 +93,7 @@ class fORMSchema
 			throw new fProgrammerException(
 				'The relationship type specified, %1$s, is invalid. Must be one of: %2$s.',
 				$relationship_type,
-				join(', ', $valid_relationship_types)
+				implode(', ', $valid_relationship_types)
 			);
 		}
 
@@ -110,7 +110,7 @@ class fORMSchema
 				($relationship_type) ? ' ' . $relationship_type . ' ' : ' ',
 				$table,
 				$related_table,
-				join(', ', array_keys($routes))
+				implode(', ', array_keys($routes))
 			);
 		}
 
@@ -147,7 +147,7 @@ class fORMSchema
 			throw new fProgrammerException(
 				'The relationship type specified, %1$s, is invalid. Must be one of: %2$s.',
 				$relationship_type,
-				join(', ', $valid_relationship_types)
+				implode(', ', $valid_relationship_types)
 			);
 		}
 
@@ -162,22 +162,22 @@ class fORMSchema
 				$route,
 				$table,
 				$related_table,
-				join(', ', array_keys($routes))
+				implode(', ', array_keys($routes))
 			);
 		}
 
 		$keys = array_keys($routes);
 
-		if (sizeof($keys) > 1) {
+		if (count($keys) > 1) {
 			throw new fProgrammerException(
 				'There is more than one route for the%1$srelationship between %2$s and %3$s. Please specify one of the following: %4$s.',
 				($relationship_type) ? ' ' . $relationship_type . ' ' : ' ',
 				$table,
 				$related_table,
-				join(', ', array_keys($routes))
+				implode(', ', array_keys($routes))
 			);
 		}
-		if (sizeof($keys) == 0) {
+		if (count($keys) == 0) {
 			throw new fProgrammerException(
 				'The table %1$s is not in a%2$srelationship with the table %3$s',
 				$table,
@@ -206,7 +206,7 @@ class fORMSchema
 			throw new fProgrammerException(
 				'The relationship type specified, %1$s, is invalid. Must be one of: %2$s.',
 				$type,
-				join(', ', $valid_types)
+				implode(', ', $valid_types)
 			);
 		}
 
@@ -255,7 +255,7 @@ class fORMSchema
 			throw new fProgrammerException(
 				'The relationship type specified, %1$s, is invalid. Must be one of: %2$s.',
 				$relationship_type,
-				join(', ', $valid_relationship_types)
+				implode(', ', $valid_relationship_types)
 			);
 		}
 
@@ -319,13 +319,13 @@ class fORMSchema
 	{
 		$relationships = self::getRoutes($schema, $table, $related_table, 'one-to-one', $route);
 
-		if ($route === NULL && sizeof($relationships) > 1) {
+		if ($route === NULL && count($relationships) > 1) {
 			throw new fProgrammerException(
 				'There is more than one route for the%1$srelationship between %2$s and %3$s. Please specify one of the following: %4$s.',
 				' one-to-one ',
 				$table,
 				$related_table,
-				join(', ', array_keys($relationships))
+				implode(', ', array_keys($relationships))
 			);
 		}
 		if (!$relationships) {

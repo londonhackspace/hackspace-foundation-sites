@@ -130,7 +130,7 @@ class fPagination
 			throw new fProgrammerException(
 				'The type specified, %1$s, is invalid. Must be one of: %2$s.',
 				$type,
-				join(', ', $valid_types)
+				implode(', ', $valid_types)
 			);
 		}
 
@@ -166,9 +166,9 @@ class fPagination
 		if (array_keys($pieces) != $required_pieces) {
 			throw new fProgrammerException(
 				'The pieces specified, %1$s, do not correspond to the pieces required by the type %2$s: %3$s.',
-				join(' ', array_keys($pieces)),
+				implode(' ', array_keys($pieces)),
 				$type,
-				join(' ', $required_pieces)
+				implode(' ', $required_pieces)
 			);
 		}
 
@@ -541,7 +541,7 @@ class fPagination
 						throw new fProgrammerException(
 							'The filter specified, %1$s, is invalid. Must be one of: %2$s.',
 							$filter,
-							join(', ', self::$filters)
+							implode(', ', self::$filters)
 						);
 					}
 					if (!strlen($value)) {

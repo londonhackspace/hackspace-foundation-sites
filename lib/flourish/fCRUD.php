@@ -192,7 +192,7 @@ class fCRUD
 
 		$possible_columns = func_get_args();
 
-		if (sizeof($possible_columns) == 1 && is_array($possible_columns[0])) {
+		if (count($possible_columns) == 1 && is_array($possible_columns[0])) {
 			$possible_columns = $possible_columns[0];
 		}
 

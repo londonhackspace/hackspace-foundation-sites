@@ -99,7 +99,7 @@ class fORMMoney
 				'The column specified, %1$s, is a %2$s column. Must be %3$s to be set as a money column.',
 				$column,
 				$data_type,
-				join(', ', $valid_data_types)
+				implode(', ', $valid_data_types)
 			);
 		}
 
@@ -111,7 +111,7 @@ class fORMMoney
 					'The currency column specified, %1$s, is a %2$s column. Must be %3$s to be set as a currency column.',
 					$currency_column,
 					$currency_column_data_type,
-					join(', ', $valid_currency_column_data_types)
+					implode(', ', $valid_currency_column_data_types)
 				);
 			}
 		}

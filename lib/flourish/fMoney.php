@@ -108,7 +108,7 @@ class fMoney
 			throw new fProgrammerException(
 				'The currency specified, %1$s, is not a valid currency. Must be one of: %2$s.',
 				$iso_code,
-				join(', ', array_keys(self::$currencies))
+				implode(', ', array_keys(self::$currencies))
 			);
 		}
 
@@ -120,7 +120,7 @@ class fMoney
 			throw new fProgrammerException(
 				'The element specified, %1$s, is not valid. Must be one of: %2$s.',
 				$element,
-				join(', ', array_keys(self::$currencies[$iso_code]))
+				implode(', ', array_keys(self::$currencies[$iso_code]))
 			);
 		}
 
@@ -204,7 +204,7 @@ class fMoney
 			throw new fProgrammerException(
 				'The currency specified, %1$s, is not a valid currency. Must be one of: %2$s.',
 				$iso_code,
-				join(', ', array_keys(self::$currencies))
+				implode(', ', array_keys(self::$currencies))
 			);
 		}
 
@@ -242,7 +242,7 @@ class fMoney
 			throw new fProgrammerException(
 				'The currency specified, %1$s, is not a valid currency. Must be one of: %2$s.',
 				$abbreviation,
-				join(', ', array_keys(self::$currencies))
+				implode(', ', array_keys(self::$currencies))
 			);
 		}
 
@@ -347,7 +347,7 @@ class fMoney
 
 			throw new fProgrammerException(
 				'The ratios specified (%s) combined are not equal to 1',
-				join(', ', $ratio_values)
+				implode(', ', $ratio_values)
 			);
 		}
 
@@ -399,7 +399,7 @@ class fMoney
 			throw new fProgrammerException(
 				'The currency specified, %1$s, is not a valid currency. Must be one of: %2$s.',
 				$new_currency,
-				join(', ', array_keys(self::$currencies))
+				implode(', ', array_keys(self::$currencies))
 			);
 		}
 
@@ -461,7 +461,7 @@ class fMoney
 		array_unshift($int_sections, substr($integer, 0, $i+3));
 
 		$symbol   = self::getCurrencyInfo($this->currency, 'symbol');
-		$integer  = join(',', $int_sections);
+		$integer  = implode(',', $int_sections);
 		$fraction = (strlen($fraction)) ? '.' . $fraction : '';
 
 		if ($remove_zero_fraction && rtrim($fraction, '.0') === '') {

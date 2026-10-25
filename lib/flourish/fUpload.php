@@ -92,7 +92,7 @@ class fUpload
 			);
 		}
 
-		return sizeof($_FILES[$field]['name']);
+		return count($_FILES[$field]['name']);
 	}
 
 

@@ -1023,7 +1023,7 @@ class fORM
 			throw new fProgrammerException(
 				'The hook specified, %1$s, should be one of: %2$s.',
 				$hook,
-				join(', ', $valid_hooks)
+				implode(', ', $valid_hooks)
 			);
 		}
 
