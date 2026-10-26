@@ -107,7 +107,14 @@ require 'header.php';?>
         <section>
             <h3 class="collapsed" data-toggle="collapse" data-target="#flickr-badge-container">Photo stream</h3>
             <div id="flickr-badge-container" class="collapse">
-              <?php include 'flickr.html'?>
+              <?php
+              if (file_exists('flickr.html') && is_readable('flickr.html')) {
+                // This static file isn't part of the git repo, but is generated elsewhere.
+                // see bin/flickr_fetch.py
+                // avoid errors on development / debugging if it's not been done.
+               include 'flickr.html';
+               }
+               ?>
               <p><a href="http://www.flickr.com/groups/londonhackspace/pool">View more on Flickr&hellip;</a></p>
             </div>
         </section>
