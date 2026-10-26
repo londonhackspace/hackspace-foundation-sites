@@ -1361,7 +1361,7 @@ class fDatabase
 		} elseif ($this->extension == 'mysqli') {
 			return "'" . mysqli_real_escape_string($this->connection, $value) . "'";
 		} elseif ($this->extension == 'pgsql') {
-			return "'" . pg_escape_string($value) . "'";
+			return "'" . pg_escape_string($this->connection, $value) . "'";
 		} elseif ($this->extension == 'sqlite') {
 			return "'" . sqlite_escape_string($value) . "'";
 		} elseif ($this->type == 'oracle') {
@@ -2412,7 +2412,7 @@ class fDatabase
 		$this->handleErrors(fCore::stopErrorCapture());
 
 		// The mssql extension will sometimes not return FALSE even if there are errors
-		if (strlen($this->error)) {
+		if (!empty($this->error)) {
 			$result = FALSE;
 		}
 
@@ -2559,7 +2559,7 @@ class fDatabase
 		$this->handleErrors(fCore::stopErrorCapture());
 
 		// The mssql extension will sometimes not return FALSE even if there are errors
-		if (strlen($this->error) && strpos($this->error, 'WARNING!') !== 0) {
+		if (!empty($this->error) && strpos($this->error, 'WARNING!') !== 0) {
 			$result->setResult(FALSE);
 		}
 
