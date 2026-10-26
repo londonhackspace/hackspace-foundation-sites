@@ -4246,7 +4246,7 @@ class fSQLSchemaTranslation
 					con.conname AS constraint_name,
 					col.attname AS column,
 					format_type(col.atttypid, col.atttypmod) AS data_type,
-					ad.adsrc AS default
+					pg_get_expr(ad.adbin, ad.adrelid) AS default
 				FROM
 					pg_attribute AS col INNER JOIN
 					pg_class AS t ON col.attrelid = t.oid INNER JOIN

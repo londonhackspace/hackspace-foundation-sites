@@ -1673,7 +1673,7 @@ class fSchema
 						LOWER(pg_attribute.attname)                                 AS column,
 						format_type(pg_attribute.atttypid, pg_attribute.atttypmod)  AS data_type,
 						pg_attribute.attnotnull                                     AS not_null,
-						pg_attrdef.adsrc                                            AS default,
+						pg_get_expr(pg_attrdef.adbin, pg_attrdef.adrelid)           AS default,
 						pg_get_constraintdef(pg_constraint.oid)                     AS constraint,
 						col_description(pg_class.oid, pg_attribute.attnum)          AS comment
 					FROM
@@ -2796,7 +2796,7 @@ class fSchema
 						FROM
 							 pg_tables
 						WHERE
-							 tablename !~ '^(pg|sql)_'
+							 tablename in (select tablename from flourish_tables)
 						ORDER BY
 							LOWER(tablename)";
 				break;

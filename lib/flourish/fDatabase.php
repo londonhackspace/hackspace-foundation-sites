@@ -1393,7 +1393,7 @@ class fDatabase
 							// so instead store a ?
 							default:
 								$output .= '?';
-								break;
+								continue 2;
 						}
 						if ($last_type == 'nchar') {
 							$output .= '+';
@@ -1869,7 +1869,7 @@ class fDatabase
 								pg_attrdef ON pg_class.oid = pg_attrdef.adrelid AND pg_attribute.attnum = pg_attrdef.adnum
 							WHERE
 								NOT pg_attribute.attisdropped AND
-								pg_attrdef.adsrc LIKE 'nextval(%'";
+								pg_get_expr(pg_attrdef.adbin, pg_attrdef.adrelid) LIKE 'nextval(%'";
 
 				$this->schema_info['sequences'] = array();
 
