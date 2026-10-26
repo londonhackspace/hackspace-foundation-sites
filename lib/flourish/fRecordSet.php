@@ -940,7 +940,7 @@ class fRecordSet implements IteratorAggregate, ArrayAccess, Countable
 				$db = fORMDatabase::retrieve($this->class, 'read');
 				// The integer cast here is to solve issues with the broken dblib
 				// SQL Server driver that is sometimes present on Windows machines
-				$this->non_limited_count = (integer) $db->translatedQuery($this->non_limited_count)->fetchScalar();
+				$this->non_limited_count = (int) $db->translatedQuery($this->non_limited_count)->fetchScalar();
 			} catch (fExpectedException $e) {
 				$this->non_limited_count = $this->count();
 			}

@@ -2265,18 +2265,20 @@ class fSchema
 	 */
 	private function findStarToOneRelationships($table)
 	{
-		foreach ($this->merged_keys[$table]['foreign'] as $key) {
-			$temp = array();
-			$temp['table']          = $table;
-			$temp['column']         = $key['column'];
-			$temp['related_table']  = $key['foreign_table'];
-			$temp['related_column'] = $key['foreign_column'];
-			$type = ($this->checkForSingleColumnUniqueKey($table, $key['column'])) ? 'one-to-one' : 'many-to-one';
-			if ($type == 'one-to-one') {
-				$temp['on_delete'] = $key['on_delete'];
-				$temp['on_update'] = $key['on_update'];
+		if (isset($this->merged_keys[$table]['foreign']) && is_array($this->merged_keys[$table]['foreign'])) {
+			foreach ($this->merged_keys[$table]['foreign'] as $key) {
+				$temp = array();
+				$temp['table']          = $table;
+				$temp['column']         = $key['column'];
+				$temp['related_table']  = $key['foreign_table'];
+				$temp['related_column'] = $key['foreign_column'];
+				$type = ($this->checkForSingleColumnUniqueKey($table, $key['column'])) ? 'one-to-one' : 'many-to-one';
+				if ($type == 'one-to-one') {
+					$temp['on_delete'] = $key['on_delete'];
+					$temp['on_update'] = $key['on_update'];
+				}
+				$this->relationships[$table][$type][] = $temp;
 			}
-			$this->relationships[$table][$type][] = $temp;
 		}
 	}
 
@@ -2328,10 +2330,10 @@ class fSchema
 	 *         'not_null'       => (bool) {if value can't be null},
 	 *         'default'        => (mixed)   {the default value},
 	 *         'valid_values'   => (array)   {the valid values for a varchar field},
-	 *         'max_length'     => (integer) {the maximum length in a varchar field},
+	 *         'max_length'     => (int) {the maximum length in a varchar field},
 	 *         'min_value'      => (numeric) {the minimum value for an integer/float field},
 	 *         'max_value'      => (numeric) {the maximum value for an integer/float field},
-	 *         'decimal_places' => (integer) {the number of decimal places for a decimal/numeric/money/smallmoney field},
+	 *         'decimal_places' => (int) {the number of decimal places for a decimal/numeric/money/smallmoney field},
 	 *         'auto_increment' => (bool) {if the integer primary key column is a serial/autoincrement/auto_increment/indentity column},
 	 *         'comment'        => (string)  {the SQL comment/description for the column}
 	 *     ), ...
@@ -2347,10 +2349,10 @@ class fSchema
 	 *     'not_null'       => (bool) {if value can't be null},
 	 *     'default'        => (mixed)   {the default value-may contain special strings CURRENT_TIMESTAMP, CURRENT_TIME or CURRENT_DATE},
 	 *     'valid_values'   => (array)   {the valid values for a varchar field},
-	 *     'max_length'     => (integer) {the maximum length in a char/varchar field},
+	 *     'max_length'     => (int) {the maximum length in a char/varchar field},
 	 *     'min_value'      => (fNumber) {the minimum value for an integer/float field},
 	 *     'max_value'      => (fNumber) {the maximum value for an integer/float field},
-	 *     'decimal_places' => (integer) {the number of decimal places for a decimal/numeric/money/smallmoney field},
+	 *     'decimal_places' => (int) {the number of decimal places for a decimal/numeric/money/smallmoney field},
 	 *     'auto_increment' => (bool) {if the integer primary key column is a serial/autoincrement/auto_increment/indentity column},
 	 *     'comment'        => (string)  {the SQL comment/description for the column}
 	 * )

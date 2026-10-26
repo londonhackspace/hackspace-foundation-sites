@@ -341,7 +341,7 @@ class fGrammar
 	/**
 	 * Returns the singular or plural form of the word or based on the quantity specified
 	 *
-	 * @param  mixed   $quantity                     The quantity (integer) or an array of objects to count
+	 * @param  mixed   $quantity                     The quantity (int) or an array of objects to count
 	 * @param  string  $singular_form                The string to be returned for when `$quantity = 1`
 	 * @param  string  $plural_form                  The string to be returned for when `$quantity != 1`, use `%d` to place the quantity in the string
 	 * @param  boolean $use_words_for_single_digits  If the numbers 0 to 9 should be written out as words

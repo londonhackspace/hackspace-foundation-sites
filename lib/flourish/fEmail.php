@@ -808,7 +808,7 @@ class fEmail
 			if ($first) { $first = FALSE; } else { $header .= ', '; }
 
 			// Try to stay within the recommended 78 character line limit
-			$last_crlf_pos = (integer) strrpos($header, "\r\n");
+			$last_crlf_pos = (int) strrpos($header, "\r\n");
 			if (strlen($header . $email) - $last_crlf_pos > 78) {
 				$header .= "\r\n ";
 				$line++;

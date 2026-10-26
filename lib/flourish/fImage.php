@@ -827,7 +827,7 @@ class fImage extends fFile
 	/**
 	 * Returns the width and height of the image as a two element array
 	 *
-	 * @return array  In the format `0 => (integer) {width}, 1 => (integer) {height}`
+	 * @return array  In the format `0 => (int) {width}, 1 => (int) {height}`
 	 */
 	public function getDimensions()
 	{

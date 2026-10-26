@@ -119,7 +119,7 @@ class fRequest
 	{
 		$level++;
 
-		$strict_array = substr($cast_to, -2) == '[]';
+		$strict_array = ((is_string($cast_to)) && (substr($cast_to, -2) == '[]'));
 		$array_type   = $cast_to == 'array' || $strict_array;
 
 		if ($level == 1 && $array_type) {

@@ -386,7 +386,7 @@ class fAuthorization
 	/**
 	 * Sets the authorization levels to use for level checking
 	 *
-	 * @param  array $levels  An associative array of `(string) {level} => (integer) {value}`, for each level
+	 * @param  array $levels  An associative array of `(string) {level} => (int) {value}`, for each level
 	 * @return void
 	 */
 	static public function setAuthLevels($levels)

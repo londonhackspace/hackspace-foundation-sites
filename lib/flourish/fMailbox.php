@@ -1202,10 +1202,10 @@ class fMailbox
 	 *
 	 * {{{
 	 * array(
-	 *     (integer) {uid} => array(
-	 *         'uid'         => (integer) {a unique identifier for this message on this server},
+	 *     (int) {uid} => array(
+	 *         'uid'         => (int) {a unique identifier for this message on this server},
 	 *         'received'    => (string) {date message was received},
-	 *         'size'        => (integer) {size of message in bytes},
+	 *         'size'        => (int) {size of message in bytes},
 	 *         'date'        => (string) {date message was sent},
 	 *         'from'        => (string) {the from header value},
 	 *         'subject'     => (string) {the message subject},

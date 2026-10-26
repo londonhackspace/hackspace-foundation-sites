@@ -671,7 +671,7 @@ class fJSON
 	static private function scalarize($type, $element)
 	{
 		if ($type == self::J_INTEGER) {
-			$element = (integer) $element;
+			$element = (int) $element;
 		}
 		if ($type == self::J_FLOAT) {
 			$element = (float) $element;
