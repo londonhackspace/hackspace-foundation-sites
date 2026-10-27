@@ -40,6 +40,7 @@ foreach( $subscribers as $row ) {
   }
   $subs[count($subs)-1]['cards'][] = $row['uid'];
 }
+header('Content-Type: application/json');
 echo json_encode($subs);
 
 /*
