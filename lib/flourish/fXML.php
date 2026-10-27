@@ -487,11 +487,12 @@ class fXML implements ArrayAccess
 	 * @internal
 	 *
 	 * @param  string $offset  The offset to check
-	 * @return boolean  If the offset exists
+	 * @return bool  If the offset exists
 	 */
+	#[\ReturnTypeWillChange]
 	public function offsetExists($offset)
 	{
-		return (bool) $this->query('@' . $offset . '[1]')->length;
+		return (bool) !empty($this->query('@' . $offset . '[1]'));
 	}
 
 
