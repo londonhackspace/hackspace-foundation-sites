@@ -11,7 +11,6 @@ require_once("$root/usersprofile.php");
 require_once("$root/learning.php");
 require_once("$root/alias.php");
 require_once("$root/interest.php");
-require_once("$root/calendar.php");
 require_once("$root/project.php");
 require_once("$root/payment.php");
 require_once("$root/gocardless.php");
