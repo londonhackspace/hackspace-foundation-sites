@@ -296,7 +296,7 @@ abstract class fException extends Exception
 	/**
 	 * Returns the CSS class name for printing information about the exception
 	 *
-	 * @return void
+	 * @return string
 	 */
 	protected function getCSSClass()
 	{
