@@ -382,6 +382,7 @@ class fResult implements Iterator
 	 *
 	 * @return array|stdClass  The current row
 	 */
+	#[\ReturnTypeWillChange]
 	public function current()
 	{
 		if(!$this->returned_rows) {
@@ -607,6 +608,7 @@ class fResult implements Iterator
 	 *
 	 * @return integer  The current row number
 	 */
+	#[\ReturnTypeWillChange]
 	public function key()
 	{
 		if ($this->pointer === NULL) {
@@ -626,6 +628,7 @@ class fResult implements Iterator
 	 *
 	 * @return void
 	 */
+	#[\ReturnTypeWillChange]
 	public function next()
 	{
 		if ($this->pointer === NULL) {
@@ -649,6 +652,7 @@ class fResult implements Iterator
 	 *
 	 * @return void
 	 */
+	#[\ReturnTypeWillChange]
 	public function rewind()
 	{
 		try {
@@ -858,8 +862,9 @@ class fResult implements Iterator
 	/**
 	 * Returns if the query has any rows left
 	 *
-	 * @return boolean  If the iterator is still valid
+	 * @return bool  If the iterator is still valid
 	 */
+	#[\ReturnTypeWillChange]
 	public function valid()
 	{
 		if (!$this->returned_rows) {

@@ -929,6 +929,7 @@ class fRecordSet implements IteratorAggregate, ArrayAccess, Countable
 	 * @param  boolean $ignore_limit  If set to `TRUE`, this method will return the number of records that would be in the set if there was no `LIMIT` clause
 	 * @return integer  The number of records in the set
 	 */
+	#[\ReturnTypeWillChange]
 	public function count($ignore_limit=FALSE)
 	{
 		if ($ignore_limit !== TRUE || $this->non_limited_count === NULL) {
@@ -1121,8 +1122,9 @@ class fRecordSet implements IteratorAggregate, ArrayAccess, Countable
 	 *
 	 * @internal
 	 *
-	 * @return ArrayIterator  An iterator for the record set
+	 * @return Traversable  An iterator for the record set
 	 */
+	#[\ReturnTypeWillChange]
 	public function getIterator()
 	{
 		return new ArrayIterator($this->records);
@@ -1412,8 +1414,9 @@ class fRecordSet implements IteratorAggregate, ArrayAccess, Countable
 	 * @internal
 	 *
 	 * @param  mixed $offset  The offset to check
-	 * @return boolean  If the offset exists
+	 * @return bool  If the offset exists
 	 */
+	#[\ReturnTypeWillChange]
 	public function offsetExists($offset)
 	{
 		return isset($this->records[$offset]);
@@ -1432,6 +1435,7 @@ class fRecordSet implements IteratorAggregate, ArrayAccess, Countable
 	 * @param  mixed $offset  The offset of the record to get
 	 * @return fActiveRecord  The requested record
 	 */
+	#[\ReturnTypeWillChange]
 	public function offsetGet($offset)
 	{
 		if ((!is_int($offset) && !is_numeric($offset)) || $offset < 0) {
@@ -1461,6 +1465,7 @@ class fRecordSet implements IteratorAggregate, ArrayAccess, Countable
 	 * @param  mixed $value   The value to set to the offset
 	 * @return void
 	 */
+	#[\ReturnTypeWillChange]
 	public function offsetSet($offset, $value)
 	{
 		throw new fProgrammerException(
@@ -1480,6 +1485,7 @@ class fRecordSet implements IteratorAggregate, ArrayAccess, Countable
 	 * @param  mixed $offset  The offset to unset
 	 * @return void
 	 */
+	#[\ReturnTypeWillChange]
 	public function offsetUnset($offset)
 	{
 		throw new fProgrammerException(
