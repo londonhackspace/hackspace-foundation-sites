@@ -1262,7 +1262,7 @@ class fCore
 	static public function startErrorCapture($types=NULL, $regex=NULL)
 	{
 		if ($types === NULL) {
-			$types = E_ALL | E_STRICT;
+			$types = E_ALL;
 		}
 
 		self::$captured_error_level++;
