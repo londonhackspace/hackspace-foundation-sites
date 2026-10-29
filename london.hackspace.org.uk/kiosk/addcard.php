@@ -47,8 +47,23 @@ if (isset($_POST['submit'])) {
     } catch (fValidationException $e) {
         echo "<p>" . $e->printMessage() . "</p>";
     }
-}
+} else {
+    if (empty($_REQUEST['cardid'])) {
+        echo 'Error. Should never have reached this page without knowing about a particular card';
+        // Redirect back to /kiosk after 20 seconds, using Javascript
+        ?>
+        <script>
+            window.setTimeout(function() {
+                window.location.href = '/kiosk';
+            }, 20000);
+            </script>
+        <?php
 
+        require('./footer.php');
+        
+        exit;
+    }
+}
 ?>
 <p>Please log in with your London Hackspace membership account:</p>
 <form method="post">
