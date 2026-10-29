@@ -249,7 +249,7 @@ class fGrammar
 				if ($upper) {
 					$string = ucfirst($string);
 				}
-				$string = preg_replace_callback('#_([a-z0-9])#i', array('self', 'camelizeCallback'), $string);
+				$string = preg_replace_callback('#_([a-z0-9])#i', function ($matches) { return strtoupper($matches[1]); }, $string);
 			}
 		}
 
@@ -327,7 +327,7 @@ class fGrammar
 
 			$string = preg_replace_callback(
 				'/(\b(api|css|gif|html|id|jpg|js|mp3|pdf|php|png|sql|swf|url|xhtml|xml)\b|\b\w)/',
-				array('self', 'camelizeCallback'),
+				function ($matches) { return strtoupper($matches[1]); },
 				str_replace('_', ' ', $string)
 			);
 		}
