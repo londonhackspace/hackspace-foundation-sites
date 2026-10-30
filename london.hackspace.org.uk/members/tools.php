@@ -16,7 +16,7 @@ function get_tools_json($url) {
   );
   $context = stream_context_create($opts);
 
-  $result = file_get_contents($ACSERVER_ADDRESS . $url, false, $context);
+  @$result = file_get_contents($ACSERVER_ADDRESS . $url, false, $context);
   return $result;
 }
 
@@ -50,6 +50,12 @@ ensureMember();
 
 $url = "/api/get_tools_summary_for_user/" . $user->getId();
 $result = get_tools_json($url);
+if (empty($result)) {
+  echo '<h2>Error connecting to acserver to check tool status</h2>';
+  // set response http header to http status code of 500
+  http_response_code(500);
+  exit;
+}
 $result = json_decode($result);
 
 ?>
@@ -75,7 +81,7 @@ $result = json_decode($result);
 $start = '<tr class="well well-small">';
 $end = '</tr>';
 
-foreach ($result as $tool)
+foreach ($result ?? [] as $tool)
 {
   // skip doorbots
   if ($tool->type == "Unrestricted Door") {

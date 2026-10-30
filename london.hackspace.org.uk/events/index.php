@@ -2,6 +2,8 @@
 $page = 'events';
 $title = 'Events';
 require '../header.php';
+$root = dirname(__FILE__, 2);
+require_once("$root/calendar.php");
 
 // choose which month to query, defaults to this month
 $month = (int) date('n');

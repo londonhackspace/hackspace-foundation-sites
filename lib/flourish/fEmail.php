@@ -114,6 +114,7 @@ class fEmail
 
 	/**
 	 * The local fully-qualified domain name
+	 * @var string|NULL
 	 */
 	static private $fqdn;
 
@@ -166,11 +167,10 @@ class fEmail
 	 * Composes text using fText if loaded
 	 *
 	 * @param  string  $message    The message to compose
-	 * @param  mixed   $component  A string or number to insert into the message
-	 * @param  mixed   ...
+	 * @param  mixed   ...$args  A string or number to insert into the message
 	 * @return string  The composed and possible translated message
 	 */
-	static protected function compose($message)
+	static protected function compose($message, $args = null)
 	{
 		$args = array_slice(func_get_args(), 1);
 

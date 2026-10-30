@@ -58,11 +58,11 @@ if (($user->isMember() && $this_user->isMember()) || $user->isAdmin()) {
       </tr>
       <tr>
         <th>Address</th>
-        <td><?= nl2br($this_user->getAddress()) ?></td>
+        <td><?= nl2br($this_user->getAddress() ?? '') ?></td>
       </tr>
       <tr>
         <th>Emergency Contact</th>
-        <td><?= htmlspecialchars($this_user->getEmergencyName()) ?><br /><?= htmlspecialchars($this_user->getEmergencyPhone()) ?></td>
+        <td><?= htmlspecialchars($this_user->getEmergencyName()) ?><br /><?= htmlspecialchars($this_user->getEmergencyPhone() ?? '') ?></td>
       </tr>
     <?php } ?>
   </table>
