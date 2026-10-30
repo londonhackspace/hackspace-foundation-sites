@@ -252,7 +252,7 @@ if (isset($_GET['saved'])) {
 	    <div class="form-group">
 	        <strong>Projects I'm working on</strong><br/>
 	        <small>The most commonly asked question in the hackspace. What are you doing? Keep it short and sweet.</small>
-	        <textarea id="description" name="description" class="form-control" rows="3"><?=htmlspecialchars(empty($user_profile->getDescription()) ? '' : $user_profile->getDescription())?></textarea>
+	        <textarea id="description" name="description" class="form-control" rows="3"><?=htmlspecialchars($user_profile->getDescription() ?? '')?></textarea>
 	    </div>
 
 	    <div class="form-group interests">
