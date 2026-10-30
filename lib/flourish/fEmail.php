@@ -759,8 +759,8 @@ class fEmail
 	public function addCustomHeader($name, $value=NULL)
 	{
 		if ($value === NULL && is_array($name)) {
-			foreach ($name as $key => $value) {
-				$this->addCustomHeader($key, $value);
+			foreach ($name as $key => $val) {
+				$this->addCustomHeader($key, $val);
 			}
 			return;
 		}
@@ -1061,14 +1061,14 @@ class fEmail
 		// If we are going to sign and encrypt, the best way is to sign, encrypt and then sign again
 		if ($this->smime_encrypt && $this->smime_sign) {
 			openssl_pkcs7_sign($plaintext_file, $ciphertext_file, $senders_smime_cert, $senders_private_key, array());
-			openssl_pkcs7_encrypt($ciphertext_file, $plaintext_file, $recipients_smime_cert, array(), NULL, OPENSSL_CIPHER_RC2_128);
+			openssl_pkcs7_encrypt($ciphertext_file, $plaintext_file, $recipients_smime_cert, array(), 0, OPENSSL_CIPHER_RC2_128);
 			openssl_pkcs7_sign($plaintext_file, $ciphertext_file, $senders_smime_cert, $senders_private_key, $headers_array);
 
 		} elseif ($this->smime_sign) {
 			openssl_pkcs7_sign($plaintext_file, $ciphertext_file, $senders_smime_cert, $senders_private_key, $headers_array);
 
 		} elseif ($this->smime_encrypt) {
-			openssl_pkcs7_encrypt($plaintext_file, $ciphertext_file, $recipients_smime_cert, $headers_array, NULL, OPENSSL_CIPHER_RC2_128);
+			openssl_pkcs7_encrypt($plaintext_file, $ciphertext_file, $recipients_smime_cert, $headers_array, 0, OPENSSL_CIPHER_RC2_128);
 		}
 
 		// It seems that the contents of the ciphertext is not always \r\n line breaks
