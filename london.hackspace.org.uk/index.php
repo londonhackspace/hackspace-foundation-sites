@@ -12,9 +12,10 @@ require 'header.php';?>
         <section>
             <h3>Visit us on a Wednesday</h3>
             <p>
-                We try to hold open evenings <strong>most Wednesdays</strong> from <strong>7pm</strong>
-                where prospective members can come, check out the space, and attend our space induction. Please check on Discord or our mailing list first to confirm, just in case.
-                <a href="http://wiki.london.hackspace.org.uk/view/Weekly_Open_Evenings">Learn more</a>.
+                We try to hold a space tour and induction <strong>most Wednesdays</strong> at <strong>7pm</strong>
+                where prospective members can come, check out the space, and learn key information about membership and using the space. 
+                <br/>If for some reason the event is cancelled, it will be announced via our mailing list and Discord.
+                <br/><a href="http://wiki.london.hackspace.org.uk/view/Weekly_Open_Evenings">Learn more</a>.
             </p>
         </section>
 
