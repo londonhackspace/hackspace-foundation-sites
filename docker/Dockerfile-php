@@ -1,4 +1,4 @@
-FROM php:7.4-fpm
+FROM php:8.5-fpm
 
 RUN apt-get update && \
     apt-get -y install vim libpq-dev libcurl4-openssl-dev npm
