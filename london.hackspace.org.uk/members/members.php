@@ -84,7 +84,7 @@ $include_unsubscribed = ($user->isAdmin() && isset($_GET['unsubscribed']) && $_G
 	                	<p class="hidden">profile</p><a href="/members/profile/<?=$row['id']?>" title="visit member's profile"><span class="glyphicon glyphicon-user"></span></a>
 					<?php } ?>
 	                </td>
-		            <td><?= htmlspecialchars( $row['nickname'] ) ?></td>
+		            <td><?= htmlspecialchars( $row['nickname'] ?? '') ?></td>
 				<?php } ?>
             </tr>
         <?php } ?>
